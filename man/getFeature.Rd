@@ -20,7 +20,6 @@
 \examples{
 
 #example using affy id from Ensembl
-
 mart <- martConnect(mart = "ensembl")
 
 getFeature( symbol = "P53", array = "hgu95av2", mart = mart)

@@ -246,6 +246,46 @@ getFeature(symbol = "P53", array = "hgu95av2", mart = mart)
 @
 
 
+\subsection{\Rfunction{getSequence}}
+
+The function \Rfunction{getSequence} retrieves the sequence given it's chromosome, start and end position. As output this function returns a \Robject{martTable}.
+The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect} and should in this case be the sequence mart.\\
+
+
+Examples: \\
+
+
+<<>>=
+
+seqMart <- martConnect(mart = "sequence")
+
+getSequence(species="gallus_gallus", chromosome = 1, start = 400, end = 500, mart = seqMart)
+
+martDisconnect(seqMart)
+
+@
+
+
+\subsection{\Rfunction{getSNP}}
+
+The function \Rfunction{getSNP} retrieves all SNP's between a given a start and end position on a gives chromosome.. As output this function returns a \Robject{martTable}.
+The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect} and should in this case be the snp mart.\\
+
+
+Examples: \\
+
+
+<<>>=
+
+snpMart <- martConnect(mart = "snp")
+
+getSNP(mart = snpMart, chromosome = 8, start = 148350, end = 159000, species ="homo_sapiens")
+
+martDisconnect(snpMart)
+
+@
+
+
 \subsection{\Rfunction{getSpecies}}
 
 The function \Rfunction{getSpecies} looks up which species are present in the BioMart.  This function currently works only for ensembl.
