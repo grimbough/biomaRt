@@ -42,8 +42,10 @@ The BioConductor \Rpackage{biomaRt} package enables to directly query databases 
 
 An object of the \Robject{Mart} class represents a connection to a BioMart.  And has the following slots:
 \begin{itemize}
-\item \Robject{connection}: stores the RMySQLConnection to a BioMart
-\item \Robject{mart}: contains the name of the mart 
+\item \Robject{ensembl}: stores the RMySQLConnection to Ensembl
+\item \Robject{vega}: stores the RMySQLConnection to VEGA
+\item \Robject{sequence}: stores the RMySQLConnection to sequence mart
+\item \Robject{snp}: stores the RMySQLConnection to snp mart
 \end{itemize}
 
 
@@ -108,8 +110,8 @@ Examples: \\
 ## load up the library
 library(biomaRt)
 
-#Connect to a BioMart
-mart <- martConnect("ensembl")
+#Connect to BioMart databases
+mart <- martConnect()
  
 @
 
@@ -122,7 +124,7 @@ Examples: \\
 
 <<>>=
 
-#Disconnect from a BioMart
+#Disconnect from BioMart databases
 
 martDisconnect(mart)
  
@@ -151,12 +153,10 @@ Examples: \\
 
 
 <<>>=
-## load up the library
-library(biomaRt)
 
-#connect to ensembl
+#connect to BioMart databases
 
-mart <- martConnect("ensembl") 
+mart <- martConnect() 
 
 #example affy
 
@@ -257,11 +257,7 @@ Examples: \\
 
 <<>>=
 
-seqMart <- martConnect(mart = "sequence")
-
-getSequence(species="gallus_gallus", chromosome = 1, start = 400, end = 500, mart = seqMart)
-
-martDisconnect(seqMart)
+getSequence(species="gallus_gallus", chromosome = 1, start = 400, end = 500, mart = mart)
 
 @
 
@@ -277,11 +273,7 @@ Examples: \\
 
 <<>>=
 
-snpMart <- martConnect(mart = "snp")
-
-getSNP(mart = snpMart, chromosome = 8, start = 148350, end = 159000, species ="homo_sapiens")
-
-martDisconnect(snpMart)
+getSNP(chromosome = 8, start = 148350, end = 159000, species ="homo_sapiens", mart = mart)
 
 @
 
@@ -297,7 +289,7 @@ Examples: \\
 <<>>=
 
 
-getSpecies( mart )
+getSpecies( mart = mart )
 
 @
 
