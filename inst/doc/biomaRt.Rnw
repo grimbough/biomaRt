@@ -53,50 +53,10 @@ An object of the \Robject{Mart} class represents a connection to a BioMart.  And
 
 \subsection{martTable-class}
  
-An object of the \Robject{martTable} class represents annotation of a gene.  And has the following slots:
+An object of the \Robject{martTable} class is the output of most biomaRt funtions and has the following slots:
 \begin{itemize}
 \item \Robject{id}: stores the id used for querying
-\item \Robject{table}: is a list of lists (or vectors) storing annotation information
-\end{itemize}
-
-
-
-\subsection{Gene-class}
- 
-An object of the \Robject{Gene} class represents annotation of a gene.  And has the following slots:
-\begin{itemize}
-\item \Robject{id}: stores the id used for querying
-\item \Robject{martID}: stores the mart specific id
-\item \Robject{symbol}: stores the gene symbol
-\item \Robject{chromosome}: stores the chromosome number on which the gene is locatlized
-\item \Robject{band}: stores the band on which the gene is localized
-\item \Robject{start}: stores the start position of the gene on the respective chromosome
-\item \Robject{end}: stores the end position of the gene on the respective chromosome
-\item \Robject{GO}: a slot to store an object of class GO
-\item \Robject{OMIM}: a slot to store an object of class OMIM 	
-\end{itemize}
-
-\subsection{MultiGene-class}
- 
-When starting from a query id, Ensembl retrieves multiple hits, all these different hits can be storen in an object of the class \Robject{MultiGene}.  This class is identical to the \Robject{Gene} class except that here we store multiple elements in each slot, e.g. multiple symbols matching a query id.
-
-\subsection{GO-class}
-
-An object of the \Robject{GO} class represents GO annotation of a gene.  And has the following slots:
-\begin{itemize}
-\item \Robject{id}: stores the id used for querying
-\item \Robject{GOID}: stores the GO id's associated with the query id.
-\item \Robject{description}: stores the description of the corresponding GO id's 
-\item \Robject{evidence}: stores the evidence code of GO annotation
-\end{itemize}
-
-\subsection{OMIM-class}
-
-An object of the \Robject{OMIM} class represents OMIM annotation of a gene.  And has the following slots:
-\begin{itemize}
-\item \Robject{id}: stores the id used for querying
-\item \Robject{OMIMID}: stores the OMIM id's associated with the query id.
-\item \Robject{disease}: stores the description of the corresponding OMIM id's 
+\item \Robject{table}: is a list of vectors storing the retrieved data
 \end{itemize}
 
 
@@ -137,16 +97,16 @@ martDisconnect(mart)
 \subsection{\Rfunction{getGene}}
 
 The function \Rfunction{getGene} uses a query id to look up identification and chromosomal information of the corresponding gene.  Depending on the selected output, this function returns a \Robject{martTable} or an object of class \Robject{Gene}. When no information about the identifier is found in Ensembl, an empty \Robject{Gene}  object will be created.  If however multiple genes match a certain identifier, then an object of class \Robject{MultiGene} will be return containing information of all matches.
-Currently the \Rfunction{getGene} function takes identifiers from locuslink, affy, RefSeq and embl.  Besides the id argument, this function also has a species, array and type argument.\\
+Currently the \Rfunction{getGene} function takes identifiers from Entrez-Gene, Affymetrix, RefSeq and embl.  Besides the id argument, this function also has a species, array and type argument.\\
 The id argument is either a vector of identifiers or a single identifier to be annotated.\\
  The species argument should have the species from which the identifier comes as value. For the value of species, we use the full name of the species where separate words are separated by an underscore, e.g. 'gallusgallus'. A list of possible species to choose from can be obtained by executing the function \Rfunction{getSpecies}.\\ 
 The array argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
-The type takes the values of 'locuslink','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
+The type takes the values of 'entrezgene','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
 The output can be changed using the output argument.  One can choose between a martTable (default) and an output of Gene/Multi-Gene objects.
 Depending on the identifier, different additional arguments will have to be given, summarized below:
 \begin{itemize}
 \item Affy id's: id, array, mart
-\item Locuslink: id, type, species, mart  
+\item Entrez-Gene: id, type, species, mart  
 \item RefSeq: id, type, species, mart
 \item embl: id, type, species, mart
 \end{itemize}
@@ -164,23 +124,23 @@ mart <- martConnect()
 
 getGene(id = "1939_at", array = "hgu95av2", mart = mart)
 
-#example locuslink
+#example Entrez-Gene
 
-getGene(id = 672, type = "locuslink", species = "homo_sapiens", mart = mart)
+getGene(id = 672, type = "entrezgene", species = "homo_sapiens", mart = mart)
 @
 
 \subsection{\Rfunction{getGO}}
 
 The function \Rfunction{getGO} uses a query id to look up GO annotation of the corresponding gene.  It return an object of class \Robject{GO}. When no information about the identifier is found in Ensembl, an empty \Robject{GO}  object will be created.
-Currently the \Rfunction{getGO} function takes identifiers from locuslink, affy, RefSeq and embl.  Besides the id argument, this function also has a species, array and type argument.\\
+Currently the \Rfunction{getGO} function takes identifiers from Entrez-Gene, Affymetrix, RefSeq and embl.  Besides the id argument, this function also has a species, array and type argument.\\
 The id argument is either a vector of identifiers or a single identifier to be annotated.\\
  The species argument should have the species from which the identifier comes as value.  A list of possible species to choose from can be obtained by executing the function \Rfunction{getSpecies}.\\ 
 The array argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\ The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
-A last argument of this function is the type argument which, takes the values of 'locuslink','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
+A last argument of this function is the type argument which, takes the values of 'entrezgene','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
 Depending on the identifier, different additional arguments will have to be given, summarized below:
 \begin{itemize}
 \item Affy id's: id, array, mart
-\item Locuslink: id, type, species, mart  
+\item Entrez-Gene: id, type, species, mart  
 \item RefSeq: id, type, species, mart
 \item embl: id, type, species, mart
 \end{itemize}
@@ -193,22 +153,22 @@ Examples: \\
 
 getGO(id = "1939_at", array = "hgu95av2", mart = mart)
 
-#example locuslink
+#example Entrez-Gene
 
-getGO(id = 672, type = "locuslink", species = "homo_sapiens", mart = mart)
+getGO(id = 672, type = "entrezgene", species = "homo_sapiens", mart = mart)
 @
 
 \subsection{\Rfunction{getOMIM}}
 
 The function \Rfunction{getOMIM} uses a query id to look up OMIM annotation of the corresponding gene.  It return an object of class \Robject{OMIM}. When no information about the identifier is found in Ensembl, an empty \Robject{OMIM}  object will be created.
-Currently the \Rfunction{getOMIM} function takes identifiers from locuslink, affy, RefSeq and embl.  Besides the id argument, this function also has an array ,type and mart argument.\\
+Currently the \Rfunction{getOMIM} function takes identifiers from entrezgene, affy, RefSeq and embl.  Besides the id argument, this function also has an array ,type and mart argument.\\
 The id argument is either a vector of identifiers or a single identifier to be annotated.\\
 The array argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\
-The type argument takes the values of 'locuslink','refseq' and 'embl' to clarify which type of identifier is specified in the id argument. If the argumant array is used then biomaRt knows the identifiers given corresponf to affy id's.  The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
+The type argument takes the values of 'entrezgene','refseq' and 'embl' to clarify which type of identifier is specified in the id argument. If the argumant array is used then biomaRt knows the identifiers given corresponf to affy id's.  The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
 Depending on the identifier, different additional arguments will have to be given, summarized below:
 \begin{itemize}
 \item Affy id's: id, array, mart 
-\item Locuslink: id, type, mart  
+\item Entrez-Gene: id, type, mart  
 \item RefSeq: id, type, mart
 \item embl: id, type, mart
 \end{itemize}
@@ -222,9 +182,9 @@ Examples: \\
 
 getOMIM(id = "1939_at", array = "hgu95av2", mart = mart)
 
-#example locuslink
+#example Entrez-Gene
 
-getOMIM(id = 672, type = "locuslink", mart = mart)
+getOMIM(id = 672, type = "entrezgene", mart = mart)
 @
 
 

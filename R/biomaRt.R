@@ -2,49 +2,49 @@
 
 ####### Class creation #######
 
-setClass("OMIM",
-         representation(
-                        OMIMID = "vector",
-                        disease = "vector"
-                        ),
-         prototype(
-                   OMIMID = NULL,
-                   disease = NULL
-                   )
-         );
+#setClass("OMIM",
+#         representation(
+#                        OMIMID = "vector",
+#                        disease = "vector"
+#                        ),
+#         prototype(
+#                   OMIMID = NULL,
+#                   disease = NULL
+#                   )
+#         );
                  
 
-setClass("GO",
-         representation(
-                        GOID = "vector",
-                        description = "vector",
-                        evidence = "vector"
-                        )
-         ,
-         prototype(
-                   GOID = NULL,
-                   description = NULL,
-                   evidence = NULL
-                   )
-         );
+#setClass("GO",
+#         representation(
+#                        GOID = "vector",
+#                        description = "vector",
+#                        evidence = "vector"
+#                        )
+#         ,
+#         prototype(
+#                   GOID = NULL,
+#                   description = NULL,
+#                   evidence = NULL
+#                   )
+#         );
 
-setClass("Gene",
-         representation(
-                        id = "character",
-                        martID= "character",
-                        symbol = "character",
-                        description = "character",
-                        chromosome = "character",
-                        band = "character",
-                        start = "numeric",
-                        end = "numeric",
-                        GO = "GO",
-                        OMIM = "OMIM"
-                        )
-         );
+#setClass("Gene",
+#         representation(
+#                        id = "character",
+#                        martID= "character",
+#                        symbol = "character",
+#                        description = "character",
+#                        chromosome = "character",
+#                        band = "character",
+#                        start = "numeric",
+#                        end = "numeric",
+#                        GO = "GO",
+#                        OMIM = "OMIM"
+#                        )
+#         );
          
 
-setClass("MultiGene","Gene");
+#setClass("MultiGene","Gene");
 
 
 setClass("Mart",
@@ -65,12 +65,12 @@ setClass("Mart",
         );
 
 
-setClass("Feature",
-         representation(
-                        id = "character",
-                        martID= "character",
-                        symbol = "character"
-                        ));
+#setClass("Feature",
+#         representation(
+#                        id = "character",
+#                        martID= "character",
+#                        symbol = "character"
+#                        ));
 
 
 setClass("martTable",
@@ -311,7 +311,7 @@ mapArrayToSpecies <- function( array = NULL, mart = NULL ){
  return( species )
 }
 
-mapSpeciesToLocusLink <- function( species = NULL, db = NULL ){
+mapSpeciesToEntrezGene <- function( species = NULL, db = NULL ){
 
   table <- NULL;
   if(db == "ensembl"){
@@ -359,6 +359,11 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
   if(!is.null(array)){
    type <- "affy"
   }
+  if( type == "locuslink"){
+    writeLines("LocusLink has been superseded by Entrez-Gene, the type argument is now set to entrezgene")
+    type <- "entrezgene";
+  }
+ 
   if( is.null( type )){
     stop("you must provide the identifier type using the type argument")
   }
@@ -366,8 +371,8 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
     stop("you must provide a mart connection object, create with function martConnect")
   }
   
-  if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("invalid type choose either affy, refseq, embl or locuslink");
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")){
+    stop("invalid type choose either affy, refseq, embl or entrezgene");
   }
   
   if( type == "affy" ){
@@ -387,16 +392,16 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
   }
   
   
-  if( type == "locuslink"){
+  if( type == "entrezgene"){
     if( !is.null( species ) ){
       
       Especies <- mapSpeciesToESpecies( species = species, db = db, mart = mart);
-      IDTable <- mapSpeciesToLocusLink( Especies, db = db);
+      IDTable <- mapSpeciesToEntrezGene( Especies, db = db);
       speciesTable <- mapESpeciesToGeneTable( Especies, db = db );
       
     }
     else{
-      stop( "you must provide the species via the species argument when using this function for locuslink identifiers" );
+      stop( "you must provide the species via the species argument when using this function for entrezgene identifiers" );
     }
   }
   
@@ -494,33 +499,33 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
           table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
         } 
       }
-      if( output == "geneObject" ){
-        if(dim(res)[1] == 0){
-          genes[[1]] <- new("Gene", id = as.character(id));
-          
-        }
-        else{
-          for( j in 1:length(id)){
-            m <- match(res[,1], id[j],nomatch = 0)
-            if(sum(m) == 0){
-              genes[[j]] <- new("Gene", id = id[j]);
-              
-            }
-            else{
-              if(sum(m) == 1){
-                genes[[j]] <- new("Gene",id = res[m == 1, 1], martID = res[m == 1,2], symbol = res[ m == 1 ,3], description = res[ m == 1,4], band = res[ m == 1,5], chromosome = res[ m == 1,6], start = as.numeric(res[ m == 1,7]), end = as.numeric(res[m == 1,8]))
-              }
-              else{
-                
-                genes[[j]] <- new("MultiGene",id = res[m == 1,1], martID = res[m==1,2],symbol = res[m == 1,3], description = res[m == 1,4], band = res[m == 1,5], chromosome = res[m == 1,6], start = as.numeric(res[m == 1,7]), end = as.numeric(res[ m == 1,8]))
-                
-              }
-            }     
-          }
-        } 
-      }
+                                        #  if( output == "geneObject" ){
+                                        #    if(dim(res)[1] == 0){
+                                        #      genes[[1]] <- new("Gene", id = as.character(id));
+      
+                                        #    }
+                                        #    else{
+                                        #      for( j in 1:length(id)){
+                                        #        m <- match(res[,1], id[j],nomatch = 0)
+                                        #        if(sum(m) == 0){
+                                        #          genes[[j]] <- new("Gene", id = id[j]);
+                                        #          
+                                        #        }
+                                        #        else{
+                                        #          if(sum(m) == 1){
+                                        #            genes[[j]] <- new("Gene",id = res[m == 1, 1], martID = res[m == 1,2], symbol = res[ m == 1 ,3], description = res[ m == 1,4], band = res[ m == 1,5], chromosome = res[ m == 1,6], start = as.numeric(res[ m == 1,7]), end = as.numeric(res[m == 1,8]))
+                                        #          }
+                                        #          else{
+                                        #            
+                                        #            genes[[j]] <- new("MultiGene",id = res[m == 1,1], martID = res[m==1,2],symbol = res[m == 1,3], description = res[m == 1,4], band = res[m == 1,5], chromosome = res[m == 1,6], start = as.numeric(res[m == 1,7]), end = as.numeric(res[ m == 1,8]))
+                                        #            
+                                        #          }
+                                        #        }     
     }
-  } 
+                                        #    } 
+                                        #  }
+  }
+   
   return(table);  
 }
 
@@ -540,8 +545,8 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
     stop("you must provide the identifier type using the type argument")
   }
   
-  if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("invalid type choose either affy, refseq or locuslink");
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")){
+    stop("invalid type choose either affy, refseq or entrezgene");
   }
   
   if( type == "affy" ){
@@ -609,13 +614,17 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   if(!is.null(array)){
     type <- "affy"
   }
+  if( type == "locuslink"){
+    writeLines("LocusLink has been superseded by Entrez-Gene, the type argument is now set to entrezgene")
+    type <- "entrezgene";
+  }
    
   if( is.null( type )){
     stop("ensembl error: you must provide the identifier type using the type argument")
   }
   
-  if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("invalid type choose either affy,  locuslink refseq or embl");
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")){
+    stop("invalid type choose either affy,  entrezgene, refseq or embl");
   }
   
   if( type == "affy" ){
@@ -633,17 +642,17 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   }
   
   
-  if( type == "locuslink"){
+  if( type== "entrezgene"){
     if( !is.null( species ) ){
 
       Especies <- mapSpeciesToESpecies( species = species, db = "ensembl", mart = mart);
-      IDTable <- mapSpeciesToLocusLink( Especies, db = "ensembl");
+      IDTable <- mapSpeciesToEntrezGene( Especies, db = "ensembl");
       GOTable <- mapESpeciesToGOTable( Especies );
    
     }
     
     else{
-      stop( "you must provide the species via the species argument when using this function for locuslink identifiers" );
+      stop( "you must provide the species via the species argument when using this function for entrezgene identifiers" );
     }
   }
   
@@ -739,12 +748,16 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   if(!is.null(array)){
     type <- "affy";
   }
- 
+  if( type == "locuslink"){
+    writeLines("LocusLink has been superseded by Entrez-Gene, the type argument is now set to entrezgene")
+    type <- "entrezgene";
+  }
+  
   if( is.null( type )){
     stop("you must provide the identifier type using the type argument")
   }
-  if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("invalid type choose either affy, refseq. embl or locuslink");
+  if(!(type == "affy") && !(type == "refseq") && !(type == "embl") && !(type == "entrezgene")){
+    stop("invalid type choose either affy, refseq. embl or entrezgene");
   }
   
   if( type == "affy" ){
@@ -758,16 +771,16 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   }
   
   
-  if( type == "locuslink"){
+  if( type == "entrezgene" ){
     if( !is.null( species ) ){
 
       Especies <- mapSpeciesToESpecies( species = species, db = "ensembl", mart = mart);
-      IDTable <- mapSpeciesToLocusLink( Especies, db = "ensembl" );
+      IDTable <- mapSpeciesToEntrezGene( Especies, db = "ensembl" );
    
     }
     
     else{
-      stop( "you must provide the species via the species argument when using this function for locuslink identifiers" );
+      stop( "you must provide the species via the species argument when using this function for entrezgene identifiers" );
     }
   }
  
