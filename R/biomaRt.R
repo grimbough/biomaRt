@@ -213,10 +213,15 @@ martDisconnect <- function( mart = NULL){
 
 ####### local functions #############
 
-mapArrayToEnsemblTable <- function(array = NULL, species = NULL, mart = NULL){
+mapArrayToEnsemblTable <- function(array = NULL, species = NULL, mart = NULL, dbtable = NULL){
   
   table <- "";
-  table <- paste( species,"_gene_ensembl__xref_",mart@arrayToEnsembl[ match( array, mart@arrayToEnsembl[,1]),2 ],"__dm",sep="");
+  if(dbtable == "xrefdm"){
+    table <- paste( species,"_gene_ensembl__xref_",mart@arrayToEnsembl[ match( array, mart@arrayToEnsembl[,1]),2 ],"__dm",sep="");
+  }
+  if(dbtable == "affybool"){
+    table <- paste(mart@arrayToEnsembl[ match( array, mart@arrayToEnsembl[,1]),2 ],"_bool",sep="");
+  }
 
   return( table );
 }
@@ -357,7 +362,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
       species <- mapArrayToSpecies( array = array, mart = mart );
       Especies <- mapSpeciesToESpecies( species = species, db = db, mart = mart );
       speciesTable <- mapESpeciesToGeneTable( Especies, db = db);
-      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies, mart = mart );
+      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies, mart = mart, dbtable = "xrefdm" );
       
     }
     else{
@@ -527,7 +532,8 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
       Especies <- mapSpeciesToESpecies( species = species, db = "ensembl", mart = mart );
       speciesTable <- mapESpeciesToGeneTable( Especies, db = "ensembl" );
       
-      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies, mart = mart  );
+      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies, mart = mart, dbtable = "xrefdm"  );
+      affyBool <- mapArrayToEnsemblTable( array = array, species = Especies, mart = mart, dbtable = "affybool"  );
       
     }
     else{
@@ -536,7 +542,7 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
   }
  
   
-  query <- paste("select distinct gene_stable_id, display_id, description from ",speciesTable," where display_id like '%",symbol,"%' and affy_hg_u95av2_bool = 1",sep="");   
+  query <- paste("select distinct gene_stable_id, display_id, description from ",speciesTable," where display_id like '%",symbol,"%' and ",affyBool," = 1",sep="");   
   martID <- dbGetQuery( conn = mart@ensembl,statement = query);
   features <- NULL;
   mID <- NULL;
@@ -595,7 +601,7 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
       species <- mapArrayToSpecies( array = array, mart = mart );
       Especies <- mapSpeciesToESpecies( species = species, db = "ensembl", mart = mart);
       GOTable <- mapESpeciesToGOTable( Especies );
-      IDTable <-  mapArrayToEnsemblTable( array = array, species = Especies, mart = mart);
+      IDTable <-  mapArrayToEnsemblTable( array = array, species = Especies, mart = mart, dbtable = "xrefdm");
         
     
  
@@ -725,7 +731,7 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   
   if( type == "affy" ){
     if( !is.null( array ) ){
-      IDTable <-  mapArrayToEnsemblTable( array, species = "hsapiens", mart = mart);
+      IDTable <-  mapArrayToEnsemblTable( array, species = "hsapiens", mart = mart, dbtable = "xrefdm");
  
     }
     else{
