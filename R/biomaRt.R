@@ -423,27 +423,67 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
       }
       
       if( output == "martTable"){
-        table <- new("martTable", id = res[,1], table = list(symbol = res[,3], description = res[,4], band = res[, 5], chromosome = res[,6], start = res[,7], end = res[,8], martID = res[,2]))
+        
+        
+        if(dim(res)[1] == 0){
+          table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA))
+        }
+        else{
+          foundID <- NULL
+          symbol <- NULL
+          description <- NULL
+          band <- NULL
+          chromosome <- NULL
+          start <- NULL
+          end <- NULL
+          martID <- NULL
+          
+          for( j in 1:length(id)){
+            m <- match( res[,1],id[j], nomatch=0)
+            if(sum(m) == 0){
+              foundID <- c(foundID, as.character(id[j]));
+              symbol <- c(symbol, NA);
+              description <- c(description, NA);
+              band <- c(band, NA);
+              chromosome <- c(chromosome, NA);
+              start <- c(start, NA);
+              end <- c(end, NA);
+              martID <- c(martID, NA);              
+            }
+            else{
+              
+                foundID <- c(foundID, res[m == 1,1]);
+                symbol <- c(symbol, res[m == 1,3]);
+                description <- c(description, res[m == 1,4]);
+                band <- c(band, res[m == 1,5]);
+                chromosome <- c(chromosome, res[m == 1,6]);
+                start <- c(start, res[m == 1,7]);
+                end <- c(end, res[m == 1,8]);
+                martID <- c(martID, res[m == 1,2]);
+            }     
+          }
+        }
+        table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
       }
       if( output == "geneObject" ){
-        if(dim(ann)[1] == 0){
+        if(dim(res)[1] == 0){
           genes[[1]] <- new("Gene", id = as.character(id));
           
         }
         else{
           for( j in 1:length(id)){
-            m <- match(ann[,1], id[j],nomatch = 0)
+            m <- match(res[,1], id[j],nomatch = 0)
             if(sum(m) == 0){
               genes[[j]] <- new("Gene", id = id[j]);
               
             }
             else{
               if(sum(m) == 1){
-                genes[[j]] <- new("Gene",id = ann[m == 1, 1], martID = ann[m == 1,2], symbol = ann[ m == 1 ,3], description = ann[ m == 1,4], band = ann[ m == 1,5], chromosome = ann[ m == 1,6], start = as.numeric(ann[ m == 1,7]), end = as.numeric(ann[m == 1,8]))
+                genes[[j]] <- new("Gene",id = res[m == 1, 1], martID = res[m == 1,2], symbol = res[ m == 1 ,3], description = res[ m == 1,4], band = res[ m == 1,5], chromosome = res[ m == 1,6], start = as.numeric(res[ m == 1,7]), end = as.numeric(res[m == 1,8]))
               }
               else{
                 
-                genes[[j]] <- new("MultiGene",id = ann[m == 1,1], martID = ann[m==1,2],symbol = ann[m == 1,3], description = ann[m == 1,4], band = ann[m == 1,5], chromosome = ann[m == 1,6], start = as.numeric(ann[m == 1,7]), end = as.numeric(ann[ m == 1,8]))
+                genes[[j]] <- new("MultiGene",id = res[m == 1,1], martID = res[m==1,2],symbol = res[m == 1,3], description = res[m == 1,4], band = res[m == 1,5], chromosome = res[m == 1,6], start = as.numeric(res[m == 1,7]), end = as.numeric(res[ m == 1,8]))
                 
               }
             }     
@@ -602,34 +642,52 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
     }
   }
   
-  if( length( id ) == 1 ){
-    
-    ann <- NULL
-    query <- paste("select gene_stable_id from ", IDTable ," where display_id_list ='", id,"'",sep="");
-    geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
-    query <- paste("select dbprimary_id, description, evidence_code from ", GOTable ," where gene_stable_id ='", geneID[1,1],"'",sep="");
-    res <- dbSendQuery(conn = mart@ensembl, statement = query);
-    ann <- fetch(res);
-    dbClearResult( res );
-    go <- new("GO", GOID = as.vector(ann[,1]), description = as.vector(ann[,2]), evidence = as.vector(ann[,3]))
-  }
-    
-  if( length( id ) > 1){
-    for( i in 1:length( id )){
-   
-      ann <- NULL
-      query <- paste("select gene_stable_id from ", IDTable ," where display_id_list ='", id,"'",sep="");
-      geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
-      query <- paste("select dbprimary_id, description, evidence_code from ", GOTable ," where gene_stable_id ='", geneID[1,1],"'",sep="");
-      res <- dbSendQuery(conn = mart@ensembl, statement = query);
-      ann <- fetch( res );
-      dbClearResult( res );
-      
-      go[[i]] <- new("GO", GOID = as.vector(ann[,1]), description = as.vector(ann[,2]), evidence = as.vector(ann[,3]));
+  if( length( id ) >= 1){
+    ids <- paste("'",id[1],"'",sep="")
+    if(length(id) >= 2){
+      for( i in 2:length(id)){
+        ids <- paste(ids,",'",id[i],"'",sep="")
+      }
     }
+    
+    res <- NULL
+    query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",GOTable,".dbprimary_id, description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_stable_id = ",GOTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,")",sep="");
+    
+    res <- dbGetQuery(conn = mart@ensembl, statement = query);
+    
+    if(dim(res)[1] == 0){
+      table <- new("martTable", id = id, table = list(GOID = NA, description = NA, evidence = NA, martID = NA))
+    }
+    else{
+      foundID <- NULL
+      GOID <- NULL
+      description <- NULL
+      evidence <- NULL
+      martID <- NULL
+      
+      for( j in 1:length(id)){
+        m <- match( res[,1],id[j], nomatch=0)
+        if(sum(m) == 0){
+          foundID <- c(foundID, as.character(id[j]));
+          GOID  <- c(GOID, NA) 
+          description <- c(description, NA);
+          evidence <- c(evidence, NA);
+          martID <- c(martID, NA);              
+        }
+        else{
+          
+          foundID <- c(foundID, res[m == 1,1]);
+          GOID  <- c(GOID, res[m == 1,3])
+          description <- c(description, res[m == 1,4]);
+          evidence <- c(evidence, res[m == 1,5]);
+          martID <- c(martID, res[m == 1,2]);
+        }     
+      }
+    }
+    table <- new("martTable", id = foundID, table = list(GOID = GOID, description = description, evidence = evidence, martID = martID))
   }
   
-  return( go );
+  return( table );
 }
 
 
@@ -707,33 +765,49 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
       stop( "you must provide the species via the species argument when using this function for EMBL identifiers" );
     }
   }
-  if ( length( id ) == 1 ){
-
-    ann <- NULL
-    query <- paste("select gene_id_key from ", IDTable ," where display_id_list = '", id,"'",sep="");
-    geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
-    query <- paste("select disease, omim_id from ", OMIMTable ," where gene_id_key ='", geneID[1,1],"'",sep="");
-    res <- dbSendQuery(conn = mart@ensembl, statement = query);
-    ann <- fetch( res );
-    dbClearResult( res );
-    omim <- new("OMIM",OMIMID = as.vector(ann[,2]), disease = as.vector(ann[,1]));
-  
-  }
-  if( length( id ) > 1){
-    
-    for( i in 1:length(id)){
-      
-      ann <- NULL
-      query <- paste("select gene_id_key from ", IDTable ," where display_id_list = '", id,"'",sep="");
-      geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
-      query <- paste("select disease, omim_id from ", OMIMTable ," where gene_id_key ='", geneID[1,1],"'",sep="");
-      res <- dbSendQuery(conn = mart@ensembl, statement = query);
-      ann <- fetch( res );
-      dbClearResult( res );
-      omim[[i]] <- new("OMIM",OMIMID = as.vector( ann[,2] ), disease = as.vector( ann[,1] ));
+  if( length( id ) >= 1){
+    ids <- paste("'",id[1],"'",sep="")
+    if(length(id) >= 2){
+      for( i in 2:length(id)){
+        ids <- paste(ids,",'",id[i],"'",sep="")
+      }
     }
+    
+    res <- NULL
+    query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".display_id_list in (",ids,")",sep="");
+    res <- dbGetQuery(conn = mart@ensembl, statement = query);
+    
+    
+    if(dim(res)[1] == 0){
+      table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
+    }
+    else{
+      foundID <- NULL
+      OMIMID <- NULL
+      disease <- NULL
+      martID <- NULL
+      
+      for( j in 1:length(id)){
+        m <- match( res[,1],id[j], nomatch=0)
+        if(sum(m) == 0){
+          foundID <- c(foundID, as.character(id[j]));
+          OMIMID  <- c(OMIMID, NA) 
+          disease <- c(disease, NA);
+          martID <- c(martID, NA);              
+        }
+        else{
+          
+          foundID <- c(foundID, res[m == 1,1]);
+          OMIMID  <- c(OMIMID, res[m == 1,3])
+          disease <- c(disease, res[m == 1,4]);
+          martID <- c(martID, res[m == 1,2]);
+        }     
+      }
+    }
+    table <- new("martTable", id = foundID, table = list(OMIMID = OMIMID, disease = disease, martID = martID))
+   
   }
-  return( omim );  
+  return( table );  
 }
 
 #####################
@@ -876,7 +950,13 @@ getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, 
  
 }
 
+####################
+#export FASTA      #
+####################
+
+#exportFASTA <- function( martTable = NULL ){
 
 
+#}
 
 
