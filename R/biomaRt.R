@@ -137,7 +137,7 @@ listMarts <- function(){
 
   
   #Search latest releases of marts
-      
+  martConf <- NULL  #one mart vs multiple marts      
       
   for(i in 1: length(marts)){
     matches <- grep(marts[i],res[,1]);
@@ -146,17 +146,27 @@ listMarts <- function(){
       latest <- 1;
       for(j in 1:length(matches)){
         v <- as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]);
-        print(v)
         if(v > version){
           latest <- j;
           version <- v;
         }
       }
       databases[[i]] <- res[matches[latest],1];
+      martConf <- c( martConf, v );
     }
     else{
       databases[[i]] <- res[matches,1];
-    }        
+      v <- as.numeric(strsplit(res[matches,1],"_")[[1]][3]);
+      martConf <- c( martConf, v );
+    }
+  }
+
+  if(!(sum(martConf)/4 == martConf[[1]])){ # mean there is only one new mart
+
+    databases$snp <- databases$ensembl
+    databases$vega <- databases$ensembl
+    databases$sequence <- databases$ensembl
+    
   }
   
   dbDisconnect(connection);
@@ -178,7 +188,7 @@ martConnect <- function(){
   arrayToEnsembl <- read.table(file = tablefile, sep="\t");
   tablefile <- system.file("tables/ArraySpeciesTable.txt",package="biomaRt") ;
   arrayToSpecies <- read.table(file = tablefile, sep="\t");
-  
+                 
   mart <- new("Mart",
               ensembl = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$ensembl),
               vega = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$vega),
@@ -238,7 +248,12 @@ mapSpeciesToESpecies <- function( species = NULL,db = NULL , mart = NULL ){
     mSpecies <- res[1,1]
   }
   if(db == "vega"){
-    mSpecies <- "hsapiens";
+    if(species == "homo_sapiens"){
+      mSpecies <- "hsapiens";
+    }
+    else{
+      stop("vega currently only works for homo_sapiens...")
+    }
   }
   if(db == "sequence" || db == "snp"){
   
@@ -611,8 +626,6 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
       GOTable <- mapESpeciesToGOTable( Especies );
       IDTable <-  mapArrayToEnsemblTable( array = array, species = Especies, mart = mart, dbtable = "xrefdm");
         
-    
- 
     }
     else{
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
@@ -724,13 +737,9 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   species <- "homo_sapiens";
 
   if(!is.null(array)){
-    type <- "affy"
+    type <- "affy";
   }
-
-  #if(mart@mart != "ensembl"){
-  #  stop( "you should connect to ensembl mart for this query" );
-  #}
-  
+ 
   if( is.null( type )){
     stop("you must provide the identifier type using the type argument")
   }
@@ -961,12 +970,17 @@ getSpecies <- function( db = "ensembl", mart = NULL ){
 
 getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, mart = NULL){
   
-    
+    table <- NULL
     Especies <- mapSpeciesToESpecies( species = species, db = "snp", mart = mart );
     ensemblTable <- paste(Especies,"_snp__snp__main", sep ="");
     query <- paste("select snp_id_key,snp_chrom_start, allele, tscid, ensemblcoding_bool, ensemblintronic_bool, ensembl5utr_bool, ensembl3utr_bool, ensemblsyn_bool from ",ensemblTable," where chr_name = '",chromosome,"' and snp_chrom_start >= ",start," and snp_chrom_start <= ",end,sep="")
     res <- dbGetQuery( mart@snp, query );
-    table <- new("martTable", id = res$tscid ,table = list(snpStart = res[,2], allele = res$allele, coding = res[,5], intronic =  res[,6], syn =  res[,9],utr5 = res[,7], utr3= res[,8]))
+    if(dim(res)[1] == 0){
+      stop("No SNP's found in selected region, check if the input you entered is correct")
+    }
+    else{
+      table <- new("martTable", id = res$tscid ,table = list(snpStart = res[,2], allele = res$allele, coding = res[,5], intronic =  res[,6], syn =  res[,9],utr5 = res[,7], utr3= res[,8]))
+    }
     return( table );
  
 }
