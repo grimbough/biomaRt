@@ -46,6 +46,8 @@ An object of the \Robject{Mart} class represents a connection to a BioMart.  And
 \item \Robject{vega}: stores the RMySQLConnection to VEGA
 \item \Robject{sequence}: stores the RMySQLConnection to sequence mart
 \item \Robject{snp}: stores the RMySQLConnection to snp mart
+\item \Robject{arrayToSpecies}: Stores mapping from affy arrays to species
+\item \Robject{arrayToEnsembl}: Stores mapping from affy arrays to Ensembl tables
 \end{itemize}
 
 
@@ -306,7 +308,7 @@ Examples: \\
 <<>>=
 
 
-getAffyArrays( )
+getAffyArrays( mart = mart )
 
 @
 
