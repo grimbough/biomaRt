@@ -40,28 +40,19 @@ setClass("Gene",
                         end = "numeric",
                         GO = "GO",
                         OMIM = "OMIM"
-                        )#,
-        # prototype(
-        #           symbol = character(0),
-        #           description = character(0),
-        #           chromosome = character(0),
-        #           band = character(0),
-        #           start = numeric(0),
-        #           end = numeric(0),
-                #   GO = NULL,
-                #   OMIM = NULL
-         #          )
+                        )
          );
-
+         
 
 setClass("MultiGene","Gene");
 
 
 setClass("Mart",
          representation(
-                        mart = "character",
-                        connection = "MySQLConnection"
-#                        driver = "MySQLDriver"
+                        ensembl = "MySQLConnection",
+                        vega = "MySQLConnection",
+                        sequence = "MySQLConnection",
+                        snp = "MySQLConnection",
                         )
         # ,
         # prototype(
@@ -69,7 +60,7 @@ setClass("Mart",
                  #  connection = NULL,
                  #  driver = NULL
          #          )
-         );
+        );
 
 
 setClass("Feature",
@@ -128,6 +119,8 @@ setMethod("show","martTable",
   #        }
   #        );
 
+
+
 #######################
 #list marts
 #######################
@@ -135,7 +128,7 @@ setMethod("show","martTable",
 listMarts <- function(){
   
   driv <- dbDriver("MySQL", force.reload = FALSE);
-  connection <- dbConnect(driv, user="anonymous", host="ensembldb.ensembl.org");
+  connection <- dbConnect(driv, user="anonymous", host="martdb.ebi.ac.uk");
   res <- dbGetQuery(connection,"show databases");
   marts <- c("ensembl_mart_","snp_mart_","sequence_mart_","vega_mart_");
   databases <- list( ensembl = "", snp = "", sequence = "", vega = "" );
@@ -170,58 +163,23 @@ listMarts <- function(){
 }
 
 ##################
-#Connect to mart
-#################
+#Connect to marts#
+##################
 
-martConnect <- function( mart = NULL, driver = NULL, host = NULL, dbname = NULL, user = NULL, passwd = NULL ){
+martConnect <- function(){
   
-  martObj <- NULL;  
   databases <- listMarts();
-  
-  if( !is.null( mart ) ){
-    if(mart != "ensembl" || mart != "vega" || mart != "sequence" || mart != "snp"){
-
-      if( mart == "ensembl" ){
-        
-        driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$ensembl );
-        martObj <- new("Mart", mart = "ensembl", connection = con)
-        writeLines(paste("-  Connected to ",databases$ensembl," -", sep = ""));
-        
-      }
-      
-      if( mart == "vega" ){
-        
-        driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$vega);
-        martObj <- new("Mart", mart = "vega", connection = con)
-        writeLines(paste("-  Connected to ",databases$vega," -", sep = ""));
-        
-      }
-      
-      if( mart == "snp" ){
-        
-        driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$snp);
-        martObj <- new("Mart", mart = "snp", connection = con)
-        writeLines(paste("-  Connected to ",databases$snp," -", sep = ""));
-        
-      }
-      if( mart == "sequence" ){
-        
-        driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$sequence);
-        martObj <- new("Mart", mart = "sequence", connection = con)
-        writeLines(paste("-  Connected to ",databases$sequence," -", sep = ""));
-        
-      }
-    }
-    else{
-      stop("biomaRt only supports one of the following BioMart databases:  ensembl, vega, snp and sequence.  All these databases are located at EBI")
-    }
-  }
-  return( martObj )
+  driver <- dbDriver("MySQL", force.reload = FALSE);
+  mart <- new("Mart",
+              ensembl = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$ensembl),
+              vega = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$vega),
+              sequence = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$sequence),
+              snp = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$snp)
+              );
+  writeLines(paste("-  Connected to ",databases$ensembl,", ",databases$vega,", ",databases$snp," and ",databases$sequence," -", sep = ""));
+  return( mart )
 }
+
 
 ######################
 #Disconnect from mart#
@@ -229,8 +187,10 @@ martConnect <- function( mart = NULL, driver = NULL, host = NULL, dbname = NULL,
 
 martDisconnect <- function( mart = NULL){
 
-  dbDisconnect( mart@connection )
-
+  dbDisconnect( mart@ensembl );
+  dbDisconnect( mart@vega );
+  dbDisconnect( mart@sequence );
+  dbDisconnect( mart@snp );
 }
 
 
@@ -258,16 +218,16 @@ mapSpeciesToESpecies <- function( species = NULL, mart = NULL ){
 
   mSpecies <- NULL;
   
-  if( mart@mart == "ensembl"){
+  if( mart == "ensembl"){
     query <- paste("select mart_species from meta_release_info where species = '", species, "'",sep = "");
   
-    res <- dbGetQuery(conn = mart@connection,statement = query );
+    res <- dbGetQuery(conn = ensembl,statement = query );
     mSpecies <- res[1,1]
   }
-  if(mart@mart == "vega"){
+  if(mart == "vega"){
     mSpecies <- "hsapiens";
   }
-  if(mart@mart == "sequence" || mart@mart == "snp"){
+  if(mart == "sequence" || mart == "snp"){
   
     if(species == "homo_sapiens"){
       mSpecies <- "hsapiens"
@@ -298,11 +258,11 @@ mapESpeciesToGeneTable <- function( species = NULL, mart = NULL){
 
   table <- NULL;
   
-  if(mart@mart == "ensembl"){
+  if(mart == "ensembl"){
     table <- paste( species,"_gene_ensembl__gene__main",sep = "");
   }
   
-  if(mart@mart == "vega"){
+  if(mart == "vega"){
     table <- paste( species,"_gene_vega__gene__main",sep = "");
   }
   
@@ -326,10 +286,10 @@ mapArrayToSpecies <- function( array = NULL ){
 mapSpeciesToLocusLink <- function( species = NULL, mart = NULL ){
 
   table <- NULL;
-  if(mart@mart == "ensembl"){
+  if(mart == "ensembl"){
     table <- paste( species, "_gene_ensembl__xref_locuslink__dm", sep = "");
    }
-  if(mart@mart == "vega"){
+  if(mart == "vega"){
      table <- paste( species, "_gene_vega__xref_locuslink__dm", sep = "");
   }
   
@@ -340,10 +300,10 @@ mapSpeciesToRefSeq <- function( species = NULL, mart = NULL ){
 
   table <- NULL;
   
-  if(mart@mart == "ensembl"){
+  if(mart == "ensembl"){
     table <- paste( species,"_gene_ensembl__xref_refseq__dm" , sep = "");
   }
-  if(mart@mart == "vega"){
+  if(mart == "vega"){
     table <- paste( species,"_gene_vega__xref_refseq__dna__dm" , sep = "");
   }
   
@@ -363,7 +323,7 @@ mapSpeciesToEMBL <- function( species = NULL ){
 #get gene information#
 ######################
 
-getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart= NULL, output = "martTable" ){
+getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = "ensembl", mart = NULL, output = "martTable" ){
 
   genes <- NULL
   IDTable <- NULL
@@ -375,7 +335,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
     stop("you must provide the identifier type using the type argument")
   }
   if( is.null( mart )){
-    stop("you must provide the identifier type using the type argument")
+    stop("you must provide a mart connection object, create with function martConnect")
   }
   
   if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
@@ -384,12 +344,12 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
   
   if( type == "affy" ){
     if( !is.null( array ) ){
-      if( mart@mart != "ensembl"){
+      if( db != "ensembl"){
         stop("you can only use ensembl when working with affy id's");
       }
       species <- mapArrayToSpecies( array );
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart );
-      speciesTable <- mapESpeciesToGeneTable( Especies, mart = mart );
+      Especies <- mapSpeciesToESpecies( species = species, mart = db );
+      speciesTable <- mapESpeciesToGeneTable( Especies, mart = db );
       IDTable <- mapArrayToEnsemblTable( array = array, species = Especies );
       
     }
@@ -402,9 +362,9 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
   if( type == "locuslink"){
     if( !is.null( species ) ){
       
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
-      IDTable <- mapSpeciesToLocusLink( Especies, mart = mart);
-      speciesTable <- mapESpeciesToGeneTable( Especies, mart = mart );
+      Especies <- mapSpeciesToESpecies( species = species, mart = db);
+      IDTable <- mapSpeciesToLocusLink( Especies, mart = db);
+      speciesTable <- mapESpeciesToGeneTable( Especies, mart = db );
       
     }
     else{
@@ -416,9 +376,9 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
   if( type == "refseq"){
     if( !is.null( species ) ){
       
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
-      IDTable <- mapSpeciesToRefSeq( Especies, mart = mart );
-      speciesTable <- mapESpeciesToGeneTable( Especies, mart = mart );
+      Especies <- mapSpeciesToESpecies( species = species, mart = db);
+      IDTable <- mapSpeciesToRefSeq( Especies, mart = db );
+      speciesTable <- mapESpeciesToGeneTable( Especies, mart = db );
       
     }
     else{
@@ -429,13 +389,10 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
   
   if( type == "embl"){
     if( !is.null( species ) ){
-      if( mart@mart != "ensembl"){
-        stop("you can only use ensembl when working with EMBL id's, connect to ensembl mart using martConnect");
-      }
       
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
-      IDTable <- mapSpeciesToEMBL( Especies, mart = mart );
-      speciesTable <- mapESpeciesToGeneTable( Especies, mart = mart );
+      Especies <- mapSpeciesToESpecies( species = species, mart = db);
+      IDTable <- mapSpeciesToEMBL( Especies, mart = db );
+      speciesTable <- mapESpeciesToGeneTable( Especies, mart = db );
       
     }
     else{
@@ -443,7 +400,9 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
     }
   }
   
-  if (mart@mart == "ensembl" || mart@mart == "vega"){
+  if (db == "ensembl" || db == "vega"){
+    conn <- NULL
+    
     if (length( id ) >= 1){
       
       res <- NULL;
@@ -454,8 +413,15 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
         }
       }
       query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",speciesTable,".display_id, description, band,chr_name, gene_chrom_start, gene_chrom_end  from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,")",sep="");
-      res <- dbGetQuery( conn = mart@connection,statement = query);
-                                        # if(dim(res)[1]!= 0){
+
+      if( mart == "ensembl"){
+        res <- dbGetQuery( conn = mart@ensembl,statement = query);
+      }
+      
+      if( mart == "vega"){
+        res <- dbGetQuery( conn = mart@vega,statement = query);
+      }
+      
       if( output == "martTable"){
         table <- new("martTable", id = res[,1], table = list(symbol = res[,3], description = res[,4], band = res[, 5], chromosome = res[,6], start = res[,7], end = res[,8], martID = res[,2]))
       }
@@ -493,7 +459,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
 #get feature           #
 ########################
 
-getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL ){
+getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
 
   if(!is.null(array)){
     type <- "affy"
@@ -502,23 +468,17 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL ){
   if( is.null( type )){
     stop("you must provide the identifier type using the type argument")
   }
-  if( is.null( mart )){
-    stop("you must provide the identifier type using the type argument")
-  }
   
   if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("ensembl error: invalid type choose either affy, refseq or locuslink");
+    stop("invalid type choose either affy, refseq or locuslink");
   }
   
   if( type == "affy" ){
     if( !is.null( array ) ){
-      if( mart@mart != "ensembl"){
-        stop("you can only use ensembl when working with affy id's");
-      }
 
       species <- mapArrayToSpecies( array );
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart );
-      speciesTable <- mapESpeciesToGeneTable( Especies, mart = mart );
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl" );
+      speciesTable <- mapESpeciesToGeneTable( Especies, mart = "ensembl" );
       
       IDTable <- mapArrayToEnsemblTable( array = array, species = Especies  );
       
@@ -527,38 +487,37 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL ){
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
     }
   }
- if (mart@mart == "ensembl"){
+ 
+  
+  query <- paste("select distinct gene_stable_id, display_id, description from ",speciesTable," where display_id like '%",symbol,"%' and affy_hg_u95av2_bool = 1",sep="");   
+  martID <- dbGetQuery( conn = ensembl,statement = query);
+  features <- NULL;
+  mID <- NULL;
+  sym <- NULL;
+  description <- NULL;
       
-      query <- paste("select distinct gene_stable_id, display_id, description from ",speciesTable," where display_id like '%",symbol,"%' and affy_hg_u95av2_bool = 1",sep="");   
-      martID <- dbGetQuery( conn = mart@connection,statement = query);
-      features <- NULL;
-      mID <- NULL;
-      sym <- NULL;
-      description <- NULL;
-      
-      if(dim(martID)[1] != 0){
-       
-        for(j in 1: dim(martID)[1]){
-          feature <- NULL;  
-          query <- paste("select distinct display_id_list from ",IDTable," where gene_stable_id = '",martID[j,1],"'",sep="");
-          feature <- dbGetQuery( conn = mart@connection,statement = query);
-          if(dim(feature)[1] != 0){
-           feature <- feature[,1];
-           select <- is.na(feature);
-           features <- c(features,feature[!select]);
-           mID <- c(mID,rep(martID[j,1],sum(!select)))
-           sym <- c(sym,rep(martID[j,2],sum(!select)))
-           description  <- c(description,rep(martID[j,3],sum(!select))) 
-          }
-               
-        }
-        
-        table <- new("martTable", id = features, table = list(symbol = sym, description = description, martID= mID)) 
+  if(dim(martID)[1] != 0){
+    
+    for(j in 1: dim(martID)[1]){
+      feature <- NULL;  
+      query <- paste("select distinct display_id_list from ",IDTable," where gene_stable_id = '",martID[j,1],"'",sep="");
+      feature <- dbGetQuery( conn = mart@ensembl,statement = query);
+      if(dim(feature)[1] != 0){
+        feature <- feature[,1];
+        select <- is.na(feature);
+        features <- c(features,feature[!select]);
+        mID <- c(mID,rep(martID[j,1],sum(!select)))
+        sym <- c(sym,rep(martID[j,2],sum(!select)))
+        description  <- c(description,rep(martID[j,3],sum(!select))) 
       }
       
-      return( table )
-     
+    }
+    
+    table <- new("martTable", id = features, table = list(symbol = sym, description = description, martID= mID)) 
   }
+  
+  return( table )
+
 }
 
 
@@ -567,18 +526,14 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL ){
 #get GO annotation#
 ###################
 
-getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = NULL ){
+getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = NULL){
   
   go <- NULL
 
   if(!is.null(array)){
     type <- "affy"
   }
-  
-  if(mart@mart != "ensembl"){
-    stop( "you should connect to ensembl mart for this query" );
-  }
-  
+   
   if( is.null( type )){
     stop("ensembl error: you must provide the identifier type using the type argument")
   }
@@ -591,7 +546,7 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
     if( !is.null( array ) ){
       
       species <- mapArrayToSpecies( array );
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl");
       GOTable <- mapESpeciesToGOTable( Especies );
       IDTable <-  mapArrayToEnsemblTable( array = array, species = Especies);
         
@@ -607,8 +562,8 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   if( type == "locuslink"){
     if( !is.null( species ) ){
 
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
-      IDTable <- mapSpeciesToLocusLink( Especies, mart = mart);
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl");
+      IDTable <- mapSpeciesToLocusLink( Especies, mart = "ensembl");
       GOTable <- mapESpeciesToGOTable( Especies );
    
     }
@@ -622,8 +577,8 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   if( type == "refseq"){
     if( !is.null( species ) ){
 
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
-      IDTable <- mapSpeciesToRefSeq( Especies, mart = mart );
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl");
+      IDTable <- mapSpeciesToRefSeq( Especies, mart = "ensembl" );
       GOTable <- mapESpeciesToGOTable( Especies );
    
     }
@@ -636,7 +591,7 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   if( type == "embl"){
     if( !is.null( species ) ){
 
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl");
       IDTable <- mapSpeciesToEMBL( Especies );
       GOTable <- mapESpeciesToGOTable( Especies );
    
@@ -651,9 +606,9 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
     
     ann <- NULL
     query <- paste("select gene_stable_id from ", IDTable ," where display_id_list ='", id,"'",sep="");
-    geneID <- dbGetQuery(conn = mart@connection, statement = query);
+    geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
     query <- paste("select dbprimary_id, description, evidence_code from ", GOTable ," where gene_stable_id ='", geneID[1,1],"'",sep="");
-    res <- dbSendQuery(conn = mart@connection, statement = query);
+    res <- dbSendQuery(conn = mart@ensembl, statement = query);
     ann <- fetch(res);
     dbClearResult( res );
     go <- new("GO", GOID = as.vector(ann[,1]), description = as.vector(ann[,2]), evidence = as.vector(ann[,3]))
@@ -664,9 +619,9 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
    
       ann <- NULL
       query <- paste("select gene_stable_id from ", IDTable ," where display_id_list ='", id,"'",sep="");
-      geneID <- dbGetQuery(conn = mart@connection, statement = query);
+      geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
       query <- paste("select dbprimary_id, description, evidence_code from ", GOTable ," where gene_stable_id ='", geneID[1,1],"'",sep="");
-      res <- dbSendQuery(conn = mart@connection, statement = query);
+      res <- dbSendQuery(conn = mart@ensembl, statement = query);
       ann <- fetch( res );
       dbClearResult( res );
       
@@ -692,12 +647,12 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
     type <- "affy"
   }
 
-  if(mart@mart != "ensembl"){
-    stop( "you should connect to ensembl mart for this query" );
-  }
+  #if(mart@mart != "ensembl"){
+  #  stop( "you should connect to ensembl mart for this query" );
+  #}
   
   if( is.null( type )){
-    stop("ensembl error: you must provide the identifier type using the type argument")
+    stop("you must provide the identifier type using the type argument")
   }
   if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
     stop("invalid type choose either affy, refseq. embl or locuslink");
@@ -717,8 +672,8 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   if( type == "locuslink"){
     if( !is.null( species ) ){
 
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
-      IDTable <- mapSpeciesToLocusLink( Especies, mart = mart );
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl");
+      IDTable <- mapSpeciesToLocusLink( Especies, mart = "ensembl" );
    
     }
     
@@ -730,7 +685,7 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   if( type == "refseq"){
     if( !is.null( species ) ){
 
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl");
       IDTable <- mapSpeciesToRefSeq( Especies, mart = mart);
    
     }
@@ -743,7 +698,7 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   if( type == "embl"){
     if( !is.null( species ) ){
 
-      Especies <- mapSpeciesToESpecies( species = species, mart = mart);
+      Especies <- mapSpeciesToESpecies( species = species, mart = "ensembl");
       IDTable <- mapSpeciesToEMBL( Especies );
    
     }
@@ -756,9 +711,9 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
 
     ann <- NULL
     query <- paste("select gene_id_key from ", IDTable ," where display_id_list = '", id,"'",sep="");
-    geneID <- dbGetQuery(conn = mart@connection, statement = query);
+    geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
     query <- paste("select disease, omim_id from ", OMIMTable ," where gene_id_key ='", geneID[1,1],"'",sep="");
-    res <- dbSendQuery(conn = mart@connection, statement = query);
+    res <- dbSendQuery(conn = mart@ensembl, statement = query);
     ann <- fetch( res );
     dbClearResult( res );
     omim <- new("OMIM",OMIMID = as.vector(ann[,2]), disease = as.vector(ann[,1]));
@@ -770,9 +725,9 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
       
       ann <- NULL
       query <- paste("select gene_id_key from ", IDTable ," where display_id_list = '", id,"'",sep="");
-      geneID <- dbGetQuery(conn = mart@connection, statement = query);
+      geneID <- dbGetQuery(conn = mart@ensembl, statement = query);
       query <- paste("select disease, omim_id from ", OMIMTable ," where gene_id_key ='", geneID[1,1],"'",sep="");
-      res <- dbSendQuery(conn = mart@connection, statement = query);
+      res <- dbSendQuery(conn = mart@ensembl, statement = query);
       ann <- fetch( res );
       dbClearResult( res );
       omim[[i]] <- new("OMIM",OMIMID = as.vector( ann[,2] ), disease = as.vector( ann[,1] ));
@@ -788,19 +743,55 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
 
 getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, martTable = NULL, mart = NULL){
   
-  sequence <- NULL;
+  sequenceStr <- NULL;
   
-  Especies <- mapSpeciesToESpecies( species = species, mart = mart);
+  Especies <- mapSpeciesToESpecies( species = species, mart = "sequence");
   speciesTable <- paste( Especies,"__dna_chunks__main",sep="" );
   
-
-  
-  if(mart@mart != "sequence"){
-    stop("you should connect to sequence mart for this query using the function martConnect with sequence as argument")
+  if(is.null( martTable ) && !is.null( chromosome ) && !is.null( start ) && !is.null( end )){
+    for(i in 1:length( chromosome )){
+      
+      if(end[i] - start[i] > 100000){
+        stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
+      }
+      
+      chunkStart <- (floor((start[i] - 1)/100000)*100000) + 1;
+      chunkEnd <- (floor((end[i] - 1)/100000)*100000) + 1;
+      
+      if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
+        
+        query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+        chunkseq <- dbGetQuery(conn = mart@sequence, statement = query);
+        newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
+        newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
+        
+        sequenceStr <- c(sequenceStr,substr(as.character(chunkseq), newstart, newend));
+        
+      }
+      
+      else{   #query sequence is on 2 sequence chuncks
+        
+        query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+        chunkseq1 <- dbGetQuery(conn = sequence, statement = query);
+        query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
+        chunkseq2 <- dbGetQuery(conn = mart@sequence, statement = query);
+        chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
+        
+        newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
+        newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
+        sequenceStr <- c(sequenceStr,substr(chunkseq, start = newstart, stop = newend));
+        
+      }
+    }
   }
   
   else{
-    if(is.null( martTable ) && !is.null( chromosome ) && !is.null( start ) && !is.null( end )){
+    if(!is.null( martTable )){
+                                        #check class!!
+      chromosome = martTable@table$chromosome;
+      start = martTable@table$start;
+      end = martTable@table$end;
+      
       for(i in 1:length( chromosome )){
         
         if(end[i] - start[i] > 100000){
@@ -813,7 +804,7 @@ getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = N
         if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
           
           query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-          chunkseq <- dbGetQuery(conn = mart@connection, statement = query);
+          chunkseq <- dbGetQuery(conn = mart@sequence, statement = query);
           newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
           newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
           
@@ -824,67 +815,23 @@ getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = N
         else{   #query sequence is on 2 sequence chuncks
           
           query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-          chunkseq1 <- dbGetQuery(conn = mart@connection, statement = query);
+          chunkseq1 <- dbGetQuery(conn = mart@sequence, statement = query);
           query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
-          chunkseq2 <- dbGetQuery(conn = mart@connection, statement = query);
+          chunkseq2 <- dbGetQuery(conn = mart@sequence, statement = query);
           chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
           
           newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
           newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
-          sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
+          sequenceStr <- c(sequenceStr,substr(chunkseq, start = newstart, stop = newend));
           
         }
-      }
-    }
-
-    else{
-      if(!is.null( martTable )){
-#check class!!
-        chromosome = martTable@table$chromosome;
-        start = martTable@table$start;
-        end = martTable@table$end;
-        
-        for(i in 1:length( chromosome )){
-          
-          if(end[i] - start[i] > 100000){
-            stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
-          }
-          
-          chunkStart <- (floor((start[i] - 1)/100000)*100000) + 1;
-          chunkEnd <- (floor((end[i] - 1)/100000)*100000) + 1;
-          
-          if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
-            
-            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-            chunkseq <- dbGetQuery(conn = mart@connection, statement = query);
-            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
-            newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
-            
-            sequence <- c(sequence,substr(as.character(chunkseq), newstart, newend));
-            
-          }
-          
-          else{   #query sequence is on 2 sequence chuncks
-            
-            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-            chunkseq1 <- dbGetQuery(conn = mart@connection, statement = query);
-            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
-            chunkseq2 <- dbGetQuery(conn = mart@connection, statement = query);
-            chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
-            
-            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
-            newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
-            sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
-            
-          }
-        }
-        
       }
       
     }
+    
   }
   
-  table <- new("martTable", id = paste(chromosome, start, end, sep = "_") ,table = list(chromosome = chromosome, start = start, end = end, sequence = sequence))
+  table <- new("martTable", id = paste(chromosome, start, end, sep = "_") ,table = list(chromosome = chromosome, start = start, end = end, sequence = sequenceStr))
   
   return(table)
 }
@@ -901,10 +848,10 @@ getAffyArrays <- function(){
 #show species info#
 ###################
 
-getSpecies <- function( mart = NULL ){
+getSpecies <- function( db = "ensembl", mart = NULL ){
   
   query <- paste("select species from meta_release_info");
-  res <- dbGetQuery( mart@connection, query );
+  res <- dbGetQuery( mart@ensembl, query );
   m <- match( "multi_species", res$species );
   sel<- rep(TRUE, length(res$species));
   sel[m] <- FALSE;
@@ -919,19 +866,14 @@ getSpecies <- function( mart = NULL ){
 
 getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, mart = NULL){
   
-  if(mart@mart != "snp"){
-    stop("you should connect to sequence mart for this query using the function martConnect with sequence as argument")
-  }
-  
-  else{
     
-    Especies <- mapSpeciesToESpecies( species = species, mart = mart );
+    Especies <- mapSpeciesToESpecies( species = species, mart = "snp" );
     ensemblTable <- paste(Especies,"_snp__snp__main", sep ="");
     query <- paste("select snp_id_key,snp_chrom_start, allele, tscid, ensemblcoding_bool, ensemblintronic_bool, ensembl5utr_bool, ensembl3utr_bool, ensemblsyn_bool from ",ensemblTable," where chr_name = '",chromosome,"' and snp_chrom_start >= ",start," and snp_chrom_start <= ",end,sep="")
-    res <- dbGetQuery( mart@connection, query );
+    res <- dbGetQuery( mart@snp, query );
     table <- new("martTable", id = res$tscid ,table = list(snpStart = res[,2], allele = res$allele, coding = res[,5], intronic =  res[,6], syn =  res[,9],utr5 = res[,7], utr3= res[,8]))
     return( table );
-  }
+ 
 }
 
 

@@ -2,16 +2,14 @@
 \alias{getSNP}
 \title{Retrieves SNP's between a given chromosome start and end position}
 \description{Retrieves SNP's between a given chromosome start and end position}
-\usage{getSNP( species = NULL, chromosome = NULL, start = NULL, end = NULL, mart = NULL )}
+\usage{getSNP( species = NULL, chromosome = NULL, start = NULL, end = NULL, mart = NULL)}
 
 \arguments{
   \item{species}{Species information.  A list of possible values for this argument can be obtained by the function getSpecies.}
   \item{chromosome}{Chromosome name}
   \item{start}{start position on given chromosome}
   \item{end}{end position on given chromosome}
-  \item{mart}{object of class Mart, representing a connection to a BioMart database}
-  
-
+  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
 }
 
 \author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
@@ -20,13 +18,11 @@
 
 \examples{
 
+mart <- martConnect()
 
-mart <- martConnect(mart = "snp")
+getSNP(chromosome = 8, start = 148350, end = 159000, species ="homo_sapiens", mart = mart)
 
-getSNP(mart = mart, chromosome = 8, start = 148350, end = 159000, species ="homo_sapiens")
-
-martDisconnect(mart)
-
+martDisconnect(mart = mart)
 }
 \keyword{methods}
 
