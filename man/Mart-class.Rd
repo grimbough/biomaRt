@@ -9,6 +9,8 @@
 \code{	vega = ..../, #connection to vega database}\cr
 \code{	sequence = ..../, #connection to sequence mart}\cr
 \code{	snp = ..../, #connection to snp mart}\cr
+\code{	arrayToSpecies = ..../, #mapping from affy arrays to species}\cr
+\code{	arrayToEnsembl = ..../, #mapping from affy arrays to Ensembl tables}\cr
 \code{ )}}
 \details{
 	This Class is used to represent connections to different BioMart databases.  

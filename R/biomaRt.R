@@ -52,7 +52,9 @@ setClass("Mart",
                         ensembl = "MySQLConnection",
                         vega = "MySQLConnection",
                         sequence = "MySQLConnection",
-                        snp = "MySQLConnection"
+                        snp = "MySQLConnection",
+                        arrayToSpecies = "data.frame",
+                        arrayToEnsembl = "data.frame"
                         )
         # ,
         # prototype(
@@ -170,13 +172,22 @@ martConnect <- function(){
   
   databases <- listMarts();
   driver <- dbDriver("MySQL", force.reload = FALSE);
+  
+  tablefile <- system.file("tables/ArrayEnsemblTable.txt",package="biomaRt") ;
+  arrayToEnsembl <- read.table(file = tablefile, sep="\t");
+  tablefile <- system.file("tables/ArraySpeciesTable.txt",package="biomaRt") ;
+  arrayToSpecies <- read.table(file = tablefile, sep="\t");
+  
   mart <- new("Mart",
               ensembl = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$ensembl),
               vega = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$vega),
               sequence = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$sequence),
-              snp = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$snp)
+              snp = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$snp),
+              arrayToSpecies = arrayToSpecies,
+              arrayToEnsembl = arrayToEnsembl
               );
   writeLines(paste("-  Connected to ",databases$ensembl,", ",databases$vega,", ",databases$snp," and ",databases$sequence," -", sep = ""));
+ 
   return( mart )
 }
 
@@ -197,19 +208,15 @@ martDisconnect <- function( mart = NULL){
 
 ### initialisation ###
 
-tablefile <- system.file("tables/ArrayEnsemblTable.txt",package="biomaRt") ;
-arrayToEnsembl <- read.table(file = tablefile, sep="\t");
-tablefile <- system.file("tables/ArraySpeciesTable.txt",package="biomaRt") ;
-arrayToSpecies <- read.table(file = tablefile, sep="\t");
 
 ####### welcome message #############
 
 ####### local functions #############
 
-mapArrayToEnsemblTable <- function(array = NULL, species = NULL){
+mapArrayToEnsemblTable <- function(array = NULL, species = NULL, mart = NULL){
   
   table <- "";
-  table <- paste( species,"_gene_ensembl__xref_",arrayToEnsembl[ match( array, arrayToEnsembl[,1]),2 ],"__dm",sep="");
+  table <- paste( species,"_gene_ensembl__xref_",mart@arrayToEnsembl[ match( array, mart@arrayToEnsembl[,1]),2 ],"__dm",sep="");
 
   return( table );
 }
@@ -276,10 +283,10 @@ mapESpeciesToGOTable <- function( species = NULL){
   return(table); 
 }
 
-mapArrayToSpecies <- function( array = NULL ){
+mapArrayToSpecies <- function( array = NULL, mart = NULL ){
 
  species = "";
- species <- arrayToSpecies[ match( array, arrayToSpecies[,1]),2 ]; 
+ species <- mart@arrayToSpecies[ match( array, mart@arrayToSpecies[,1]),2 ]; 
  return( species )
 }
 
@@ -347,10 +354,10 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
       if( db != "ensembl"){
         stop("you can only use ensembl when working with affy id's");
       }
-      species <- mapArrayToSpecies( array );
+      species <- mapArrayToSpecies( array = array, mart = mart );
       Especies <- mapSpeciesToESpecies( species = species, db = db, mart = mart );
       speciesTable <- mapESpeciesToGeneTable( Especies, db = db);
-      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies );
+      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies, mart = mart );
       
     }
     else{
@@ -516,11 +523,11 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
   if( type == "affy" ){
     if( !is.null( array ) ){
 
-      species <- mapArrayToSpecies( array );
+      species <- mapArrayToSpecies( array = array, mart = mart );
       Especies <- mapSpeciesToESpecies( species = species, db = "ensembl", mart = mart );
       speciesTable <- mapESpeciesToGeneTable( Especies, db = "ensembl" );
       
-      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies  );
+      IDTable <- mapArrayToEnsemblTable( array = array, species = Especies, mart = mart  );
       
     }
     else{
@@ -585,10 +592,10 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   if( type == "affy" ){
     if( !is.null( array ) ){
       
-      species <- mapArrayToSpecies( array );
+      species <- mapArrayToSpecies( array = array, mart = mart );
       Especies <- mapSpeciesToESpecies( species = species, db = "ensembl", mart = mart);
       GOTable <- mapESpeciesToGOTable( Especies );
-      IDTable <-  mapArrayToEnsemblTable( array = array, species = Especies);
+      IDTable <-  mapArrayToEnsemblTable( array = array, species = Especies, mart = mart);
         
     
  
@@ -718,7 +725,7 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   
   if( type == "affy" ){
     if( !is.null( array ) ){
-      IDTable <-  mapArrayToEnsemblTable( array, species = "hsapiens");
+      IDTable <-  mapArrayToEnsemblTable( array, species = "hsapiens", mart = mart);
  
     }
     else{
@@ -914,8 +921,8 @@ getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = N
 #show affy info#
 ################
 
-getAffyArrays <- function(){
-  print( arrayToSpecies );
+getAffyArrays <- function(mart = NULL){
+  print( mart@arrayToSpecies );
 }
 
 ###################
