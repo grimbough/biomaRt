@@ -6,7 +6,7 @@
 
 \arguments{
   \item{id}{gene identifier}
-  \item{type}{type of identifier, value should be either affy or locuslink}
+  \item{type}{type of identifier, value should be either affy, entrezgene, embl or refseq}
   \item{array}{array identifier only to be used if gene identifiers are from affy arrays. An overview of the accepted identifiers can be obtained with the function: getAffyArrays()}
   \item{species}{species, only to be used if type equals locuslink.  Accepted values for species can be retrieved by the function getSpecies()}
   \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
@@ -26,7 +26,7 @@ getGO( id = "1939_at", array = "hgu95av2", mart = mart)
 
 #example using locuslink id
 
-getGO( id = 672, type = "locuslink", species = "homo_sapiens", mart = mart)
+getGO( id = 672, type = "entrezgene", species = "homo_sapiens", mart = mart)
 
 martDisconnect(mart = mart)
 }
