@@ -315,7 +315,7 @@ mapSpeciesToLocusLink <- function( species = NULL, db = NULL ){
 
   table <- NULL;
   if(db == "ensembl"){
-    table <- paste( species, "_gene_ensembl__xref_locuslink__dm", sep = "");
+    table <- paste( species, "_gene_ensembl__xref_entrezgene__dm", sep = "");
    }
   if(db == "vega"){
      table <- paste( species, "_gene_vega__xref_locuslink__dm", sep = "");
