@@ -138,35 +138,40 @@ martConnect <- function( mart = NULL, driver = NULL, host = NULL, dbname = NULL,
   driver <- NULL;
   
   if( !is.null( mart ) ){
-    if( mart == "ensembl" ){
-    
-      driver <- dbDriver("MySQL", force.reload = FALSE);
-      con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="ensembl_mart_28_1");
-      connected <- TRUE
-      martObj <- new("Mart", mart = "ensembl", connection = con)
-      writeLines("-  Connected to Ensembl  -");
+    if(mart != "ensembl" || mart != "vega" || mart != "sequence" || mart != "snp"){
+      if( mart == "ensembl" ){
+        
+        driver <- dbDriver("MySQL", force.reload = FALSE);
+        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="ensembl_mart_28_1");
+        connected <- TRUE
+        martObj <- new("Mart", mart = "ensembl", connection = con)
+        writeLines("-  Connected to Ensembl  -");
+        
+      }
       
+      if( mart == "vega" ){
+        
+        driver <- dbDriver("MySQL", force.reload = FALSE);
+        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="vega_mart_28_1");
+        connected <- TRUE
+        martObj <- new("Mart", mart = "vega", connection = con)
+        writeLines("-  Connected to vega  -");
+        
+      }
+      
+      if( mart == "snp" ){
+        
+        driver <- dbDriver("MySQL");
+        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="snp_mart_28_1");
+        connected <- TRUE
+        martObj <- new("Mart", mart = "ensembl", connection = con)
+        writeLines("-  Connected to snp  -");
+        
+      }
     }
-    
-    if( mart == "vega" ){
-      
-      driver <- dbDriver("MySQL", force.reload = FALSE);
-      con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="vega_mart_28_1");
-      connected <- TRUE
-      martObj <- new("Mart", mart = "vega", connection = con)
-      writeLines("-  Connected to vega  -");
-      
+    else{
+      stop("biomaRt only supports one of the following BioMart databases:  ensembl, vega, snp and sequence.  All these databases are located at EBI")
     }
-
-    if( mart == "snp" ){
-      
-      driver <- dbDriver("MySQL");
-      con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="snp_mart_28_1");
-      connected <- TRUE
-      martObj <- new("Mart", mart = "ensembl", connection = con)
-      writeLines("-  Connected to snp  -");
-      
-    }    
   }
   return( martObj )
 }
@@ -298,7 +303,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
   }
   
   if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("ensembl error: invalid type choose either affy, refseq or locuslink");
+    stop("invalid type choose either affy, refseq, embl or locuslink");
   }
   
   if( type == "affy" ){
@@ -349,7 +354,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart=
   if( type == "embl"){
     if( !is.null( species ) ){
       if( mart@mart != "ensembl"){
-        stop("you can only use ensembl when working with affy id's");
+        stop("you can only use ensembl when working with EMBL id's, connect to ensembl mart using martConnect");
       }
       
       Especies <- mapSpeciesToESpecies( species = species, mart = mart);
@@ -503,7 +508,7 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   }
   
   if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("ensembl error: invalid type choose either affy or locuslink");
+    stop("invalid type choose either affy,  locuslink refseq or embl");
   }
   
   if( type == "affy" ){
@@ -619,7 +624,7 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
     stop("ensembl error: you must provide the identifier type using the type argument")
   }
   if(!(type == "affy") && !(type == "locuslink") && !(type == "refseq") && !(type == "embl")){
-    stop("ensembl error: invalid type choose either affy or locuslink");
+    stop("invalid type choose either affy, refseq. embl or locuslink");
   }
   
   if( type == "affy" ){
