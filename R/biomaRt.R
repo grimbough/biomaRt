@@ -127,54 +127,92 @@ setMethod("show","martTable",
   #                   
   #        }
   #        );
-####### connect to mart ######
-#could make host changable in case people have a local BioMart install
 
-connected <- FALSE;
+#######################
+#list marts
+#######################
 
+listMarts <- function(){
+  
+  driv <- dbDriver("MySQL", force.reload = FALSE);
+  connection <- dbConnect(driv, user="anonymous", host="ensembldb.ensembl.org");
+  res <- dbGetQuery(connection,"show databases");
+  marts <- c("ensembl_mart_","snp_mart_","sequence_mart_","vega_mart_");
+  databases <- list( ensembl = "", snp = "", sequence = "", vega = "" );
+
+  
+  #Search latest releases of marts
+      
+      
+  for(i in 1: length(marts)){
+    matches <- grep(marts[i],res[,1]);
+    if(length(matches) > 1){
+      version <- 1;
+      latest <- 1;
+      for(j in 1:length(matches)){
+        v <- as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]);
+        if(v > version){
+          latest <- j;
+          version <- v;
+        }
+      }
+      databases[[i]] <- res[matches[latest],1];
+    }
+    else{
+      databases[[i]] <- res[matches,1];
+    }        
+  }
+  
+  dbDisconnect(connection);
+  
+  return( databases );
+  
+}
+
+##################
+#Connect to mart
+#################
 
 martConnect <- function( mart = NULL, driver = NULL, host = NULL, dbname = NULL, user = NULL, passwd = NULL ){
-  martObj <- NULL;
-  driver <- NULL;
+  
+  martObj <- NULL;  
+  databases <- listMarts();
   
   if( !is.null( mart ) ){
     if(mart != "ensembl" || mart != "vega" || mart != "sequence" || mart != "snp"){
+
       if( mart == "ensembl" ){
         
         driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="ensembl_mart_28_1");
-        connected <- TRUE
+        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$ensembl );
         martObj <- new("Mart", mart = "ensembl", connection = con)
-        writeLines("-  Connected to Ensembl@EBI -");
+        writeLines(paste("-  Connected to ",databases$ensembl," -", sep = ""));
         
       }
       
       if( mart == "vega" ){
         
         driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="vega_mart_28_1");
-        connected <- TRUE
+        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$vega);
         martObj <- new("Mart", mart = "vega", connection = con)
-        writeLines("-  Connected to vega@EBI -");
+        writeLines(paste("-  Connected to ",databases$vega," -", sep = ""));
         
       }
       
       if( mart == "snp" ){
         
         driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="snp_mart_28_1");
-        connected <- TRUE
+        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$snp);
         martObj <- new("Mart", mart = "snp", connection = con)
-        writeLines("-  Connected to SNP mart @ EBI -");
+        writeLines(paste("-  Connected to ",databases$snp," -", sep = ""));
         
       }
       if( mart == "sequence" ){
         
         driver <- dbDriver("MySQL", force.reload = FALSE);
-        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="sequence_mart_28_1");
-        connected <- TRUE
+        con <- dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$sequence);
         martObj <- new("Mart", mart = "sequence", connection = con)
-        writeLines("-  Connected to sequence mart @ EBI -");
+        writeLines(paste("-  Connected to ",databases$sequence," -", sep = ""));
         
       }
     }
@@ -184,6 +222,10 @@ martConnect <- function( mart = NULL, driver = NULL, host = NULL, dbname = NULL,
   }
   return( martObj )
 }
+
+######################
+#Disconnect from mart#
+######################
 
 martDisconnect <- function( mart = NULL){
 
