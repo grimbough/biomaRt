@@ -20,7 +20,7 @@
 
 mart <- martConnect()
 
-getSNP(chromosome = 8, start = 148350, end = 159000, species ="homo_sapiens", mart = mart)
+getSNP(chromosome = 8, start = 148350, end = 148612, species ="homo_sapiens", mart = mart)
 
 martDisconnect(mart = mart)
 }
