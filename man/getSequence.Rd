@@ -21,7 +21,7 @@
 
 mart <- martConnect()
 
-getSequence(species="gallus_gallus", chromosome = 1, start = 400, end = 500)
+getSequence(species="gallus_gallus", chromosome = 1, start = 400, end = 500, mart = mart)
 
 martDisconnect(mart = mart)
 

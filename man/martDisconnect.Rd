@@ -2,7 +2,7 @@
 \alias{martDisconnect}
 \title{Disconnects from BioMarts}
 \description{This function closes connections of the Mart object the BioMarts}
-\usage{martConnect()}
+\usage{martDisconnect(mart = NULL)}
 
 \arguments{
 \item{mart}{Mart object created with function martConnect}
