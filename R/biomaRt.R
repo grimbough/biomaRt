@@ -130,7 +130,7 @@ setMethod("show","martTable",
 listMarts <- function(){
   
   driv <- dbDriver("MySQL", force.reload = FALSE);
-  connection <- dbConnect(driv, user="anonymous", host="martdb.ebi.ac.uk");
+  connection <- dbConnect(driv, user="anonymous", host="ensembldb.ensembl.org");
   res <- dbGetQuery(connection,"show databases");
   marts <- c("ensembl_mart_","snp_mart_","sequence_mart_","vega_mart_");
   databases <- list( ensembl = "", snp = "", sequence = "", vega = "" );
@@ -146,6 +146,7 @@ listMarts <- function(){
       latest <- 1;
       for(j in 1:length(matches)){
         v <- as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]);
+        print(v)
         if(v > version){
           latest <- j;
           version <- v;
@@ -356,7 +357,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
   
   if( type == "affy" ){
     if( !is.null( array ) ){
-      if( db != "ensembl"){
+      if( db != "ensembl" && db != "vega"){
         stop("you can only use ensembl when working with affy id's");
       }
       species <- mapArrayToSpecies( array = array, mart = mart );
@@ -436,11 +437,12 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
       
       if( output == "martTable"){
         
-        
         if(dim(res)[1] == 0){
+          
           table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA))
         }
         else{
+         
           foundID <- NULL
           symbol <- NULL
           description <- NULL
@@ -474,8 +476,8 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
                 martID <- c(martID, res[m == 1,2]);
             }     
           }
-        }
-        table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
+          table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
+        } 
       }
       if( output == "geneObject" ){
         if(dim(res)[1] == 0){
@@ -512,7 +514,9 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
 ########################
 
 getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
-
+  
+  table <- NULL
+  
   if(!is.null(array)){
     type <- "affy"
   }
@@ -568,6 +572,9 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
     
     table <- new("martTable", id = features, table = list(symbol = sym, description = description, martID= mID)) 
   }
+  else{
+    writeLines("No match found")
+  }
   
   return( table )
 
@@ -580,8 +587,9 @@ getFeature <- function( symbol = NULL, array = NULL, type = NULL, mart = NULL){
 ###################
 
 getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = NULL){
-  
-  go <- NULL
+
+  table <- NULL;
+  go <- NULL;
 
   if(!is.null(array)){
     type <- "affy"
@@ -696,8 +704,8 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
           martID <- c(martID, res[m == 1,2]);
         }     
       }
+      table <- new("martTable", id = foundID, table = list(GOID = GOID, description = description, evidence = evidence, martID = martID));
     }
-    table <- new("martTable", id = foundID, table = list(GOID = GOID, description = description, evidence = evidence, martID = martID))
   }
   
   return( table );
@@ -711,7 +719,8 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
 getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   
   OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
-  omim <- NULL
+  omim <- NULL;
+  table <- NULL;
   species <- "homo_sapiens";
 
   if(!is.null(array)){
@@ -816,9 +825,8 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
           martID <- c(martID, res[m == 1,2]);
         }     
       }
+      table <- new("martTable", id = foundID, table = list(OMIMID = OMIMID, disease = disease, martID = martID))
     }
-    table <- new("martTable", id = foundID, table = list(OMIMID = OMIMID, disease = disease, martID = martID))
-   
   }
   return( table );  
 }
