@@ -1,0 +1,2 @@
+export(martConnect, martDisconnect, getGene, getOMIM, getGO, getAffyArrays, getSpecies, getFeature)
+exportClasses(Gene, GO, OMIM, MultiGene, martTable)
