@@ -1,7 +1,7 @@
 Package:biomaRt
 Version: 1.0.0
 Date: 2005-02-01
-Title: Interface to biomart
+Title: Interface to BioMart (http://www.ebi.ac.uk/biomart)
 Author: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>, Wolfgang Huber <huber@ebi.ac.uk>
 Maintainer: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>
 Depends: methods, Biobase, RMySQL

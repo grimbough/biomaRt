@@ -60,8 +60,8 @@ setClass("MultiGene","Gene");
 setClass("Mart",
          representation(
                         mart = "character",
-                        connection = "MySQLConnection",
-                        driver = "MySQLDriver"
+                        connection = "MySQLConnection"
+#                        driver = "MySQLDriver"
                         )
         # ,
         # prototype(
@@ -145,7 +145,7 @@ martConnect <- function( mart = NULL, driver = NULL, host = NULL, dbname = NULL,
         con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="ensembl_mart_28_1");
         connected <- TRUE
         martObj <- new("Mart", mart = "ensembl", connection = con)
-        writeLines("-  Connected to Ensembl  -");
+        writeLines("-  Connected to Ensembl@EBI -");
         
       }
       
@@ -155,17 +155,26 @@ martConnect <- function( mart = NULL, driver = NULL, host = NULL, dbname = NULL,
         con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="vega_mart_28_1");
         connected <- TRUE
         martObj <- new("Mart", mart = "vega", connection = con)
-        writeLines("-  Connected to vega  -");
+        writeLines("-  Connected to vega@EBI -");
         
       }
       
       if( mart == "snp" ){
         
-        driver <- dbDriver("MySQL");
+        driver <- dbDriver("MySQL", force.reload = FALSE);
         con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="snp_mart_28_1");
         connected <- TRUE
-        martObj <- new("Mart", mart = "ensembl", connection = con)
-        writeLines("-  Connected to snp  -");
+        martObj <- new("Mart", mart = "snp", connection = con)
+        writeLines("-  Connected to SNP mart @ EBI -");
+        
+      }
+      if( mart == "sequence" ){
+        
+        driver <- dbDriver("MySQL", force.reload = FALSE);
+        con <- dbConnect(driver,user="anonymous", host="ensembldb.ensembl.org", dbname="sequence_mart_28_1");
+        connected <- TRUE
+        martObj <- new("Mart", mart = "sequence", connection = con)
+        writeLines("-  Connected to sequence mart @ EBI -");
         
       }
     }
@@ -204,8 +213,9 @@ mapArrayToEnsemblTable <- function(array = NULL, species = NULL){
 }
 
 mapSpeciesToESpecies <- function( species = NULL, mart = NULL ){
-  
+
   mSpecies <- NULL;
+  
   if( mart@mart == "ensembl"){
     query <- paste("select mart_species from meta_release_info where species = '", species, "'",sep = "");
   
@@ -215,6 +225,30 @@ mapSpeciesToESpecies <- function( species = NULL, mart = NULL ){
   if(mart@mart == "vega"){
     mSpecies <- "hsapiens";
   }
+  if(mart@mart == "sequence" || mart@mart == "snp"){
+  
+    if(species == "homo_sapiens"){
+      mSpecies <- "hsapiens"
+    }
+    if(species == "mus_musculus"){
+      mSpecies <- "mmusculus"
+    }
+    if(species == "rattus_norvegicus"){
+      mSpecies <- "rnorvegicus"
+    }
+    if(species == "apis_mellifera"){
+      mSpecies <- "amellifera"
+    }
+    if(species == "caenorhabditis_elegans"){
+      mSpecies <- "celegans"
+    }
+    if(species == "gallus_gallus"){
+      mSpecies <- "ggallus"
+    }
+    
+    
+  }
+  
   return( mSpecies ); 
 }
 
@@ -705,6 +739,114 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   return( omim );  
 }
 
+#####################
+#getSequence
+#####################
+
+
+getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, martTable = NULL, mart = NULL){
+  
+  sequence <- NULL;
+  
+  Especies <- mapSpeciesToESpecies( species = species, mart = mart);
+  speciesTable <- paste( Especies,"__dna_chunks__main",sep="" );
+  
+
+  
+  if(mart@mart != "sequence"){
+    stop("you should connect to sequence mart for this query using the function martConnect with sequence as argument")
+  }
+  
+  else{
+    if(is.null( martTable ) && !is.null( chromosome ) && !is.null( start ) && !is.null( end )){
+      for(i in 1:length( chromosome )){
+        
+        if(end[i] - start[i] > 100000){
+          stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
+        }
+        
+        chunkStart <- (floor((start[i] - 1)/100000)*100000) + 1;
+        chunkEnd <- (floor((end[i] - 1)/100000)*100000) + 1;
+        
+        if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
+          
+          query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+          chunkseq <- dbGetQuery(conn = mart@connection, statement = query);
+          newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
+          newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
+          
+          sequence <- c(sequence,substr(as.character(chunkseq), newstart, newend));
+          
+        }
+        
+        else{   #query sequence is on 2 sequence chuncks
+          
+          query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+          chunkseq1 <- dbGetQuery(conn = mart@connection, statement = query);
+          query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
+          chunkseq2 <- dbGetQuery(conn = mart@connection, statement = query);
+          chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
+          
+          newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
+          newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
+          sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
+          
+        }
+      }
+    }
+
+    else{
+      if(!is.null( martTable )){
+#check class!!
+        chromosome = martTable@table$chromosome;
+        start = martTable@table$start;
+        end = martTable@table$end;
+        
+        for(i in 1:length( chromosome )){
+          
+          if(end[i] - start[i] > 100000){
+            stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
+          }
+          
+          chunkStart <- (floor((start[i] - 1)/100000)*100000) + 1;
+          chunkEnd <- (floor((end[i] - 1)/100000)*100000) + 1;
+          
+          if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
+            
+            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+            chunkseq <- dbGetQuery(conn = mart@connection, statement = query);
+            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
+            newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
+            
+            sequence <- c(sequence,substr(as.character(chunkseq), newstart, newend));
+            
+          }
+          
+          else{   #query sequence is on 2 sequence chuncks
+            
+            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+            chunkseq1 <- dbGetQuery(conn = mart@connection, statement = query);
+            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
+            chunkseq2 <- dbGetQuery(conn = mart@connection, statement = query);
+            chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
+            
+            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
+            newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
+            sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
+            
+          }
+        }
+        
+      }
+      
+    }
+  }
+  
+  table <- new("martTable", id = paste(chromosome, start, end, sep = "_") ,table = list(chromosome = chromosome, start = start, end = end, sequence = sequence))
+  
+  return(table)
+}
+
 ################
 #show affy info#
 ################
@@ -713,6 +855,9 @@ getAffyArrays <- function(){
   print( arrayToSpecies );
 }
 
+###################
+#show species info#
+###################
 
 getSpecies <- function( mart = NULL ){
   
@@ -725,8 +870,27 @@ getSpecies <- function( mart = NULL ){
   return( res ); 
 }
 
+#######################
+#getSNP
+#######################
 
 
+getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, mart = NULL){
+  
+  if(mart@mart != "snp"){
+    stop("you should connect to sequence mart for this query using the function martConnect with sequence as argument")
+  }
+  
+  else{
+    
+    Especies <- mapSpeciesToESpecies( species = species, mart = mart );
+    ensemblTable <- paste(Especies,"_snp__snp__main", sep ="");
+    query <- paste("select snp_id_key,snp_chrom_start, allele, tscid, ensemblcoding_bool, ensemblintronic_bool, ensembl5utr_bool, ensembl3utr_bool, ensemblsyn_bool from ",ensemblTable," where chr_name = '",chromosome,"' and snp_chrom_start >= ",start," and snp_chrom_start <= ",end,sep="")
+    res <- dbGetQuery( mart@connection, query );
+    table <- new("martTable", id = res$tscid ,table = list(snpStart = res[,2], allele = res$allele, coding = res[,5], intronic =  res[,6], syn =  res[,9],utr5 = res[,7], utr3= res[,8]))
+    return( table );
+  }
+}
 
 
 
