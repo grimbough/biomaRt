@@ -8,7 +8,7 @@
   \item{id}{gene identifier}
   \item{type}{type of identifier, value should be either affy, entrezgene, embl or refseq}
   \item{array}{array identifier only to be used if gene identifiers are from affy arrays. An overview of the accepted identifiers can be obtained with the function: getAffyArrays()}
-  \item{species}{species, only to be used if type equals locuslink.  Accepted values for species currently are: can be retrieved with the function getSpecies()} 
+  \item{species}{species, only to be used if type equals locuslink.  Accepted values for species can be retrieved with the function getSpecies()} 
   \item{db}{database you want to query either ensembl (default) or vega}
   \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
   \item{output}{desired output type, either object of class martTable or GeneObject}

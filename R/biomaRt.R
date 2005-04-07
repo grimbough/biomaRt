@@ -1,51 +1,5 @@
 .packageName <- "biomaRt"
 
-####### Class creation #######
-
-#setClass("OMIM",
-#         representation(
-#                        OMIMID = "vector",
-#                        disease = "vector"
-#                        ),
-#         prototype(
-#                   OMIMID = NULL,
-#                   disease = NULL
-#                   )
-#         );
-                 
-
-#setClass("GO",
-#         representation(
-#                        GOID = "vector",
-#                        description = "vector",
-#                        evidence = "vector"
-#                        )
-#         ,
-#         prototype(
-#                   GOID = NULL,
-#                   description = NULL,
-#                   evidence = NULL
-#                   )
-#         );
-
-#setClass("Gene",
-#         representation(
-#                        id = "character",
-#                        martID= "character",
-#                        symbol = "character",
-#                        description = "character",
-#                        chromosome = "character",
-#                        band = "character",
-#                        start = "numeric",
-#                        end = "numeric",
-#                        GO = "GO",
-#                        OMIM = "OMIM"
-#                        )
-#         );
-         
-
-#setClass("MultiGene","Gene");
-
 
 setClass("Mart",
          representation(
@@ -56,21 +10,7 @@ setClass("Mart",
                         arrayToSpecies = "data.frame",
                         arrayToEnsembl = "data.frame"
                         )
-        # ,
-        # prototype(
-        #           mart = NULL,
-                 #  connection = NULL,
-                 #  driver = NULL
-         #          )
         );
-
-
-#setClass("Feature",
-#         representation(
-#                        id = "character",
-#                        martID= "character",
-#                        symbol = "character"
-#                        ));
 
 
 setClass("martTable",
@@ -127,10 +67,10 @@ setMethod("show","martTable",
 #list marts
 #######################
 
-listMarts <- function(){
+listMarts <- function(host = "ensembldb.ensembl.org", user = "anonymous", password = ""){
   
   driv <- dbDriver("MySQL", force.reload = FALSE);
-  connection <- dbConnect(driv, user="anonymous", host="ensembldb.ensembl.org");
+  connection <- dbConnect(driv, user = user, host = host, password = password);
   res <- dbGetQuery(connection,"show databases");
   marts <- c("ensembl_mart_","snp_mart_","sequence_mart_","vega_mart_");
   databases <- list( ensembl = "", snp = "", sequence = "", vega = "" );
@@ -179,26 +119,25 @@ listMarts <- function(){
 #Connect to marts#
 ##################
 
-martConnect <- function(){
-  
-  databases <- listMarts();
-  driver <- dbDriver("MySQL", force.reload = FALSE);
-  
-  tablefile <- system.file("tables/ArrayEnsemblTable.txt",package="biomaRt") ;
-  arrayToEnsembl <- read.table(file = tablefile, sep="\t");
-  tablefile <- system.file("tables/ArraySpeciesTable.txt",package="biomaRt") ;
-  arrayToSpecies <- read.table(file = tablefile, sep="\t");
-                 
-  mart <- new("Mart",
-              ensembl = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$ensembl),
-              vega = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$vega),
-              sequence = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$sequence),
-              snp = dbConnect(drv = driver,user="anonymous", host="ensembldb.ensembl.org", dbname = databases$snp),
-              arrayToSpecies = arrayToSpecies,
-              arrayToEnsembl = arrayToEnsembl
-              );
-  writeLines(paste("-  Connected to ",databases$ensembl,", ",databases$vega,", ",databases$snp," and ",databases$sequence," -", sep = ""));
- 
+martConnect <- function(host = "ensembldb.ensembl.org", user = "anonymous", password = ""){
+
+    databases <- listMarts();
+    driver <- dbDriver("MySQL", force.reload = FALSE);
+    
+    tablefile <- system.file("tables/ArrayEnsemblTable.txt",package="biomaRt") ;
+    arrayToEnsembl <- read.table(file = tablefile, sep="\t");
+    tablefile <- system.file("tables/ArraySpeciesTable.txt",package="biomaRt") ;
+    arrayToSpecies <- read.table(file = tablefile, sep="\t");
+    
+    mart <- new("Mart",
+                ensembl = dbConnect(drv = driver,user = user, host = host , dbname = databases$ensembl, password = password),
+                vega = dbConnect(drv = driver,user = user, host= host, dbname = databases$vega, password = password),
+                sequence = dbConnect(drv = driver,user = user, host = host, dbname = databases$sequence, password = password),
+                snp = dbConnect(drv = driver,user = user, host = host, dbname = databases$snp, password = password),
+                arrayToSpecies = arrayToSpecies,
+                arrayToEnsembl = arrayToEnsembl
+                );
+    writeLines(paste("-  Connected to ",databases$ensembl,", ",databases$vega,", ",databases$snp," and ",databases$sequence," -", sep = ""));
   return( mart )
 }
 
@@ -318,7 +257,7 @@ mapSpeciesToEntrezGene <- function( species = NULL, db = NULL ){
     table <- paste( species, "_gene_ensembl__xref_entrezgene__dm", sep = "");
    }
   if(db == "vega"){
-     table <- paste( species, "_gene_vega__xref_locuslink__dm", sep = "");
+     table <- paste( species, "_gene_vega__xref_entrezgene__dm", sep = "");
   }
   
   return( table );
@@ -329,7 +268,7 @@ mapSpeciesToRefSeq <- function( species = NULL, db = NULL ){
   table <- NULL;
   
   if(db == "ensembl"){
-    table <- paste( species,"_gene_ensembl__xref_refseq__dm" , sep = "");
+    table <- paste( species,"_gene_ensembl__xref_refseq_dna__dm" , sep = "");
   }
   if(db == "vega"){
     table <- paste( species,"_gene_vega__xref_refseq__dna__dm" , sep = "");
@@ -344,6 +283,13 @@ mapSpeciesToEMBL <- function( species = NULL ){
   return( table );
 }
 
+
+mapESpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
+  
+  table <- NULL;
+  table <- paste(fromESpecies,"_gene_ensembl__homologs_",toESpecies,"__dm",sep="");
+  return(table);
+}
 
 ######### public functions ##############
 
@@ -997,6 +943,103 @@ getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, 
     return( table );
  
 }
+
+##################
+#getHomolog      #
+##################
+
+
+getHomolog <- function(id = NULL, fromtype = NULL, totype = NULL, fromspecies = NULL, tospecies = NULL, mart = NULL, output = "martTable") {
+  
+  #all homology needs to go through ensembl_mart, not vega, etc.
+  db = "ensembl";
+  
+  id <- as.character(id)
+  
+  if (is.null(fromtype)) {
+    stop("You must provide the identifier type using the fromtype  argument")
+  }
+  if (is.null(totype)) {
+    stop("You must provide the identifier type using the totype  argument")
+  }
+  if (is.null(fromspecies)) {
+    stop("You must provide the species to map FROM using the  fromspecies argument")
+  }
+  if (is.null(tospecies)) {
+    stop("You must provide the species to map TO using the tospecies  argument")
+  }
+  
+  fromESpecies <-  mapSpeciesToESpecies(species = fromspecies, db = db, mart = mart);
+  toESpecies <-  mapSpeciesToESpecies(species = tospecies, db = db, mart = mart);
+  
+  fromIDTable <-
+    switch(fromtype,
+           entrezgene = mapSpeciesToEntrezGene(fromESpecies,db=db),
+           refseq     = mapSpeciesToRefSeq(fromESpecies,db=db),
+           embl       = mapSpeciesToEMBL(fromESpecies),
+           );
+  
+  toIDTable <-
+    switch(totype,
+           entrezgene = mapSpeciesToEntrezGene(toESpecies,db=db),
+           refseq     = mapSpeciesToRefSeq(toESpecies,db=db),
+           embl       = mapSpeciesToEMBL(toESpecies),
+           );
+  
+  homolTable <- mapESpeciesToHomologTable(fromESpecies,toESpecies);
+  
+  if (length(id) >= 1) {
+    ids <- paste("'", id[1], "'", sep = "")
+    if (length(id) >= 2) {
+      for (i in 2:length(id)) {
+        ids <- paste(ids, ",'", id[i], "'", sep = "")
+      }
+    }
+    res <- NULL
+    query <- paste("select distinct a.display_id_list,b.display_id_list from  ",
+                   fromIDTable," as a inner join ",
+                   homolTable," as c on a.gene_id_key=c.gene_id_key inner  join ",
+                   toIDTable," as b on b.gene_id_key=c.homol_id ",
+                   "where a.display_id_list in (",ids,")",sep="");
+    
+    res <- dbGetQuery(conn = mart@ensembl, statement = query);
+    
+    if (dim(res)[1] == 0) {
+      table <- new("martTable", id = id, table = list( MappedID = rep(NA,length(id))))
+    }
+    
+    else {
+      
+      foundID <- NULL
+      MappedID <- NULL
+      isNA <- is.na(res[ ,2])
+      res <- res[!isNA ,]
+      
+      for (j in 1:length(id)) {
+        
+        m <- match(res[, 1], id[j], nomatch = 0)
+        
+        if (sum(m) == 0) {
+          
+          foundID <- c(foundID, as.character(id[j]))
+          MappedID <- c(MappedID, NA)
+        }
+        
+        else {
+       
+          foundID <- c(foundID, res[m == 1, 1])
+          MappedID <- c(MappedID, res[m == 1, 2])
+          
+        }
+      }
+      table <- new("martTable", id = foundID, table = list(MappedID = MappedID))
+    }
+  }
+  return(table)
+} 
+
+
+
 
 ####################
 #export FASTA      #
