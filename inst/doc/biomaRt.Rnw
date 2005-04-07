@@ -273,4 +273,14 @@ getAffyArrays( mart = mart )
 @
 
 
+\subsection{\Rfunction{getHomolog}}
+
+This function retrieves homologs of genes of one species in another species
+
+Example: \\
+
+<<>>=
+getHomolog(id = 1:20, fromspecies = 'homo_sapiens', tospecies = 'mus_musculus', fromtype = 'entrezgene', totype = 'refseq', mart = mart)
+@
+
 \end{document}
