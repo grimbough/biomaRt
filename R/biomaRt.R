@@ -370,7 +370,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
     if( !is.null( species ) ){
       
       Especies <- mapSpeciesToESpecies( species = species, db = db, mart = mart);
-      IDTable <- mapSpeciesToEMBL( Especies, db = db );
+      IDTable <- mapSpeciesToEMBL( Especies );
       speciesTable <- mapESpeciesToGeneTable( Especies, db = db );
       
     }
