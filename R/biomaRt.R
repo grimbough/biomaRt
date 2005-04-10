@@ -19,34 +19,44 @@ setClass("martTable",
                         ));
 
 setMethod("show","martTable",
-          function(object){
-            cat("object of class martTable\n\n")
-            cat("slot id\n\n")
-            len <- length(object@id)
-            if(len < 10){
-                print(object@id)
-            }
-            else{
-              print(object@id[1:10])
-            }
-            cat("\nslot table\n\n")
-            names <- rownames(summary(object@table))
-            if(len < 10){
-              for(i in 1:length(names)){
-                cat(names[i],"\n\n")
-                print(object@table[[i]])
-                cat("\n\n")
-              }
-            }
-            else{
-             for(i in 1:length(names)){
-                cat(names[i],"\n\n")
-                print(object@table[[i]][1:10])
-                cat("\n\n")
-              }
-            }            
-          }
-          );
+  function(object){
+    nrShow = 7
+    res = paste("Object of class 'martTable' with", length(object@id), "IDs.")
+    if(length(object@id) > nrShow)
+      res = paste(res, "The first", nrShow, "rows are:")
+    cat(strwrap(res, exdent=5), sep="\n")
+    n  = min(nrShow, length(object@id))
+    df = do.call("data.frame", args=lapply(object@table, "[", 1:n))
+    show(df)
+  })
+
+#             cat("object of class martTable\n\n")
+#             cat("slot id\n\n")
+#             len <- length(object@id)
+#             if(len < 10){
+#                 print(object@id)
+#             }
+#             else{
+#               print(object@id[1:10])
+#             }
+#             cat("\nslot table\n\n")
+#             names <- rownames(summary(object@table))
+#             if(len < 10){
+#               for(i in 1:length(names)){
+#                 cat(names[i],"\n\n")
+#                 print(object@table[[i]])
+#                 cat("\n\n")
+#               }
+#             }
+#             else{
+#              for(i in 1:length(names)){
+#                 cat(names[i],"\n\n")
+#                 print(object@table[[i]][1:10])
+#                 cat("\n\n")
+#               }
+#             }            
+#           }
+#           );
 
 
 #setMethod("as.data.frame","martTable",
@@ -384,22 +394,11 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
     
     if (length( id ) >= 1){
       
-      res <- NULL;
-      ids <- paste("'",id[1],"'",sep="")
-      if(length(id) >= 2){
-        for( i in 2:length(id)){
-          ids <- paste(ids,",'",id[i],"'",sep="")
-        }
-      }
+      ids <- paste("'",id,"'",sep="",collapse=",")
+
       query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",speciesTable,".display_id, description, band,chr_name, gene_chrom_start, gene_chrom_end  from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,")",sep="");
 
-      if( db == "ensembl"){
-        res <- dbGetQuery( conn = mart@ensembl,statement = query);
-      }
-      
-      if( db == "vega"){
-        res <- dbGetQuery( conn = mart@vega,statement = query);
-      }
+      res <- dbGetQuery( conn = slot(mart, db),statement = query);
       
       if( output == "martTable"){
         
