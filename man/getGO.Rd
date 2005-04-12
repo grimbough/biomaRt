@@ -22,11 +22,11 @@ mart <- martConnect()
 
 #example using affy id
 
-getGO( id = "1939_at", array = "hgu95av2", mart = mart)
+getGO( id = "1939_at", array = "hg_u95av2", mart = mart)
 
 #example using locuslink id
 
-getGO( id = 672, type = "entrezgene", species = "homo_sapiens", mart = mart)
+getGO( id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
 
 martDisconnect(mart = mart)
 }

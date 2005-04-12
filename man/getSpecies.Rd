@@ -2,7 +2,7 @@
 \alias{getSpecies}
 \title{Displays species identifiers currently present in Ensembl}
 \description{Displays species identifiers currently present in Ensembl}
-\usage{getSpecies( db = "ensembl", mart = NULL)}
+\usage{getSpecies(mart = NULL, db = c('ensembl','vega','snp','sequence'))}
 
 \arguments{
 \item{db}{database to query, only works for Ensembl}

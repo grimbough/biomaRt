@@ -22,7 +22,7 @@ mart <- martConnect()
 
 #example using affy id from Ensembl
 
-getFeature( symbol = "P53", array = "hgu95av2", mart = mart)
+getFeature( symbol = "P53", array = "hg_u95av2", mart = mart)
 
 martDisconnect(mart = mart)
 
