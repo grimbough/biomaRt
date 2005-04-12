@@ -47,7 +47,6 @@ An object of the \Robject{Mart} class represents a connection to a BioMart.  And
 \item \Robject{sequence}: stores the RMySQLConnection to sequence mart
 \item \Robject{snp}: stores the RMySQLConnection to snp mart
 \item \Robject{arrayToSpecies}: Stores mapping from affy arrays to species
-\item \Robject{arrayToEnsembl}: Stores mapping from affy arrays to Ensembl tables
 \end{itemize}
 
 
@@ -122,11 +121,11 @@ mart <- martConnect()
 
 #example affy
 
-getGene(id = "1939_at", array = "hgu95av2", mart = mart)
+getGene(id = "1939_at", array = "hg_u95av2", mart = mart)
 
 #example Entrez-Gene
 
-getGene(id = 672, type = "entrezgene", species = "homo_sapiens", mart = mart)
+getGene(id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
 @
 
 \subsection{\Rfunction{getGO}}
@@ -151,11 +150,11 @@ Examples: \\
 
 #example affy
 
-getGO(id = "1939_at", array = "hgu95av2", mart = mart)
+getGO(id = "1939_at", array = "hg_u95av2", mart = mart)
 
 #example Entrez-Gene
 
-getGO(id = 672, type = "entrezgene", species = "homo_sapiens", mart = mart)
+getGO(id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
 @
 
 \subsection{\Rfunction{getOMIM}}
@@ -180,7 +179,7 @@ Examples: \\
 
 #example affy
 
-getOMIM(id = "1939_at", array = "hgu95av2", mart = mart)
+getOMIM(id = "1939_at", array = "hg_u95av2", mart = mart)
 
 #example Entrez-Gene
 
@@ -203,7 +202,7 @@ Examples: \\
 
 #find all probes on the hgu95av2 array which have something to do with P53
 
-getFeature(symbol = "P53", array = "hgu95av2", mart = mart)
+getFeature(symbol = "P53", array = "hg_u95av2", mart = mart)
 
 @
 
@@ -219,7 +218,7 @@ Examples: \\
 
 <<>>=
 
-getSequence(species="gallus_gallus", chromosome = 1, start = 400, end = 500, mart = mart)
+getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
 
 @
 
@@ -235,7 +234,7 @@ Examples: \\
 
 <<>>=
 
-getSNP(chromosome = 8, start = 148350, end = 148612, species ="homo_sapiens", mart = mart)
+getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)
 
 @
 
@@ -280,7 +279,35 @@ This function retrieves homologs of genes of one species in another species
 Example: \\
 
 <<>>=
-getHomolog(id = 1:20, fromspecies = 'homo_sapiens', tospecies = 'mus_musculus', fromtype = 'entrezgene', totype = 'refseq', mart = mart)
+getHomolog(id = 1:20, from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq', mart = mart)
 @
 
+
+\subsection{\Rfunction{getPossibleXrefs}}
+
+This function retrieves the possible cross-references present in Ensembl.  This is a very general function to see what can be extracted from En
+sembl.  The results of this function can be used in the getXref function to extract the data of interest.
+
+Example: \\
+
+<<>>=
+xref <- getPossibleXrefs(mart = mart)
+xref[1:10,]
+
+@
+
+
+\subsection{\Rfunction{getXref}}
+
+This powerful function retrieves any cross reference in Ensembl
+
+Example: \\
+
+<<>>=
+
+#starting from an affy id of chip hg_u95av2 and id 1939_at, give me corresponding affy identifiers on the affy mouse chip mouse430_2
+
+getXref(id="1939_at", from.species="hsapiens", to.species = "mmusculus", from.xref ="affy_hg_u95av2", to.xref="affy_mouse430_2",mart=mart)
+
+@
 \end{document}
