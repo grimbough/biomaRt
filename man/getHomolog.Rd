@@ -19,12 +19,13 @@
 \seealso{}
 
 \examples{
-
+\dontrun{
 mart <- martConnect()
 
 getHomolog(id = 1:20, from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq', mart = mart)
 
 martDisconnect(mart = mart)
+}
 }
 \keyword{methods}
 

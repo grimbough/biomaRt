@@ -19,7 +19,7 @@
 \seealso{}
 
 \examples{
-
+\dontrun{
 mart <- martConnect()
 
 #starting from an affy id of chip hg_u95av2 and id 1939_at, give me corresponding affy identifiers on the affy mouse chip mouse430_2
@@ -27,6 +27,7 @@ mart <- martConnect()
 getXref(id="1939_at", from.species="hsapiens", to.species = "mmusculus", from.xref ="affy_hg_u95av2", to.xref="affy_mouse430_2",mart=mart)
 
 martDisconnect(mart = mart)
+}
 }
 \keyword{methods}
 

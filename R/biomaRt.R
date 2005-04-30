@@ -219,6 +219,20 @@ mapSpeciesToEntrezGene <- function( species = NULL, db = NULL ){
   return( table );
 }
 
+mapSpeciesToHUGO <- function( species = NULL, db = NULL ){
+
+  table <- NULL;
+  if(db == "ensembl"){
+    table <- paste( species, "_gene_ensembl__xref_hugo__dm", sep = "");
+   }
+  if(db == "vega"){
+    stop("No HUGO annotation currently present in VEGA")
+  }
+  
+  return( table );
+}
+
+
 mapSpeciesToRefSeq <- function( species = NULL, db = NULL ){
 
   table <- NULL;
@@ -273,8 +287,8 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
     stop("you must provide a mart connection object, create with function martConnect")
   }
   
-  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")){
-    stop("invalid type choose either affy, refseq, embl or entrezgene");
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo")  && !(type == "ensembl")){
+    stop("invalid type choose either affy, refseq, embl, hugo, ensembl or entrezgene");
   }
   
   if( type == "affy" ){
@@ -304,6 +318,18 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
       stop( "you must provide the species via the species argument when using this function for entrezgene identifiers" );
     }
   }
+
+  if( type == "hugo"){
+    if( !is.null( species ) ){
+      
+      IDTable <- mapSpeciesToHUGO( species, db = db);
+      speciesTable <- mapESpeciesToGeneTable( species, db = db );
+      
+    }
+    else{
+      stop( "you must provide the species via the species argument when using this function for HUGO identifiers" );
+    }
+  }
   
   
   if( type == "refseq"){
@@ -315,6 +341,17 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
     }
     else{
       stop( "you must provide the species via the species argument when using this function for RefSeq identifiers" );
+    }
+  }
+
+  if( type == "ensembl"){
+    if( !is.null( species ) ){
+      
+      speciesTable <- mapESpeciesToGeneTable( species, db = db );
+      
+    }
+    else{
+      stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
     }
   }
   
@@ -337,9 +374,13 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
     if (length( id ) >= 1){
       
       ids <- paste("'",id,"'",sep="",collapse=",")
-
-      query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",speciesTable,".display_id, description, band,chr_name, gene_chrom_start, gene_chrom_end  from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,")",sep="");
-
+      
+      if(type == "ensembl"){
+         query <- paste("select distinct gene_stable_id, display_id, description, band,chr_name, gene_chrom_start, gene_chrom_end  from ", speciesTable," where gene_stable_id in (",ids,")",sep="");
+      }
+      else{
+        query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",speciesTable,".display_id, description, band,chr_name, gene_chrom_start, gene_chrom_end  from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,")",sep="");
+      }
       res <- dbGetQuery( conn = slot(mart, db),statement = query);
       
       if( output == "martTable"){
@@ -373,6 +414,17 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
             }
             else{
               
+              if(type == "ensembl"){
+                foundID <- c(foundID, res[m == 1,1]);
+                symbol <- c(symbol, res[m == 1,2]);
+                description <- c(description, res[m == 1,3]);
+                band <- c(band, res[m == 1,4]);
+                chromosome <- c(chromosome, res[m == 1,5]);
+                start <- c(start, res[m == 1,6]);
+                end <- c(end, res[m == 1,7]);
+                martID <- c(martID, res[m == 1,1]);
+              }
+              else{ 
                 foundID <- c(foundID, res[m == 1,1]);
                 symbol <- c(symbol, res[m == 1,3]);
                 description <- c(description, res[m == 1,4]);
@@ -381,6 +433,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
                 start <- c(start, res[m == 1,7]);
                 end <- c(end, res[m == 1,8]);
                 martID <- c(martID, res[m == 1,2]);
+              }
             }     
           }
           table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
@@ -482,11 +535,11 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
   }
    
   if( is.null( type )){
-    stop("ensembl error: you must provide the identifier type using the type argument")
+    stop(" you must provide the identifier type using the type argument")
   }
   
-  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")){
-    stop("invalid type choose either affy,  entrezgene, refseq or embl");
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo") && !(type == "ensembl")){
+    stop("invalid type choose either affy,  entrezgene, hugo, ensembl, refseq or embl");
   }
   
   if( type == "affy" ){
@@ -502,6 +555,18 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
     }
   }
   
+  if( type == "ensembl"){
+    if( !is.null( species ) ){
+      
+      IDTable <- mapESpeciesToGeneTable( species, db = "ensembl");
+      GOTable <- mapESpeciesToGOTable( species );
+     
+      
+    }
+    else{
+      stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
+    }
+  }
   
   if( type== "entrezgene"){
     if( !is.null( species ) ){
@@ -513,6 +578,18 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
     
     else{
       stop( "you must provide the species via the species argument when using this function for entrezgene identifiers" );
+    }
+  }
+  
+  if( type == "hugo"){
+    if( !is.null( species ) ){
+      
+      IDTable <- mapSpeciesToHUGO( species, db = "ensembl");
+      GOTable <- mapESpeciesToGOTable( species );
+      
+    }
+    else{
+      stop( "you must provide the species via the species argument when using this function for HUGO identifiers" );
     }
   }
   
@@ -552,7 +629,14 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
     }
     
     res <- NULL
-    query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",GOTable,".dbprimary_id, description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_stable_id = ",GOTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,")",sep="");
+    if(type == "ensembl"){
+      query <- paste("select distinct ",IDTable,".gene_stable_id,",IDTable,".gene_stable_id, ",GOTable,".dbprimary_id,",GOTable,".description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_stable_id = ",GOTable,".gene_stable_id where ",IDTable,".gene_stable_id in (",ids,")",sep="");
+    }
+    else{
+      query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",GOTable,".dbprimary_id, description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_stable_id = ",GOTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,")",sep="");
+  }
+
+
     
     res <- dbGetQuery(conn = mart@ensembl, statement = query);
     
@@ -576,7 +660,6 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
           martID <- c(martID, NA);              
         }
         else{
-          
           foundID <- c(foundID, res[m == 1,1]);
           GOID  <- c(GOID, res[m == 1,3])
           description <- c(description, res[m == 1,4]);
@@ -614,8 +697,8 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
   if( is.null( type )){
     stop("you must provide the identifier type using the type argument")
   }
-  if(!(type == "affy") && !(type == "refseq") && !(type == "embl") && !(type == "entrezgene")){
-    stop("invalid type choose either affy, refseq. embl or entrezgene");
+  if(!(type == "affy") && !(type == "refseq") && !(type == "embl") && !(type == "entrezgene") && !(type == "hugo") && !(type == "ensembl")){
+    stop("invalid type choose either affy, refseq. embl, hugo, ensembl or entrezgene");
   }
   
   if( type == "affy" ){
@@ -628,6 +711,16 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
     }
   }
   
+  if( type == "ensembl"){
+    if( !is.null( species ) ){
+      
+      IDTable <- mapESpeciesToGeneTable( species, db = "ensembl" );
+      
+    }
+    else{
+      stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
+    }
+  }
   
   if( type == "entrezgene" ){
     if( !is.null( species ) ){
@@ -640,7 +733,18 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
       stop( "you must provide the species via the species argument when using this function for entrezgene identifiers" );
     }
   }
- 
+  if( type == "hugo"){
+    if( !is.null( species ) ){
+      
+      IDTable <- mapSpeciesToHUGO( species, db = "ensembl");
+      
+    }
+    else{
+      stop( "you must provide the species via the species argument when using this function for HUGO identifiers" );
+    }
+  }
+  
+  
   if( type == "refseq"){
     if( !is.null( species ) ){
 
@@ -673,7 +777,13 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
     }
     
     res <- NULL
-    query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".display_id_list in (",ids,")",sep="");
+    if(type == "ensembl"){
+      query <- paste("select distinct ",IDTable,".gene_stable_id, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".gene_stable_id in (",ids,")",sep="");
+      
+    }
+    else{
+      query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".display_id_list in (",ids,")",sep="");
+  }
     res <- dbGetQuery(conn = mart@ensembl, statement = query);
     
     
@@ -866,6 +976,8 @@ getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.species
            entrezgene = mapSpeciesToEntrezGene(from.species,db=db),
            refseq     = mapSpeciesToRefSeq(from.species,db=db),
            embl       = mapSpeciesToEMBL(from.species),
+           hugo       = mapSpeciesToHUGO(from.species,db=db),
+           ensembl    = mapSpeiciesToGeneTable(to.species,db=db)
            );
   
   toIDTable <-
@@ -873,6 +985,8 @@ getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.species
            entrezgene = mapSpeciesToEntrezGene(to.species,db=db),
            refseq     = mapSpeciesToRefSeq(to.species,db=db),
            embl       = mapSpeciesToEMBL(to.species),
+           hugo       = mapSpeciesToHUGO(from.species,db=db),
+           ensembl    = mapSpeiciesToGeneTable(to.species,db=db)
            );
   
   homolTable <- mapESpeciesToHomologTable(from.species,to.species);
