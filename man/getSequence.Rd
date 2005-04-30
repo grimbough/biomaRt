@@ -18,13 +18,13 @@
 \seealso{}
 
 \examples{
-
+\dontrun{
 mart <- martConnect()
 
 getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
 
 martDisconnect(mart = mart)
-
+}
 }
 \keyword{methods}
 

@@ -14,9 +14,11 @@
 \seealso{}
 
 \examples{
+\dontrun{
 mart <- martConnect()
 getAffyArrays(mart = mart)
 martDisconnect( mart )
+}
 }
 \keyword{methods}
 

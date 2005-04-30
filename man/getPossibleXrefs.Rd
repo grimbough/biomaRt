@@ -13,13 +13,14 @@
 \seealso{}
 
 \examples{
-
+\dontrun{
 mart <- martConnect()
 
 xref <- getPossibleXrefs(mart = mart)
 xref[1:10,]
 
 martDisconnect(mart = mart)
+}
 }
 \keyword{methods}
 

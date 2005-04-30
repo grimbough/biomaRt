@@ -13,10 +13,11 @@
 \seealso{}
 
 \examples{
-
+\dontrun{
 mart <- martConnect()
 
 martDisconnect(mart = mart)
+}
 }
 \keyword{methods}
 

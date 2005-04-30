@@ -6,7 +6,7 @@
 
 \arguments{
   \item{id}{gene identifier}
-  \item{type}{type of identifier, value should be either affy, entrezgene, embl or refseq}
+  \item{type}{type of identifier, value should be either affy, entrezgene, embl, hugo, ensembl or refseq}
   \item{array}{array identifier only to be used if gene identifiers are from affy arrays. An overview of the accepted identifiers can be obtained with the function: getAffyArrays()}
   \item{species}{species, only to be used if type equals locuslink.  Accepted values for species can be retrieved with the function getSpecies()} 
   \item{db}{database you want to query either ensembl (default) or vega}
@@ -19,7 +19,7 @@
 \seealso{}
 
 \examples{
-
+\dontrun{
 mart <- martConnect()
 
 #example using affy id from Ensembl
@@ -31,6 +31,7 @@ getGene( id = "1939_at", array = "hg_u95av2", mart = mart)
 getGene( id = 100, type = "entrezgene", species = "hsapiens", db = "vega", mart = mart)
 
 martDisconnect(mart = mart)
+}
 }
 \keyword{methods}
 

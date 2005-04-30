@@ -9,7 +9,9 @@
 \seealso{}
 
 \examples{
+\dontrun{
 listMarts()
+}
 }
 \keyword{methods}
 
