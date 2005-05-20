@@ -1,11 +1,16 @@
-Package:biomaRt
-Version: 1.0.4
+Package: biomaRt
+Version: 1.1.0
 Date: 2005-10-04
 Title: Interface to BioMart databases (e.g. Ensembl)
-Author: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>, Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis <sdavis2@mail.nih.gov>
+Author: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>,
+        Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis
+        <sdavis2@mail.nih.gov>
 Maintainer: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>
 Depends: methods, Biobase, RMySQL
-Description: Interface to BioMart databases (e.g. Ensembl).  Provides functions to retrieve gene annotation, GO, SNP, sequence and other information directly from the BioMart databases.
+Description: Interface to BioMart databases (e.g. Ensembl).  Provides
+        functions to retrieve gene annotation, GO, SNP, sequence and
+        other information directly from the BioMart databases.
 License: LGPL version
-URL:  http://www.esat.kuleuven.ac.be/~sdurinck
+URL: http://www.esat.kuleuven.ac.be/~sdurinck
 Packaged: Sat Feb 19 13:21:56 2005; steffen
+
