@@ -1,2 +1,2 @@
-export(martConnect, martDisconnect,listMarts, getGene, getOMIM, getGO, getAffyArrays, getSpecies, getFeature, getSequence, getSNP, getHomolog, getPossibleXrefs, getXref)
+export(martConnect, martDisconnect,listMarts, getGene, getOMIM, getGO, getAffyArrays, getSpecies, getFeature, getSequence, getSNP, getHomolog, getPossibleXrefs, getXref, getINTERPRO)
 exportClasses(martTable, Mart)
