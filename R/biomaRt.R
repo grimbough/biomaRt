@@ -381,59 +381,68 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
       if(db == "ensembl"){
         res <- dbGetQuery( conn = mart@connections$ensembl, statement = query);
       }
-      if(dim(res)[1] == 0){
+
+      
+      mt = match(res[,1], id)
+      if(any(is.na(mt)))
+	stop("Internal error!")
+
+      res = res[order(mt), ]
+      names(res) = c("id", "symbol", "description", "band", "chromosome", "start", "end", "martID")
+      table <- new("martTable", id = id, table = as.list(res[,-1]))
+
+      ## if(dim(res)[1] == 0){
+      ##  table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA))
+      ## }
+      ##else{
+      #  
+      #  foundID <- NULL;
+      #  symbol <- NULL;
+      # # description <- NULL;
+      #  band <- NULL;
+      #  chromosome <- NULL;
+      #  start <- NULL;
+      #  end <- NULL;
+      #  martID <- NULL;
+      #  for( j in 1:length(id)){
+      #    m <- match( res[,1],id[j], nomatch=0)
+      #    if(sum(m) == 0){
+      #      foundID <- c(foundID, as.character(id[j]));
+      #      symbol <- c(symbol, NA);
+      #      description <- c(description, NA);
+      #      band <- c(band, NA);
+      #      chromosome <- c(chromosome, NA);
+      #      start <- c(start, NA);
+      #      end <- c(end, NA);
+      #      martID <- c(martID, NA);              
+      #    }
+      #   else{
+      #      
+      #       if(type == "ensembl"){
+      #        foundID <- c(foundID, res[m == 1,1]);
+      #        symbol <- c(symbol, res[m == 1,2]);
+      #        description <- c(description, res[m == 1,3]);
+      #        band <- c(band, res[m == 1,4]);
+      #        chromosome <- c(chromosome, res[m == 1,5]);
+      #        start <- c(start, res[m == 1,6]);
+      #        end <- c(end, res[m == 1,7]);
+      #        martID <- c(martID, res[m == 1,1]);
+      #      }
+      #      else{ 
+      #        foundID <- c(foundID, res[m == 1,1]);
+      #        symbol <- c(symbol, res[m == 1,3]);
+      #        description <- c(description, res[m == 1,4]);
+      #        band <- c(band, res[m == 1,5]);
+      #        chromosome <- c(chromosome, res[m == 1,6]);
+      #        start <- c(start, res[m == 1,7]);
+      #        end <- c(end, res[m == 1,8]);
+      #        martID <- c(martID, res[m == 1,2]);
+      #      }
+      #    }     
+      #  }
+      #  table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
         
-        table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA))
-      }
-      else{
-        
-        foundID <- NULL;
-        symbol <- NULL;
-        description <- NULL;
-        band <- NULL;
-        chromosome <- NULL;
-        start <- NULL;
-        end <- NULL;
-        martID <- NULL;
-        for( j in 1:length(id)){
-          m <- match( res[,1],id[j], nomatch=0)
-          if(sum(m) == 0){
-            foundID <- c(foundID, as.character(id[j]));
-            symbol <- c(symbol, NA);
-            description <- c(description, NA);
-            band <- c(band, NA);
-            chromosome <- c(chromosome, NA);
-            start <- c(start, NA);
-            end <- c(end, NA);
-            martID <- c(martID, NA);              
-          }
-          else{
-            
-            if(type == "ensembl"){
-              foundID <- c(foundID, res[m == 1,1]);
-              symbol <- c(symbol, res[m == 1,2]);
-              description <- c(description, res[m == 1,3]);
-              band <- c(band, res[m == 1,4]);
-              chromosome <- c(chromosome, res[m == 1,5]);
-              start <- c(start, res[m == 1,6]);
-              end <- c(end, res[m == 1,7]);
-              martID <- c(martID, res[m == 1,1]);
-            }
-            else{ 
-              foundID <- c(foundID, res[m == 1,1]);
-              symbol <- c(symbol, res[m == 1,3]);
-              description <- c(description, res[m == 1,4]);
-              band <- c(band, res[m == 1,5]);
-              chromosome <- c(chromosome, res[m == 1,6]);
-              start <- c(start, res[m == 1,7]);
-              end <- c(end, res[m == 1,8]);
-              martID <- c(martID, res[m == 1,2]);
-            }
-          }     
-        }
-        table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
-        
-      }
+      #}
     }
   }
   
