@@ -383,71 +383,23 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
       if(db == "ensembl"){
         res <- dbGetQuery( conn = mart@connections$ensembl, statement = query);
       }
-
-      mt = match(res[,1], id)
-      if(any(is.na(mt)))
-	stop("Internal error!")
-      if(type == "ensembl"){ 
-        res = res[order(mt),c(2,3,4,5,6,7,1)];
+      if(dim(res)[1] == 0){
+        table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA))
       }
       else{
-         res = res[order(mt),c(3,4,5,6,7,8,2)];
-      }
-      names(res) = c("symbol", "description", "band", "chromosome", "start", "end", "martID")
-      table <- new("martTable", id = id, table = as.list(res))
-
-      ## if(dim(res)[1] == 0){
-      ##  table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA))
-      ## }
-      ##else{
-      #  
-      #  foundID <- NULL;
-      #  symbol <- NULL;
-      # # description <- NULL;
-      #  band <- NULL;
-      #  chromosome <- NULL;
-      #  start <- NULL;
-      #  end <- NULL;
-      #  martID <- NULL;
-      #  for( j in 1:length(id)){
-      #    m <- match( res[,1],id[j], nomatch=0)
-      #    if(sum(m) == 0){
-      #      foundID <- c(foundID, as.character(id[j]));
-      #      symbol <- c(symbol, NA);
-      #      description <- c(description, NA);
-      #      band <- c(band, NA);
-      #      chromosome <- c(chromosome, NA);
-      #      start <- c(start, NA);
-      #      end <- c(end, NA);
-      #      martID <- c(martID, NA);              
-      #    }
-      #   else{
-      #      
-      #       if(type == "ensembl"){
-      #        foundID <- c(foundID, res[m == 1,1]);
-      #        symbol <- c(symbol, res[m == 1,2]);
-      #        description <- c(description, res[m == 1,3]);
-      #        band <- c(band, res[m == 1,4]);
-      #        chromosome <- c(chromosome, res[m == 1,5]);
-      #        start <- c(start, res[m == 1,6]);
-      #        end <- c(end, res[m == 1,7]);
-      #        martID <- c(martID, res[m == 1,1]);
-      #      }
-      #      else{ 
-      #        foundID <- c(foundID, res[m == 1,1]);
-      #        symbol <- c(symbol, res[m == 1,3]);
-      #        description <- c(description, res[m == 1,4]);
-      #        band <- c(band, res[m == 1,5]);
-      #        chromosome <- c(chromosome, res[m == 1,6]);
-      #        start <- c(start, res[m == 1,7]);
-      #        end <- c(end, res[m == 1,8]);
-      #        martID <- c(martID, res[m == 1,2]);
-      #      }
-      #    }     
-      #  }
-      #  table <- new("martTable", id = foundID, table = list(symbol = symbol, description = description, band = band, chromosome = chromosome, start = start, end = end, martID = martID))
+        mt = match(res[,1], id)
+        if(any(is.na(mt)))
+          stop("Internal error!")
+        if(type == "ensembl"){ 
+          res = res[order(mt),c(1,2,3,4,5,6,7,1)];
+        }
+        else{
+          res = res[order(mt),c(1,3,4,5,6,7,8,2)];
+        }
+        names(res) = c("id","symbol", "description", "band", "chromosome", "start", "end", "martID")
+        table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
         
-      #}
+      }
     }
   }
   
@@ -592,29 +544,17 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
       table <- new("martTable", id = id, table = list(GOID = NA, description = NA, evidence = NA, martID = NA))
     }
     else{
-      foundID <- NULL;
-      GOID <- NULL;
-      description <- NULL;
-      evidence <- NULL;
-      martID <- NULL
-      for( j in 1:length(id)){
-        m <- match( res[,1],id[j], nomatch=0)
-        if(sum(m) == 0){
-          foundID <- c(foundID, as.character(id[j]));
-          GOID  <- c(GOID, NA) 
-          description <- c(description, NA);
-          evidence <- c(evidence, NA);
-          martID <- c(martID, NA);              
-        }
-        else{
-          foundID <- c(foundID, res[m == 1,1]);
-          GOID  <- c(GOID, res[m == 1,3])
-          description <- c(description, res[m == 1,4]);
-          evidence <- c(evidence, res[m == 1,5]);
-          martID <- c(martID, res[m == 1,2]);
-        }     
+      mt = match(res[,1], id)
+      if(any(is.na(mt)))
+        stop("Internal error!")
+      if(type == "ensembl"){ 
+        res = res[order(mt),c(1,3,4,5,1)];
       }
-      table <- new("martTable", id = foundID, table = list(GOID = GOID, description = description, evidence = evidence, martID = martID));
+      else{
+        res = res[order(mt),c(1,3,4,5,2)];
+      }
+      names(res) = c("id","GOID", "description", "evidence", "martID")
+      table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
     }
   }
   
@@ -673,11 +613,11 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
     ids <- paste("'",id,"'",sep="",collapse=",")
     res <- NULL
     if(type == "ensembl"){
-      query <- paste("select distinct ",IDTable,".gene_stable_id, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".gene_stable_id in (",ids,")",sep="");
+      query <- paste("select distinct ",IDTable,".gene_stable_id, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".gene_stable_id in (",ids,")  and ",OMIMTable,".omim_id != 'NULL'",sep="");
       
     }
     else{
-      query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".display_id_list in (",ids,")",sep="");
+      query <- paste("select distinct ",IDTable,".display_id_list, ",IDTable,".gene_stable_id,",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".display_id_list in (",ids,") and ",OMIMTable,".omim_id != 'NULL'",sep="");
   }
     res <- dbGetQuery(conn = mart@connections$ensembl, statement = query);
     
@@ -685,30 +625,20 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
     if(dim(res)[1] == 0){
       table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
     }
+
     else{
-      foundID <- NULL;
-      OMIMID <- NULL;
-      disease <- NULL;
-      martID <- NULL;
-      
-      for( j in 1:length(id)){
-        m <- match( res[,1],id[j], nomatch=0)
-        if(sum(m) == 0){
-          foundID <- c(foundID, as.character(id[j]));
-          OMIMID  <- c(OMIMID, NA) 
-          disease <- c(disease, NA);
-          martID <- c(martID, NA);              
-        }
-        else{
-          
-          foundID <- c(foundID, res[m == 1,1]);
-          OMIMID  <- c(OMIMID, res[m == 1,3])
-          disease <- c(disease, res[m == 1,4]);
-          martID <- c(martID, res[m == 1,2]);
-        }     
+      mt = match(res[,1], id)
+      if(any(is.na(mt)))
+        stop("Internal error!")
+      if(type == "ensembl"){ 
+        res = res[order(mt),c(1,3,4,1)];
       }
-      table <- new("martTable", id = foundID, table = list(OMIMID = OMIMID, disease = disease, martID = martID))
-    }
+      else{
+        res = res[order(mt),c(1,3,4,2)];
+      }
+      names(res) = c("id","OMIMID", "disease", "martID")
+      table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
+    }  
   }
   return( table );  
 }
