@@ -53,7 +53,9 @@ setMethod("show","martTable",
 listMarts <- function(mart = NULL, host = "ensembldb.ensembl.org", user = "anonymous", password = ""){
   
   driv <- dbDriver("MySQL", force.reload = FALSE);
+  
   connection <- dbConnect(driv, user = user, host = host, password = password);
+  
   res <- dbGetQuery(connection,"show databases like '%mart%'");
   database <- NULL
   
@@ -382,14 +384,17 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
         res <- dbGetQuery( conn = mart@connections$ensembl, statement = query);
       }
 
-      
       mt = match(res[,1], id)
       if(any(is.na(mt)))
 	stop("Internal error!")
-
-      res = res[order(mt), ]
-      names(res) = c("id", "symbol", "description", "band", "chromosome", "start", "end", "martID")
-      table <- new("martTable", id = id, table = as.list(res[,-1]))
+      if(type == "ensembl"){ 
+        res = res[order(mt),c(2,3,4,5,6,7,1)];
+      }
+      else{
+         res = res[order(mt),c(3,4,5,6,7,8,2)];
+      }
+      names(res) = c("symbol", "description", "band", "chromosome", "start", "end", "martID")
+      table <- new("martTable", id = id, table = as.list(res))
 
       ## if(dim(res)[1] == 0){
       ##  table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA))
@@ -1163,7 +1168,7 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
       
         uniprotacc <- paste("'",resEns[[2]],"'",sep="",collapse=",")
         db <- "uniprot" 
-        query <- paste("SELECT sptr_ac, ipro_id, name, short_name, type from uniprot__interpro__dm join uniprot__protein__main on uniprot__interpro__dm.protein_id_key = uniprot__protein__main.protein_id_key where sptr_ac in (",uniprotacc,")",sep="");
+        query <- paste("SELECT sptr_ac, ipro_id, name, short_name, type from uniprot__interpro__dm join uniprot__protein__main on uniprot__interpro__dm.protein_id_key = uniprot__protein__main.protein_id_key where sptr_ac in (",uniprotacc,") and ipro_id != 'NULL'",sep="");
         resUni <- dbGetQuery( conn = mart@connections$uniprot,statement = query);
       }
     }
@@ -1180,8 +1185,9 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
       type <- NULL
       
       for( j in 1:length(id)){
-        m <- match( resEns[,1],id[j], nomatch=0)
+        m <- match( as.character(resEns[,1]),as.character(id[j]), nomatch=0)
         if(sum(m) == 0){
+         
           foundID <- c(foundID, as.character(id[j]));
           interproid <- c(interproid, NA);
           name <- c(name, NA);
@@ -1189,8 +1195,10 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
           type <- c(type, NA);
         }
         else{
+          
           uniprotAcc <- resEns[m == 1,2]
-          if(length(uniprotAcc == 1)){ #one to one relation between Ensemble gene and protein in Uniprot
+          if(length(uniprotAcc) == 1){ #one to one relation between Ensemble gene and protein in Uniprot
+            
             unimatch <- match( resUni[,1],uniprotAcc, nomatch=0)
             foundID <- c(foundID, rep(resEns[m == 1,1],sum(unimatch)));
             interproid <- c(interproid, resUni[unimatch == 1,2]);
@@ -1199,6 +1207,7 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
             type <- c(type, resUni[unimatch == 1,5]);
           }
           else{
+            
             for(h in 1:length(uniprotAcc)){
               unimatch <- match( resUni[,1],uniprotAcc[h], nomatch=0)
               foundID <- c(foundID, rep(resEns[m == 1,1],sum(unimatch)));
