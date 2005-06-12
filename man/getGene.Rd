@@ -18,7 +18,9 @@
 \seealso{}
 
 \examples{
-\dontrun{
+
+if(interactive()){
+
 mart <- martConnect( biomarts = c("ensembl","vega"))
 
 #example using affy id from Ensembl
@@ -30,6 +32,8 @@ getGene( id = "1939_at", array = "hg_u95av2", mart = mart)
 getGene( id = 100, type = "entrezgene", species = "hsapiens", db = "vega", mart = mart)
 
 martDisconnect(mart = mart)
+
+}
 }
 }
 \keyword{methods}

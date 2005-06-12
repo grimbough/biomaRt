@@ -17,7 +17,7 @@
 \seealso{}
 
 \examples{
-\dontrun{
+if(interactive()){
 mart <- martConnect()
 
 getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)

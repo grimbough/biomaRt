@@ -13,7 +13,7 @@
 \seealso{}
 
 \examples{
-\dontrun{
+if(interactive()){
 mart <- martConnect()
 
 martDisconnect(mart = mart)
