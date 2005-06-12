@@ -357,11 +357,11 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
 
   IDTable <- switch(type,
                     affy = mapArrayToEnsemblTable( array, species = "hsapiens", mart = mart, dbtable = "xrefdm"),
-                    ensembl =  mapSpeciesToGeneTable( species, db = "ensembl" ),
+                    ensembl =  mapSpeciesToGeneTable( species, db = db ),
                     ensemblTrans =   paste(species,"_gene_ensembl__transcript__main",sep=""),
-                    entrezgene = mapSpeciesToEntrezGene( species, db = "ensembl" ),
-                    hugo = mapSpeciesToHUGO( species, db = "ensembl"),
-                    refseq = mapSpeciesToRefSeq( species, db = "ensembl"),
+                    entrezgene = mapSpeciesToEntrezGene( species, db = db),
+                    hugo = mapSpeciesToHUGO( species, db = db),
+                    refseq = mapSpeciesToRefSeq( species, db = db),
                     embl = mapSpeciesToEMBL( species ));
   
   if (db == "ensembl" || db == "vega"){
