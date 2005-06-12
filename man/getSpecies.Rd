@@ -16,7 +16,8 @@
 \seealso{}
 
 \examples{
-\dontrun{
+
+if(interactive()){
 mart <- martConnect()
 
 getSpecies(mart = mart)

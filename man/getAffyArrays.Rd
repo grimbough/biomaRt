@@ -14,7 +14,7 @@
 \seealso{}
 
 \examples{
-\dontrun{
+if(interactive()){
 mart <- martConnect()
 getAffyArrays(mart = mart)
 martDisconnect( mart )

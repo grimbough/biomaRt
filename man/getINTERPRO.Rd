@@ -17,7 +17,7 @@
 \seealso{}
 
 \examples{
-\dontrun{
+if(interactive()){
 mart <- martConnect(biomarts = c("ensembl","uniprot"))
 
 #example using affy id

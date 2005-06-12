@@ -16,7 +16,7 @@
 \seealso{}
 
 \examples{
-\dontrun{
+if(interactive()){
 mart <- martConnect()
 
 #example using affy id

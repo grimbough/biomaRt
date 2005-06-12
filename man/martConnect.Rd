@@ -18,7 +18,7 @@
 \seealso{}
 
 \examples{
-\dontrun{
+if(interactive()){
 mart <- martConnect(biomarts = c("ensembl","sequence"))
 
 martDisconnect(mart = mart)

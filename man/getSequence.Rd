@@ -18,7 +18,7 @@
 \seealso{}
 
 \examples{
-\dontrun{
+if(interactive()){
 mart <- martConnect(biomarts = c("ensembl","sequence"))
 
 getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
