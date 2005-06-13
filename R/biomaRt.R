@@ -995,7 +995,7 @@ getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xr
                    'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
                    'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
                    "on a.gene_id_key=b.gene_id_key where a.display_id_list in ('",xp,
-                   "')",sep="");
+                   "') and b.display_id_list != 'NULL'",sep="");
   } else {
     if (db == 'vega'){
       stop('VEGA supports only hsapiens')
@@ -1007,7 +1007,7 @@ getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xr
                    'on a.gene_id_key=c.gene_id_key ',
                    'left join ',to.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
                    "on c.homol_id=b.gene_id_key where a.display_id_list in ('",xp,
-                   "')",sep="");
+                   "') and b.display_id_list != 'NULL'",sep="");
   }
   
   res <- dbGetQuery(con = mart@connections$ensembl, query);
