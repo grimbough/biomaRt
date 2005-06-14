@@ -356,7 +356,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
   }
 
   IDTable <- switch(type,
-                    affy = mapArrayToEnsemblTable( array, species = "hsapiens", mart = mart, dbtable = "xrefdm"),
+                    affy = mapArrayToEnsemblTable( array, species = species, mart = mart, dbtable = "xrefdm"),
                     ensembl =  mapSpeciesToGeneTable( species, db = db ),
                     ensemblTrans =   paste(species,"_gene_ensembl__transcript__main",sep=""),
                     entrezgene = mapSpeciesToEntrezGene( species, db = db),
@@ -812,9 +812,9 @@ getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, 
 ##################
 
 
-getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.species = NULL, to.species = NULL, mart = NULL, output = "martTable") {
+getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.array = NULL, to.array = NULL, from.species = NULL, to.species = NULL, mart = NULL, output = "martTable") {
   
-  #all homology needs to go through ensembl_mart, not vega, etc.
+  
   db = "ensembl";
   if( is.null( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
@@ -825,16 +825,26 @@ getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.species
   
   id <- as.character(id)
   
-  if (is.null(from.type)) {
+  if(!is.null(from.array)){
+    from.type <- "affy";
+    from.species <- mapArrayToSpecies( array = from.array, mart = mart );
+  }
+  
+  if(!is.null(to.array)){
+    to.type <- "affy";
+    to.species <- mapArrayToSpecies( array = to.array, mart = mart );
+  }
+  
+  if (is.null(from.type) && is.null(from.array)) {
     stop("You must provide the identifier type using the from.type  argument")
   }
-  if (is.null(to.type)) {
+  if (is.null(to.type) && is.null(to.array)) {
     stop("You must provide the identifier type using the to.type  argument")
   }
-  if (is.null(from.species)) {
+  if (is.null(from.species) && is.null(from.array)) {
     stop("You must provide the species to map FROM using the  from.species argument")
   }
-  if (is.null(to.species)) {
+  if (is.null(to.species) && is.null(to.array)) {
     stop("You must provide the species to map TO using the to.species  argument")
   }
   
@@ -844,7 +854,8 @@ getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.species
            refseq     = mapSpeciesToRefSeq(from.species,db=db),
            embl       = mapSpeciesToEMBL(from.species),
            hugo       = mapSpeciesToHUGO(from.species,db=db),
-           ensembl    = mapSpeciesToGeneTable(to.species,db=db)
+           affy       =  mapArrayToEnsemblTable( from.array, species = from.species, mart = mart, dbtable = "xrefdm"),
+           ensembl    = mapSpeciesToGeneTable(from.species,db=db)
            );
   
   toIDTable <-
@@ -852,20 +863,66 @@ getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.species
            entrezgene = mapSpeciesToEntrezGene(to.species,db=db),
            refseq     = mapSpeciesToRefSeq(to.species,db=db),
            embl       = mapSpeciesToEMBL(to.species),
-           hugo       = mapSpeciesToHUGO(from.species,db=db),
+           hugo       = mapSpeciesToHUGO(to.species,db=db),
+           affy       =  mapArrayToEnsemblTable( to.array, species = to.species, mart = mart, dbtable = "xrefdm"),
            ensembl    = mapSpeciesToGeneTable(to.species,db=db)
            );
 
-  homolTable <- mapSpeciesToHomologTable(from.species,to.species);
+  fromCol <- switch(from.type,
+                    entrezgene = "display_id_list",
+                    refseq     = "display_id_list",
+                    embl       = "display_id_list",
+                    hugo       = "display_id_list",
+                    affy       = "display_id_list",
+                    ensembl    = "gene_stable_id"
+                    );
+  toCol <- switch(to.type,
+                    entrezgene = "display_id_list",
+                    refseq     = "display_id_list",
+                    embl       = "display_id_list",
+                    hugo       = "display_id_list",
+                    affy       = "display_id_list",
+                    ensembl    = "gene_stable_id"
+                    );
+  if(to.type == "ensembl" && from.type != "ensembl"){
+    homolTable <- mapSpeciesToHomologTable(to.species,from.species);
+  }
+  else{
+    homolTable <- mapSpeciesToHomologTable(from.species,to.species);
+  }
   
   if (length(id) >= 1) {
     ids <- paste("'",id,"'",sep="",collapse=",")
     res <- NULL
-    query <- paste("select distinct a.display_id_list,b.display_id_list from  ",
-                   fromIDTable," as a inner join ",
-                   homolTable," as c on a.gene_id_key=c.gene_id_key inner  join ",
-                   toIDTable," as b on b.gene_id_key=c.homol_id ",
-                   "where a.display_id_list in (",ids,")",sep="");
+
+    if(from.type == "ensembl" && to.type != "ensembl"){
+      query <-  paste("select distinct c.",fromCol,",b.",toCol," from ",
+                      homolTable," as c inner join ",
+                      toIDTable," as b on b.gene_id_key=c.homol_id ",
+                      "where c.",fromCol," in (",ids,") and b.",toCol," != 'NULL'",sep="");
+   
+    }
+    else{
+      if(to.type == "ensembl" && from.type != "ensembl"){    
+        query <-  paste("select distinct b.",fromCol,",c.",toCol," from ",
+                        homolTable," as c inner join ",
+                        fromIDTable," as b on b.gene_id_key=c.homol_id ",
+                        "where b.",fromCol," in (",ids,") and c.",toCol," != 'NULL'",sep="");
+      }
+      else{
+        if(to.type == "ensembl" && from.type == "ensembl"){
+          query <-  paste("select distinct ",fromCol,", homol_stable_id from ",
+                          homolTable," where ",fromCol," in (",ids,") and homol_stable_id != 'NULL'",sep="");
+        }
+        else{
+          query <-  paste("select distinct a.",fromCol,",b.",toCol," from  ",
+                          fromIDTable," as a inner join ",
+                          homolTable," as c on a.gene_id_key=c.gene_id_key inner join ",
+                          toIDTable," as b on b.gene_id_key=c.homol_id ",
+                          "where a.",fromCol," in (",ids,") and b.",toCol," != 'NULL'",sep="");
+        }
+      }
+    }
     
     res <- dbGetQuery(conn = mart@connections$ensembl, statement = query);
     
@@ -1089,7 +1146,7 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
   }
 
   IDTable <- switch(type,
-                    affy = mapArrayToEnsemblTable( array, species = "hsapiens", mart = mart, dbtable = "xrefdm"),
+                    affy = mapArrayToEnsemblTable( array, species = species, mart = mart, dbtable = "xrefdm"),
                     ensembl =  mapSpeciesToGeneTable( species, db = "ensembl" ),
                     ensemblTrans =  mapSpeciesToGeneTable( species, db = "ensembl" ),
                     entrezgene = mapSpeciesToEntrezGene( species, db = "ensembl" ),
