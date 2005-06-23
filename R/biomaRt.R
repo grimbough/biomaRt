@@ -1027,7 +1027,9 @@ getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xr
     print(getSpecies(mart = mart, db = "ensembl"));
     stop();
   }
-  
+  if (from.species == to.species) {
+    to.species <- NULL;
+  } 
   if (is.null(from.xref) || is.null(to.xref)) {
     writeLines('Both fromxref and toxref are required.\nPossible crossreferences are:');
     print(getPossibleXrefs(mart = mart));
