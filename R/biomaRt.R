@@ -1164,7 +1164,7 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
     res <- dbGetQuery( conn = mart@connections$ensembl,statement = query);
     
     if(dim(res)[1] == 0){
-      table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
+      table <- new("martTable", id = id, table = list(INTERPROID = NA, short description = NA, description = NA))
     }
 
     else{
