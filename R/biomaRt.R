@@ -431,7 +431,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
 ########################
 
 
-getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, species = NULL, type = NULL,  mart = NULL){
+getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, species = NULL, chromosome = NULL, start = NULL, end = NULL, type = NULL,  mart = NULL){
   
   table <- NULL
   
@@ -461,6 +461,9 @@ getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, spe
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
     }
   }
+  if(is.null(species)){
+    stop("you must provide the species, valid species names can be found by using the function getSpecies()")
+  }
 
   speciesTable <-  mapSpeciesToGeneTable( species, db = "ensembl" );
   IDTable <- switch(type,
@@ -480,6 +483,17 @@ getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, spe
     OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
     query <- paste("select distinct ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",OMIMTable,".omim_id in (",OMIM,")  and ",IDTable,".",dbcolID," != 'NULL'",sep="");  
   }
+
+  if(!is.null(chromosome)){
+    if(is.null(start) && is.null(end)){
+      query <- paste("select distinct a.",dbcolID,", b.chr_name, b.gene_chrom_start, b.gene_chrom_end from ", IDTable ," as a inner join ",speciesTable," as b on a.gene_stable_id = b.gene_stable_id where b.chr_name = '",chromosome,"' and a.",dbcolID," !='NULL'",sep="");
+    
+    }
+    else{
+      query <- paste("select distinct a.",dbcolID,",b.chr_name,b.gene_chrom_start,b.gene_chrom_end from ", IDTable ," as a inner join ",speciesTable," as b on a.gene_stable_id = b.gene_stable_id where b.chr_name ='",chromosome,"' and b.gene_chrom_start >=",start," and b.gene_chrom_end <= ",end," and a.",dbcolID," !='NULL'",sep="");  
+ 
+    }
+  }
   
   res <- dbGetQuery( conn = mart@connections$ensembl,statement = query);
 
@@ -489,6 +503,10 @@ getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, spe
     }
     if(!is.null(OMIM)){
       table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(OMIMID = as.vector(res[,2]), description = as.vector(res[,3])))
+    }
+
+    if(!is.null(chromosome)){
+      table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(chromosome = as.vector(res[,2]), start = as.vector(res[,3]), end = as.vector(res[,4])))
     }
   }
   else{
@@ -1164,7 +1182,7 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
     res <- dbGetQuery( conn = mart@connections$ensembl,statement = query);
     
     if(dim(res)[1] == 0){
-      table <- new("martTable", id = id, table = list(INTERPROID = NA, short description = NA, description = NA))
+      table <- new("martTable", id = id, table = list(INTERPROID = NA, shortdescription = NA, description = NA))
     }
 
     else{
