@@ -54,7 +54,10 @@ setMethod("show","martTable",
 #######################
 
 listMarts <- function(mart = NULL, host = "ensembldb.ensembl.org", user = "anonymous", password = ""){
-  
+
+  if(is.null(mart)){
+    stop("You need to provide the mart you are looking for.  listMarts will then return you the version of the BioMart it is using.  Choose either ensembl, snp, sequence, vega or uniprot.  If you use this function for uniprot, please also provide the host martdb.ebi.ac.uk.");
+  }
   driv <- dbDriver("MySQL", force.reload = FALSE);
   
   connection <- dbConnect(driv, user = user, host = host, password = password);
@@ -81,8 +84,13 @@ listMarts <- function(mart = NULL, host = "ensembldb.ensembl.org", user = "anony
       #  martConf <- c( martConf, v );
       }
       else{
-        databases <- res[matches,1];
-        v <- as.numeric(strsplit(res[matches,1],"_")[[1]][3]);
+        if(sum(matches)> 0){
+          databases <- res[matches,1];
+          v <- as.numeric(strsplit(res[matches,1],"_")[[1]][3]);
+        }
+        else{
+          stop(paste("No biomaRt database for",mart," found, please check if host is set correctly"));
+        }
       #  martConf <- c( martConf, v );
       }
   #  }

@@ -9,8 +9,8 @@
 \seealso{}
 
 \examples{
-\dontrun{
-listMarts()
+if(interactive()){
+listMarts(mart = "ensembl")
 }
 }
 \keyword{methods}
