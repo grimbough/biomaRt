@@ -2,12 +2,14 @@
 \alias{getFeature}
 \title{Retrieves Feature starting from a gene symbol and array identifier}
 \description{This function function retrieves features representing a certain gene given a gene symbol array identifier}
-\usage{getFeature( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, species = NULL, chromosome = NULL, start = NULL, end = NULL, type = NULL, mart = NULL)}
+\usage{getFeature( symbol = NULL, OMIM = NULL, OMIMID = NULL, GO = NULL, GOID = NULL, array = NULL, species = NULL, chromosome = NULL, start = NULL, end = NULL, type = NULL, mart = NULL)}
 
 \arguments{
   \item{symbol}{gene symbol}
-  \item{OMIM}{OMIM identifier} 
-  \item{GO}{GO identifier - not yet functional}
+  \item{OMIM}{OMIM term e.g. diabetes} 
+  \item{OMIMID}{OMIM identifier} 
+  \item{GO}{GO term}
+  \item{GOID}{GO identifier}
   \item{array}{array identifier only to be used if gene identifiers are from affy arrays. An overview of the accepted identifiers can be obtained with the function: getAffyArrays()}
   \item{species}{species}
   \item{chromosome}{chromosome, can be used without start and end positions}
