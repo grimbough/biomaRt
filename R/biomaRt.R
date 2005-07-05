@@ -30,7 +30,7 @@ setMethod("show","martTable",
     n  = min(nrShow, length(object@id))
     df = do.call("data.frame", args=lapply(object@table, "[", 1:n));
     df = cbind(object@id[1:n],df)
-   
+    
     show(df)
   })
 
@@ -439,7 +439,7 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
 ########################
 
 
-getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, species = NULL, chromosome = NULL, start = NULL, end = NULL, type = NULL,  mart = NULL){
+getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID = NULL, array = NULL, species = NULL, chromosome = NULL, start = NULL, end = NULL, type = NULL,  mart = NULL){
   
   table <- NULL
   
@@ -486,10 +486,23 @@ getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, spe
   
   if(!is.null(symbol)){ 
     query <- paste("select distinct ",speciesTable,".display_id, ",IDTable,".",dbcolID,", description from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",speciesTable,".display_id like '%",symbol,"%' and ",IDTable,".",dbcolID," !='NULL'",sep="");
+ 
   }
   if(!is.null(OMIM)){
     OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
-    query <- paste("select distinct ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",OMIMTable,".omim_id in (",OMIM,")  and ",IDTable,".",dbcolID," != 'NULL'",sep="");  
+    query <- paste("select distinct ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",OMIMTable,".disease like '%",OMIM,"%'  and ",IDTable,".",dbcolID," != 'NULL'",sep="");  
+  }
+  if(!is.null(OMIMID)){
+    OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
+    query <- paste("select distinct ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",OMIMTable,".omim_id in ('",OMIMID,"') and ",IDTable,".",dbcolID," != 'NULL'",sep="");
+  }
+  if(!is.null(GO)){
+    GOTable <- mapSpeciesToGOTable( species );
+    query <- paste("select distinct ",IDTable,".",dbcolID,",",GOTable,".dbprimary_id,",GOTable,".description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_id_key = ",GOTable,".gene_id_key where ",GOTable,".description like '%",GO,"%' and ",IDTable,".",dbcolID," != 'NULL'",sep="");
+  }
+  if(!is.null(GOID)){
+    GOTable <- mapSpeciesToGOTable( species );
+    query <- paste("select distinct ",IDTable,".",dbcolID,",",GOTable,".dbprimary_id,",GOTable,".description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_id_key = ",GOTable,".gene_id_key where ",GOTable,".dbprimary_id in ('",GOID,"') and ",IDTable,".",dbcolID," != 'NULL'",sep="");
   }
 
   if(!is.null(chromosome)){
@@ -509,8 +522,11 @@ getFeature <- function( symbol = NULL, OMIM = NULL, GO = NULL, array = NULL, spe
     if(!is.null(symbol)){
       table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(symbol = as.vector(res[,2]), description = as.vector(res[,3])))
     }
-    if(!is.null(OMIM)){
+    if(!is.null(OMIM) || !is.null(OMIMID)){
       table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(OMIMID = as.vector(res[,2]), description = as.vector(res[,3])))
+    }
+    if(!is.null(GO) || !is.null(GOID)){
+      table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(GOID = as.vector(res[,2]), description = as.vector(res[,3]), evidence = as.vector(res[,4])))
     }
 
     if(!is.null(chromosome)){
@@ -1105,10 +1121,13 @@ getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xr
 #export FASTA      #
 ####################
 
-#exportFASTA <- function( martTable = NULL ){
-
-
-#}
+exportFASTA <- function( martTable = NULL, file = NULL ){
+  for(i in 1:length(martTable@id)){
+    cat(paste(">",martTable@id[i],"\n",sep=""),file = file, append=TRUE);
+    cat(martTable@table$sequence[i],file = file, append = TRUE);
+    cat("\n\n", file = file, append = TRUE);
+  }  
+}
 
 #####################
 #INTERPRO functions #
