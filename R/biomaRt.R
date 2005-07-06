@@ -520,7 +520,7 @@ getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID
 
   if(dim(res)[1] != 0){
     if(!is.null(symbol)){
-      table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(symbol = as.vector(res[,2]), description = as.vector(res[,3])))
+      table <- new("martTable", id = as.vector(as.character(res[,2])), table = list(symbol = as.vector(res[,1]), description = as.vector(res[,3])))
     }
     if(!is.null(OMIM) || !is.null(OMIMID)){
       table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(OMIMID = as.vector(res[,2]), description = as.vector(res[,3])))
