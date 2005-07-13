@@ -2,7 +2,7 @@
 \alias{getGO}
 \title{Retrieves GO information}
 \description{This function retrieves GO information from Ensemble given a gene identifier}
-\usage{getGO( id = NULL, type = NULL, array = NULL, species = NULL, mart = NULL)}
+\usage{getGO( id, type, array, species, mart)}
 
 \arguments{
   \item{id}{gene identifier}
@@ -22,11 +22,13 @@ mart <- martConnect()
 
 #example using affy id
 
-getGO( id = "1939_at", array = "hg_u95av2", mart = mart)
+go = getGO( id = "1939_at", array = "hg_u95av2", mart = mart)
+show(go)
 
 #example using locuslink id
 
-getGO( id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
+go = getGO( id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
+show(go)
 
 martDisconnect(mart = mart)
 }

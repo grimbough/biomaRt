@@ -2,7 +2,7 @@
 \alias{getINTERPRO}
 \title{Retrieves INTERPRO protein domain information}
 \description{This function retrieves INTERPRO protein domain information using Ensembl and  UNIPROT (http://www.ebi.ac.uk/uniprot) given a gene identifier}
-\usage{getINTERPRO( id = NULL, type = NULL, array = NULL, species = NULL, mart = NULL)}
+\usage{getINTERPRO( id, type, array, species, mart)}
 
 \arguments{
   \item{id}{gene identifier}
@@ -22,11 +22,13 @@ mart <- martConnect(biomarts = c("ensembl","uniprot"))
 
 #example using affy id
 
-getINTERPRO( id = "1939_at", array = "hg_u95av2", mart = mart)
+interpro = getINTERPRO( id = "1939_at", array = "hg_u95av2", mart = mart)
+show(interpro)
 
 #example using locuslink id
 
-getINTERPRO( id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
+interpro = getINTERPRO( id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
+show(interpro)
 
 martDisconnect(mart = mart)
 }

@@ -2,7 +2,7 @@
 \alias{martConnect}
 \title{Connects to available BioMarts}
 \description{This function connects to available BioMarts}
-\usage{martConnect(biomarts = "ensembl", host = NULL, user = NULL, password = NULL, mart = NULL, local = FALSE)}
+\usage{martConnect(biomarts = "ensembl", host, user, password, mart, local = FALSE)}
 
 \arguments{
 \item{biomarts}{vector with BioMart database names you want to connect to. Use one or a vector of the following BioMart database names:  ensembl (default, for gene information, GO and OMIM annotation),sequence (for sequence retrieval), snp (for SNP retrieval), uniprot (for protein related data), vega (for VEGA gene annotation)}

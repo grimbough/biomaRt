@@ -2,7 +2,7 @@
 \alias{getSNP}
 \title{Retrieves SNP's between a given chromosome start and end position}
 \description{Retrieves SNP's between a given chromosome start and end position}
-\usage{getSNP( species = NULL, chromosome = NULL, start = NULL, end = NULL, mart = NULL)}
+\usage{getSNP( species, chromosome, start, end, mart)}
 
 \arguments{
   \item{species}{Species information.  A list of possible values for this argument can be obtained by the function getSpecies.}
@@ -18,9 +18,10 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect()
+mart <- martConnect(biomarts=c("ensembl","snp"))
 
-getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)
+snp = getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)
+show(snp)
 
 martDisconnect(mart = mart)
 }

@@ -53,9 +53,9 @@ setMethod("show","martTable",
 #list marts
 #######################
 
-listMarts <- function(mart = NULL, host = "ensembldb.ensembl.org", user = "anonymous", password = ""){
+listMarts <- function(mart, host = "ensembldb.ensembl.org", user = "anonymous", password = ""){
 
-  if(is.null(mart)){
+  if(missing( mart )){
     stop("You need to provide the mart you are looking for.  listMarts will then return you the version of the BioMart it is using.  Choose either ensembl, snp, sequence, vega or uniprot.  If you use this function for uniprot, please also provide the host martdb.ebi.ac.uk.");
   }
   driv <- dbDriver("MySQL", force.reload = FALSE);
@@ -131,9 +131,9 @@ listMarts <- function(mart = NULL, host = "ensembldb.ensembl.org", user = "anony
 #Connect to marts#
 ##################
 
-martConnect <- function(biomarts = "ensembl", host = NULL, user = NULL, password = NULL, mart = NULL, local = FALSE){
+martConnect <- function(biomarts = "ensembl", host, user, password, mart, local = FALSE){
   
-    if(is.null(mart)){
+    if(missing(mart)){
       driver <- dbDriver("MySQL", force.reload = FALSE);
       mart <- new("Mart", mysqldriver = driver)
     }
@@ -141,10 +141,15 @@ martConnect <- function(biomarts = "ensembl", host = NULL, user = NULL, password
     for(i in 1: length(biomarts)){
       if(local){
         if(biomarts[i] == "ensembl" || biomarts[i] == "sequence" || biomarts[i] == "uniprot" || biomarts[i] == "snp" || biomarts[i] == "vega"){
-          database <- listMarts(mart = biomarts[i], host = host[i], user = user[i], password = password[i]);
-          mart@connections[[i + presentConnections]] <- dbConnect(drv = mart@mysqldriver,user = user[i], host = host[i] , dbname = database, password = password[i])
-          writeLines(paste("connected to: ",database))
-          names(mart@connections)[i + presentConnections] <- biomarts[i]
+          if(!missing(host) && !missing(user) && !missing(password)){
+            database <- listMarts(mart = biomarts[i], host = host[i], user = user[i], password = password[i]);
+            mart@connections[[i + presentConnections]] <- dbConnect(drv = mart@mysqldriver,user = user[i], host = host[i] , dbname = database, password = password[i])
+            writeLines(paste("connected to: ",database))
+            names(mart@connections)[i + presentConnections] <- biomarts[i]
+          }
+          else{
+            stop("you should provide host, user and password when using local databases")
+          }
         }
         else{
           stop(paste("mart ",biomarts[i]," is not covered by biomaRt, please choose one of the following BioMarts to connect to: ensembl, vega, sequence, uniprot and snp"))
@@ -159,7 +164,8 @@ martConnect <- function(biomarts = "ensembl", host = NULL, user = NULL, password
                              snp = listMarts(mart = biomarts[i], host = "ensembldb.ensembl.org", user = "anonymous", password = ""),
                              vega = listMarts(mart = biomarts[i], host = "ensembldb.ensembl.org", user = "anonymous", password = ""));
           
-     
+          #should have a try and catch here ...
+          
           mart@connections[[i + presentConnections]] <- switch(biomarts[i],
                                                                ensembl = dbConnect(drv = mart@mysqldriver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = database, password = ""),
                                                                sequence = dbConnect(drv = mart@mysqldriver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = database, password = ""),
@@ -179,9 +185,9 @@ martConnect <- function(biomarts = "ensembl", host = NULL, user = NULL, password
       xref <- getPossibleXrefs( mart );
       affySelect <- grep("affy", xref[,2]);
       affyTables <- xref[affySelect,];
-      affyTables[,2] <- gsub("affy_","", affyTables[,2]); 
-      colnames(affyTables) <- c('species','affy array');
-      mart@arrayToSpecies <- as.data.frame(cbind(affyTables[,2],affyTables[,1]))
+      affyTables[,2] <- gsub("affy_","", affyTables[,2]);
+      affyPackName <- gsub("_","",affyTables[,2]);
+      mart@arrayToSpecies <- data.frame(affyID = affyPackName,EnsemblArrayID = affyTables[,2],species = affyTables[,1]);
     }
     return( mart )
 }
@@ -191,8 +197,11 @@ martConnect <- function(biomarts = "ensembl", host = NULL, user = NULL, password
 #Disconnect from mart#
 ######################
 
-martDisconnect <- function( mart = NULL){
+martDisconnect <- function( mart ){
 
+  if(missing(mart)){
+    stop("no Mart object to disconnect");
+  }
   openConnections <- names(mart@connections);
   
   if(match("ensembl",openConnections,nomatch = 0) != 0){
@@ -218,6 +227,8 @@ martDisconnect <- function( mart = NULL){
 mapArrayToEnsemblTable <- function(array = NULL, species = NULL, mart = NULL, dbtable = NULL){
   
   table <- NULL;
+  array <- gsub("_","",array)
+  array <- mart@arrayToSpecies$EnsemblArrayID[ match( array, mart@arrayToSpecies$affyID)]; 
   if(dbtable == "xrefdm"){
     table <- paste( species,"_gene_ensembl__xref_affy_",array,"__dm",sep="");
   }
@@ -257,7 +268,8 @@ mapSpeciesToUNIPROTTable <- function( species = NULL){
 mapArrayToSpecies <- function( array = NULL, mart = NULL ){
 
  species = "";
- species <- mart@arrayToSpecies[ match( array, mart@arrayToSpecies[,1]),2 ]; 
+ array <- gsub("_","",array) 
+ species <- mart@arrayToSpecies$species[ match( array, mart@arrayToSpecies$affyID)]; 
  return( species )
 }
 
@@ -334,11 +346,11 @@ getTableColumn <- function(type = NULL){
 ######################
 
 
-getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = "ensembl", mart = NULL){
+getGene <- function( id, type, array, species, db = "ensembl", mart){
 
   IDTable <- NULL
   
-  if( is.null( mart ) || class( mart ) != 'Mart'){
+  if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
@@ -348,31 +360,32 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
     stop("you can only use ensembl or vega");
   }
      
-  if(!is.null(array)){
+  if(!missing(array)){
     type <- "affy";
      if( db != "ensembl"){
         stop("you can only use ensembl when working with affy id's");
       }
   }
-  if( is.null( type )){
+  if( missing( type )){
     stop("you must provide the identifier type using the type argument")
   }
 
   if( type == "affy" ){
-    if( is.null( array ) ){
+    if( missing( array ) ){
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
     }
     else{
       species <- mapArrayToSpecies( array = array, mart = mart );
     }
   }
-  
-  if(is.null( species ) ){
-    stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
-  }
   else{
-    speciesTable <- mapSpeciesToGeneTable( species, db = db);
+    if(missing( species ) ){
+      stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
+    }
   }
+  
+  speciesTable <- mapSpeciesToGeneTable( species, db = db);
+  
   
   if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo")  && !(type == "ensembl") && !(type == "ensemblTrans")){
     stop("invalid type choose either affy, refseq, embl, hugo, ensembl, ensemblTrans or entrezgene");
@@ -439,21 +452,25 @@ getGene <- function( id = NULL, type = NULL, array = NULL, species = NULL, db = 
 ########################
 
 
-getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID = NULL, array = NULL, species = NULL, chromosome = NULL, start = NULL, end = NULL, type = NULL,  mart = NULL){
+getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromosome, start, end, type,  mart){
   
   table <- NULL
   
-  if(!is.null(array)){
+  if(!missing(array)){
     type <- "affy"
   }
-  if( is.null( mart ) || class( mart ) != 'Mart'){
+  
+  else{
+    if( missing( type )){
+      stop("you must provide the identifier type using the type argument");
+    }
+  }
+  
+  if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect");
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector");
-  }
-  if( is.null( type )){
-    stop("you must provide the identifier type using the type argument");
   }
   
   if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")  && !(type == "hugo") && !(type == "ensembl") ){
@@ -461,7 +478,7 @@ getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID
   }
   
   if( type == "affy" ){
-    if( !is.null( array ) ){
+    if( !missing( array ) ){
       species <- mapArrayToSpecies( array = array, mart = mart );
       affyBool <- mapArrayToEnsemblTable( array = array, species = species, mart = mart, dbtable = "affybool"  );    
     }
@@ -469,10 +486,11 @@ getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
     }
   }
-  if(is.null(species)){
-    stop("you must provide the species, valid species names can be found by using the function getSpecies()")
+  else{
+    if(missing(species)){
+      stop("you must provide the species, valid species names can be found by using the function getSpecies()")
+    }
   }
-
   speciesTable <-  mapSpeciesToGeneTable( species, db = "ensembl" );
   IDTable <- switch(type,
                     affy = mapArrayToEnsemblTable( array, species = species, mart = mart, dbtable = "xrefdm"),
@@ -484,29 +502,29 @@ getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID
     
   dbcolID <- getTableColumn(type);        #get database id col
   
-  if(!is.null(symbol)){ 
+  if(!missing(symbol)){ 
     query <- paste("select distinct ",speciesTable,".display_id, ",IDTable,".",dbcolID,", description from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",speciesTable,".display_id like '%",symbol,"%' and ",IDTable,".",dbcolID," !='NULL'",sep="");
  
   }
-  if(!is.null(OMIM)){
+  if(!missing(OMIM)){
     OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
     query <- paste("select distinct ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",OMIMTable,".disease like '%",OMIM,"%'  and ",IDTable,".",dbcolID," != 'NULL'",sep="");  
   }
-  if(!is.null(OMIMID)){
+  if(!missing(OMIMID)){
     OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
     query <- paste("select distinct ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",OMIMTable,".omim_id in ('",OMIMID,"') and ",IDTable,".",dbcolID," != 'NULL'",sep="");
   }
-  if(!is.null(GO)){
+  if(!missing(GO)){
     GOTable <- mapSpeciesToGOTable( species );
     query <- paste("select distinct ",IDTable,".",dbcolID,",",GOTable,".dbprimary_id,",GOTable,".description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_id_key = ",GOTable,".gene_id_key where ",GOTable,".description like '%",GO,"%' and ",IDTable,".",dbcolID," != 'NULL'",sep="");
   }
-  if(!is.null(GOID)){
+  if(!missing(GOID)){
     GOTable <- mapSpeciesToGOTable( species );
     query <- paste("select distinct ",IDTable,".",dbcolID,",",GOTable,".dbprimary_id,",GOTable,".description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_id_key = ",GOTable,".gene_id_key where ",GOTable,".dbprimary_id in ('",GOID,"') and ",IDTable,".",dbcolID," != 'NULL'",sep="");
   }
 
-  if(!is.null(chromosome)){
-    if(is.null(start) && is.null(end)){
+  if(!missing(chromosome)){
+    if(missing(start) && missing(end)){
       query <- paste("select distinct a.",dbcolID,", b.chr_name, b.gene_chrom_start, b.gene_chrom_end from ", IDTable ," as a inner join ",speciesTable," as b on a.gene_stable_id = b.gene_stable_id where b.chr_name = '",chromosome,"' and a.",dbcolID," !='NULL'",sep="");
     
     }
@@ -519,17 +537,17 @@ getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID
   res <- dbGetQuery( conn = mart@connections$ensembl,statement = query);
 
   if(dim(res)[1] != 0){
-    if(!is.null(symbol)){
+    if(!missing(symbol)){
       table <- new("martTable", id = as.vector(as.character(res[,2])), table = list(symbol = as.vector(res[,1]), description = as.vector(res[,3])))
     }
-    if(!is.null(OMIM) || !is.null(OMIMID)){
+    if(!missing(OMIM) || !missing(OMIMID)){
       table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(OMIMID = as.vector(res[,2]), description = as.vector(res[,3])))
     }
-    if(!is.null(GO) || !is.null(GOID)){
+    if(!missing(GO) || !missing(GOID)){
       table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(GOID = as.vector(res[,2]), description = as.vector(res[,3]), evidence = as.vector(res[,4])))
     }
 
-    if(!is.null(chromosome)){
+    if(!missing(chromosome)){
       table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(chromosome = as.vector(res[,2]), start = as.vector(res[,3]), end = as.vector(res[,4])))
     }
   }
@@ -545,25 +563,27 @@ getFeature <- function( symbol = NULL, OMIM = NULL, OMIMID=NULL, GO = NULL, GOID
 ###################
 
 
-getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = NULL){
+getGO <- function( id, type, array, species, mart){
 
   table <- NULL;
   go <- NULL;
 
-  if( is.null( mart ) || class( mart ) != 'Mart'){
+  if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
   }
  
-  if(!is.null(array)){
+  if(!missing(array)){
     type <- "affy";
   }
-  if( is.null( type )){
-    stop("you must provide the identifier type using the type argument")
+  else{
+    if(missing( type )){
+      stop("you must provide the identifier type using the type argument")
+    }
   }
-
+  
   if( type == "affy" ){
     if( is.null( array ) ){
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
@@ -572,13 +592,13 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
       species <- mapArrayToSpecies( array = array, mart = mart );
     }
   }
-  
-  if(is.null( species ) ){
-    stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
-  }
   else{
-    GOTable <- mapSpeciesToGOTable( species );
+    if(missing( species ) ){
+      stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
+    }
   }
+
+  GOTable <- mapSpeciesToGOTable( species );
 
   if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo") && !(type == "ensembl")){
     stop("invalid type choose either affy,  entrezgene, hugo, ensembl, refseq or embl");
@@ -631,33 +651,35 @@ getGO <- function( id = NULL, type = NULL, array = NULL, species = NULL, mart = 
 #####################
 
 
-getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
+getOMIM <- function( id, type, array, mart){
   
   OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
   omim <- NULL;
   table <- NULL;
   species <- "hsapiens";
 
-  if( is.null( mart )|| class( mart ) != 'Mart'){
+  if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
   }
-  if(!is.null(array)){
+  if(!missing(array)){
     type <- "affy";
   }
-  if( is.null( type )){
-    stop("you must provide the identifier type using the type argument")
+  else{
+    if( missing( type )){
+      stop("you must provide the identifier type using the type argument")
+    }
   }
 
   if( type == "affy" ){
-    if( is.null( array ) ){
+    if( missing( array ) ){
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
     }
   }
   else{
-    if( is.null( species ) ){
+    if( missing( species ) ){
       stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
     }
   }
@@ -716,8 +738,8 @@ getOMIM <- function( id = NULL, type = NULL, array = NULL, mart = NULL){
 #####################
 
 
-getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, martTable = NULL, mart = NULL){
-  if( is.null( mart )|| class( mart ) != 'Mart'){
+getSequence <- function(species, chromosome, start, end, martTable, mart){
+  if(missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
   if(match("sequence",names(mart@connections),nomatch=0) == 0){
@@ -728,9 +750,10 @@ getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = N
   }
 
   sequence <- NULL;  
+  #speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" );  #need to use this from Ensembl v32 on!!
   speciesTable <- paste( species,"__dna_chunks__main",sep="" );
   
-  if(is.null( martTable ) && !is.null( chromosome ) && !is.null( start ) && !is.null( end )){
+  if(missing( martTable ) && !missing( chromosome ) && !missing( start ) && !missing( end )){
     for(i in 1:length( chromosome )){
       
       if(end[i] - start[i] > 100000){
@@ -768,7 +791,7 @@ getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = N
   }
   
   else{
-    if(!is.null( martTable )){
+    if(!missing( martTable )){
                                         #check class!!
       chromosome = martTable@table$chromosome;
       start = martTable@table$start;
@@ -821,7 +844,10 @@ getSequence <- function(species = NULL, chromosome = NULL, start = NULL, end = N
 ################
 
 
-getAffyArrays <- function(mart = NULL){
+getAffyArrays <- function(mart){
+  if(missing(mart)){
+    stop("no Mart object found, create this first using the function martConnect and then give as argument in the function")
+  }
   print( mart@arrayToSpecies );
 }
 
@@ -830,8 +856,8 @@ getAffyArrays <- function(mart = NULL){
 #######################
 
 
-getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, mart = NULL){
-  if( is.null( mart )|| class( mart ) != 'Mart'){
+getSNP <- function(species, chromosome, start, end, mart){
+  if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
@@ -839,6 +865,9 @@ getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, 
   }
   if(match("snp",names(mart@connections),nomatch=0) == 0){
     stop("You are missing a database connection to snp for this query.  Add connection to snp a BioMart to your Mart object via the function martConnect.   Use the following command to do this:  martConnect(biomarts='snp',mart=mart,host='ensembldb.ensembl.org',user='anonymous',password='')")
+  }
+  if(missing(chromosome) || missing(start) || missing(end) || missing(species)){
+    stop("you have to give chromosome, start and end positions and species as arguments, see ?getSNP for more information")
   }
   
   table <- NULL
@@ -858,41 +887,49 @@ getSNP <- function(species = NULL, chromosome = NULL, start = NULL, end = NULL, 
 #getHomolog      #
 ##################
 
-
-getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.array = NULL, to.array = NULL, from.species = NULL, to.species = NULL, mart = NULL, output = "martTable") {
+getHomolog <- function(id, from.type, to.type, from.array, to.array, from.species, to.species, mart, output = "martTable") {
     
   db = "ensembl";
-  if( is.null( mart )|| class( mart ) != 'Mart'){
+  if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
   }
+
+  if( !missing( id )){
+    id <- as.character(id);
+  }
+  else{
+    stop("No id's to search for homologs given");
+  }
   
-  id <- as.character(id)
-  
-  if(!is.null(from.array)){
+  if( !missing( from.array )){
     from.type <- "affy";
     from.species <- mapArrayToSpecies( array = from.array, mart = mart );
   }
-  
-  if(!is.null(to.array)){
+  else{
+    if( missing( from.species ) ) {
+      stop("You must provide the species to map FROM using the  from.species argument")
+    }
+    if ( missing( from.type )) {
+      stop("You must provide the identifier type using the from.type  argument")
+    }
+  }
+
+  if( !missing( to.array )){
     to.type <- "affy";
     to.species <- mapArrayToSpecies( array = to.array, mart = mart );
   }
+  else{
+    if ( missing( to.species )) {
+      stop("You must provide the species to map TO using the to.species  argument");
+    }
+    if ( missing( to.type )) {
+      stop("You must provide the identifier type using the to.type  argument")
+    } 
+  }
   
-  if (is.null(from.type) && is.null(from.array)) {
-    stop("You must provide the identifier type using the from.type  argument")
-  }
-  if (is.null(to.type) && is.null(to.array)) {
-    stop("You must provide the identifier type using the to.type  argument")
-  }
-  if (is.null(from.species) && is.null(from.array)) {
-    stop("You must provide the species to map FROM using the  from.species argument")
-  }
-  if (is.null(to.species) && is.null(to.array)) {
-    stop("You must provide the species to map TO using the to.species  argument")
-  }
   
   fromIDTable <-
     switch(from.type,
@@ -1004,11 +1041,11 @@ getHomolog <- function(id = NULL, from.type = NULL, to.type = NULL, from.array =
 ###########################
 
 
-getPossibleXrefs <-  function( mart = NULL) {
-  if ( is.null( mart ) || class( mart ) != 'Mart') {
+getPossibleXrefs <-  function( mart ) {
+  if ( missing( mart ) || class( mart ) != 'Mart') {
     stop('You must supply a valid mart object.  You can use martConnect to produce one')
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
+  if( match("ensembl",names(mart@connections), nomatch=0) == 0){
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
   }
  
@@ -1024,11 +1061,11 @@ getPossibleXrefs <-  function( mart = NULL) {
 } 
 
 
-getSpecies <- function(mart = NULL, db = c("ensembl")) {
-  if (is.null(mart) || class(mart)!='Mart') {
+getSpecies <- function(mart, db = c("ensembl")) {
+  if ( missing( mart ) || class( mart )!='Mart') {
     stop('You must supply a valid mart object.  You can use martConnect to produce one')
   }
-   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
+  if( match("ensembl",names(mart@connections), nomatch=0) == 0){
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
   }
  
@@ -1053,26 +1090,23 @@ getSpecies <- function(mart = NULL, db = c("ensembl")) {
   return( unique( species ) );
 } 
 
-getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xref = NULL, to.xref = NULL, db = "ensembl", mart = NULL) {
+getXref <- function( id, from.species, to.species, from.xref, to.xref, db = "ensembl", mart) {
   
-  if (is.null(mart) || class(mart)!='Mart'){
+  if ( missing( mart ) || class( mart )!='Mart'){
     stop('You must specify a valid Mart object which can be created using martConnect().');
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
   } 
-  if (is.null(id)) {
+  if ( missing( id )) {
     stop('You need to give ID(s) to map from');
   }
-  if (is.null(from.species)) {
+  if ( missing( from.species )) {
     writeLines('fromspecies is a necessary argument\nValid species for this mart are:');
-    print(getSpecies(mart = mart, db = "ensembl"));
+    print( getSpecies(mart = mart, db = "ensembl" ));
     stop();
   }
-  if (from.species == to.species) {
-    to.species <- NULL;
-  } 
-  if (is.null(from.xref) || is.null(to.xref)) {
+  if ( missing( from.xref ) || missing( to.xref ) ) {
     writeLines('Both fromxref and toxref are required.\nPossible crossreferences are:');
     print(getPossibleXrefs(mart = mart));
     stop();
@@ -1080,7 +1114,7 @@ getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xr
   
   xp <- paste(id, collapse="','")
   
-  if (is.null( to.species )) {
+  if (missing( to.species )) {
     query <- paste( 
                    'SELECT distinct a.display_id_list as fromid,b.display_id_list as toid,',
                    'a.gene_stable_id as ensemblgene ',
@@ -1092,14 +1126,26 @@ getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xr
     if (db == 'vega'){
       stop('VEGA supports only hsapiens')
     }
-    query <- paste(
-                   'SELECT distinct a.display_id_list as fromid,b.display_id_list as toid,c.* ',
+    if ( from.species == to.species) {
+     query <- paste( 
+                   'SELECT distinct a.display_id_list as fromid,b.display_id_list as toid,',
+                   'a.gene_stable_id as ensemblgene ',
                    'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
-                   'left join ',from.species,'_gene_ensembl__homologs_',to.species,'__dm as c ',
-                   'on a.gene_id_key=c.gene_id_key ',
-                   'left join ',to.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-                   "on c.homol_id=b.gene_id_key where a.display_id_list in ('",xp,
+                   'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
+                   "on a.gene_id_key=b.gene_id_key where a.display_id_list in ('",xp,
                    "') and b.display_id_list != 'NULL'",sep="");
+   
+    }
+    else{
+      query <- paste(
+                     'SELECT distinct a.display_id_list as fromid,b.display_id_list as toid,c.* ',
+                     'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
+                     'left join ',from.species,'_gene_ensembl__homologs_',to.species,'__dm as c ',
+                     'on a.gene_id_key=c.gene_id_key ',
+                     'left join ',to.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
+                     "on c.homol_id=b.gene_id_key where a.display_id_list in ('",xp,
+                     "') and b.display_id_list != 'NULL'",sep="");
+    }
   }
   
   res <- dbGetQuery(con = mart@connections$ensembl, query);
@@ -1121,7 +1167,13 @@ getXref <- function( id  = NULL, from.species = NULL, to.species = NULL, from.xr
 #export FASTA      #
 ####################
 
-exportFASTA <- function( martTable = NULL, file = NULL ){
+exportFASTA <- function( martTable, file ){
+  if( missing( martTable ) || class( martTable ) != "martTable"){
+    stop("No martTable given to write");
+  }
+  if( missing(file)){
+    stop("Please provide filename to write to");
+  }
   for(i in 1:length(martTable@id)){
     cat(paste(">",martTable@id[i],"\n",sep=""),file = file, append=TRUE);
     cat(martTable@table$sequence[i],file = file, append = TRUE);
@@ -1134,7 +1186,7 @@ exportFASTA <- function( martTable = NULL, file = NULL ){
 #####################
 
 
-getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, mart = NULL){
+getINTERPRO <- function( id, type, array, species, mart){
   
   genes <- NULL
   speciesTable <- NULL
@@ -1144,7 +1196,7 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
   db <- "ensembl";
   results <- FALSE;
     
-  if( is.null( mart )|| class(mart)!='Mart'){
+  if( missing( mart )|| class(mart)!='Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
   if(match("ensembl",names(mart@connections), nomatch=0) == 0){
@@ -1153,28 +1205,30 @@ getINTERPRO <- function(id = NULL, type = NULL, array = NULL, species = NULL, ma
  # if(match("uniprot",names(mart@connections), nomatch=0) == 0){
  #   stop("You need a connection to uniprot for this query, use martConnect and include 'uniprot' in your biomarts vector")
  # }
-  if(!is.null(array)){
+  if( !missing( array )){
     type <- "affy";
   }
-  if( is.null( type )){
-    stop("you must provide the identifier type using the type argument")
+  else{
+    if( missing( type )){
+      stop("you must provide the identifier type using the type argument");
+    }
   }
 
   if( type == "affy" ){
-    if( is.null( array ) ){
+    if( missing( array ) ){
       stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
     }
     else{
       species <- mapArrayToSpecies( array = array, mart = mart );
     }
   }
-  
-  if(is.null( species ) ){
-    stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
-  }
   else{
-    uniprotTable <- mapSpeciesToUNIPROTTable( species );
+    if( missing( species ) ){
+      stop( "you must provide the species via the species argument when using this function for Ensembl identifiers" );
+    }
   }
+
+  uniprotTable <- mapSpeciesToUNIPROTTable( species );
   
   if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo")  && !(type == "ensembl")  && !(type == "ensemblTrans") ){
     stop("invalid type choose either affy, refseq, embl, hugo, ensembl or entrezgene");

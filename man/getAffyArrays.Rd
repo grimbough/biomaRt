@@ -2,7 +2,7 @@
 \alias{getAffyArrays}
 \title{Displays affy identifiers of Affymetrix chips supported by the Ensembl package}
 \description{Displays affy identifiers of Affymetrix chips supported by the Ensembl package}
-\usage{getAffyArrays( mart = NULL)}
+\usage{getAffyArrays( mart )}
 
 \arguments{
   \item{mart}{object of class Mart, representing connections to the
