@@ -2,7 +2,7 @@
 \alias{exportFASTA}
 \title{Exports getSequence results to FASTA format}
 \description{Exports getSequence results to FASTA format}
-\usage{exportFASTA(martTable = NULL, file=NULL)}
+\usage{exportFASTA(martTable, file)}
 
 \arguments{
 \item{martTable}{A martTable that was the output of the getSequence function}

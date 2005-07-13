@@ -2,7 +2,7 @@
 \alias{getFeature}
 \title{Retrieves Feature starting from a gene symbol and array identifier}
 \description{This function function retrieves features representing a certain gene given a gene symbol array identifier}
-\usage{getFeature( symbol = NULL, OMIM = NULL, OMIMID = NULL, GO = NULL, GOID = NULL, array = NULL, species = NULL, chromosome = NULL, start = NULL, end = NULL, type = NULL, mart = NULL)}
+\usage{getFeature( symbol, OMIM, OMIMID, GO, GOID, array, species, chromosome, start, end, type, mart)}
 
 \arguments{
   \item{symbol}{gene symbol}
@@ -30,7 +30,8 @@ mart <- martConnect()
 
 #example using affy id from Ensembl
 
-getFeature( symbol = "P53", array = "hg_u95av2", mart = mart)
+feat = getFeature( symbol = "P53", array = "hg_u95av2", mart = mart)
+show(feat)
 
 martDisconnect(mart = mart)
 }

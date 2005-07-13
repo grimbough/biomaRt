@@ -2,7 +2,7 @@
 \alias{getGene}
 \title{Retrieves Gene information}
 \description{This function function retrieves gene information from Ensemble given a gene identifier}
-\usage{getGene( id = NULL, type = NULL, array = NULL, species = NULL, db = "ensembl", mart = NULL)}
+\usage{getGene( id, type, array, species, db = "ensembl", mart)}
 
 \arguments{
   \item{id}{gene identifier}
@@ -25,11 +25,13 @@ mart <- martConnect( biomarts = c("ensembl","vega"))
 
 #example using affy id from Ensembl
 
-getGene( id = "1939_at", array = "hg_u95av2", mart = mart)
+g = getGene( id = "1939_at", array = "hg_u95av2", mart = mart)
+show(g)
 
 #example using locuslink id from vega
 
-getGene( id = 100, type = "entrezgene", species = "hsapiens", db = "vega", mart = mart)
+g = getGene( id = 100, type = "entrezgene", species = "hsapiens", db = "vega", mart = mart)
+show(g)
 
 martDisconnect(mart = mart)
 

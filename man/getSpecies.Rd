@@ -2,7 +2,7 @@
 \alias{getSpecies}
 \title{Displays species identifiers currently present in Ensembl}
 \description{Displays species identifiers currently present in Ensembl}
-\usage{getSpecies(mart = NULL, db = c("ensembl"))}
+\usage{getSpecies(mart, db = c("ensembl"))}
 
 \arguments{
 \item{db}{database to query, only works for Ensembl}
@@ -20,7 +20,8 @@
 if(interactive()){
 mart <- martConnect()
 
-getSpecies(mart = mart)
+species =getSpecies(mart = mart)
+show(species)
 
 martDisconnect(mart = mart)
 }

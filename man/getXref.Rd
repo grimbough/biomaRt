@@ -2,7 +2,7 @@
 \alias{getXref}
 \title{Get cross reference in Ensembl}
 \description{This powerful function retrieves any cross reference in Ensembl}
-\usage{getXref(id  = NULL, from.species = NULL, to.species = NULL, from.xref = NULL, to.xref = NULL, db = "ensembl", mart = NULL)}
+\usage{getXref(id, from.species, to.species, from.xref, to.xref, db = "ensembl", mart)}
 
 \arguments{
   \item{id}{any identifier}
@@ -25,7 +25,9 @@ mart <- martConnect()
 
 #starting from an affy id of chip hg_u95av2 and id 1939_at, give me corresponding affy identifiers on the affy mouse chip mouse430_2
 
-getXref(id="1939_at", from.species="hsapiens", to.species = "mmusculus", from.xref ="affy_hg_u95av2", to.xref="affy_mouse430_2",mart=mart)
+
+xref = getXref(id="1939_at", from.species="hsapiens", to.species = "mmusculus", from.xref ="affy_hg_u95av2", to.xref="affy_mouse430_2",mart=mart)
+show(xref)
 
 martDisconnect(mart = mart)
 }

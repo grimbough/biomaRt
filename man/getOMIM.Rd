@@ -2,7 +2,7 @@
 \alias{getOMIM}
 \title{Retrieves OMIM information}
 \description{This function retrieves OMIM information from Ensemble given a gene identifier}
-\usage{getOMIM( id = NULL, type = NULL, array = NULL, mart = NULL)}
+\usage{getOMIM( id, type, array, mart)}
 
 \arguments{
   \item{id}{gene identifier}
@@ -21,11 +21,13 @@ mart <- martConnect()
 
 #example using affy id
 
-getOMIM( id = "1939_at", array = "hg_u95av2", mart = mart)
+omim = getOMIM( id = "1939_at", array = "hg_u95av2", mart = mart)
+show(omim)
 
 #example using locuslink id
 
-getOMIM( id = 672, type = "entrezgene", mart = mart)
+omim = getOMIM( id = 672, type = "entrezgene", mart = mart)
+show(omim)
 
 martDisconnect(mart = mart)
 }

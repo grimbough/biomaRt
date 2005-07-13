@@ -2,7 +2,7 @@
 \alias{getSequence}
 \title{Retrieves sequences}
 \description{This function retrieves sequences given the chomosome, start and end position}
-\usage{getSequence( species = NULL, chromosome = NULL, start = NULL, end = NULL, martTable = NULL, mart = NULL)}
+\usage{getSequence( species, chromosome, start, end, martTable, mart)}
 
 \arguments{
   \item{species}{Species information.  A list of possible values for this argument can be obtained by the function getSpecies.}
@@ -21,7 +21,8 @@
 if(interactive()){
 mart <- martConnect(biomarts = c("ensembl","sequence"))
 
-getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
+seq = getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
+show(seq)
 
 martDisconnect(mart = mart)
 }

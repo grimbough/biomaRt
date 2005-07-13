@@ -2,7 +2,7 @@
 \alias{getHomolog}
 \title{Get homologs}
 \description{This function retrieves homologs of genes from one species in another species}
-\usage{getHomolog(id = NULL, from.type = NULL, to.type = NULL, from.array = NULL, to.array = NULL, from.species = NULL, to.species = NULL, mart = NULL, output = "martTable")}
+\usage{getHomolog(id, from.type, to.type, from.array, to.array, from.species, to.species, mart, output = "martTable")}
 
 \arguments{
   \item{id}{gene identifier}
@@ -26,19 +26,23 @@ mart <- martConnect()
 
 #HUGO to Entrez Gene
 
-getHomolog(id = 1:20, from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq', mart = mart)
+homolog = getHomolog(id = 1:20, from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq', mart = mart)
+show(homolog)
 
 #ensembl to ensembl
 
-getHomolog( id = "ENSG00000072778", from.species = "hsapiens", from.type = "ensembl", to.type="ensembl",to.species="mmusculus", mart = mart )
+homolog = getHomolog( id = "ENSG00000072778", from.species = "hsapiens", from.type = "ensembl", to.type="ensembl",to.species="mmusculus", mart = mart )
+show(homolog)
 
 #Affy to Affy
 
-getHomolog( id = "1424184_at", to.array = "hg_u95av2", from.array = "mouse430a_2", mart = mart )
+homolog = getHomolog( id = "1424184_at", to.array = "hg_u95av2", from.array = "mouse430a_2", mart = mart )
+show(homolog)
 
 #Affy to ensembl
 
-getHomolog( id = "1424184_at", to.species = "hsapiens", to.type = "ensembl", from.array = "mouse430a_2", mart = mart )
+homolog = getHomolog( id = "1424184_at", to.species = "hsapiens", to.type = "ensembl", from.array = "mouse430a_2", mart = mart )
+show(homolog)
 
 martDisconnect(mart = mart)
 }
