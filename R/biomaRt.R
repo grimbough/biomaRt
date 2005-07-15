@@ -329,11 +329,11 @@ mapSpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
 
 getTableColumn <- function(type = NULL){
   tableCol <- switch(type,
-                     entrezgene = "display_id_list",
+                     entrezgene = "dbprimary_id",
                      refseq     = "dbprimary_id",
-                     embl       = "display_id_list",
+                     embl       = "dbprimary_id",
                      hugo       = "display_id_list",
-                     affy       = "display_id_list",
+                     affy       = "dbprimary_id",
                      ensembl    = "gene_stable_id",
                      ensemblTrans = "transcript_stable_id"
                      );
@@ -750,8 +750,8 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
   }
 
   sequence <- NULL;  
-  #speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" );  #need to use this from Ensembl v32 on!!
-  speciesTable <- paste( species,"__dna_chunks__main",sep="" );
+  speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" );  #need to use this from Ensembl v32 on!!
+  #speciesTable <- paste( species,"__dna_chunks__main",sep="" );
   
   if(missing( martTable ) && !missing( chromosome ) && !missing( start ) && !missing( end )){
     for(i in 1:length( chromosome )){
@@ -1116,35 +1116,35 @@ getXref <- function( id, from.species, to.species, from.xref, to.xref, db = "ens
   
   if (missing( to.species )) {
     query <- paste( 
-                   'SELECT distinct a.display_id_list as fromid,b.display_id_list as toid,',
+                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
                    'a.gene_stable_id as ensemblgene ',
                    'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
                    'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-                   "on a.gene_id_key=b.gene_id_key where a.display_id_list in ('",xp,
-                   "') and b.display_id_list != 'NULL'",sep="");
+                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
+                   "') and b.dbprimary_id != 'NULL'",sep="");
   } else {
     if (db == 'vega'){
       stop('VEGA supports only hsapiens')
     }
     if ( from.species == to.species) {
      query <- paste( 
-                   'SELECT distinct a.display_id_list as fromid,b.display_id_list as toid,',
+                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
                    'a.gene_stable_id as ensemblgene ',
                    'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
                    'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-                   "on a.gene_id_key=b.gene_id_key where a.display_id_list in ('",xp,
-                   "') and b.display_id_list != 'NULL'",sep="");
+                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
+                   "') and b.dbprimary_id != 'NULL'",sep="");
    
     }
     else{
       query <- paste(
-                     'SELECT distinct a.display_id_list as fromid,b.display_id_list as toid,c.* ',
+                     'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,c.* ',
                      'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
                      'left join ',from.species,'_gene_ensembl__homologs_',to.species,'__dm as c ',
                      'on a.gene_id_key=c.gene_id_key ',
                      'left join ',to.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-                     "on c.homol_id=b.gene_id_key where a.display_id_list in ('",xp,
-                     "') and b.display_id_list != 'NULL'",sep="");
+                     "on c.homol_id=b.gene_id_key where a.dbprimary_id in ('",xp,
+                     "') and b.dbprimary_id != 'NULL'",sep="");
     }
   }
   
@@ -1242,7 +1242,9 @@ getINTERPRO <- function( id, type, array, species, mart){
                     hugo = mapSpeciesToHUGO( species, db = "ensembl"),
                     refseq = mapSpeciesToRefSeq( species, db = "ensembl"),
                     embl = mapSpeciesToEMBL( species ));
-  
+
+  dbcolID <- getTableColumn(type);        #get database id col
+ 
   if (length( id ) >= 1){
     
     ids <- paste("'",id,"'",sep="",collapse=",")
@@ -1256,7 +1258,7 @@ getINTERPRO <- function( id, type, array, species, mart){
        
       }
      else{
-       query <- paste("select distinct ",IDTable,".display_id_list,",uniprotTable,".interpro_list, short_description,",uniprotTable,".description from ", IDTable ," inner join ",uniprotTable," on ",IDTable,".gene_stable_id = ",uniprotTable,".gene_stable_id where ",IDTable,".display_id_list in (",ids,") and ",uniprotTable,".interpro_list != 'NULL'",sep="");
+       query <- paste("select distinct ",IDTable,".",dbcolID,",",uniprotTable,".interpro_list, short_description,",uniprotTable,".description from ", IDTable ," inner join ",uniprotTable," on ",IDTable,".gene_stable_id = ",uniprotTable,".gene_stable_id where ",IDTable,".",dbcolID," in (",ids,") and ",uniprotTable,".interpro_list != 'NULL'",sep="");
      }
     }
 
