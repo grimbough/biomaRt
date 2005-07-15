@@ -18,11 +18,11 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect(biomarts = c("ensembl","uniprot"))
+mart <- martConnect()
 
 #example using affy id
 
-interpro = getINTERPRO( id = "1939_at", array = "hg_u95av2", mart = mart)
+interpro = getINTERPRO( id = "1939_at", array = "hgu95av2", mart = mart)
 show(interpro)
 
 #example using locuslink id
