@@ -10,7 +10,7 @@ Depends: methods, Biobase, RMySQL
 Description: Interface to BioMart databases (e.g. Ensembl and VEGA).  Provides
         functions to retrieve gene, GO, SNP, sequence, INTERPRO and
         OMIM information directly from the BioMart databases starting from affy, refseq, hugo, ensembl, entrezgene or embl identifiers.
-        The package also provides homology mappings between these identifiers across all species present in Ensembl.  Genes can be pre-selected such that fulfill a certain requirement e.g. give all human refseq id's of genes known to be involved in diabetes.
+        The package also provides homology mappings between these identifiers across all species present in Ensembl.  Genes can be pre-selected such that they fulfill a certain requirement e.g. give all human refseq id's of genes known to be involved in diabetes.
 License: LGPL version
 URL: http://www.esat.kuleuven.ac.be/~sdurinck
 Packaged: Sat Feb 19 13:21:56 2005; steffen
