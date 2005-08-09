@@ -502,9 +502,13 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
     
   dbcolID <- getTableColumn(type);        #get database id col
   
-  if(!missing(symbol)){ 
-    query <- paste("select distinct ",speciesTable,".display_id, ",IDTable,".",dbcolID,", description from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",speciesTable,".display_id like '%",symbol,"%' and ",IDTable,".",dbcolID," !='NULL'",sep="");
- 
+  if(!missing(symbol)){
+    if(type != "ensembl"){
+      query <- paste("select distinct ",speciesTable,".display_id, ",IDTable,".",dbcolID,", description from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",speciesTable,".display_id like '%",symbol,"%' and ",IDTable,".",dbcolID," !='NULL'",sep="");
+    }
+    else{
+      query <- paste("select distinct display_id,",dbcolID,", description from ", speciesTable ," where display_id like '%",symbol,"%' and ",dbcolID," !='NULL'",sep="");
+    }
   }
   if(!missing(OMIM)){
     OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
