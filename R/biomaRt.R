@@ -326,6 +326,16 @@ mapSpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
   return(table);
 }
 
+mapSpeciesToFlybase <- function ( species = NULL){
+  table <- NULL;
+  if(species == "dmelanogaster"){
+    table <- "dmelanogaster_gene_ensembl__xref_flybase_gene_id__dm";
+  }
+  else{
+    stop("Flybase id's can only be used with dmelanogaster as species")
+  }
+  return(table);
+}
 
 getTableColumn <- function(type = NULL){
   tableCol <- switch(type,
@@ -334,6 +344,7 @@ getTableColumn <- function(type = NULL){
                      embl       = "dbprimary_id",
                      hugo       = "display_id_list",
                      affy       = "dbprimary_id",
+                     flybase    = "dbprimary_id",
                      ensembl    = "gene_stable_id",
                      ensemblTrans = "transcript_stable_id"
                      );
@@ -387,7 +398,7 @@ getGene <- function( id, type, array, species, db = "ensembl", mart){
   speciesTable <- mapSpeciesToGeneTable( species, db = db);
   
   
-  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo")  && !(type == "ensembl") && !(type == "ensemblTrans")){
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo")  && !(type == "ensembl") && !(type == "ensemblTrans") && !(type == "flybase")){
     stop("invalid type choose either affy, refseq, embl, hugo, ensembl, ensemblTrans or entrezgene");
   }
 
@@ -398,8 +409,10 @@ getGene <- function( id, type, array, species, db = "ensembl", mart){
                     entrezgene = mapSpeciesToEntrezGene( species, db = db),
                     hugo = mapSpeciesToHUGO( species, db = db),
                     refseq = mapSpeciesToRefSeq( species, db = db),
-                    embl = mapSpeciesToEMBL( species ));
-
+                    embl = mapSpeciesToEMBL( species ),
+                    flybase = mapSpeciesToFlybase( species )
+                    );
+                    
 
   dbcolID <- getTableColumn("ensembl");
   dbcolQID <- getTableColumn(type);
@@ -473,7 +486,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
     stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector");
   }
   
-  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")  && !(type == "hugo") && !(type == "ensembl") ){
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")  && !(type == "hugo") && !(type == "ensembl")  && !(type == "flybase") ){
     stop("invalid type choose either affy, refseq or entrezgene");
   }
   
@@ -498,7 +511,9 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
                     entrezgene = mapSpeciesToEntrezGene( species, db = "ensembl" ),
                     hugo = mapSpeciesToHUGO( species, db = "ensembl"),
                     refseq = mapSpeciesToRefSeq( species, db = "ensembl"),
-                    embl = mapSpeciesToEMBL( species ));
+                    embl = mapSpeciesToEMBL( species ),
+                    flybase = mapSpeciesToFlybase( species )
+                    );
     
   dbcolID <- getTableColumn(type);        #get database id col
   
@@ -604,7 +619,7 @@ getGO <- function( id, type, array, species, mart){
 
   GOTable <- mapSpeciesToGOTable( species );
 
-  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo") && !(type == "ensembl")){
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo") && !(type == "ensembl") && !(type == "flybase")){
     stop("invalid type choose either affy,  entrezgene, hugo, ensembl, refseq or embl");
   }
 
@@ -614,7 +629,9 @@ getGO <- function( id, type, array, species, mart){
                     entrezgene = mapSpeciesToEntrezGene( species, db = "ensembl" ),
                     hugo = mapSpeciesToHUGO( species, db = "ensembl"),
                     refseq = mapSpeciesToRefSeq( species, db = "ensembl"),
-                    embl = mapSpeciesToEMBL( species ));
+                    embl = mapSpeciesToEMBL( species ),
+                    flybase = mapSpeciesToFlybase( species )
+                    );
     
   dbcolID <- getTableColumn("ensembl");        #get database id col   
   dbcolQID <- getTableColumn(type);        #get database id col
@@ -942,7 +959,8 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.specie
            embl       = mapSpeciesToEMBL(from.species),
            hugo       = mapSpeciesToHUGO(from.species,db=db),
            affy       =  mapArrayToEnsemblTable( from.array, species = from.species, mart = mart, dbtable = "xrefdm"),
-           ensembl    = mapSpeciesToGeneTable(from.species,db=db)
+           ensembl    = mapSpeciesToGeneTable(from.species,db=db),
+           flybase    = mapSpeciesToFlybase( from.species )
            );
   
   toIDTable <-
@@ -952,7 +970,8 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.specie
            embl       = mapSpeciesToEMBL(to.species),
            hugo       = mapSpeciesToHUGO(to.species,db=db),
            affy       =  mapArrayToEnsemblTable( to.array, species = to.species, mart = mart, dbtable = "xrefdm"),
-           ensembl    = mapSpeciesToGeneTable(to.species,db=db)
+           ensembl    = mapSpeciesToGeneTable(to.species,db=db),
+           flybase    = mapSpeciesToFlybase( to.species )
            );
 
   fromCol <- getTableColumn(from.type);
@@ -1234,7 +1253,7 @@ getINTERPRO <- function( id, type, array, species, mart){
 
   uniprotTable <- mapSpeciesToUNIPROTTable( species );
   
-  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo")  && !(type == "ensembl")  && !(type == "ensemblTrans") ){
+  if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl") && !(type == "hugo")  && !(type == "ensembl")  && !(type == "ensemblTrans")  && !(type == "flybase")){
     stop("invalid type choose either affy, refseq, embl, hugo, ensembl or entrezgene");
   }
 
@@ -1245,7 +1264,9 @@ getINTERPRO <- function( id, type, array, species, mart){
                     entrezgene = mapSpeciesToEntrezGene( species, db = "ensembl" ),
                     hugo = mapSpeciesToHUGO( species, db = "ensembl"),
                     refseq = mapSpeciesToRefSeq( species, db = "ensembl"),
-                    embl = mapSpeciesToEMBL( species ));
+                    embl = mapSpeciesToEMBL( species ),
+                    flybase = mapSpeciesToFlybase( species )
+                    );
 
   dbcolID <- getTableColumn(type);        #get database id col
  
