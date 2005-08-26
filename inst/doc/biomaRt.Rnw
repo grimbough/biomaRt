@@ -55,12 +55,11 @@ An object of the \Robject{martTable} class is the output of most biomaRt funtion
 \item \Robject{table}: is a list of vectors storing the retrieved data
 \end{itemize}
 
-\section{Functions}
+\section{Connecting to BioMart databases}
+
+A first step in using the biomaRt package is to connect to a BioMart database. The function martConnect establishes a connection with one or more of the following BioMart databases: snp, ensembl, sequence and vega.  Default this function will connect to public BioMart databases.  If no biomart is specified, only a connection to ensembl will be established.  If you want to use local BioMart install you have to set the local argument to TRUE and specify host, password and user details in the corresponding arguments.   
+
 \subsection{\Rfunction{martConnect}}
-
-A first step in using the biomaRt package is to connect to a BioMart database. The function martConnect establishes a connection with one or more of the following BioMart databases: snp, ensembl, uniprot, sequence and vega.  Default this function will connect to public BioMart databases.  If no biomart is specified, only a connection to ensembl will be established.  If you want to use local BioMart install you have to set the local argument to TRUE and specify host, password and user details in the corresponding arguments.   
-
-Examples: \\	
 
 <<>>=
 ## load up the library
@@ -75,8 +74,6 @@ mart <- martConnect()
 
 You can only hold a limited number of connections with different BioMarts.  The function martDisconnect can be used to close a mart connection.
 
-Examples: \\
-
 <<>>=
 
 #Disconnect from BioMart databases
@@ -85,162 +82,141 @@ martDisconnect(mart)
  
 @
 
-\subsection{\Rfunction{getGene}}
+\section{Annotating identifiers with gene information}
 
-The function \Rfunction{getGene} uses a query id to look up identification and chromosomal information of the corresponding gene.  Depending on the selected output, this function returns a \Robject{martTable}.
+The function \Rfunction{getGene} uses a query id to look up the name, description and chromosomal information of the corresponding gene.
 Currently the \Rfunction{getGene} function takes identifiers from entrezgene, ensembl, refseq, affy, hugo and embl.  Besides the id argument, this function also has a species, array and type argument.\\
-The id argument is either a vector of identifiers or a single identifier to be annotated.\\
- The species argument should have the species from which the identifier comes as value. For the value of species, we use the full name of the species where separate words are separated by an underscore, e.g. 'gallusgallus'. A list of possible species to choose from can be obtained by executing the function \Rfunction{getSpecies}.\\ 
-The array argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
-The type takes the values of 'entrezgene','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
-The output can be changed using the output argument.  One can choose between a martTable (default) and an output of Gene/Multi-Gene objects.
-Depending on the identifier, different additional arguments will have to be given, summarized below:
-\begin{itemize}
-\item Affy id's: id, array, mart
-\item Entrez-Gene: id, type, species, mart  
-\item RefSeq: id, type, species, mart
-\item embl: id, type, species, mart
-\end{itemize}
+The {\it id} argument is either a vector of identifiers or a single identifier to be annotated.\\
+ The {\it species} argument should have the species from which the identifier originates.\\
+The {\it array} argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\
+The {\it mart} argument is a mart connection, which was obtained using the method \Rfunction{martConnect}.\\
+The {\it type} takes the values of 'entrezgene','refseq','hugo', 'ensembl' and 'embl' to clarify which type of identifier is specified in the id argument.\\
 
-Note:  make sure you have a Mart object with connections to ensembl and vega (only if you want to retrieve data from VEGA)
-
-Examples: \\
-
+First we connect to the BioMart databases we need (note that this should happen only once per session).  
 
 <<>>=
 
-#connect to BioMart databases, in this example we connect to all public BioMart databases.  Depending on your query a subset of these will suffice.
+mart <- martConnect(biomarts = c("ensembl", "snp","sequence")) 
 
-mart <- martConnect(biomarts = c("ensembl", "snp","sequence","uniprot", "vega")) 
-
-#example affy
-
-getGene(id = "1939_at", array = "hg_u95av2", mart = mart)
-
-#example Entrez-Gene
-
-getGene(id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
 @
 
-\subsection{\Rfunction{getGO}}
-
-The function \Rfunction{getGO} uses a query id to look up GO annotation of the corresponding gene.
-Currently the \Rfunction{getGO} function takes identifiers from entrezgene, hugo, ensembl, refseq, affy and embl.  Besides the id argument, this function also has a species, array and type argument.\\
-The id argument is either a vector of identifiers or a single identifier to be annotated.\\
- The species argument should have the species from which the identifier comes as value.  A list of possible species to choose from can be obtained by executing the function \Rfunction{getSpecies}.\\ 
-The array argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\ The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
-A last argument of this function is the type argument which, takes the values of 'entrezgene','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
-Depending on the identifier, different additional arguments will have to be given, summarized below:
-\begin{itemize}
-\item Affy id's: id, array, mart
-\item Entrez-Gene: id, type, species, mart  
-\item RefSeq: id, type, species, mart
-\item embl: id, type, species, mart
-\end{itemize}
-
-Note:  make sure you have a Mart object with a connection to ensembl
-
-Examples: \\
+Then we check which affy arrays are available:
 
 <<>>=
 
-#example affy
 
-getGO(id = "1939_at", array = "hg_u95av2", mart = mart)
+getAffyArrays(mart)
 
-#example Entrez-Gene
-
-getGO(id = 672, type = "entrezgene", species = "hsapiens", mart = mart)
 @
 
-\subsection{\Rfunction{getOMIM}}
-
-The function \Rfunction{getOMIM} uses a query id to look up OMIM annotation of the corresponding gene.
-Currently the \Rfunction{getOMIM} function takes identifiers from entrezgene, affy, refseq, ensembl, hugo and embl.  Besides the id argument, this function also has an array ,type and mart argument.\\
-The id argument is either a vector of identifiers or a single identifier to be annotated.\\
-The array argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\
-The type argument takes the values of 'entrezgene','refseq' and 'embl' to clarify which type of identifier is specified in the id argument. If the argumant array is used then biomaRt knows the identifiers given corresponf to affy id's.  The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
-Depending on the identifier, different additional arguments will have to be given, summarized below:
-\begin{itemize}
-\item Affy id's: id, array, mart 
-\item Entrez-Gene: id, type, mart  
-\item RefSeq: id, type, mart
-\item embl: id, type, mart
-\end{itemize}
-
-Note:  make sure you have a Mart object with a connection to ensembl
-
-Examples: \\
+Assume now that we have some upregulated features that we want to annotate. To get the gene information on a certain affy array do:
 
 <<>>=
 
-#example affy
+upregulated <- c("210708_x_at","202763_at","211464_x_at")
 
-getOMIM(id = "1939_at", array = "hg_u95av2", mart = mart)
+gene <- getGene( id = upregulated, array = "hgu133plus2", mart = mart)
 
-#example Entrez-Gene
-
-getOMIM(id = 672, type = "entrezgene", mart = mart)
+gene
 @
 
-\subsection{\Rfunction{getINTERPRO}}
+When using other id's we have to specify the \texttt{type} and \texttt{species}, use the function \Rfunction{getSpecies} to find valid species names.
 
-The function \Rfunction{getINTERPRO} uses a query id to look up INTERPRO protein domains of the corresponding protein.
-Currently the \Rfunction{getINTERPRO} function takes identifiers from entrezgene, affy, refseq and embl, hugo, ensembl.  Besides the id argument, this function also has a species, array and type argument.\\
-The id argument is either a vector of identifiers or a single identifier to be annotated.\\
- The species argument should have the species from which the identifier comes as value.  A list of possible species to choose from can be obtained by executing the function \Rfunction{getSpecies}.\\ 
-The array argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\ The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
-A last argument of this function is the type argument which, takes the values of 'entrezgene','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
-Depending on the identifier, different additional arguments will have to be given, summarized below:
-\begin{itemize}
-\item Affy id's: id, array, mart
-\item Entrez-Gene: id, type, species, mart  
-\item RefSeq: id, type, species, mart
-\item embl: id, type, species, mart
-\end{itemize}
+<<>>=
+getGene(id=100,species="hsapiens",type="entrezgene",mart=mart)
+
+@
 
 
-Note:  make sure you have a Mart object with a connections to ensembl and uniprot
+\section{GO annotation}
 
-Examples: \\
+Gene Onotology annotation can be retrieved with the function \Rfunction{getGO}.  The arguments are the same as the function \Rfunction{getGene}.
+
+<<>>=
+go <- getGO( id = upregulated[1], array = "hgu133plus2", mart = mart)
+go
+@
+
+\section{OMIM annotation}
+
+OMIM annotation can be retrieved with the function \Rfunction{getOMIM}.  The arguments are the same as the function \Rfunction{getGene}.
+
+<<>>=
+omim <- getOMIM( id = "203140_at" , array = "hgu133plus2", mart = mart)
+omim
+@
+
+\section{INTERPRO protein domains}
+
+INTERPRO protein domains of the corresponding proteins can be searched with the function \Rfunction{getINTERPRO}. Again the arguments are the same as the function \Rfunction{getGene}.  
 
 <<>>=
 
-#example affy
+getINTERPRO(id="1939_at",array="hgu95av2",mart=mart)
 
-getINTERPRO(id = "1939_at", array = "hg_u95av2", mart = mart)
-
-#example Entrez-Gene
-
-getINTERPRO(id = 100, type = "entrezgene", species = "hsapiens", mart = mart)
 @
 
-\subsection{\Rfunction{getFeature}}
 
-The function \Rfunction{getFeature} looks up affy identifiers on a given affy array which correspond to a given symbol. As output this function returns a \Robject{martTable}.
-Currently the \Rfunction{getFeature} function takes identifiers from affy only.  Besides the symbol argument, this function also has array and mart argument.\\ The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect}\\
-A last argument of this function is the type argument which, takes the values of 'affy', 'locuslink','refseq' and 'embl' to clarify which type of identifier is specified in the id argument.\\
+\section{Homology mapping}
 
-Note:  make sure you have a Mart object with a connection to ensembl
+This function maps homologs of genes of one species to another species.
+To see which species are available do:\\
 
-Examples: \\
+<<>>=
+getSpecies(mart)
+
+@
+
+Now we can look for homologs:
 
 <<>>=
 
-#find all probes on the hgu95av2 array which have something to do with P53
+getHomolog(id = 2,from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq',mart = mart)
 
-getFeature(symbol = "P53", array = "hg_u95av2", mart = mart)
+getHomolog(id = "1939_at",to.array = "canine", from.array = "hgu95av2",mart = mart )
 
 @
 
-\subsection{\Rfunction{getSequence}}
 
-The function \Rfunction{getSequence} retrieves the sequence given it's chromosome, start and end position. As output this function returns a \Robject{martTable}.
-The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect} and should in this case be the sequence mart.\\
+\section{Identify subsets of genes for further analysis with the \Rfunction{getFeature} function}
 
-Note:  make sure you have a Mart object with connections to ensembl and sequence
+The function \Rfunction{getFeature} is a general function to look up identifiers which pass a certain filter.  A first such a filter is to look for identifiers that correspond to genes with a given symbol.  If the array argument is given then affy identifiers from that array will be returned.  For retrieving other identifiers one has to specify the species and the type of identifier to retrieve.\\
 
-Examples: \\
+<<>>=
+getFeature(symbol="BRCA2",array="hgu95av2",mart=mart)
+@
+
+A second possible filter is to look for id's which have a certain OMIM disease term attached to them (this only works for hsapiens).
+
+<<>>=
+getFeature(OMIM="diabetes mellitus", type="refseq", species="hsapiens",mart=mart)
+@
+
+Similarly one can look for id's that have a certain GO annotation e.g. retrieve all affy id's on the hgu133plus2 array which have protein-tyrosine kinase activity.\\
+
+<<>>=
+
+tyrkinase <- getFeature(GO="protein-tyrosine kinase",array="hgu133plus2",mart=mart)
+
+@
+
+An other filter uses the position of genes on the genome.  One can query for all genes on a certain chromosome:
+
+<<>>=
+ychrom <- getFeature(chromosome="Y",type="entrezgene",species="hsapiens",mart=mart)
+ychrom@id[1:10]
+
+@
+
+Or query for genes that lay in a particular region:\\
+
+<<>>=
+getFeature(chromosome=21,start=30000000, end = 35000000, array="hgu95av2",mart=mart)
+@
+
+\section{Sequence information}
+
+The function \Rfunction{getSequence} retrieves the sequence given it's chromosome, start and end position.
 
 <<>>=
 
@@ -249,15 +225,10 @@ getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = ma
 @
 
 
-\subsection{\Rfunction{getSNP}}
+\section{Single Nucleotide Polymorphisms}
 
-The function \Rfunction{getSNP} retrieves all SNP's between a given a start and end position on a gives chromosome.. As output this function returns a \Robject{martTable}.
-The mart argument is a mart connection, which was obtained using the method \Rfunction{martConnect} and should in this case be the snp mart.\\
-
+The function \Rfunction{getSNP} retrieves all SNP's between a given a start and end position on a gives chromosome..
 Note:  make sure you have a Mart object with connections to ensembl and snp
-
-Examples: \\
-
 
 <<>>=
 
@@ -265,59 +236,11 @@ getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart =
 
 @
 
-\subsection{\Rfunction{getSpecies}}
-
-The function \Rfunction{getSpecies} looks up which species are present in the BioMart.  This function currently works only for ensembl.
-
-Note:  make sure you have a Mart object with a connection to ensembl
-
-Examples: \\
-
-<<>>=
-
-
-getSpecies( mart = mart )
-
-@
-
-\subsection{\Rfunction{getAffyArrays}}
-
-The function \Rfunction{getAffyArrays} retrieves the Affymetrix array identifiers which are present in ensembl and which can be queried using the biomaRt package.
-
-Note:  make sure you have a Mart object with a connection to ensembl
-
-Examples: \\
-
-
-<<>>=
-
-
-getAffyArrays( mart = mart )
-
-@
-
-
-\subsection{\Rfunction{getHomolog}}
-
-This function retrieves homologs of genes of one species in another species
-
-Note:  make sure you have a Mart object with a connection to ensembl
-
-Example: \\
-
-<<>>=
-getHomolog(id = 1:20, from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq', mart = mart)
-@
-
-
+\section{More exotic functions}
 \subsection{\Rfunction{getPossibleXrefs}}
 
 This function retrieves the possible cross-references present in Ensembl.  This is a very general function to see what can be extracted from En
 sembl.  The results of this function can be used in the getXref function to extract the data of interest.
-
-Note:  make sure you have a Mart object with a connection to ensembl
-
-Example: \\
 
 <<>>=
 xref <- getPossibleXrefs(mart = mart)
@@ -328,20 +251,14 @@ xref[1:10,]
 
 \subsection{\Rfunction{getXref}}
 
-This powerful function retrieves any cross reference in Ensembl
-
-Note:  make sure you have a Mart object with a connection to ensembl
-
-Example: \\
+This powerful function retrieves any cross reference in Ensembl.  It can for example be used to map different affymetrix array within one species.
+E.g. starting from an affy id of chip hgu95av2 and id 1939\_at, look for corresponding affy identifiers on the affy hgu133plus2 chip.
 
 <<>>=
 
-#starting from an affy id of chip hg_u95av2 and id 1939_at, give me corresponding affy identifiers on the affy mouse chip mouse430_2
-
-getXref(id="1939_at", from.species="hsapiens", to.species = "mmusculus", from.xref ="affy_hg_u95av2", to.xref="affy_mouse430_2",mart=mart)
+getXref(id=c("1939_at"), from.species="hsapiens", to.species = "hsapiens", from.xref ="affy_hg_u95av2", to.xref="affy_hg_u133_plus_2",mart=mart)
 
 @
-
 
 
 \end{document}
