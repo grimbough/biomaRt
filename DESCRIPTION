@@ -1,12 +1,12 @@
 Package: biomaRt
-Version: 1.1.8
-Date: 2005-08-9
+Version: 1.2.0
+Date: 2005-09-01
 Title: Interface to BioMart databases (e.g. Ensembl)
 Author: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>,
         Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis
         <sdavis2@mail.nih.gov>
 Maintainer: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>
-Depends: methods, Biobase, RMySQL
+Depends: methods, RMySQL, XML 
 Description: Interface to BioMart databases (e.g. Ensembl and VEGA).  Provides
         functions to retrieve gene, GO, SNP, sequence, INTERPRO and
         OMIM information directly from the BioMart databases starting from affy, refseq, hugo, ensembl, entrezgene or embl identifiers.
