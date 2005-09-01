@@ -35,7 +35,8 @@
 \tableofcontents
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-The BioConductor \Rpackage{biomaRt} package enables to directly query databases based on biomaRt such as Ensembl, a software system which produces and maintains automatic annotation on metazoan genomes.  This way you can annotate the features on your array with the latest annotations starting from identifiers such as affy id's, locuslink, RefSeq and more. Annotation includes gene names, GO and OMIM annotation (depending on species).\\
+The BioConductor \Rpackage{biomaRt} package enables to directly query databases based on biomaRt such as Ensembl, a software system which produces and maintains automatic annotation on metazoan genomes.  This way you can annotate the features on your array with the latest annotations starting from identifiers such as affy id's, locuslink, RefSeq and more. Annotation includes gene names, GO and OMIM annotation (depending on species).  After discussing the biomaRt objects there is a section discussing easy to use functions which consists of a collection of common queries on Ensembl.  A second section describes functions that are of general use on all BioMart databases and which closely resemble other BioMart API's such as Martshell.\\
+
 \section{objects}
 
 \subsection{Mart-class}
@@ -55,11 +56,12 @@ An object of the \Robject{martTable} class is the output of most biomaRt funtion
 \item \Robject{table}: is a list of vectors storing the retrieved data
 \end{itemize}
 
-\section{Connecting to BioMart databases}
+\section{Easy functions}
+\subsection{Connecting to BioMart databases}
 
 A first step in using the biomaRt package is to connect to a BioMart database. The function martConnect establishes a connection with one or more of the following BioMart databases: snp, ensembl, sequence and vega.  Default this function will connect to public BioMart databases.  If no biomart is specified, only a connection to ensembl will be established.  If you want to use local BioMart install you have to set the local argument to TRUE and specify host, password and user details in the corresponding arguments.   
 
-\subsection{\Rfunction{martConnect}}
+\subsubsection{\Rfunction{martConnect}}
 
 <<>>=
 ## load up the library
@@ -70,7 +72,7 @@ mart <- martConnect()
  
 @
 
-\subsection{\Rfunction{martDisconnect}}
+\subsubsection{\Rfunction{martDisconnect}}
 
 You can only hold a limited number of connections with different BioMarts.  The function martDisconnect can be used to close a mart connection.
 
@@ -82,7 +84,7 @@ martDisconnect(mart)
  
 @
 
-\section{Annotating identifiers with gene information}
+\subsection{Annotating identifiers with gene information}
 
 The function \Rfunction{getGene} uses a query id to look up the name, description and chromosomal information of the corresponding gene.
 Currently the \Rfunction{getGene} function takes identifiers from entrezgene, ensembl, refseq, affy, hugo and embl.  Besides the id argument, this function also has a species, array and type argument.\\
@@ -128,7 +130,7 @@ getGene(id=100,species="hsapiens",type="entrezgene",mart=mart)
 @
 
 
-\section{GO annotation}
+\subsubsection{GO annotation}
 
 Gene Onotology annotation can be retrieved with the function \Rfunction{getGO}.  The arguments are the same as the function \Rfunction{getGene}.
 
@@ -137,7 +139,7 @@ go <- getGO( id = upregulated[1], array = "hgu133plus2", mart = mart)
 go
 @
 
-\section{OMIM annotation}
+\subsubsection{OMIM annotation}
 
 OMIM annotation can be retrieved with the function \Rfunction{getOMIM}.  The arguments are the same as the function \Rfunction{getGene}.
 
@@ -146,7 +148,7 @@ omim <- getOMIM( id = "203140_at" , array = "hgu133plus2", mart = mart)
 omim
 @
 
-\section{INTERPRO protein domains}
+\subsubsection{INTERPRO protein domains}
 
 INTERPRO protein domains of the corresponding proteins can be searched with the function \Rfunction{getINTERPRO}. Again the arguments are the same as the function \Rfunction{getGene}.  
 
@@ -157,7 +159,7 @@ getINTERPRO(id="1939_at",array="hgu95av2",mart=mart)
 @
 
 
-\section{Homology mapping}
+\subsection{Homology mapping}
 
 This function maps homologs of genes of one species to another species.
 To see which species are available do:\\
@@ -178,7 +180,7 @@ getHomolog(id = "1939_at",to.array = "canine", from.array = "hgu95av2",mart = ma
 @
 
 
-\section{Identify subsets of genes for further analysis with the \Rfunction{getFeature} function}
+\subsection{Identify subsets of genes for further analysis with the \Rfunction{getFeature} function}
 
 The function \Rfunction{getFeature} is a general function to look up identifiers which pass a certain filter.  A first such a filter is to look for identifiers that correspond to genes with a given symbol.  If the array argument is given then affy identifiers from that array will be returned.  For retrieving other identifiers one has to specify the species and the type of identifier to retrieve.\\
 
@@ -214,7 +216,7 @@ Or query for genes that lay in a particular region:\\
 getFeature(chromosome=21,start=30000000, end = 35000000, array="hgu95av2",mart=mart)
 @
 
-\section{Sequence information}
+\subsection{Sequence information}
 
 The function \Rfunction{getSequence} retrieves the sequence given it's chromosome, start and end position.
 
@@ -225,7 +227,7 @@ getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = ma
 @
 
 
-\section{Single Nucleotide Polymorphisms}
+\subsection{Single Nucleotide Polymorphisms}
 
 The function \Rfunction{getSNP} retrieves all SNP's between a given a start and end position on a gives chromosome..
 Note:  make sure you have a Mart object with connections to ensembl and snp
@@ -236,8 +238,8 @@ getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart =
 
 @
 
-\section{More exotic functions}
-\subsection{\Rfunction{getPossibleXrefs}}
+\subsection{More exotic functions}
+\subsubsection{\Rfunction{getPossibleXrefs}}
 
 This function retrieves the possible cross-references present in Ensembl.  This is a very general function to see what can be extracted from En
 sembl.  The results of this function can be used in the getXref function to extract the data of interest.
@@ -249,7 +251,7 @@ xref[1:10,]
 @
 
 
-\subsection{\Rfunction{getXref}}
+\subsubsection{\Rfunction{getXref}}
 
 This powerful function retrieves any cross reference in Ensembl.  It can for example be used to map different affymetrix array within one species.
 E.g. starting from an affy id of chip hgu95av2 and id 1939\_at, look for corresponding affy identifiers on the affy hgu133plus2 chip.
@@ -257,8 +259,72 @@ E.g. starting from an affy id of chip hgu95av2 and id 1939\_at, look for corresp
 <<>>=
 
 getXref(id=c("1939_at"), from.species="hsapiens", to.species = "hsapiens", from.xref ="affy_hg_u95av2", to.xref="affy_hg_u133_plus_2",mart=mart)
+martDisconnect(mart)
 
 @
 
+\section{BioMart functions}
+In this section we'll discuss functions that resemble other BioMart API's such as Martshell (see: http://www.biomart.org for more info).   These functions are very general and can be used on all BioMart databases.  The order in which the functions are discussed is the usual order of how you should use them.
 
+\subsection{listMarts}
+
+The \Rfunction{listMarts} lists the possible BioMarts where we can connect to.
+
+<<>>=
+marts <- listMarts()
+marts
+@
+
+\subsection{useMart}
+
+Here we select from the list of possible BioMart databases, a BioMart that we want to use.  You have to specify the full name of the BioMart e.g. "ensembl\_mart\_32".
+<<>>=
+index<-grep("ensembl",marts)
+mart <- useMart(marts[index])
+@
+\subsection{listDatasets}
+
+Next we want to select a specific dataset of the selected BioMart. To see which dataset is available we use the function \Rfunction{listDatasets}.
+
+<<>>=
+listDatasets(mart)
+@
+
+\subsection{useDataset}
+
+To actually use a dataset we use the function \Rfunction{useDataset} to update our Mart object so it contains the configuration information of the dataset of interest.
+
+<<>>=
+
+mart<-useDataset(dataset="hsapiens_gene_ensembl",mart=mart)
+
+@
+
+\subsection{Filter, Values and Attributes}
+
+In BioMart, a filter is used to search a set of attributes that have a specified value for that filter.  To explain this better lets consider the following usecase.  We want to get the gene symbol, chromosome name and band of the following features on the affy hgu95av2 chip: 1939\_at,1503\_at and 1454\_at.  In this case the attributes are gene symbol, chromosome name and band.  The filter is the hgu95av2 chip and as values for this filter we use the affy identifiers.   
+In BioMart a list of possible attributes that we can query for can be retrieved by using the function \Rfunction{listAttributes}
+
+<<>>=
+
+attributes <- listAttributes(mart) 
+attributes[1:10]
+
+@
+
+Similarly a list of possible filters can be obtained with the function \Rfunction{listFilters}.
+
+<<>>=
+filters <- listFilters(mart)
+filters[1:10]
+@
+
+To get the information depicted in our example we can use the function |Rfunction{get}, using valid attributes and filter.
+
+<<>>=
+get(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95av2",values=c("1939_at","1503_at","1454_at"), mart=mart)
+martDisconnect(mart)
+@
+
+As you see multiple attributes can be retrieved at once but in the current version of biomaRt there is the restriction that the attributes which are queried together, should somehow be of a similar type, e.g. gene symbol, chromosome name or e.g. allele, SNP, and frequency of snp. 
 \end{document}

@@ -2,17 +2,33 @@
 .packageName <- "biomaRt"
 
 
+
 setClass("Mart",
          representation(
                         connections = "list",
                         mysqldriver = "MySQLDriver",
-                        arrayToSpecies = "data.frame"
+                        arrayToSpecies = "data.frame",
+                        datasets = "list"
                         ),
          prototype(
                    connections = new("list"),
                    arrayToSpecies = data.frame(cbind(x=1, y=1:2))
                    )
          );
+
+
+
+#setClass("Mart",
+#         representation(
+#                        connections = "list",
+#                        mysqldriver = "MySQLDriver",
+#                        arrayToSpecies = "data.frame"
+#                        ),
+#         prototype(
+#                   connections = new("list"),
+#                   arrayToSpecies = data.frame(cbind(x=1, y=1:2))
+#                   )
+#         );
 
 
 setClass("martTable",
@@ -53,78 +69,64 @@ setMethod("show","martTable",
 #list marts
 #######################
 
-listMarts <- function(mart, host = "ensembldb.ensembl.org", user = "anonymous", password = ""){
 
-  if(missing( mart )){
-    stop("You need to provide the mart you are looking for.  listMarts will then return you the version of the BioMart it is using.  Choose either ensembl, snp, sequence, vega or uniprot.  If you use this function for uniprot, please also provide the host martdb.ebi.ac.uk.");
+listMarts <- function( mart, host, user, password, includeHosts = FALSE){
+
+  if(missing(mart)){
+    mart <- c("ensembl","vega","snp","msd","uniprot")
   }
-  driv <- dbDriver("MySQL", force.reload = FALSE);
+  if(missing(host)){
+    host <- c("ensembldb.ensembl.org", "martdb.ebi.ac.uk")
+    user <- c("anonymous","anonymous")
+    password <- c("","")
+  }
   
-  connection <- dbConnect(driv, user = user, host = host, password = password);
-  
-  res <- dbGetQuery(connection,"show databases like '%mart%'");
   database <- NULL
+  driv <- dbDriver("MySQL", force.reload = FALSE);
+
+  for(i in 1:length(host)){
+    connection <- dbConnect(driv, user = user[i], host = host[i], password = password[i]);
   
-  #Search latest releases of marts
- # martConf <- NULL  #one mart vs multiple marts      
-  if(dim(res)[1] >= 1){
- #   for(i in 1: length(marts)){
-      matches <- grep(mart,res[,1]);
-      if(length(matches) > 1){
-        version <- 1;
-        latest <- 1;
-        for(j in 1:length(matches)){
-          v <- as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]);
-          if(v > version){
-            latest <- j;
-            version <- v;
+    res <- dbGetQuery(connection,"show databases like '%mart%'");
+    
+                                        #Search latest releases of marts
+    if(dim(res)[1] >= 1){
+      for(j in 1:length(mart)){ 
+        matches <- grep(mart[j],res[,1]);
+        if(length(matches) > 1){
+          version <- 1;
+          latest <- 1;
+          for(j in 1:length(matches)){
+            v <- as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]);
+            if(v > version){
+              latest <- j;
+              version <- v;
+            }
+          }
+          if(!includeHosts){
+            database <- c(database,res[matches[latest],1])
+          }
+          else{
+            database <- rbind(database,cbind(res[matches[latest],1],host[i]))
           }
         }
-        database <- res[matches[latest],1];
-      #  martConf <- c( martConf, v );
-      }
-      else{
-        if(sum(matches)> 0){
-          databases <- res[matches,1];
-          v <- as.numeric(strsplit(res[matches,1],"_")[[1]][3]);
-        }
         else{
-          stop(paste("No biomaRt database for",mart," found, please check if host is set correctly"));
+          if(sum(matches)> 0){
+            if(!includeHosts){
+              database <- c(database,res[matches,1]);
+              v <- as.numeric(strsplit(res[matches,1],"_")[[1]][3]);
+            }
+            else{
+              database <- rbind(database,cbind(res[matches,1],host[i]));
+            }
+          }
         }
-      #  martConf <- c( martConf, v );
+        
+        dbDisconnect(connection);
       }
-  #  }
-    
-  #  if(!(sum(martConf)/4 == martConf[[1]])){ # mean there is only one new mart
-  #    
-  #    databases$snp <- databases$ensembl
-  #    databases$vega <- databases$ensembl
-  #    databases$sequence <- databases$ensembl
-      
-  #  }
-    
+    }
   }
-  else{
-   # if(dim(res)[1] == 1){
-   #   if(grep("ensembl",res[1,1]) == 1){
-   #     databases$ensembl <- res[1,1]
-   #     databases$snp <- databases$ensembl
-   #     databases$vega <- databases$ensembl
-   #     databases$sequence <- databases$ensembl
-   #   }
-   #   else{
-   #     stop("No Ensembl database found, if you have a local installation, make sure your database follows trhe following naming convention: ensembl_mart_30 where 30 is the release number");
-   #   }
-      
-   # }
-   # else{
-      stop(paste("No biomaRt database for",mart," found, please check if host is set correctly"));
-   # }
-  }
-  dbDisconnect(connection);
-  
   return( database );
-  
 }
 
 ##################
@@ -218,6 +220,9 @@ martDisconnect <- function( mart ){
   }
   if(match("uniprot",openConnections,nomatch = 0) != 0){
     dbDisconnect( mart@connections$uniprot );
+  }
+  if(match("biomart",openConnections,nomatch = 0) != 0){
+    dbDisconnect( mart@connections$biomart );
   }
 }
 
@@ -1308,4 +1313,318 @@ getINTERPRO <- function( id, type, array, species, mart){
     }
   }
   return(table)
+}
+
+######################################################################################
+#
+#BioMart functions
+#based on martshell
+#
+######################################################################################
+
+useMart <- function(biomart, host, user, password, local = FALSE){
+
+  
+  driver <- dbDriver("MySQL", force.reload = FALSE);
+  mart <- new("Mart", mysqldriver = driver)
+  
+
+  if(local){
+    if(!missing(host) && !missing(user) && !missing(password)){
+      database <- listMarts(mart = biomart, host = host, user = user, password = password);
+      mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver,user = user, host = host, dbname = database, password = password)
+      writeLines(paste("connected to: ",database[1,1]))
+    }
+    else{
+      stop("you should provide host, user and password when using local databases")
+    }
+  } 
+  else{
+    database <- listMarts(includeHosts=TRUE)
+    m<-match(biomart,database[,1],nomatch=0)
+    if(m == 0){
+      stop(paste("BioMart ",biomart, " does not exist or can not be found", sep =""))
+    }
+    else{
+      mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver,user = "anonymous", host = database[m,2] , dbname = database[m,1], password = "")
+      writeLines(paste("connected to: ",biomart))
+    }
+             
+    
+    #should have a try and catch here ...
+    
+    
+  }  
+  return( mart )
+}
+
+
+
+
+listDatasets <- function( mart ){
+  res <- dbGetQuery(mart@connections$biomart,"select dataset, version from meta_configuration where visible = 1")
+  return(res)
+}
+
+getAttributes<-function( xml ){
+  names <- names.XMLNode(xml)
+  writeLines("Checking attributes ...", sep =" ")
+  attrib <- NULL
+  table <- NULL
+  fieldA <- NULL
+  keyA <- NULL
+  
+  for(h in 1:(xmlSize(xml)-1)){
+    if(names[h] == "AttributePage"){  #fix xmlSize ...first test if size > 0!!
+      if(!is.null(xmlGetAttr(xml[[h]],"hidden"))){
+        if(xmlGetAttr(xml[[h]],"hidden") != "true"){                
+          for(i in 1:xmlSize(xml[[h]])){
+            for(j in 1:xmlSize(xml[[h]][[i]])){
+              for(k in 1:xmlSize(xml[[h]][[i]][[j]])){
+                if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"hidden"))){
+                  if(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"hidden") != "true"){                
+                    if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))){
+                      table<-c(table,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))
+                      attrib<-c(attrib,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"internalName"))
+                      fieldA <- c(fieldA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"field"))
+                      keyA <- c(keyA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"key"))
+                    }
+                  }
+                }
+                else{
+                  if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))){
+                    table<-c(table,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))
+                    attrib<-c(attrib,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"internalName"))
+                    fieldA <- c(fieldA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"field"))
+                    keyA <- c(keyA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"key"))
+                    
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      else{
+        for(i in 1:xmlSize(xml[[h]])){
+          for(j in 1:xmlSize(xml[[h]][[i]])){
+            for(k in 1:xmlSize(xml[[h]][[i]][[j]])){
+              if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"hidden"))){
+                if(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"hidden") != "true"){                
+                  if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))){
+                    table<-c(table,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))
+                    attrib<-c(attrib,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"internalName"))
+                    fieldA <- c(fieldA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"field"))
+                    keyA <- c(keyA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"key"))
+                   
+                  }
+                }
+              }
+              else{
+                if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))){
+                  table<-c(table,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))
+                  attrib<-c(attrib,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"internalName"))
+                  fieldA <- c(fieldA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"field"))
+                  keyA <- c(keyA,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"key"))
+                   
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  attributes <- list(attributes = attrib, field = fieldA, table = table, key = keyA)
+  writeLines("ok")
+  return(attributes)
+}
+
+
+getFilters <- function(xml){
+  writeLines("Checking filters ...", sep=" ")
+
+  names <- names.XMLNode(xml)
+  
+  filter <- NULL
+  tableF <- NULL
+  fieldF <- NULL
+  keyF <- NULL
+  for(h in 1:(xmlSize(xml)-1)){
+    if(names[h] == "FilterPage"){ 
+      if(xmlAttrs(xml[[h]])[["displayName"]]=="FILTERS"){
+        for(i in 1:xmlSize(xml[[h]])){
+          for(j in 1:xmlSize(xml[[h]][[i]])){
+            if(xmlSize(xml[[h]][[i]][[j]]) > 0){
+              for(k in 1:xmlSize(xml[[h]][[i]][[j]])){
+                if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))){
+                  tableF<-c(tableF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))
+                  filter<-c(filter,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"internalName"))
+                  fieldF <- c(fieldF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"field"))
+                  keyF <- c(keyF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"key"))
+                   
+                }
+                else{
+                  if(xmlSize(xml[[h]][[i]][[j]][[k]]) > 0){
+                    for(s in 1:xmlSize(xml[[h]][[i]][[j]][[k]])){
+                      if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"tableConstraint"))){
+                        tableF<-c(tableF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"tableConstraint"))
+                        filter<-c(filter,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"internalName"))
+                        fieldF<-c(fieldF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"field"))
+                        keyF <- c(keyF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"key"))
+                      }
+                    }
+                  }
+                }  
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  filters <- list(filter = filter,field = fieldF, table = tableF, key = keyF)
+  writeLines("ok")
+  return(filters)
+}
+
+useDataset <- function(dataset, mart){
+  res <- dbGetQuery(mart@connections$biomart,paste("select xml from meta_configuration where dataset = '",dataset,"'",sep=""))
+  writeLines(paste("Reading database configuration of:",dataset))
+  xml <- xmlTreeParse(res[1,])
+  xml <- xml$doc$children[[1]]
+ 
+  #Getting the attributes & filters
+ 
+  attributes <- getAttributes(xml)
+  filters <- getFilters(xml)
+
+  datasets <- list(name = dataset, xml= xml, attributes = attributes, filters = filters);
+  mart@datasets <- datasets
+  
+  return(mart)
+}
+
+
+listAttributes <- function( mart ){
+  return(mart@datasets$attributes$attributes)
+}
+
+listFilters <- function( mart ){
+  return(mart@datasets$filters$filter)
+
+}
+    
+get <- function(attributes, filter, values, mart){
+  query<-queryGenerator(attributes=attributes, filters=filter, values=values, mart=mart)
+  res <- dbGetQuery(mart@connections$biomart,query)
+  if(dim(res)[1] == 0){
+    #table <- new("martTable", values = values, table = NA);
+    res <- data.frame()
+  }
+  else{
+    mt = match(res[,1], values);
+    if(any(is.na(mt)))
+      stop("Internal error!");
+    res = res[order(mt),];
+    names(res) = c(filter, attributes);     
+  }  
+  return(as.data.frame(res))
+}
+
+
+
+queryGenerator <- function(attributes, filters, values, mart){
+
+  query <- "SELECT DISTINCT "
+  Afields <- NULL
+  Atables <- NULL
+  Akeys <- NULL
+  Ffields <- NULL
+  Ftables <- NULL
+  Fkeys <- NULL
+  
+  for(i in 1:length(attributes)){
+    m<-match(attributes[i], mart@datasets$attributes$attributes, nomatch = 0)
+    if(m == 0){
+      stop("attribute not found, use function listAttributes to get valid attribute names")
+    }
+    Afields <- c(Afields,mart@datasets$attributes$field[m])
+    table <- mart@datasets$attributes$table[m]
+    Akeys <- c(Akeys,mart@datasets$attributes$key[m])
+    if(table == "main"){
+      table <- switch(mart@datasets$attributes$key[m],
+                      "gene_id_key" = paste(mart@datasets$name,"__gene__main",sep=""),
+                      "transcript_id_key" = paste(mart@datasets$name,"__transcript__main",sep=""));
+    }
+    Atables <- c(Atables,table)
+  }
+
+  numAtables <- unique(Atables)
+  if(length(numAtables)> 1)stop("query currently not possible...try only using attributes that are similar eg allele and freq when retrieving snp information");
+  
+  lastA <- length(attributes)
+  
+  
+  for(i in 1:length(filters)){
+    m<-match(filters[i], mart@datasets$filters$filter, nomatch = 0)
+    if(m == 0){
+      stop("Filter doesn't exists")
+    }
+    else{
+      Ffields <- c(Ffields,mart@datasets$filters$field[m])
+      table <- mart@datasets$filters$table[m]
+      Fkeys <- c(Fkeys,mart@datasets$filters$key[m])
+  
+      if(table == "main"){
+        table <- switch(mart@datasets$filters$key[m],
+                        "gene_id_key" = paste(mart@datasets$name,"__gene__main",sep=""),
+                        "transcript_id_key" = paste(mart@datasets$name,"__transcript__main",sep=""));
+      }
+      Ftables <- c(Ftables,table)
+    }
+  }
+  query <- paste(query,Ftables[1],".",Ffields[1],", " ,sep ="")
+  
+  for (i in 1:length(attributes)){
+    query <- paste(query,Atables[i],".",Afields[i] ,sep ="")
+    if(i != lastA){
+      query <- paste(query,",",sep ="")
+    }
+  }
+
+  if(grep("_gene_", numAtables) > 0){ 
+    if(grep("_gene_",Ftables) > 0){
+      Fkeys[1] <- "gene_id_key";
+      Akeys[1] <- "gene_id_key";
+    }
+  }
+  
+  tables <- unique(c(Atables,Ftables));
+  
+  query <- paste (query," FROM ", sep="")
+  query<-paste(query,tables[1]," INNER JOIN ",tables[2], " ON ",tables[1],".",Akeys[1]," = ",tables[2],".",Fkeys[1],sep="")  
+  
+  for(i in 1:length(Ftables)){
+    
+    query <-paste(query, " WHERE ", sep ="")
+
+    if (length( values ) >= 1){
+      
+      valueString <- paste("'",values,"'",sep="",collapse=",");
+    }
+    
+   # for (i in 1:length(filters)){
+    query <- paste(query,Ftables[1],".",Ffields[1] ,sep ="")
+    query <- paste(query," IN " ,sep ="")
+    query <- paste(query,"(",valueString,")",sep ="")
+      
+      #if(i != length(filters)){
+      #  query <- paste(query," AND ",sep ="")
+      #}
+    #}
+  }
+    
+   return(query)
 }
