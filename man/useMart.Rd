@@ -18,11 +18,12 @@
 
 \examples{
 if(interactive()){
-marts <- listMarts()
-index<-grep("ensembl",marts)
-mart <- useMart(marts[index])
 
-martDisconnect(mart = mart)
+#marts <- listMarts()
+#index<-grep("ensembl",marts)
+#mart <- useMart(marts[index])
+
+#martDisconnect(mart = mart)
 }
 }
 \keyword{methods}

@@ -15,15 +15,15 @@
 \examples{
 
 if(interactive()){
-marts <- listMarts()
-index<-grep("ensembl",marts)
+#marts <- listMarts()
+#index<-grep("ensembl",marts)
 
-mart <- useMart(marts[index])
-datasets <- listDatasets(mart)
-mart <- useDataset(datasets[1],mart = mart)
-filters <- listFilters(mart)
-filters[1:10]
-martDisconnect(mart = mart)
+#mart <- useMart(marts[index])
+#datasets <- listDatasets(mart)
+#mart <- useDataset(datasets[1],mart = mart)
+#filters <- listFilters(mart)
+#filters[1:10]
+#martDisconnect(mart = mart)
 }
 }
 \keyword{methods}
