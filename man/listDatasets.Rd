@@ -16,14 +16,14 @@
 
 if(interactive()){
 
-marts <- listMarts()
-index<-grep("ensembl",marts)
+#marts <- listMarts()
+#index<-grep("ensembl",marts)
 
-mart <- useMart(marts[index])
+#mart <- useMart(marts[index])
 
-listDatasets(mart = mart)
+#listDatasets(mart = mart)
 
-martDisconnect(mart = mart)
+#martDisconnect(mart = mart)
 }
 }
 \keyword{methods}
