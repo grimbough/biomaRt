@@ -302,7 +302,7 @@ mart<-useDataset(dataset="hsapiens_gene_ensembl",mart=mart)
 
 \subsection{Filter, Values and Attributes}
 
-In BioMart, a filter is used to search a set of attributes that have a specified value for that filter.  To explain this better lets consider the following usecase.  We want to get the gene symbol, chromosome name and band of the following features on the affy hgu95av2 chip: 1939\_at,1503\_at and 1454\_at.  In this case the attributes are gene symbol, chromosome name and band.  The filter is the hgu95av2 chip and as values for this filter we use the affy identifiers.   
+In BioMart, a filter is used to search a set of attributes that have a specified value for that filter.  To explain this better lets consider the following usecase.  We want to get the gene symbol, chromosome name and band of the following features on the affy hgu95av2 chip: 1939\_at,2082\_s\_at and 1454\_at.  In this case the attributes are gene symbol, chromosome name and band.  The filter is the hgu95av2 chip and as values for this filter we use the affy identifiers.   
 In BioMart a list of possible attributes that we can query for can be retrieved by using the function \Rfunction{listAttributes}
 
 <<>>=
@@ -319,10 +319,10 @@ filters <- listFilters(mart)
 filters[1:10]
 @
 
-To get the information depicted in our example we can use the function |Rfunction{get}, using valid attributes and filter.
+To get the information depicted in our example we can use the function \Rfunction{bmget}, using valid attributes and filter.
 
 <<>>=
-get(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95av2",values=c("1939_at","1503_at","1454_at"), mart=mart)
+bmget(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95av2",values=c("1939_at","2082_s_at","1454_at"), mart=mart)
 martDisconnect(mart)
 @
 

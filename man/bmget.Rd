@@ -1,8 +1,8 @@
-\name{get}
-\alias{get}
+\name{bmget}
+\alias{bmget}
 \title{Retrieves information from the BioMart database}
 \description{This function retrieves information from the BioMart database}
-\usage{get(attributes, filter, values, mart)}
+\usage{bmget(attributes, filter, values, mart)}
 
 \arguments{
   \item{attributes}{Attributes you want to retrieve.  A possible list of attributes can be retrieved using the function listAttributes.}
@@ -23,7 +23,7 @@ if(interactive()){
 #datasets <- listDatasets(mart)
 #mart<-useDataset("hsapiens_gene_ensembl",mart)
 
-#get(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95_v2",values=c("1939_at","1503_at","1454_at"), mart=mart)
+#bmget(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95_v2",values=c("1939_at","1503_at","1454_at"), mart=mart)
 
 #martDisconnect(mart = mart)
 }
