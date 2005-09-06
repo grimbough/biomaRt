@@ -1,4 +1,3 @@
-
 .packageName <- "biomaRt"
 
 
@@ -1516,7 +1515,7 @@ listFilters <- function( mart ){
 
 }
     
-get <- function(attributes, filter, values, mart){
+bmget <- function(attributes, filter, values, mart){
   query<-queryGenerator(attributes=attributes, filters=filter, values=values, mart=mart)
   res <- dbGetQuery(mart@connections$biomart,query)
   if(dim(res)[1] == 0){
