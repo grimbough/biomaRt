@@ -6,10 +6,10 @@ Author: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>,
         Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis
         <sdavis2@mail.nih.gov>
 Maintainer: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>
-Depends: methods, RMySQL, XML 
-Description: Interface to BioMart databases (e.g. Ensembl and VEGA).  Provides
-        functions to retrieve gene, GO, SNP, sequence, INTERPRO and
-        OMIM information directly from the BioMart databases starting from affy, refseq, hugo, ensembl, entrezgene or embl identifiers.
+Depends: methods, RMySQL, XML
+biocViews: Annotation 
+Description: Interface to BioMart databases (e.g. Ensembl and VEGA).  Provides access to BioMart databases similar to Martshell (http://www.biomart.org).
+	     There are also functions available which do queries commonly used in microarray data analysis such as functions to retrieve gene, GO, SNP, sequence, INTERPRO and OMIM information starting from affy, refseq, hugo, ensembl, entrezgene or embl identifiers.
         The package also provides homology mappings between these identifiers across all species present in Ensembl.  Genes can be pre-selected such that they fulfill a certain requirement e.g. give all human refseq id's of genes known to be involved in diabetes.
 License: LGPL version
 URL: http://www.esat.kuleuven.ac.be/~sdurinck
