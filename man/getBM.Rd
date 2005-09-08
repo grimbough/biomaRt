@@ -2,7 +2,7 @@
 \alias{getBM}
 \title{Retrieves information from the BioMart database}
 \description{This function retrieves information from the BioMart database}
-\usage{bmget(attributes, filter, values, mart)}
+\usage{getBM(attributes, filter, values, mart)}
 
 \arguments{
   \item{attributes}{Attributes you want to retrieve.  A possible list of attributes can be retrieved using the function listAttributes.}
