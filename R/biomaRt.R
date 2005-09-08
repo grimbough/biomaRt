@@ -15,21 +15,6 @@ setClass("Mart",
                    )
          );
 
-
-
-#setClass("Mart",
-#         representation(
-#                        connections = "list",
-#                        mysqldriver = "MySQLDriver",
-#                        arrayToSpecies = "data.frame"
-#                        ),
-#         prototype(
-#                   connections = new("list"),
-#                   arrayToSpecies = data.frame(cbind(x=1, y=1:2))
-#                   )
-#         );
-
-
 setClass("martTable",
          representation(id = "character",
                         table = "list"
@@ -48,20 +33,6 @@ setMethod("show","martTable",
     
     show(df)
   })
-
-
-#setMethod("as.data.frame","martTable",
- #         function( object, row.names = NULL, optional = NULL){
-  #          names <- rownames( summary( object@table ))
-  #          frame <- new("data.frame", id = as.vector(object@id))
-  #          for(i in 1: length(names)){
-  #            frame<-cbind(as.vector(object@table[[names[i]]]))
-  #          }
-  #          return( frame )
-  #                   
-  #        }
-  #        );
-
 
 
 #######################
@@ -1348,11 +1319,6 @@ useMart <- function(biomart, host, user, password, local = FALSE){
       mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver,user = "anonymous", host = database[m,2] , dbname = database[m,1], password = "")
       writeLines(paste("connected to: ",biomart))
     }
-             
-    
-    #should have a try and catch here ...
-    
-    
   }  
   return( mart )
 }
@@ -1491,9 +1457,13 @@ getFilters <- function(xml){
 useDataset <- function(dataset, mart){
   res <- dbGetQuery(mart@connections$biomart,paste("select xml from meta_configuration where dataset = '",dataset,"'",sep=""))
   writeLines(paste("Reading database configuration of:",dataset))
-  xml <- xmlTreeParse(res[1,])
-  xml <- xml$doc$children[[1]]
- 
+  if(dim(res)[1] == 0){
+    writeLines("This dataset is not accessible from biomaRt as not xml description of dataset is available")
+  }
+  else{
+    xml <- xmlTreeParse(res[1,])
+    xml <- xml$doc$children[[1]]
+  }
   #Getting the attributes & filters
  
   attributes <- getAttributes(xml)
@@ -1515,11 +1485,10 @@ listFilters <- function( mart ){
 
 }
     
-bmget <- function(attributes, filter, values, mart){
+getBM <- function(attributes, filter, values, mart){
   query<-queryGenerator(attributes=attributes, filters=filter, values=values, mart=mart)
   res <- dbGetQuery(mart@connections$biomart,query)
   if(dim(res)[1] == 0){
-    #table <- new("martTable", values = values, table = NA);
     res <- data.frame()
   }
   else{
@@ -1575,8 +1544,10 @@ queryGenerator <- function(attributes, filters, values, mart){
       Ffields <- c(Ffields,mart@datasets$filters$field[m])
       table <- mart@datasets$filters$table[m]
       Fkeys <- c(Fkeys,mart@datasets$filters$key[m])
-  
+
       if(table == "main"){
+        ## Should be updated when new BioMarts are available ###
+
         table <- switch(mart@datasets$filters$key[m],
                         "gene_id_key" = paste(mart@datasets$name,"__gene__main",sep=""),
                         "transcript_id_key" = paste(mart@datasets$name,"__transcript__main",sep=""));
@@ -1614,15 +1585,10 @@ queryGenerator <- function(attributes, filters, values, mart){
       valueString <- paste("'",values,"'",sep="",collapse=",");
     }
     
-   # for (i in 1:length(filters)){
     query <- paste(query,Ftables[1],".",Ffields[1] ,sep ="")
     query <- paste(query," IN " ,sep ="")
     query <- paste(query,"(",valueString,")",sep ="")
       
-      #if(i != length(filters)){
-      #  query <- paste(query," AND ",sep ="")
-      #}
-    #}
   }
     
    return(query)
