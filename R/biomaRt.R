@@ -1,7 +1,5 @@
 .packageName <- "biomaRt"
 
-
-
 setClass("Mart",
          representation(
                         connections = "list",
@@ -1416,31 +1414,33 @@ getFilters <- function(xml){
   fieldF <- NULL
   keyF <- NULL
   for(h in 1:(xmlSize(xml)-1)){
-    if(names[h] == "FilterPage"){ 
-      if(xmlAttrs(xml[[h]])[["displayName"]]=="FILTERS"){
-        for(i in 1:xmlSize(xml[[h]])){
-          for(j in 1:xmlSize(xml[[h]][[i]])){
-            if(xmlSize(xml[[h]][[i]][[j]]) > 0){
-              for(k in 1:xmlSize(xml[[h]][[i]][[j]])){
-                if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))){
-                  tableF<-c(tableF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))
-                  filter<-c(filter,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"internalName"))
-                  fieldF <- c(fieldF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"field"))
-                  keyF <- c(keyF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"key"))
-                   
-                }
-                else{
-                  if(xmlSize(xml[[h]][[i]][[j]][[k]]) > 0){
-                    for(s in 1:xmlSize(xml[[h]][[i]][[j]][[k]])){
-                      if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"tableConstraint"))){
-                        tableF<-c(tableF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"tableConstraint"))
-                        filter<-c(filter,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"internalName"))
-                        fieldF<-c(fieldF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"field"))
-                        keyF <- c(keyF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"key"))
+    if(names[h] == "FilterPage"){
+      if(!is.null(xmlGetAttr(xml[[h]],"displayName"))){
+        if(xmlAttrs(xml[[h]])[["displayName"]]=="FILTERS"){
+          for(i in 1:xmlSize(xml[[h]])){
+            for(j in 1:xmlSize(xml[[h]][[i]])){
+              if(xmlSize(xml[[h]][[i]][[j]]) > 0){
+                for(k in 1:xmlSize(xml[[h]][[i]][[j]])){
+                  if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))){
+                    tableF<-c(tableF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"tableConstraint"))
+                    filter<-c(filter,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"internalName"))
+                    fieldF <- c(fieldF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"field"))
+                    keyF <- c(keyF,xmlGetAttr(xml[[h]][[i]][[j]][[k]],"key"))
+                    
+                  }
+                  else{
+                    if(xmlSize(xml[[h]][[i]][[j]][[k]]) > 0){
+                      for(s in 1:xmlSize(xml[[h]][[i]][[j]][[k]])){
+                        if(!is.null(xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"tableConstraint"))){
+                          tableF<-c(tableF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"tableConstraint"))
+                          filter<-c(filter,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"internalName"))
+                          fieldF<-c(fieldF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"field"))
+                          keyF <- c(keyF,xmlGetAttr(xml[[h]][[i]][[j]][[k]][[s]],"key"))
+                        }
                       }
                     }
-                  }
-                }  
+                  }  
+                }
               }
             }
           }
@@ -1468,13 +1468,35 @@ useDataset <- function(dataset, mart){
  
   attributes <- getAttributes(xml)
   filters <- getFilters(xml)
-
-  datasets <- list(name = dataset, xml= xml, attributes = attributes, filters = filters);
+  mainTables <- getMainTables(xml)
+  datasets <- list(name = dataset, xml= xml, mainTables = mainTables, attributes = attributes, filters = filters);
   mart@datasets <- datasets
   
   return(mart)
 }
 
+getMainTables <- function( xml ){
+  writeLines("Checking main tables ...", sep=" ")
+  names <- names.XMLNode(xml)
+  
+  tableM <- NULL
+  keyM <- NULL
+  i<-1
+  j<-1
+  for(h in 1:(xmlSize(xml)-1)){
+    if(names[h] == "MainTable"){
+      tableM[i] = xmlValue(xml[[h]])
+      i <- i+1
+    }
+    if(names[h] == "Key"){
+      keyM[j] = xmlValue(xml[[h]])
+      j <- j+1
+    }
+  }
+  writeLines("ok")
+ 
+  return(list(tables=tableM,keys=keyM))
+}
 
 listAttributes <- function( mart ){
   return(mart@datasets$attributes$attributes)
@@ -1521,10 +1543,15 @@ queryGenerator <- function(attributes, filters, values, mart){
     Afields <- c(Afields,mart@datasets$attributes$field[m])
     table <- mart@datasets$attributes$table[m]
     Akeys <- c(Akeys,mart@datasets$attributes$key[m])
+
     if(table == "main"){
-      table <- switch(mart@datasets$attributes$key[m],
-                      "gene_id_key" = paste(mart@datasets$name,"__gene__main",sep=""),
-                      "transcript_id_key" = paste(mart@datasets$name,"__transcript__main",sep=""));
+
+       m2 <- match(mart@datasets$attributes$key[m], mart@datasets$mainTables$keys, nomatch = 0)
+       if(m2 == 0){
+         stop("internal error: Key doesn't match MainTable key");
+       }
+       table <- mart@datasets$mainTables$tables[m2];
+       
     }
     Atables <- c(Atables,table)
   }
@@ -1546,11 +1573,14 @@ queryGenerator <- function(attributes, filters, values, mart){
       Fkeys <- c(Fkeys,mart@datasets$filters$key[m])
 
       if(table == "main"){
-        ## Should be updated when new BioMarts are available ###
-
-        table <- switch(mart@datasets$filters$key[m],
-                        "gene_id_key" = paste(mart@datasets$name,"__gene__main",sep=""),
-                        "transcript_id_key" = paste(mart@datasets$name,"__transcript__main",sep=""));
+       
+        #check which biomart you are connected to
+        m2 <- match(mart@datasets$filters$key[m], mart@datasets$mainTables$keys, nomatch = 0)
+        if(m2 == 0){
+          stop("internal error: Key doesn't match MainTable key");
+        }
+        table <- mart@datasets$mainTables$tables[m2];
+      
       }
       Ftables <- c(Ftables,table)
     }
@@ -1564,18 +1594,31 @@ queryGenerator <- function(attributes, filters, values, mart){
     }
   }
 
-  if(grep("_gene_", numAtables) > 0){ 
-    if(grep("_gene_",Ftables) > 0){
-      Fkeys[1] <- "gene_id_key";
-      Akeys[1] <- "gene_id_key";
-    }
+  ##############################
+  #Key Order: gene > transcript#
+  ##############################
+  
+  if(Fkeys[1] == "gene_id_key"){ 
+   if(Akeys[1] == "transcript_id_key"){
+     Akeys[1] = Fkeys[1];
+   }
+  }
+  if(Akeys[1] == "gene_id_key"){ 
+   if(Fkeys[1] == "transcript_id_key"){
+     Fkeys[1] = Akeys[1];
+   }
   }
   
   tables <- unique(c(Atables,Ftables));
-  
+ 
   query <- paste (query," FROM ", sep="")
-  query<-paste(query,tables[1]," INNER JOIN ",tables[2], " ON ",tables[1],".",Akeys[1]," = ",tables[2],".",Fkeys[1],sep="")  
-  
+  if(length(tables) > 1){
+    query<-paste(query,tables[1]," INNER JOIN ",tables[2], " ON ",tables[1],".",Akeys[1]," = ",tables[2],".",Fkeys[1],sep="")  
+  }
+  else{
+    query<-paste(query,tables[1]," ",sep="")  
+ 
+  }
   for(i in 1:length(Ftables)){
     
     query <-paste(query, " WHERE ", sep ="")
