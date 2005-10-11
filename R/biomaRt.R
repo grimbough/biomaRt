@@ -1330,7 +1330,7 @@ listDatasets <- function( mart ){
 }
 
 getAttributes<-function( xml ){
-  names <- names.XMLNode(xml)
+  names <- names(xml)
   writeLines("Checking attributes ...", sep =" ")
   attrib <- NULL
   table <- NULL
@@ -1407,7 +1407,7 @@ getAttributes<-function( xml ){
 getFilters <- function(xml){
   writeLines("Checking filters ...", sep=" ")
 
-  names <- names.XMLNode(xml)
+  names <- names(xml)
   
   filter <- NULL
   tableF <- NULL
@@ -1477,7 +1477,7 @@ useDataset <- function(dataset, mart){
 
 getMainTables <- function( xml ){
   writeLines("Checking main tables ...", sep=" ")
-  names <- names.XMLNode(xml)
+  names <- names(xml)
   
   tableM <- NULL
   keyM <- NULL
