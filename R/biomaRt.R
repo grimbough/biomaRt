@@ -330,7 +330,7 @@ getTableColumn <- function(type = NULL){
 ######################
 
 
-getGene <- function( id, type, array, species, db = "ensembl", mart){
+getGene <- function( id, type, array, species, db = "ensembl", mart, output = "data.frame"){
 
   IDTable <- NULL
   
@@ -397,10 +397,10 @@ getGene <- function( id, type, array, species, db = "ensembl", mart){
       ids <- paste("'",id,"'",sep="",collapse=",");
       
       if(type == "ensembl"){
-         query <- paste("select distinct ",dbcolID,", display_id, description, band,chr_name, gene_chrom_start, gene_chrom_end  from ", speciesTable," where ",dbcolQID," in (",ids,")",sep="");
+         query <- paste("select distinct ",dbcolID,", display_id, description, band,chr_name, gene_chrom_start, gene_chrom_end, chrom_strand  from ", speciesTable," where ",dbcolQID," in (",ids,")",sep="");
       }
       else{
-          query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".gene_stable_id,",speciesTable,".display_id,",speciesTable,".description, ",speciesTable,".band,",speciesTable,".chr_name,",speciesTable,".gene_chrom_start,",speciesTable,".gene_chrom_end  from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",IDTable,".",dbcolQID," in (",ids,")",sep="");        
+          query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".gene_stable_id,",speciesTable,".display_id,",speciesTable,".description, ",speciesTable,".band,",speciesTable,".chr_name,",speciesTable,".gene_chrom_start,",speciesTable,".gene_chrom_end,",speciesTable,".chrom_strand  from ", IDTable ," inner join ",speciesTable," on ",IDTable,".gene_stable_id = ",speciesTable,".gene_stable_id where ",IDTable,".",dbcolQID," in (",ids,")",sep="");        
       }
 
       if(db == "vega"){
@@ -420,13 +420,19 @@ getGene <- function( id, type, array, species, db = "ensembl", mart){
         if(any(is.na(mt)))
           stop("Internal error!");
         if(type == "ensembl"){ 
-          res = res[order(mt),c(1,2,3,4,5,6,7,1)];
+          res = res[order(mt),c(1,2,3,4,5,6,7,8,1)];
         }
         else{
-          res = res[order(mt),c(1,3,4,5,6,7,8,2)];
+          res = res[order(mt),c(1,3,4,5,6,7,8,9,2)];
         }
-        names(res) = c("id","symbol", "description", "band", "chromosome", "start", "end", "martID");
-        table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]));     
+        
+        names(res) = c("id","symbol", "description", "band", "chromosome", "start", "end","strand" ,"martID");
+        if(output == "martTable"){
+         table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]));
+        }
+        else{
+          table <- as.data.frame(res)
+        }
       }
     }
   }  
@@ -555,7 +561,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
 ###################
 
 
-getGO <- function( id, type, array, species, mart){
+getGO <- function( id, type, array, species, mart, output="data.frame"){
 
   table <- NULL;
   go <- NULL;
@@ -622,6 +628,7 @@ getGO <- function( id, type, array, species, mart){
     
     if(dim(res)[1] == 0){
       table <- new("martTable", id = id, table = list(GOID = NA, description = NA, evidence = NA, martID = NA))
+      
     }
     else{
       mt = match(res[,1], id)
@@ -634,7 +641,12 @@ getGO <- function( id, type, array, species, mart){
         res = res[order(mt),c(1,3,4,5,2)];
       }
       names(res) = c("id","GOID", "description", "evidence", "martID")
-      table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
+      if(output == "martTable"){
+        table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
+      } 
+      else{
+        table <- as.data.frame(res)
+      }
     }
   }
   return( table );
@@ -645,7 +657,7 @@ getGO <- function( id, type, array, species, mart){
 #####################
 
 
-getOMIM <- function( id, type, array, mart){
+getOMIM <- function( id, type, array, mart, output="data.frame"){
   
   OMIMTable <- "hsapiens_gene_ensembl__disease__dm";
   omim <- NULL;
@@ -721,7 +733,12 @@ getOMIM <- function( id, type, array, mart){
         res = res[order(mt),c(1,3,4,2)];
       }
       names(res) = c("id","OMIMID", "disease", "martID")
-      table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
+      if(output == "martTable"){ 
+        table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
+      }
+      else{
+        table <- as.data.frame(res)
+      }
     }  
   }
   return( table );  
@@ -744,8 +761,7 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
   }
 
   sequence <- NULL;  
-  speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" );  #need to use this from Ensembl v32 on!!
-  #speciesTable <- paste( species,"__dna_chunks__main",sep="" );
+  speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" ); 
   
   if(missing( martTable ) && !missing( chromosome ) && !missing( start ) && !missing( end )){
     for(i in 1:length( chromosome )){
@@ -1182,13 +1198,10 @@ exportFASTA <- function( martTable, file ){
 #####################
 
 
-getINTERPRO <- function( id, type, array, species, mart){
+getINTERPRO <- function( id, type, array, species, mart, output="data.frame"){
   
   genes <- NULL
   speciesTable <- NULL
-  #if(match("uniprot",names(mart@connections),nomatch=0) == 0){
-   # stop("You are missing a database connection to uniprot for this query.  Add connection to uniprot a BioMart to your Mart object via the function martConnect.  Use the following command to do this:  martConnect(biomarts='uniprot',mart=mart,host='martdb.ebi.ac.uk',user='anonymous',password='')")
-  #}
   db <- "ensembl";
   results <- FALSE;
     
@@ -1277,7 +1290,12 @@ getINTERPRO <- function( id, type, array, species, mart){
         res = res[order(mt),];
       }
       names(res) = c("id","INTEPROID", "short description", "description")
-      table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
+      if(output=="data.frame"){
+        table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
+      }
+      else{
+        table <- as.data.frame(res)
+      }
     }
   }
   return(table)
