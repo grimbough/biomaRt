@@ -22,16 +22,11 @@
 
 if(interactive()){
 
-mart <- martConnect( biomarts = c("ensembl","vega"))
+mart <- martConnect()
 
 #example using affy id from Ensembl
 
 g = getGene( id = "1939_at", array = "hg_u95av2", mart = mart)
-show(g)
-
-#example using locuslink id from vega
-
-g = getGene( id = 100, type = "entrezgene", species = "hsapiens", db = "vega", mart = mart)
 show(g)
 
 martDisconnect(mart = mart)
