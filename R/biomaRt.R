@@ -1290,7 +1290,7 @@ getINTERPRO <- function( id, type, array, species, mart, output="data.frame"){
         res = res[order(mt),];
       }
       names(res) = c("id","INTEPROID", "short description", "description")
-      if(output=="data.frame"){
+      if(output=="martTable"){
         table <- new("martTable", id = as.vector(res[,1]), table = as.list(res[,-1]))
       }
       else{

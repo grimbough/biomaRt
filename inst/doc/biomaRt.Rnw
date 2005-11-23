@@ -35,7 +35,9 @@
 \tableofcontents
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-The BioConductor \Rpackage{biomaRt} package provides and API in R to query BioMart databases such as Ensembl (http://www.ensembl.org), a software system which produces and maintains automatic annotation on metazoan genomes.  Two sets of functions are currently implemented.  A first set of functions aims to mimic functionality of other BioMart API's such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart API's provide.  A Second set of functions are tailored towards Ensembl and are a set of commonly used queries in microarray data analysis.  With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy id's, locuslink, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM annotation, etc.  On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.\\
+The BioConductor \Rpackage{biomaRt} package provides and API in R to query BioMart databases such as Ensembl (http://www.ensembl.org), a software system which produces and maintains automatic annotation on metazoan genomes.  Two sets of functions are currently implemented.\\  
+A first set of functions is tailored towards Ensembl and are a set of commonly used queries in microarray data analysis.
+A second set of functions aims to mimic functionality of other BioMart API's such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart API's provide. With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy id's, locuslink, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM annotation, etc.  On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.\\
 
 \section{objects}
 
@@ -48,80 +50,8 @@ An object of the \Robject{Mart} class stores connections to BioMart databases an
 \end{itemize}
 
 
-\subsection{martTable-class}
- 
-An object of the \Robject{martTable} class is the output of the Ensembl specific functions and has the following slots:
-\begin{itemize}
-\item \Robject{id}: stores the id used for querying
-\item \Robject{table}: is a list of vectors storing the retrieved data
-\end{itemize}
-
-\section{BioMart API functions}
-In this section we'll discuss functions that resemble other BioMart API's such as Martshell (see: http://www.biomart.org for more info).   These functions are very general and can be used on all BioMart databases.  The order in which the functions are discussed is the usual order of how you should use them.
-
-\subsection{listMarts}
-
-The \Rfunction{listMarts} lists the possible BioMarts where we can connect to.
-
-<<>>=
-library(biomaRt)
-marts <- listMarts()
-marts
-@
-
-\subsection{useMart}
-
-Here we select from the list of possible BioMart databases, a BioMart that we want to use.  You have to specify the full name of the BioMart e.g. "ensembl\_mart\_32".
-<<>>=
-index<-grep("ensembl",marts)
-mart <- useMart(marts[index])
-@
-\subsection{listDatasets}
-
-Next we want to select a specific dataset of the selected BioMart. To see which dataset is available we use the function \Rfunction{listDatasets}.
-
-<<>>=
-listDatasets(mart)
-@
-
-\subsection{useDataset}
-
-To actually use a dataset we use the function \Rfunction{useDataset} to update our Mart object so it contains the configuration information of the dataset of interest.
-
-<<>>=
-
-mart<-useDataset(dataset="hsapiens_gene_ensembl",mart=mart)
-
-@
-
-\subsection{Filter, Values and Attributes}
-
-In BioMart, a filter is used to search a set of attributes that have a specified value for that filter.  To explain this better lets consider the following use case.  We want to get the gene symbol, chromosome name and band of the following features on the affy hgu95av2 chip: 1939\_at,2082\_s\_at and 1454\_at.  In this case the attributes are gene symbol, chromosome name and band, they are the information we want to retrieve.  The filter is the hgu95av2 chip and as values for this filter we use the affy identifiers we want to retrieve the information from.   
-In BioMart a list of possible attributes that we can query for can be retrieved by using the function \Rfunction{listAttributes}
-
-<<>>=
-
-attributes <- listAttributes(mart) 
-attributes[1:10]
-
-@
-
-Similarly a list of possible filters can be obtained with the function \Rfunction{listFilters}.
-
-<<>>=
-filters <- listFilters(mart)
-filters[1:10]
-@
-
-To get the information  from our example we can use the function \Rfunction{getBM}, using valid attributes and filter.
-
-<<>>=
-getBM(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95av2",values=c("1939_at","2082_s_at","1454_at"), mart=mart)
-martDisconnect(mart)
-@
-
-As you see multiple attributes can be retrieved at once but in the current version of biomaRt there is the restriction that the attributes which are queried together, should somehow be of a similar type, e.g. gene symbol, chromosome name or e.g. allele, SNP, and frequency of snp.\\ 
-\section{Easy functions}
+\section{Simple biomaRt functions for frequently used queries to Ensembl}
+In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases is described in the next section "Advanced data retrieval with BioMart API functions".
 
 \subsection{Connecting to BioMart databases}
 
@@ -130,7 +60,7 @@ A first step in using the biomaRt package is to connect to a BioMart database. T
 \subsubsection{\Rfunction{martConnect}}
 
 <<>>=
-
+library(biomaRt)
 #Connect to BioMart databases, using default (ensembl)
 mart <- martConnect()
  
@@ -326,5 +256,74 @@ getXref(id=c("1939_at"), from.species="hsapiens", to.species = "hsapiens", from.
 martDisconnect(mart)
 
 @
+
+
+\section{Advanced data retrieval with BioMart API functions}
+In this section we'll discuss functions that resemble other BioMart API's such as Martshell (see: http://www.biomart.org for more info).   These functions are very general and can be used on all BioMart databases.  The order in which the functions are discussed is the usual order of how you should use them.
+
+\subsection{listMarts}
+
+The \Rfunction{listMarts} lists the possible BioMarts where we can connect to.
+
+<<>>=
+library(biomaRt)
+marts <- listMarts()
+marts
+@
+
+\subsection{useMart}
+
+Here we select from the list of possible BioMart databases, a BioMart that we want to use.  You have to specify the full name of the BioMart e.g. "ensembl\_mart\_32".
+<<>>=
+index<-grep("ensembl",marts)
+mart <- useMart(marts[index])
+@
+\subsection{listDatasets}
+
+Next we want to select a specific dataset of the selected BioMart. To see which dataset is available we use the function \Rfunction{listDatasets}.
+
+<<>>=
+listDatasets(mart)
+@
+
+\subsection{useDataset}
+
+To actually use a dataset we use the function \Rfunction{useDataset} to update our Mart object so it contains the configuration information of the dataset of interest.
+
+<<>>=
+
+mart<-useDataset(dataset="hsapiens_gene_ensembl",mart=mart)
+
+@
+
+\subsection{Filter, Values and Attributes}
+
+In BioMart, a filter is used to search a set of attributes that have a specified value for that filter.  To explain this better lets consider the following use case.  We want to get the gene symbol, chromosome name and band of the following features on the affy hgu95av2 chip: 1939\_at,2082\_s\_at and 1454\_at.  In this case the attributes are gene symbol, chromosome name and band, they are the information we want to retrieve.  The filter is the hgu95av2 chip and as values for this filter we use the affy identifiers we want to retrieve the information from.   
+In BioMart a list of possible attributes that we can query for can be retrieved by using the function \Rfunction{listAttributes}
+
+<<>>=
+
+attributes <- listAttributes(mart) 
+attributes[1:10]
+
+@
+
+Similarly a list of possible filters can be obtained with the function \Rfunction{listFilters}.
+
+<<>>=
+filters <- listFilters(mart)
+filters[1:10]
+@
+
+To get the information from our example we can use the function \Rfunction{getBM}, using valid attributes and filter.
+
+<<>>=
+
+getBM(attributes="hgnc_symbol",filter="affy_hg_u95av2",values=c("1939_at","2082_s_at","1454_at","1000_at"), mart=mart)
+getBM(attributes=c("chr_name","band"),filter="affy_hg_u95av2",values=c("1939_at","2082_s_at","1454_at", "1000_at"), mart=mart)
+martDisconnect(mart)
+@
+
+As you see multiple attributes can be retrieved at once but in the current version of biomaRt there is the restriction that the attributes which are queried together, should somehow be of a similar type, e.g. chromosome band and chromosome name or e.g. allele, SNP, and frequency of snp.\\ 
 
 \end{document}
