@@ -1350,10 +1350,7 @@ listDatasets <- function( mart ){
 getAttributes<-function( xml ){
   names <- names(xml)
   writeLines("Checking attributes ...", sep =" ")
-  attrib <- NULL
-  table <- NULL
-  fieldA <- NULL
-  keyA <- NULL
+  attrib <- table <- fieldA <- keyA <- NULL
   
   for(h in 1:(xmlSize(xml)-1)){
     if(names[h] == "AttributePage"){  #fix xmlSize ...first test if size > 0!!
@@ -1431,6 +1428,13 @@ getFilters <- function(xml){
   tableF <- NULL
   fieldF <- NULL
   keyF <- NULL
+  ## FIXME:
+  ## 1. perhaps could this be simplified (and made faster, b/c currently it's quite slow) by using
+  ##    "xmlSApply". One could perhaps avoid the awkward  v = c(v, x)  constructs  to append vectors.
+  ## 2. Should make sure that we don't fall into the "for(i in 1:length(x))" trap - consider
+  ##    what happens when length(x)=0. Usually "for(i in seq(along=x))" is the way that matches
+  ##    better what is intended.
+
   for(h in 1:(xmlSize(xml)-1)){
     if(names[h] == "FilterPage"){
       if(!is.null(xmlGetAttr(xml[[h]],"displayName"))){
@@ -1526,7 +1530,7 @@ listFilters <- function( mart ){
 }
     
 getBM <- function(attributes, filter, values, mart){
-  query<-queryGenerator(attributes=attributes, filters=filter, values=values, mart=mart)
+  query <- queryGenerator(attributes=attributes, filter=filter, values=values, mart=mart)
   res <- dbGetQuery(mart@connections$biomart,query)
   if(dim(res)[1] == 0){
     res <- data.frame()
@@ -1542,115 +1546,78 @@ getBM <- function(attributes, filter, values, mart){
 }
 
 
+queryGenerator <- function(attributes, filter, values, mart){
 
-queryGenerator <- function(attributes, filters, values, mart){
+  ## attributes
+  if(length(attributes)==0)
+    stop("Please specify at least one attribute")
 
-  query <- "SELECT DISTINCT "
-  Afields <- NULL
-  Atables <- NULL
-  Akeys <- NULL
-  Ffields <- NULL
-  Ftables <- NULL
-  Fkeys <- NULL
-  
-  for(i in 1:length(attributes)){
-    m<-match(attributes[i], mart@datasets$attributes$attributes, nomatch = 0)
-    if(m == 0){
-      stop("attribute not found, use function listAttributes to get valid attribute names")
-    }
-    Afields <- c(Afields,mart@datasets$attributes$field[m])
-    table <- mart@datasets$attributes$table[m]
-    Akeys <- c(Akeys,mart@datasets$attributes$key[m])
+  m = match(attributes, mart@datasets$attributes$attributes)
+  if(any(is.na(m)))
+    stop(sprintf("attribute(s) %s not found, please use the function 'listAttributes' to get valid attribute names",
+                 paste(attributes[is.na(m)], collapse=", ")))
+  Afield = mart@datasets$attributes$field[m]
+  Atab   = mart@datasets$attributes$table[m]
+  Akey   = mart@datasets$attributes$key[m]
 
-    if(table == "main"){
+  ## special treatment of main table
+  isMain = (Atab=="main")
+  m2 = match(Akey, mart@datasets$mainTables$keys)
+  if(any(is.na(m2) & isMain))
+    stop("Internal error: Key does not match MainTable key")
+  Atable = ifelse(isMain, mart@datasets$mainTables$tables[m2], Atab)
 
-       m2 <- match(mart@datasets$attributes$key[m], mart@datasets$mainTables$keys, nomatch = 0)
-       if(m2 == 0){
-         stop("internal error: Key doesn't match MainTable key");
-       }
-       table <- mart@datasets$mainTables$tables[m2];
-       
-    }
-    Atables <- c(Atables,table)
-  }
+  if(length(unique(Atable))>1)
+    stop(paste("This query is currently not possible: your attributes extend over multiple tables (",
+               paste(Atable, collapse=", "), "), please only use attributes from one table per query.", sep=""))
+  
+  ## filter
+  ## FIXME: I assume this is correct - filter can have only length 1?
+  if(length(filter)!=1)
+    stop(sprintf("'length(filter)' must be 1."))
+  
+  m = match(filter, mart@datasets$filter$filter, nomatch = 0)
+  if(any(is.na(m)))
+    stop(sprintf("filter(s) %s not found, please use the function 'listFilters' to get valid filter names",
+                 paste(filter[is.na(m)], collapse=", ")))
+  Ffield = mart@datasets$filter$field[m]
+  Ftab   = mart@datasets$filter$table[m]
+  Fkey   = mart@datasets$filter$key[m]
 
-  numAtables <- unique(Atables)
-  if(length(numAtables)> 1)stop("query currently not possible...try only using attributes that are similar eg allele and freq when retrieving snp information");
-  
-  lastA <- length(attributes)
-  
-  
-  for(i in 1:length(filters)){
-    m<-match(filters[i], mart@datasets$filters$filter, nomatch = 0)
-    if(m == 0){
-      stop("Filter doesn't exists")
-    }
-    else{
-      Ffields <- c(Ffields,mart@datasets$filters$field[m])
-      table <- mart@datasets$filters$table[m]
-      Fkeys <- c(Fkeys,mart@datasets$filters$key[m])
+  ## special treatment of main table
+  isMain = (Ftab=="main")
+  m2 = match(Fkey, mart@datasets$mainTables$keys)
+  if(any(is.na(m2) & isMain))
+    stop("Internal error: Key does not match MainTable key")
+  Ftable = ifelse(isMain, mart@datasets$mainTables$tables[m2], Ftab)
 
-      if(table == "main"){
-       
-        #check which biomart you are connected to
-        m2 <- match(mart@datasets$filters$key[m], mart@datasets$mainTables$keys, nomatch = 0)
-        if(m2 == 0){
-          stop("internal error: Key doesn't match MainTable key");
-        }
-        table <- mart@datasets$mainTables$tables[m2];
-      
-      }
-      Ftables <- c(Ftables,table)
-    }
-  }
-  query <- paste(query,Ftables[1],".",Ffields[1],", " ,sep ="")
-  
-  for (i in 1:length(attributes)){
-    query <- paste(query,Atables[i],".",Afields[i] ,sep ="")
-    if(i != lastA){
-      query <- paste(query,",",sep ="")
-    }
-  }
+  query = paste("SELECT DISTINCT",
+    paste(Ftable, Ffield, sep=".", collapse=", "), ",",
+    paste(Atable, Afield, sep=".", collapse=", "),
+    "FROM")
 
-  ##############################
-  #Key Order: gene > transcript#
-  ##############################
+  ########################################
+  # Key Order: gene overrides transcript #
+  ########################################
+  ## FIXME: why only for Akey[1] and not for all?
+  if(Fkey[1] == "gene_id_key" && Akey[1] == "transcript_id_key")  
+    Akey[1] = Fkey[1]
+
+  if(Akey[1] == "gene_id_key" && Fkey[1] == "transcript_id_key")
+    Fkey[1] = Akey[1]
   
-  if(Fkeys[1] == "gene_id_key"){ 
-   if(Akeys[1] == "transcript_id_key"){
-     Akeys[1] = Fkeys[1];
-   }
-  }
-  if(Akeys[1] == "gene_id_key"){ 
-   if(Fkeys[1] == "transcript_id_key"){
-     Fkeys[1] = Akeys[1];
-   }
-  }
-  
-  tables <- unique(c(Atables,Ftables));
+  tables <- unique(c(Atable, Ftable));
  
-  query <- paste (query," FROM ", sep="")
-  if(length(tables) > 1){
-    query<-paste(query,tables[1]," INNER JOIN ",tables[2], " ON ",tables[1],".",Akeys[1]," = ",tables[2],".",Fkeys[1],sep="")  
-  }
-  else{
-    query<-paste(query,tables[1]," ",sep="")  
- 
-  }
-  for(i in 1:length(Ftables)){
+  ## FIXME: why only for tables[1:2] and Akey[1] and not for all?
+  query = paste(query, tables[1])
+  if(length(tables) > 1)
+    query = paste(query, " INNER JOIN ",tables[2], " ON ", tables[1], ".", Akey[1], " = ",
+      tables[2], ".", Fkey[1], sep="")  
+  
+  query = paste(query, " WHERE ", 
+    paste(Ftab[1], Ffield[1], sep ="."),
+    " IN (",
+    paste("'", values, "'", collapse=", ", sep=""), ")", sep="")
     
-    query <-paste(query, " WHERE ", sep ="")
-
-    if (length( values ) >= 1){
-      
-      valueString <- paste("'",values,"'",sep="",collapse=",");
-    }
-    
-    query <- paste(query,Ftables[1],".",Ffields[1] ,sep ="")
-    query <- paste(query," IN " ,sep ="")
-    query <- paste(query,"(",valueString,")",sep ="")
-      
-  }
-    
-   return(query)
+  return(query)
 }
