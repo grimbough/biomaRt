@@ -1313,7 +1313,9 @@ useMart <- function(biomart, host, user, password, local = FALSE){
   
   driver <- dbDriver("MySQL", force.reload = FALSE);
   mart <- new("Mart", mysqldriver = driver)
-  
+
+  if(! (is.character(biomart) && (length(biomart)==1)))
+    stop("'biomart' should be a single character string.")
 
   if(local){
     if(!missing(host) && !missing(user) && !missing(password)){
@@ -1322,11 +1324,10 @@ useMart <- function(biomart, host, user, password, local = FALSE){
       writeLines(paste("connected to: ",database[1,1]))
     }
     else{
-      stop("you should provide host, user and password when using local databases")
+      stop(sprintf("Please provide host, user and password for using local database '%s'.", biomart))
     }
-  } 
-  else{
-    database <- listMarts(includeHosts=TRUE)
+  } else {
+    database <- listMarts(mart = biomart, includeHosts=TRUE)
     m<-match(biomart,database[,1],nomatch=0)
     if(m == 0){
       stop(paste("BioMart ",biomart, " does not exist or can not be found", sep =""))
