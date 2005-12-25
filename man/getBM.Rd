@@ -23,7 +23,7 @@ mart <- useMart(marts[index])
 datasets <- listDatasets(mart)
 mart<-useDataset("hsapiens_gene_ensembl",mart)
 
-getBM(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95_v2",values=c("1939_at","1503_at","1454_at"), mart=mart)
+getBM(attributes=c("external_gene_id","chr_name","band"),filter="affy_hg_u95av2",values=c("1939_at","1503_at","1454_at"), mart=mart)
 
 martDisconnect(mart = mart)
 }
