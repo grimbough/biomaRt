@@ -325,5 +325,9 @@ martDisconnect(mart)
 @
 
 As you see multiple attributes can be retrieved at once but in the current version of biomaRt there is the restriction that the attributes which are queried together, should somehow be of a similar type, e.g. chromosome band and chromosome name or e.g. allele, SNP, and frequency of snp.\\ 
+\section{Local BioMart databases}
+The biomaRt package can be used with a local install of a public BioMart database or a locally developed BioMart database.
+In order for biomaRt to recognize the database as a BioMart, make sure that the local database you create has a name conform with database_mart_version where database is the name of the database and version is a version number.  No more underscores than the ones showed should be present in this name. A possible name is for example ensemblLocal_mart_36.
+For more information on how to install a public BioMart database see:  http://www.biomart.org/install.html and follow link databases.
 
 \end{document}

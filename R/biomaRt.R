@@ -65,10 +65,13 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE){
           version <- 1;
           latest <- 1;
           for(j in 1:length(matches)){
-            v <- as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]);
-            if(v > version){
-              latest <- j;
-              version <- v;
+            v <- suppressWarnings(as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]));
+            if(!is.na(v)){
+              
+              if(v > version){
+                latest <- j;
+                version <- v;
+              }
             }
           }
           if(!includeHosts){
@@ -1601,6 +1604,7 @@ queryGenerator <- function(attributes, filter, values, mart){
   # Key Order: gene overrides transcript #
   ########################################
   ## FIXME: why only for Akey[1] and not for all?
+  
   if(Fkey[1] == "gene_id_key" && Akey[1] == "transcript_id_key")  
     Akey[1] = Fkey[1]
 
@@ -1614,9 +1618,10 @@ queryGenerator <- function(attributes, filter, values, mart){
   if(length(tables) > 1)
     query = paste(query, " INNER JOIN ",tables[2], " ON ", tables[1], ".", Akey[1], " = ",
       tables[2], ".", Fkey[1], sep="")  
-  
+
+ 
   query = paste(query, " WHERE ", 
-    paste(Ftab[1], Ffield[1], sep ="."),
+    paste(Ftable, Ffield[1], sep ="."),
     " IN (",
     paste("'", values, "'", collapse=", ", sep=""), ")", sep="")
     
