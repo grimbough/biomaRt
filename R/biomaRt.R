@@ -55,8 +55,7 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE){
   for(i in 1:length(host)){
     connection <- dbConnect(driv, user = user[i], host = host[i], password = password[i]);
   
-    res <- dbGetQuery(connection,"show databases like '%mart%'");
-    
+    res <- dbGetQuery(connection,"show databases like '%mart%'"); 
                                         #Search latest releases of marts
     if(dim(res)[1] >= 1){
       for(j in 1:length(mart)){ 
@@ -1347,6 +1346,7 @@ useMart <- function(biomart, host, user, password, local = FALSE){
 
 
 listDatasets <- function( mart ){
+  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   res <- dbGetQuery(mart@connections$biomart,"select dataset, version from meta_configuration where visible = 1")
   return(res)
 }
@@ -1525,15 +1525,24 @@ getMainTables <- function( xml ){
 }
 
 listAttributes <- function( mart ){
+  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   return(mart@datasets$attributes$attributes)
 }
 
 listFilters <- function( mart ){
+  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   return(mart@datasets$filters$filter)
 
 }
     
 getBM <- function(attributes, filter, values, mart){
+
+  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+  if(missing( attributes )) stop("No attributes given")
+  if(missing( filter )) stop("No filter given")
+  if(length(filter) > 1) stop("biomaRt currently allows only one filter per query, reduce the number of filters to one")
+  if(missing( values )) stop("No values given")
+  
   query <- queryGenerator(attributes=attributes, filter=filter, values=values, mart=mart)
   res <- dbGetQuery(mart@connections$biomart,query)
   if(dim(res)[1] == 0){
@@ -1553,9 +1562,7 @@ getBM <- function(attributes, filter, values, mart){
 queryGenerator <- function(attributes, filter, values, mart){
 
   ## attributes
-  if(length(attributes)==0)
-    stop("Please specify at least one attribute")
-
+ 
   m = match(attributes, mart@datasets$attributes$attributes)
   if(any(is.na(m)))
     stop(sprintf("attribute(s) %s not found, please use the function 'listAttributes' to get valid attribute names",
@@ -1577,6 +1584,8 @@ queryGenerator <- function(attributes, filter, values, mart){
   
   ## filter
   ## FIXME: I assume this is correct - filter can have only length 1?
+  ## YES currently we only allow for one filter to be present this might change once we have a SOAP based implementation.
+  
   if(length(filter)!=1)
     stop(sprintf("'length(filter)' must be 1."))
   
@@ -1601,29 +1610,42 @@ queryGenerator <- function(attributes, filter, values, mart){
     "FROM")
 
   ########################################
-  # Key Order: gene overrides transcript #
+  # Ensembl Key Order: gene overrides transcript #
   ########################################
-  ## FIXME: why only for Akey[1] and not for all?
   
-  if(Fkey[1] == "gene_id_key" && Akey[1] == "transcript_id_key")  
-    Akey[1] = Fkey[1]
+  matchGeneKey=match("gene_id_key",c(Akey,Fkey))
+  matchTransKey=match("transcript_id_key",c(Akey,Fkey))
 
-  if(Akey[1] == "gene_id_key" && Fkey[1] == "transcript_id_key")
-    Fkey[1] = Akey[1]
+  if(!is.na(matchGeneKey) && !is.na(matchTransKey)){ # so keys are mixed and we have to take order into account
+     Akey[Akey =="transcript_id_key"] = "gene_id_key"
+     Fkey[Fkey =="transcript_id_key"] = "gene_id_key"
+  }
+  
+  ### end Ensembl specific part #######
   
   tables <- unique(c(Atable, Ftable));
  
   ## FIXME: why only for tables[1:2] and Akey[1] and not for all?
-  query = paste(query, tables[1])
-  if(length(tables) > 1)
-    query = paste(query, " INNER JOIN ",tables[2], " ON ", tables[1], ".", Akey[1], " = ",
-      tables[2], ".", Fkey[1], sep="")  
 
- 
-  query = paste(query, " WHERE ", 
-    paste(Ftable, Ffield[1], sep ="."),
-    " IN (",
-    paste("'", values, "'", collapse=", ", sep=""), ")", sep="")
+  query = paste(query, tables[1])
+
+  if(length(tables) > 1){
+
+     query = paste(query, " INNER JOIN ",tables[2], " ON ", tables[1], ".", Akey[1], " = ",tables[2], ".", Fkey[1], sep="")  #old query
     
+   # query = paste(query, " INNER JOIN (",paste("",tables[-1],sep="",collapse=","), ") ON (",paste(paste(tables[-1],Akey[1],sep="."), paste(tables[1], Akey[1], sep="."),sep=" = ", collapse=" AND "))
+     #query = paste(query, ")", sep="")
+  }
+  
+  query = paste(query, " WHERE ", paste(Ftable, Ffield[1], sep =".")," IN (",
+    paste("'", values, "'", collapse=", ", sep=""), ")", sep="")
+
+  #The last part of the query is to avoid returning duplicate results that are the same but where one of the returned values is NULL due to multiple entries in the database
+  #By commenting this you can see it's effect
+  
+  #for(j in 1:length(Afield)){
+  # query = paste(query," AND ",paste(Atable[j], Afield[j], sep="."),"!='NULL'")
+  #}
+  
   return(query)
 }
