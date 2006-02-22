@@ -15,7 +15,7 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect()
+mart <- useMart("ensembl",mysql=TRUE)
 getAffyArrays(mart = mart)
 martDisconnect( mart )
 }

@@ -1,7 +1,7 @@
 packageName <- "biomaRt"
 
 setClass("Mart",
-         representation(useMySQL = "logical",
+         representation(mysql = "logical",
 #MySQL-----------------------------------------------------------
                         connections = "list",
                         mysqldriver = "list",
@@ -47,15 +47,15 @@ setMethod("show","martTable",
 #######################
 
 
-listMarts <- function( mart, host, user, password, includeHosts = FALSE, useMySQL = FALSE){
+listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql = FALSE){
   
-  if(useMySQL){
+  if(mysql){
     
 #MySQL-----------------------------------------------------------    
     require(RMySQL)
     
     if(missing(mart)){
-      mart <- c("ensembl","vega","snp","msd","uniprot")
+      mart <- c("ensembl","vega","snp","msd","uniprot","sequence","wormbase")
     }
     if(missing(host)){
       host <- c("ensembldb.ensembl.org", "martdb.ebi.ac.uk")
@@ -142,62 +142,26 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, useMySQ
 ##################
 
 martConnect <- function(biomarts = "ensembl", host, user, password, mart, local = FALSE){
-    require(RMySQL)
-    if(missing(mart)){
-      driver <- dbDriver("MySQL", force.reload = FALSE);
-      mart <- new("Mart", mysqldriver = list(driver=driver))
+  
+   writeLines("\n###############################################\n")
+   writeLines("This function will go out of use soon, please adapt by using the 'useMart' function instead.")
+   writeLines("\n###############################################\n")
+   
+  if(length(biomarts)>1){
+    stop("You can only connect to ensembl with this function.  To use the function getSNP or getSequence you need to use biomarts = 'ensembl'.  VEGA should now be accessed using the advanced biomaRt functions: useMart,useDatasets,listAttributes,listFilters and getBM.")
+  }
+  if(biomarts != "ensembl") stop("With this function you can only connect to 'ensembl'.  To use the function getSNP or getSequence you need to use biomarts = 'ensembl'.  VEGA should now be accessed using the advanced biomaRt functions: useMart,useDatasets,listAttributes,listFilters and getBM.")
+  
+  version = ""
+  marts = listMarts(mysql = TRUE)
+  for(i in 1:length(marts)){
+    if("ensembl" == strsplit(marts[i],"_")[[1]][1]){
+      version = strsplit(marts[i],"_")[[1]][3]
     }
-    presentConnections <- length(mart@connections)
-    for(i in 1: length(biomarts)){
-      if(local){
-        if(biomarts[i] == "ensembl" || biomarts[i] == "sequence" || biomarts[i] == "snp" || biomarts[i] == "vega"){
-          if(!missing(host) && !missing(user) && !missing(password)){
-            database <- listMarts(mart = biomarts[i], host = host[i], user = user[i], password = password[i], useMySQL = TRUE);
-            mart@connections[[i + presentConnections]] <- dbConnect(drv = mart@mysqldriver$driver,user = user[i], host = host[i] , dbname = database, password = password[i])
-            writeLines(paste("connected to: ",database))
-            names(mart@connections)[i + presentConnections] <- biomarts[i]
-          }
-          else{
-            stop("you should provide host, user and password when using local databases")
-          }
-        }
-        else{
-          stop(paste("mart ",biomarts[i]," is not covered by biomaRt, please choose one of the following BioMarts to connect to: ensembl, vega, sequence, uniprot and snp"))
-        }
-      }
-      else{
-        if(biomarts[i] == "ensembl" || biomarts[i] == "sequence" || biomarts[i] == "snp" || biomarts[i] == "vega"){
-          database <- switch(biomarts[i],
-                             ensembl = listMarts(mart = biomarts[i], host = "ensembldb.ensembl.org", user = "anonymous", password = ""),
-                             sequence = listMarts(mart = biomarts[i], host = "ensembldb.ensembl.org", user = "anonymous", password = ""),
-                             snp = listMarts(mart = biomarts[i], host = "ensembldb.ensembl.org", user = "anonymous", password = ""),
-                             vega = listMarts(mart = biomarts[i], host = "ensembldb.ensembl.org", user = "anonymous", password = ""));
-          
-          #should have a try and catch here ...
-          
-          mart@connections[[i + presentConnections]] <- switch(biomarts[i],
-                                                               ensembl = dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = database, password = ""),
-                                                               sequence = dbConnect(drv = mart@mysqldriver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = database, password = ""),
-                                                               snp = dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = database, password = ""),
-                                                               vega = dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = database, password = ""));
-          writeLines(paste("connected to: ",database))
-          names(mart@connections)[i + presentConnections] <- biomarts[i]
-        }
-        else{
-          stop(paste("mart ",biomarts[i]," is not covered by the martConnect function of  biomaRt, please choose one of the following BioMarts to connect to: ensembl, vega, sequence and snp\n Alternatively you may try to connect to this BioMart using the useMart function"))
-        }
-      }
-    }
-    
-    if(match("ensembl",biomarts,nomatch=0) > 0){
-      xref <- getPossibleXrefs( mart );
-      affySelect <- grep("affy", xref[,2]);
-      affyTables <- xref[affySelect,];
-      affyTables[,2] <- gsub("affy_","", affyTables[,2]);
-      affyPackName <- gsub("_","",affyTables[,2]);
-      mart@arrayToSpecies <- data.frame(affyID = affyPackName,EnsemblArrayID = affyTables[,2],species = affyTables[,1]);
-    }
-    return( mart )
+  }
+  mart = useMart(paste("ensembl_mart_",version,sep=""), mysql = TRUE)
+  
+  return( mart )
 }
 
 
@@ -375,8 +339,8 @@ getGene <- function( id, type, array, species, db = "ensembl", mart, output = "d
     stop("you must provide a valid Mart object, create with function martConnect")
   }
   
-  if( db != "ensembl" && db != "vega"){
-    stop("you can only use ensembl or vega");
+  if(mart@biomart != "ensembl"){
+    stop("you can only use ensembl for this query.  Please do: useMart('ensembl',mysql=TRUE).  To access VEGA you have to use the more advanced biomaRt function:  useMart. listDatasets, useDataset, listFilters, listAttributes and getBM.");
   }
      
   if(!missing(array)){
@@ -390,13 +354,16 @@ getGene <- function( id, type, array, species, db = "ensembl", mart, output = "d
   }
 
 #MySQL-----------------------------------------------------------
-  if(mart@useMySQL){
+  if(mart@mysql){
 
     IDTable <- NULL
     
-    if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-      stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
+    if(length(strsplit(mart@biomart,"_")[[1]])>1){
+      if("ensembl" != strsplit(mart@biomart,"_")[[1]][1]){
+        stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+      }
     }
+    
     if( type == "affy" ){
       if( missing( array ) ){
         stop( "you must provide the affymetrix array identifier via the array argument when using this function for affy identifiers" );
@@ -452,7 +419,7 @@ getGene <- function( id, type, array, species, db = "ensembl", mart, output = "d
           res <- dbGetQuery( conn = mart@connections$vega, statement = query);
         }
         if(db == "ensembl"){
-          res <- dbGetQuery( conn = mart@connections$ensembl, statement = query);
+          res <- dbGetQuery( conn = mart@connections$biomart, statement = query);
         }
         if(dim(res)[1] == 0){
           table <- new("martTable", id = id, table = list(symbol = NA, description = NA, band = NA, chromosome = NA, start = NA, end = NA, martID = NA));
@@ -500,7 +467,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
   if(!missing(array)){
     type <- "affy"
   }
-  
+   
   else{
     if( missing( type )){
       stop("you must provide the identifier type using the type argument");
@@ -510,10 +477,11 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
   if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect");
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector");
-  }
   
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+  }
+
   if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")  && !(type == "hugo") && !(type == "ensembl")  && !(type == "flybase") ){
     stop("invalid type choose either affy, refseq or entrezgene");
   }
@@ -581,7 +549,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
     }
   }
   
-  res <- dbGetQuery( conn = mart@connections$ensembl,statement = query);
+  res <- dbGetQuery( conn = mart@connections$biomart,statement = query);
 
   if(dim(res)[1] != 0){
     if(!missing(symbol)){
@@ -611,17 +579,17 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, species, chromoso
 
 
 getGO <- function( id, type, array, species, mart, output="data.frame"){
-
+  
   table <- NULL;
   go <- NULL;
 
   if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
- 
+  
   if(!missing(array)){
     type <- "affy";
   }
@@ -673,7 +641,7 @@ getGO <- function( id, type, array, species, mart, output="data.frame"){
     else{
       query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolID,",",GOTable,".dbprimary_id, description, evidence_code from ", IDTable ," inner join ",GOTable," on ",IDTable,".gene_stable_id = ",GOTable,".gene_stable_id where ",IDTable,".",dbcolQID," in (",ids,") and ",GOTable,".dbprimary_id != 'NULL'",sep="");
   }
-    res <- dbGetQuery(conn = mart@connections$ensembl, statement = query);
+    res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
     
     if(dim(res)[1] == 0){
       table <- new("martTable", id = id, table = list(GOID = NA, description = NA, evidence = NA, martID = NA))
@@ -716,9 +684,10 @@ getOMIM <- function( id, type, array, mart, output="data.frame"){
   if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
+  
   if(!missing(array)){
     type <- "affy";
   }
@@ -764,7 +733,7 @@ getOMIM <- function( id, type, array, mart, output="data.frame"){
     else{
       query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".",dbcolQID," in (",ids,") and ",OMIMTable,".omim_id != 'NULL'",sep="");
   }
-    res <- dbGetQuery(conn = mart@connections$ensembl, statement = query);
+    res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
     
     
     if(dim(res)[1] == 0){
@@ -802,13 +771,22 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
   if(missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
-  if(match("sequence",names(mart@connections),nomatch=0) == 0){
-    stop("You are missing a database connection to sequence BioMart for this query.  Add connection to a sequence BioMart to your Mart object via the function martConnect. Use the following command to do this:  martConnect(biomarts='sequence',mart=mart,host='ensembldb.ensembl.org',user='anonymous',password=''). ")
+  martdb = "";
+  if(mart@biomart != "sequence"){
+    version = "0"
+    marts = listMarts(mysql = TRUE)
+    for(i in 1:length(marts)){
+      if("sequence" == strsplit(marts[i],"_")[[1]][1]){
+        version = strsplit(marts[i],"_")[[1]][3]
+      }
+    }
+    martdb = paste("sequence_mart_",version,sep="")
+    mart@biomart="sequence"
+    
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
-  }
-
+  mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = martdb, password = "")
+    
+ 
   sequence <- NULL;  
   speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" ); 
   
@@ -825,7 +803,7 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
       if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
         
         query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-        chunkseq <- dbGetQuery(conn = mart@connections$sequence, statement = query);
+        chunkseq <- dbGetQuery(conn = mart@connections$biomart, statement = query);
         newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
         newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
         
@@ -836,9 +814,9 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
       else{   #query sequence is on 2 sequence chuncks
         
         query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-        chunkseq1 <- dbGetQuery(conn = mart@connections$sequence, statement = query);
+        chunkseq1 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
         query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
-        chunkseq2 <- dbGetQuery(conn = mart@connections$sequence, statement = query);
+        chunkseq2 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
         chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
         
         newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
@@ -868,7 +846,7 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
         if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
           
           query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-          chunkseq <- dbGetQuery(conn = mart@connections$sequence, statement = query);
+          chunkseq <- dbGetQuery(conn = mart@connections$biomart, statement = query);
           newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
           newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
           
@@ -879,9 +857,9 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
         else{   #query sequence is on 2 sequence chuncks
           
           query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-          chunkseq1 <- dbGetQuery(conn = mart@connections$sequence, statement = query);
+          chunkseq1 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
           query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
-          chunkseq2 <- dbGetQuery(conn = mart@connections$sequence, statement = query);
+          chunkseq2 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
           chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
           
           newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
@@ -919,12 +897,10 @@ getSNP <- function(species, chromosome, start, end, mart){
   if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
+  if("snp" != mart@biomart){
+    stop("This function only works when using to snp. To use this function use: mart =  useMart('snp')")
   }
-  if(match("snp",names(mart@connections),nomatch=0) == 0){
-    stop("You are missing a database connection to snp for this query.  Add connection to snp a BioMart to your Mart object via the function martConnect.   Use the following command to do this:  martConnect(biomarts='snp',mart=mart,host='ensembldb.ensembl.org',user='anonymous',password='')")
-  }
+   
   if(missing(chromosome) || missing(start) || missing(end) || missing(species)){
     stop("you have to give chromosome, start and end positions and species as arguments, see ?getSNP for more information")
   }
@@ -932,7 +908,7 @@ getSNP <- function(species, chromosome, start, end, mart){
   table <- NULL
   ensemblTable <- paste(species,"_snp__snp__main", sep ="");
   query <- paste("select snp_id_key,snp_chrom_start, allele, tscid, ensemblcoding_bool, ensemblintronic_bool, ensembl5utr_bool, ensembl3utr_bool, ensemblsyn_bool from ",ensemblTable," where chr_name = '",chromosome,"' and snp_chrom_start >= ",start," and snp_chrom_start <= ",end,sep="")
-  res <- dbGetQuery( mart@connections$snp, query );
+  res <- dbGetQuery( mart@connections$biomart, query );
   if(dim(res)[1] == 0){
     stop("No SNP's found in selected region, check if the input you entered is correct")
   }
@@ -952,10 +928,11 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.specie
   if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
-  }
 
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+  }
+   
   if( !missing( id )){
     id <- as.character(id);
   }
@@ -1055,7 +1032,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.specie
       }
     }
     
-    res <- dbGetQuery(conn = mart@connections$ensembl, statement = query);
+    res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
     
     if (dim(res)[1] == 0) {
       table <- new("martTable", id = id, table = list( MappedID = rep(NA,length(id))))
@@ -1101,11 +1078,11 @@ getPossibleXrefs <-  function( mart ) {
   if ( missing( mart ) || class( mart ) != 'Mart') {
     stop('You must supply a valid mart object.  You can use martConnect to produce one')
   }
-  if( match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
- 
-  res <- dbGetQuery( mart@connections$ensembl, "show tables like '%_gene_ensembl__xref%'")
+   
+  res <- dbGetQuery( mart@connections$biomart, "show tables like '%_gene_ensembl__xref%'")
   xref <- strsplit(res[,1],'_gene_ensembl__xref_')
   xref <- lapply(xref,function(s) {
     s[2] <- gsub('__dm','',s[2])
@@ -1116,28 +1093,19 @@ getPossibleXrefs <-  function( mart ) {
   return(xrefdf)
 } 
 
+#######################
+#getSpecies
+#######################
 
-getSpecies <- function(mart, db = c("ensembl")) {
+getSpecies <- function(mart) {
   if ( missing( mart ) || class( mart )!='Mart') {
     stop('You must supply a valid mart object.  You can use martConnect to produce one')
   }
-  if( match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
- 
-  #db <- match.arg(db)
-  query = "show tables like '%gene__main'";
-
-  if(match(db, names(mart@connections),nomatch=0) == 0){
-    stop(paste("You are missing a database connection to ", db," for this query.  Add connection to ",db," a BioMart to your Mart object via the function martConnect.   Use the following command to do this:  martConnect(biomarts='",db,"',mart=mart,host='ensembldb.ensembl.org',user='anonymous',password='')"),sep="")
-  }
- 
-  res <- switch(db,
-                ensembl  = dbGetQuery(mart@connections$ensembl,query),
-                vega     = dbGetQuery(mart@connections$vega,query),
-                snp  = dbGetQuery(mart@connections$snp,query),
-                sequence = dbGetQuery(mart@connections$sequence,query)
-                );
+  query = "show tables like '%gene__main'"; 
+  res <- dbGetQuery(mart@connections$biomart,query);
   
   resvec <- as.vector(as.character(res[,1]));
   speciessub <- grep('gene__main',resvec);
@@ -1151,9 +1119,10 @@ getXref <- function( id, from.species, to.species, from.xref, to.xref, db = "ens
   if ( missing( mart ) || class( mart )!='Mart'){
     stop('You must specify a valid Mart object which can be created using martConnect().');
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
-  } 
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+  }
+  
   if ( missing( id )) {
     stop('You need to give ID(s) to map from');
   }
@@ -1204,7 +1173,7 @@ getXref <- function( id, from.species, to.species, from.xref, to.xref, db = "ens
     }
   }
   
-  res <- dbGetQuery(con = mart@connections$ensembl, query);
+  res <- dbGetQuery(con = mart@connections$biomart, query);
   
   if (dim(res)[1]>0){
 
@@ -1252,9 +1221,11 @@ getINTERPRO <- function( id, type, array, species, mart, output="data.frame"){
   if( missing( mart )|| class(mart)!='Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
-  if(match("ensembl",names(mart@connections), nomatch=0) == 0){
-    stop("You need a connection to ensembl for this query, use martConnect and include 'ensembl' in your biomarts vector")
+
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
+ 
   if( !missing( array )){
     type <- "affy";
   }
@@ -1314,7 +1285,7 @@ getINTERPRO <- function( id, type, array, species, mart, output="data.frame"){
      }
     }
 
-    res <- dbGetQuery( conn = mart@connections$ensembl,statement = query);
+    res <- dbGetQuery( conn = mart@connections$biomart,statement = query);
     
     if(dim(res)[1] == 0){
       table <- new("martTable", id = id, table = list(INTERPROID = NA, shortdescription = NA, description = NA))
@@ -1349,13 +1320,14 @@ getINTERPRO <- function( id, type, array, species, mart, output="data.frame"){
 #
 ######################################################################################
 
-useMart <- function(biomart, host, user, password, local = FALSE, useMySQL = FALSE){
+useMart <- function(biomart, host, user, password, local = FALSE, mysql = FALSE){
 
-  if(useMySQL){
+  if(mysql){
     
     require(RMySQL)
     driver <- dbDriver("MySQL", force.reload = FALSE);
-    mart <- new("Mart", mysqldriver = list(driver=driver), useMySQL = TRUE)
+    
+    mart <- new("Mart", biomart = biomart, mysqldriver = list(driver=driver), mysql = TRUE)
 
     if(! (is.character(biomart) && (length(biomart)==1)))
       stop("'biomart' should be a single character string.")
@@ -1371,35 +1343,51 @@ useMart <- function(biomart, host, user, password, local = FALSE, useMySQL = FAL
       }
     }
     else {
-      database <- listMarts(mart = biomart, includeHosts=TRUE,useMySQL=TRUE)
-      m<-match(biomart,database[,1],nomatch=0)
-      if(m == 0){
-        stop(paste("BioMart ",biomart, " does not exist or can not be found", sep =""))
+      
+      version = "0"
+      marts = listMarts(mysql = TRUE)
+      for(i in 1:length(marts)){
+        if(biomart == strsplit(marts[i],"_")[[1]][1]){
+          version = strsplit(marts[i],"_")[[1]][3]
+        }
+      }
+      martdb=""
+      if(version > 0){
+        martdb = paste(biomart,"_mart_",version,sep="")
       }
       else{
-        mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = database[m,2] , dbname = database[m,1], password = "")
-        writeLines(paste("connected to: ",biomart))
+        martdb = biomart
       }
-    }  
+
+      if(!martdb %in% marts) stop("Requested BioMart database is not available please use the function listMarts(mysql=TRUE) to see the valid biomart names you can query using mysql access")
+      mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = martdb, password = "")
+      writeLines(paste("connected to: ",biomart))
+    }
+      if("ensembl" == mart@biomart){
+        xref <- getPossibleXrefs( mart );
+        affySelect <- grep("affy", xref[,2]);
+        affyTables <- xref[affySelect,];
+        affyTables[,2] <- gsub("affy_","", affyTables[,2]);
+        affyPackName <- gsub("_","",affyTables[,2]);
+        mart@arrayToSpecies <- data.frame(affyID = affyPackName,EnsemblArrayID = affyTables[,2],species = affyTables[,1]);
+      }
     return( mart )
   }
   else{
     if(missing(host)){
       host = "http://www.ebi.ac.uk/biomart/martservice"
     }
-    mart <- new("Mart", biomart = biomart, host = host, useMySQL = FALSE)
+    mart <- new("Mart", biomart = biomart, host = host, mysql= FALSE)
     return(mart)
   }
 }
 
 
-
-
 listDatasets <- function( mart ){
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
-  if(mart@useMySQL){
+  if(mart@mysql){
     
-    res <- dbGetQuery(mart@connections$biomart,"select dataset, version from meta_configuration where visible = 1")
+    res <- dbGetQuery(mart@connections$biomart,"select dataset, version from meta_conf__dataset__main where visible = 1")
     return(res)
     
   }
@@ -1571,8 +1559,8 @@ useDataset <- function(dataset, mart){
   validDatasets=listDatasets(mart)
   if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function"))
   
-  if(mart@useMySQL){
-    res <- dbGetQuery(mart@connections$biomart,paste("select xml from meta_configuration where dataset = '",dataset,"'",sep=""))
+  if(mart@mysql){
+    res <- dbGetQuery(mart@connections$biomart,paste("select xml from meta_conf__dataset__main inner join meta_conf__xml__dm on meta_conf__dataset__main.dataset_id_key = meta_conf__xml__dm.dataset_id_key where dataset = '",dataset,"'",sep=""))
     writeLines(paste("Reading database configuration of:",dataset))
     if(dim(res)[1] == 0) stop("This dataset is not accessible from biomaRt as not xml description of dataset is available")
 
@@ -1657,7 +1645,7 @@ getBM <- function(attributes, filters, values, mart){
   if(missing( filters )) stop("No filter given")
   if(missing( values )) stop("No values given")
 
-  if(mart@useMySQL){
+  if(mart@mysql){
     if(length(filters) > 1) stop("biomaRt currently allows only one filter per query, reduce the number of filters to one")
     query <- queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
     res <- dbGetQuery(mart@connections$biomart,query)

@@ -10,7 +10,7 @@
   \item{start}{start position of sequence on chromosome}
   \item{end}{end position of sequence on chromosome}
   \item{martTable}{alternatively a martTable can be used containing all information}
-  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
+  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
 }
 
 \author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
@@ -19,7 +19,7 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect(biomarts = c("ensembl","sequence"))
+mart <- useMart("ensembl",mysql=TRUE)
 
 seq = getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
 show(seq)

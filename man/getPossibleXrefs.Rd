@@ -5,7 +5,7 @@
 \usage{getPossibleXrefs(mart)}
 
 \arguments{
-  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
+  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
 }
 
 \author{Sean Davis, Steffen Durinck,  \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
@@ -14,7 +14,7 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect()
+mart <- useMart("ensembl",mysql=TRUE)
 
 xref <- getPossibleXrefs(mart = mart)
 xref[1:10,]
