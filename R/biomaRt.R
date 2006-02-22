@@ -16,7 +16,7 @@ setClass("Mart",
                         attributes = "environment"
 #---------------------------------------------------------------
                         ),
-         prototype(useMySQL = FALSE,
+         prototype(mysql = FALSE,
                    connections = new("list"),
                    arrayToSpecies = data.frame(cbind(x=1, y=1:2))
                    )
