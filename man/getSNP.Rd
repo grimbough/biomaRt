@@ -9,7 +9,7 @@
   \item{chromosome}{Chromosome name}
   \item{start}{start position on given chromosome}
   \item{end}{end position on given chromosome}
-  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
+  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
 }
 
 \author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
@@ -18,7 +18,7 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect(biomarts=c("ensembl","snp"))
+mart <- useMart("snp",mysql=TRUE)
 
 snp = getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)
 show(snp)

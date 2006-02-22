@@ -26,7 +26,7 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect()
+mart <- useMart("ensembl",mysql=TRUE)
 
 #example using affy id from Ensembl
 

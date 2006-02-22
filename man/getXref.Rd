@@ -11,7 +11,7 @@
   \item{from.species}{species of which the id is from.  Accepted values for species can be retrieved with the function getSpecies()} 
   \item{to.species}{species in which you want to find the homologs.  Accepted values for species can be retrieved with the function getSpecies()} 
   \item{db}{database to use. Currently this function only works with Ensembl}
-  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
+  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
 }
 
 \author{Sean Davis, Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
@@ -21,7 +21,7 @@
 \examples{
 
 if(interactive()){
-mart <- martConnect()
+mart <- useMart("ensembl",mysql=TRUE)
 
 #starting from an affy id of chip hg_u95av2 and id 1939_at, give me corresponding affy identifiers on the affy mouse chip mouse430_2
 

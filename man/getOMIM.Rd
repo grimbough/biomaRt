@@ -8,7 +8,7 @@
   \item{id}{gene identifier}
   \item{type}{type of identifier, value should be either affy, entrezgene, embl, hugo, ensembl or refseq}
   \item{array}{array identifier only to be used if gene identifiers are from affy arrays. An overview of the accepted identifiers can be obtained with the function: getAffyArrays()}
-  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
+  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
   \item{output}{Specify the output, default is a data.frame.  You can also select a martTable but this is going to dissappear}
 }
 
@@ -18,7 +18,7 @@
 
 \examples{
 if(interactive()){
-mart <- martConnect()
+mart <- useMart("ensembl",mysql=TRUE)
 
 #example using affy id
 

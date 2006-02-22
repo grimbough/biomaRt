@@ -53,16 +53,16 @@ An object of the \Robject{Mart} class stores connections to BioMart databases an
 \section{Simple biomaRt functions for frequently used queries to Ensembl}
 In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases is described in the next section "Advanced data retrieval with BioMart API functions".
 
-\subsection{Connecting to BioMart databases}
+\subsection{Selecting a  BioMart database to use}
 
 A first step in using the biomaRt package is to connect to a BioMart database. The function martConnect establishes a connection with one or more of the following BioMart databases: snp, ensembl, sequence and vega.  Default this function will connect to public BioMart databases.  If no biomart is specified, only a connection to ensembl will be established.  If you want to use local BioMart install you have to set the local argument to TRUE and specify host, password and user details in the corresponding arguments.   
 
-\subsubsection{\Rfunction{martConnect}}
+\subsubsection{\Rfunction{useMart}}
 
 <<>>=
 library(biomaRt)
-#Connect to BioMart databases, using default (ensembl)
-mart <- martConnect()
+#select a BioMart database to use.
+mart <- useMart("ensembl")
  
 @
 
@@ -92,7 +92,7 @@ First we connect to the BioMart databases we need (note that this should happen 
 
 <<>>=
 
-mart <- martConnect(biomarts = c("ensembl", "snp","sequence")) 
+mart <- useMart("ensembl", mysql=TRUE) 
 
 @
 
@@ -217,7 +217,7 @@ The function \Rfunction{getSequence} retrieves the sequence given it's chromosom
 <<>>=
 
 getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
-
+martDisconnect(mart)
 @
 
 
@@ -227,9 +227,9 @@ The function \Rfunction{getSNP} retrieves all SNP's between a given a start and 
 Note:  make sure you have a Mart object with connections to ensembl and snp
 
 <<>>=
-
+mart=useMart("snp",mysql=TRUE)
 getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)
-
+martDisconnect(mart)
 @
 
 \subsection{More exotic functions}
@@ -239,6 +239,7 @@ This function retrieves the possible cross-references present in Ensembl.  This 
 sembl.  The results of this function can be used in the getXref function to extract the data of interest.
 
 <<>>=
+mart=useMart("ensembl",mysql=TRUE)
 xref <- getPossibleXrefs(mart = mart)
 xref[1:10,]
 
@@ -275,8 +276,8 @@ marts
 
 Here we select from the list of possible BioMart databases, a BioMart that we want to use.  You have to specify the full name of the BioMart e.g. "ensembl\_mart\_32".
 <<>>=
-index<-grep("ensembl",marts)
-mart <- useMart(marts[index])
+
+mart <- useMart("ensembl")
 @
 \subsection{listDatasets}
 
