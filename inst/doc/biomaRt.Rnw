@@ -88,11 +88,11 @@ The {\it array} argument takes affy array identifiers as values.  A list of poss
 The {\it mart} argument is a mart connection, which was obtained using the method \Rfunction{martConnect}.\\
 The {\it type} takes the values of 'entrezgene','refseq','hugo', 'ensembl' and 'embl' to clarify which type of identifier is specified in the id argument.\\
 
-First we connect to the BioMart databases we need (note that this should happen only once per session).  
+First we select the BioMart databases and the dataset we want to use.  
 
 <<>>=
 
-mart <- useMart("ensembl", mysql=TRUE) 
+mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl") 
 
 @
 
@@ -111,7 +111,7 @@ Assume now that we have some upregulated features that we want to annotate. To g
 
 upregulated <- c("210708_x_at","202763_at","211464_x_at")
 
-gene <- getGene( id = upregulated, array = "hgu133plus2", mart = mart)
+gene <- getGene( id = upregulated, array = "affy_hg_u133_plus_2", mart = mart)
 
 gene
 @
@@ -119,7 +119,7 @@ gene
 When using other id's we have to specify the \texttt{type} and \texttt{species}, use the function \Rfunction{getSpecies} to find valid species names.
 
 <<>>=
-getGene(id=100,species="hsapiens",type="entrezgene",mart=mart)
+getGene(id=100,type="entrezgene",mart=mart)
 
 @
 
@@ -129,7 +129,7 @@ getGene(id=100,species="hsapiens",type="entrezgene",mart=mart)
 Gene Onotology annotation can be retrieved with the function \Rfunction{getGO}.  The arguments are the same as the function \Rfunction{getGene}.
 
 <<>>=
-go <- getGO( id = upregulated[1], array = "hgu133plus2", mart = mart)
+go <- getGO( id = upregulated[1], array = "affy_hg_u133_plus_2", mart = mart)
 go
 @
 
@@ -138,7 +138,7 @@ go
 OMIM annotation can be retrieved with the function \Rfunction{getOMIM}.  The arguments are the same as the function \Rfunction{getGene}.
 
 <<>>=
-omim <- getOMIM( id = "203140_at" , array = "hgu133plus2", mart = mart)
+omim <- getOMIM( id = "203140_at" , array = "affy_hg_u133_plus_2", mart = mart)
 omim
 @
 
@@ -148,7 +148,7 @@ INTERPRO protein domains of the corresponding proteins can be searched with the 
 
 <<>>=
 
-getINTERPRO(id="1939_at",array="hgu95av2",mart=mart)
+getINTERPRO(id="1939_at",array="affy_hg_u95av2",mart=mart)
 
 @
 
@@ -159,7 +159,8 @@ This function maps homologs of genes of one species to another species.
 To see which species are available do:\\
 
 <<>>=
-getSpecies(mart)
+#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
+#getSpecies(mart)
 
 @
 
@@ -167,9 +168,9 @@ Now we can look for homologs:
 
 <<>>=
 
-getHomolog(id = 2,from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq',mart = mart)
+#getHomolog(id = 2,from.species = 'hsapiens', to.species = 'mmusculus', from.type = 'entrezgene', to.type = 'refseq',mart = mart)
 
-getHomolog(id = "1939_at",to.array = "canine", from.array = "hgu95av2",mart = mart )
+#getHomolog(id = "1939_at",to.array = "canine", from.array = "hgu95av2",mart = mart )
 
 @
 
@@ -179,35 +180,35 @@ getHomolog(id = "1939_at",to.array = "canine", from.array = "hgu95av2",mart = ma
 The function \Rfunction{getFeature} is a general function to look up identifiers which pass a certain filter.  A first such a filter is to look for identifiers that correspond to genes with a given symbol.  If the array argument is given then affy identifiers from that array will be returned.  For retrieving other identifiers one has to specify the species and the type of identifier to retrieve.\\
 
 <<>>=
-getFeature(symbol="BRCA2",array="hgu95av2",mart=mart)
+getFeature(symbol="BRCA2",array="affy_hg_u133_plus_2",mart=mart)
 @
 
 A second possible filter is to look for id's which have a certain OMIM disease term attached to them (this only works for hsapiens).
 
 <<>>=
-getFeature(OMIM="diabetes mellitus", type="refseq", species="hsapiens",mart=mart)
+#getFeature(OMIM="diabetes mellitus", type="refseq",mart=mart)
 @
 
 Similarly one can look for id's that have a certain GO annotation e.g. retrieve all affy id's on the hgu133plus2 array which have protein-tyrosine kinase activity.\\
 
 <<>>=
 
-tyrkinase <- getFeature(GO="protein-tyrosine kinase",array="hgu133plus2",mart=mart)
+#tyrkinase <- getFeature(GO="protein-tyrosine kinase",array="hgu133plus2",mart=mart)
 
 @
 
 An other filter uses the position of genes on the genome.  One can query for all genes on a certain chromosome:
 
 <<>>=
-ychrom <- getFeature(chromosome="Y",type="entrezgene",species="hsapiens",mart=mart)
-ychrom@id[1:10]
+ychrom <- getFeature(chromosome="Y",type="entrezgene", mart=mart)
+ychrom[1:10,]
 
 @
 
 Or query for genes that lay in a particular region:\\
 
 <<>>=
-getFeature(chromosome=21,start=30000000, end = 35000000, array="hgu95av2",mart=mart)
+#getFeature(chromosome=21,start=30000000, end = 35000000, array="hgu95av2",mart=mart)
 @
 
 \subsection{Sequence information}
@@ -216,8 +217,9 @@ The function \Rfunction{getSequence} retrieves the sequence given it's chromosom
 
 <<>>=
 
-getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
-martDisconnect(mart)
+#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
+#getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
+#martDisconnect(mart)
 @
 
 
@@ -227,9 +229,11 @@ The function \Rfunction{getSNP} retrieves all SNP's between a given a start and 
 Note:  make sure you have a Mart object with connections to ensembl and snp
 
 <<>>=
-mart=useMart("snp",mysql=TRUE)
-getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)
-martDisconnect(mart)
+
+#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
+#mart=useMart("snp",mysql=TRUE)
+#getSNP(chromosome = 8, start = 148350, end = 148612, species ="hsapiens", mart = mart)
+#martDisconnect(mart)
 @
 
 \subsection{More exotic functions}
@@ -239,9 +243,11 @@ This function retrieves the possible cross-references present in Ensembl.  This 
 sembl.  The results of this function can be used in the getXref function to extract the data of interest.
 
 <<>>=
-mart=useMart("ensembl",mysql=TRUE)
-xref <- getPossibleXrefs(mart = mart)
-xref[1:10,]
+
+#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
+#mart=useMart("ensembl",mysql=TRUE)
+#xref <- getPossibleXrefs(mart = mart)
+#xref[1:10,]
 
 @
 
@@ -253,8 +259,9 @@ E.g. starting from an affy id of chip hgu95av2 and id 1939\_at, look for corresp
 
 <<>>=
 
-getXref(id=c("1939_at"), from.species="hsapiens", to.species = "hsapiens", from.xref ="affy_hg_u95av2", to.xref="affy_hg_u133_plus_2",mart=mart)
-martDisconnect(mart)
+#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
+#getXref(id=c("1939_at"), from.species="hsapiens", to.species = "hsapiens", from.xref ="affy_hg_u95av2", to.xref="affy_hg_u133_plus_2",mart=mart)
+#martDisconnect(mart)
 
 @
 
