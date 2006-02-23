@@ -2,7 +2,7 @@
 \alias{getFeature}
 \title{Retrieves Feature starting from a gene symbol and array identifier}
 \description{This function function retrieves features representing a certain gene given a gene symbol array identifier}
-\usage{getFeature( symbol, OMIM, OMIMID, GO, GOID, array, species, chromosome, start, end, type, mart)}
+\usage{getFeature( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start, end, type, mart)}
 
 \arguments{
   \item{symbol}{gene symbol}
@@ -11,7 +11,6 @@
   \item{GO}{GO term}
   \item{GOID}{GO identifier}
   \item{array}{array identifier only to be used if gene identifiers are from affy arrays. An overview of the accepted identifiers can be obtained with the function: getAffyArrays()}
-  \item{species}{species}
   \item{chromosome}{chromosome, can be used without start and end positions}
   \item{start}{start on chromosome}
   \item{end}{end on chromosome}
@@ -26,11 +25,11 @@
 
 \examples{
 if(interactive()){
-mart <- useMart("ensembl",mysql=TRUE)
+mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl")
 
 #example using affy id from Ensembl
 
-feat = getFeature( symbol = "P53", array = "hg_u95av2", mart = mart)
+feat = getFeature( symbol = "TP53", array = "affy_hg_u95a2", mart = mart)
 show(feat)
 
 martDisconnect(mart = mart)

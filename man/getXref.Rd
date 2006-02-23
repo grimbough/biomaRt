@@ -2,7 +2,7 @@
 \alias{getXref}
 \title{Get cross reference in Ensembl}
 \description{This powerful function retrieves any cross reference in Ensembl}
-\usage{getXref(id, from.species, to.species, from.xref, to.xref, db = "ensembl", mart)}
+\usage{getXref(id, from.species, to.species, from.xref, to.xref, mart)}
 
 \arguments{
   \item{id}{any identifier}
@@ -10,7 +10,6 @@
   \item{to.xref}{type of identifier, value should correspond to results of getPossibleXrefs function}
   \item{from.species}{species of which the id is from.  Accepted values for species can be retrieved with the function getSpecies()} 
   \item{to.species}{species in which you want to find the homologs.  Accepted values for species can be retrieved with the function getSpecies()} 
-  \item{db}{database to use. Currently this function only works with Ensembl}
   \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
 }
 
