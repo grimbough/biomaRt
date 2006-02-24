@@ -1676,14 +1676,23 @@ listFilters <- function( mart ){
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   return(ls(mart@filters))
 }
-    
+
+##------------------------------------------------------------
+## getBM
+##------------------------------------------------------------
+
 getBM <- function(attributes, filters, values, mart){
 
-  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
-  if(missing( attributes )) stop("No attributes given")
-  if(missing( filters )) stop("No filter given")
-  if(missing( values )) stop("No values given")
+  if(missing( mart ) || class( mart )!='Mart')
+    stop("Argument 'mart' must be specified and be of class 'Mart'.")
+  if(missing( attributes ))
+    stop("Argument 'attributes' must be specified.")
+  if(missing( filters )) 
+    stop("Argument 'filters' must be specified.")
+  if(missing( values ))
+    stop("Argument 'values' must be specified.")
 
+  ## use the mySQL interface
   if(mart@mysql){
     if(length(filters) > 1) stop("biomaRt currently allows only one filter per query, reduce the number of filters to one")
     query <- queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
@@ -1701,10 +1710,12 @@ getBM <- function(attributes, filters, values, mart){
     return(as.data.frame(res))
   }
   else{
+  ## use the http/XML interface
     xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",mart@dataset,"'>",sep="")
-    attributeXML =  paste("<Attribute name = '", attributes, "' />", collapse="", sep="")
+    attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
     if(length(filters) > 1){
-      if(class(values)!= "list") stop("The values have to be in a list when using multiple filters and example list could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\n here we will select on affy id and chromosome, only results that pass both filters will be returned");
+      if(class(values)!= "list")
+        stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
       filterXML = NULL
       for(i in 1:length(filters)){
         valuesString = paste(values[[i]],"",collapse=",",sep="")
@@ -1716,19 +1727,25 @@ getBM <- function(attributes, filters, values, mart){
       filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
     }
     xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
-    result = postForm(paste(mart@host,"?",sep=""),"query"=xmlQuery)
-    if(result == ""){
-      return(NULL)
-    }
+    postRes = postForm(paste(mart@host,"?",sep=""),"query"=xmlQuery)
     
-    result = strsplit(result,"\n")[[1]]
-    result = sapply(result,"strsplit","\t")
-    
-#    stopifnot(all(listLen(result)==length(attributes)))
-  
+    if(postRes != ""){
 
-    result = as.data.frame(matrix(unlist(result), byrow=TRUE, ncol=length(attributes)))
-    colnames(result) = attributes
+      ## convert the serialized table into a dataframe
+      con = textConnection(postRes)
+      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+      close(con)
+
+      ## check and postprocess
+      if(all(is.na(result[,ncol(result)])))
+        result = result[,-ncol(result)]
+      stopifnot(ncol(result)==length(attributes))
+      colnames(result) = attributes
+      
+    } else {
+      warning("getBM returns NULL.")
+      result=NULL
+    }
     return(result)
   }
 }
