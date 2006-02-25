@@ -1432,7 +1432,8 @@ listDatasets <- function( mart ){
   }
   else{
     
-    datasetsTemp = scan(paste(mart@host,"?type=datasets&mart=",mart@biomart,sep=""), sep="\t", blank.lines.skip=TRUE, what="character")
+    datasetsTemp = scan(paste(mart@host,"?type=datasets&mart=",mart@biomart,sep=""),
+      sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
     dataset = NULL
     version = NULL
     index = 0
