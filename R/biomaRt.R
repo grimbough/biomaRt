@@ -1738,7 +1738,7 @@ getBM <- function(attributes, filters, values, mart){
 
       ## check and postprocess
       if(all(is.na(result[,ncol(result)])))
-        result = result[,-ncol(result)]
+        result = result[,-ncol(result),drop=FALSE]
       stopifnot(ncol(result)==length(attributes))
       colnames(result) = attributes
       
