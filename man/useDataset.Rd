@@ -11,8 +11,6 @@
 
 \author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
 
-\seealso{}
-
 \examples{
 if(interactive()){
 

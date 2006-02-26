@@ -13,16 +13,13 @@
 
 \author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
 
-\seealso{}
-
 \examples{
 if(interactive()){
-#mart <- useMart("snp",mysql=TRUE)
+mart <- useMart("snp",dataset="hsapiens_snp")
 
-#snp = getSNP(chromosome = 8, start = 148350, end = 148612, mart = mart)
-#show(snp)
+snp = getSNP(chromosome = 8, start = 148350, end = 148612, mart = mart)
+show(snp)
 
-martDisconnect(mart = mart)
 }
 }
 \keyword{methods}

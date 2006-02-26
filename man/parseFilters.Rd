@@ -9,10 +9,5 @@
 \item{env}{Environment to put the filter info in}
 }
 \author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
-
-\seealso{}
-
-\examples{
-}
 \keyword{methods}
 
