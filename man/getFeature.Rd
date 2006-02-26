@@ -21,8 +21,6 @@
 
 \author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
 
-\seealso{}
-
 \examples{
 if(interactive()){
 mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl")
