@@ -160,13 +160,10 @@ To use the function one needs two instances of a mart object where two different
 Now we can look for homologs:
 
 <<>>=
-#from.mart=useMart("ensembl",dataset="hsapiens_gene_ensembl")
-#to.mart=useMart("ensembl",dataset="mmusculus_gene_ensembl")
+from.mart=useMart("ensembl",dataset="hsapiens_gene_ensembl")
+to.mart=useMart("ensembl",dataset="mmusculus_gene_ensembl")
 
-#getHomolog(id = 2,from.type = 'entrezgene', to.type = 'refseq',from.mart = from.mart, to.mart = to.mart)
-
-#to.mart=useMart("ensembl",dataset="cfamiliaris_gene_ensembl")
-#getHomolog(id = "1939_at",to.array = "canine", from.array = "hgu95av2",from.mart = from.mart, to.mart = to.mart )
+getHomolog(id = 2,from.type = 'entrezgene', to.type = 'refseq',from.mart = from.mart, to.mart = to.mart)
 
 @
 
@@ -213,9 +210,7 @@ The function \Rfunction{getSequence} retrieves the sequence given it's chromosom
 
 <<>>=
 
-#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
-#getSequence(species="ggallus", chromosome = 1, start = 400, end = 500, mart = mart)
-#martDisconnect(mart)
+getSequence(id="BRCA1",type="hugo",seqType="peptide", mart = mart)
 @
 
 

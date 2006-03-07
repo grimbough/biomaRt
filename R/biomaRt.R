@@ -111,7 +111,7 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
 #Webservice-----------------------------------------------------
   else{
     if(missing(host)){
-      host = "http://www.ebi.ac.uk/biomart/martservice"
+      host = "http://www.biomart.org/biomart/martservice"
     }
     registry = getURL(paste(host,"?type=registry", sep=""))
     registry = xmlTreeParse(registry)
@@ -138,10 +138,10 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
 
 martConnect <- function(biomarts = "ensembl", host, user, password, mart, local = FALSE){
   
-   writeLines("\n###############################################\n")
-   writeLines("This function will go out of use soon, please adapt by using the 'useMart' function instead.")
-   writeLines("\n###############################################\n")
-   
+  writeLines("\n###############################################\n")
+  writeLines("This function will go out of use soon, please adapt by using the 'useMart' function instead.")
+  writeLines("\n###############################################\n")
+  
   if(length(biomarts)>1){
     stop("You can only connect to ensembl with this function.  To use the function getSNP or getSequence you need to use biomarts = 'ensembl'.  VEGA should now be accessed using the advanced biomaRt functions: useMart,useDatasets,listAttributes,listFilters and getBM.")
   }
@@ -165,12 +165,12 @@ martConnect <- function(biomarts = "ensembl", host, user, password, mart, local 
 ######################
 
 martDisconnect <- function( mart ){
-
+  
   if(missing(mart)){
     stop("no Mart object to disconnect");
   }
   openConnections <- names(mart@connections);
-
+  
   if(match("biomart",openConnections,nomatch = 0) != 0){
     dbDisconnect( mart@connections$biomart );
   }
@@ -186,7 +186,7 @@ mapSpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
 }
 
 mapFilter <- function(type){
-
+  
   if(!(type %in% c("affy","entrezgene","agilentprobe","refseq","embl","hugo","ensembl","ensemblTrans","flybase", "unigene"))){
     stop("invalid type choose either affy, refseq, embl, hugo, ensembl, ensemblTrans, unigene, agilentprobe or entrezgene");
   }
@@ -214,9 +214,8 @@ mapFilter <- function(type){
 #get gene information#
 ######################
 
-
 getGene <- function( id, type, array, mart){
-
+  
   if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
@@ -224,11 +223,11 @@ getGene <- function( id, type, array, mart){
   if(mart@biomart != "ensembl"){
     stop("you can only use ensembl for this query.  Please do: useMart('ensembl').  To access VEGA you have to use the more advanced biomaRt function:  useMart. listDatasets, useDataset, listFilters, listAttributes and getBM.");
   }
-
+  
   if(mart@dataset==""){
     stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
   }
-     
+  
   if(!missing(array)){
     type <- "affy";
   }
@@ -236,19 +235,19 @@ getGene <- function( id, type, array, mart){
   if( missing( type )){
     stop("you must provide the identifier type using the type argument")
   }
-
+  
 #MySQL-----------------------------------------------------------
   if(mart@mysql){
-
+    
     if("ensembl" != mart@biomart){
       stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
     }
     
     speciesTable <- unique(mart@mainTables$tables[mart@mainTables$keys == "gene_id_key"]);
-     
+    
     IDTable = NULL
     dbcolQID = NULL
-
+    
     if(!missing(array)){
       IDTable = get(array,mart@filters)$table
       dbcolQID = get(array,mart@filters)$field
@@ -257,7 +256,7 @@ getGene <- function( id, type, array, mart){
       IDTable <- get(mapFilter(type),mart@filters)$table
       dbcolQID = get(mapFilter(type),mart@filters)$field
     }
-   
+    
     dbcolID <- get(mapFilter("ensembl"),mart@filters)$field;
     
     if (length( id ) >= 1){
@@ -272,7 +271,7 @@ getGene <- function( id, type, array, mart){
       }
       
       res <- dbGetQuery( conn = mart@connections$biomart, statement = query);
-
+      
       if(dim(res)[1] == 0){
         writeLines("Query retrieved no results")
         return(NULL)
@@ -318,7 +317,7 @@ getGene <- function( id, type, array, mart){
 
 
 getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start, end, type,  mart){
-
+  
   if(!missing(array)){
     type <- "affy"
   }
@@ -352,7 +351,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
       }
     }
     speciesTable <- unique(mart@mainTables$tables[mart@mainTables$keys == "gene_id_key"]);
-   
+    
     IDTable = NULL
     dbcolID=NULL
     if(!missing(array)){
@@ -433,9 +432,9 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     attribute = switch(type, hugo="hgcn_symbol",agilentcgh = "agilentcgh",agilentprobe="agilentprobe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="gene_stable_id")
     
     if(!missing(symbol)){
-       filter="hgnc_symbol"
-       attribute = c("hgnc_symbol",attribute)
-       values = symbol
+      filter="hgnc_symbol"
+      attribute = c("hgnc_symbol",attribute)
+      values = symbol
     }
     
     if(!missing(OMIM)){
@@ -468,11 +467,11 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     }
     
     table = getBM(attributes = attribute, filters = filter, values = values, mart=mart)
-
+    
     #duplicates = duplicated(table)
     #table = table[!duplicates,]
     #rownames(result) = seq(1:length(result[,1]))
-   
+    
     return(table)
   }
 }
@@ -486,16 +485,16 @@ getGO <- function( id, type, array, mart){
   
   table <- NULL;
   go <- NULL;
-
+  
   if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
   if("ensembl" != mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
- if(mart@dataset==""){
-   stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
- }
+  if(mart@dataset==""){
+    stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
+  }
  
   if(mart@mysql){
     
@@ -520,7 +519,7 @@ getGO <- function( id, type, array, mart){
     }
     
     dbcolID <- get(mapFilter("ensembl"),mart@filters)$field;        #get database id col   
-
+    
     if( length( id ) >= 1){
       ids <- paste("'",id,"'",sep="",collapse=",")
       res <- NULL
@@ -554,7 +553,7 @@ getGO <- function( id, type, array, mart){
   }
 #--webservice----------------------
   else{
-    if(!missing(array)){  
+    if(!missing(array)){
       table = getBM(attributes=c("go_id", "go_description", "evidence_code","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
     }
     else{
@@ -575,7 +574,7 @@ getGO <- function( id, type, array, mart){
 
 
 getOMIM <- function( id, type, array, mart){
-
+  
   if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function martConnect")
   }
@@ -599,7 +598,7 @@ getOMIM <- function( id, type, array, mart){
         stop("you must provide the identifier type using the type argument")
       }
     }
-     
+    
     IDTable = NULL
     dbcolQID = NULL
     if(!missing(array)){
@@ -610,7 +609,7 @@ getOMIM <- function( id, type, array, mart){
       IDTable <- get(mapFilter(type),mart@filters)$table
       dbcolQID = get(mapFilter(type),mart@filters)$field
     }
-   
+    
     dbcolID <- get(mapFilter("ensembl"),mart@filters)$field;
     
     if( length( id ) >= 1){
@@ -620,31 +619,32 @@ getOMIM <- function( id, type, array, mart){
         query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolQID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".",dbcolQID," in (",ids,")  and ",OMIMTable,".omim_id != 'NULL'",sep="");
         
       }
-      else{
-        query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".",dbcolQID," in (",ids,") and ",OMIMTable,".omim_id != 'NULL'",sep="");
-      }
-      res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-            
-      if(dim(res)[1] == 0){
-        table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
-      } 
-      else{
-        mt = match(res[,1], id)
-        if(any(is.na(mt)))
-          stop("Internal error!")
-        if(type == "ensembl"){ 
-          res = res[order(mt),c(1,3,4,1)];
-        }
-        else{
-          res = res[order(mt),c(1,3,4,2)];
-        }
-        names(res) = c("id","OMIMID", "disease", "martID")
-        table <- as.data.frame(res)
-      }  
     }
+    else{
+      query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".",dbcolQID," in (",ids,") and ",OMIMTable,".omim_id != 'NULL'",sep="");
+    }
+    res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
+    
+    if(dim(res)[1] == 0){
+      table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
+    } 
+    else{
+      mt = match(res[,1], id)
+      if(any(is.na(mt)))
+        stop("Internal error!")
+      if(type == "ensembl"){ 
+        res = res[order(mt),c(1,3,4,1)];
+      }
+      else{
+        res = res[order(mt),c(1,3,4,2)];
+      }
+      names(res) = c("id","OMIMID", "disease", "martID")
+      table <- as.data.frame(res)
+    }  
+  
     return( table );
   }
-
+  
 #------webservice-------------------------------
   else{
     if(!missing(array)){  
@@ -667,76 +667,39 @@ getOMIM <- function( id, type, array, mart){
 #####################
 
 
-getSequence <- function(species, chromosome, start, end, martTable, mart){
+getSequence <- function(chromosome, start, end, id, type, seqType, mart){
+
   if(missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
-  
-  if(!mart@mysql)stop("This function only works via MySQL access to the BioMart.  Create a new Mart object using the function useMart('ensembl',mysql=TRUE)")
-  
-  martdb = "";
-  if(mart@biomart != "sequence"){
-    version = "0"
-    marts = listMarts(mysql = TRUE)
-    for(i in 1:length(marts)){
-      if("sequence" == strsplit(marts[i],"_")[[1]][1]){
-        version = strsplit(marts[i],"_")[[1]][3]
-      }
-    }
-    martdb = paste("sequence_mart_",version,sep="")
-    mart@biomart="sequence"
-    
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
-  mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = martdb, password = "")
-    
- 
-  sequence <- NULL;  
-  speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" ); 
+  if(mart@dataset==""){
+    stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
+  }  
+  if(mart@mysql){
   
-  if(missing( martTable ) && !missing( chromosome ) && !missing( start ) && !missing( end )){
-    for(i in 1:length( chromosome )){
-      
-      if(end[i] - start[i] > 100000){
-        stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
+    martdb = "";
+    if(mart@biomart != "sequence"){
+      version = "0"
+      marts = listMarts(mysql = TRUE)
+      for(i in 1:length(marts)){
+        if("sequence" == strsplit(marts[i],"_")[[1]][1]){
+          version = strsplit(marts[i],"_")[[1]][3]
+        }
       }
+      martdb = paste("sequence_mart_",version,sep="")
+      mart@biomart="sequence"
       
-      chunkStart <- (floor((start[i] - 1)/100000)*100000) + 1;
-      chunkEnd <- (floor((end[i] - 1)/100000)*100000) + 1;
-      
-      if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
-        
-        query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-        chunkseq <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-        newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
-        newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
-        
-        sequence <- c(sequence,substr(as.character(chunkseq), newstart, newend));
-        
-      }
-      
-      else{   #query sequence is on 2 sequence chuncks
-        
-        query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-        chunkseq1 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-        query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
-        chunkseq2 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-        chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
-        
-        newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
-        newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
-        sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
-        
-      }
     }
-  }
-  
-  else{
-    if(!missing( martTable )){
-                                        #check class!!
-      chromosome = martTable@table$chromosome;
-      start = martTable@table$start;
-      end = martTable@table$end;
-      
+    mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = martdb, password = "")
+    
+    species = strsplit(mart@dataset,"_")[[1]][1]
+    sequence <- NULL;  
+    speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" ); 
+    
+    if(missing( martTable ) && !missing( chromosome ) && !missing( start ) && !missing( end )){
       for(i in 1:length( chromosome )){
         
         if(end[i] - start[i] > 100000){
@@ -770,13 +733,100 @@ getSequence <- function(species, chromosome, start, end, martTable, mart){
           sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
           
         }
-      } 
+      }
     }
+    
+    else{
+      if(!missing( martTable )){
+                                        #check class!!
+        chromosome = martTable@table$chromosome;
+        start = martTable@table$start;
+        end = martTable@table$end;
+        
+        for(i in 1:length( chromosome )){
+          
+          if(end[i] - start[i] > 100000){
+            stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
+          }
+          
+          chunkStart <- (floor((start[i] - 1)/100000)*100000) + 1;
+          chunkEnd <- (floor((end[i] - 1)/100000)*100000) + 1;
+          
+          if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
+            
+            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+            chunkseq <- dbGetQuery(conn = mart@connections$biomart, statement = query);
+            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
+            newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
+            
+            sequence <- c(sequence,substr(as.character(chunkseq), newstart, newend));
+            
+          }
+          
+          else{   #query sequence is on 2 sequence chuncks
+            
+            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
+            chunkseq1 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
+            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
+            chunkseq2 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
+            chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
+            
+            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
+            newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
+            sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
+            
+          }
+        } 
+      }
+    }
+    
+    table <- new("martTable", id = paste(chromosome, start, end, sep = "_") ,table = list(chromosome = chromosome, start = start, end = end, sequence = sequence))
+    
+    return(table)
   }
-  
-  table <- new("martTable", id = paste(chromosome, start, end, sep = "_") ,table = list(chromosome = chromosome, start = start, end = end, sequence = sequence))
-  
-  return(table)
+  else{
+    
+    species = strsplit(mart@dataset,"_")[[1]][1]
+    if(!missing(chromosome)){
+      if(seqType %in% c("cdna","peptide","3utr","5utr")){
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = 'chr_name' value = '",chromosome,"'/><ValueFilter name = 'gene_chrom_start' value = '",start,"'/><ValueFilter name = 'gene_chrom_end' value = '",end,"'/></Dataset><Links source = '",species,"_gene_ensembl' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = 'gene_stable_id'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+      }
+      else{
+        stop("The type of sequence specified with seqType is not available. Please select from: cdna, peptide, 3utr, 5utr")
+      }
+    }
+    
+    if(!missing(id)){
+      valuesString = paste(id,"",collapse=",",sep="")
+      if(seqType %in% c("cdna","peptide","3utr","5utr")){
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = '",mapFilter(type),"' value = '",valuesString,"'/></Dataset><Links source = '",mart@dataset,"' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = 'gene_stable_id'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>", sep="")
+      }
+      else{
+        stop("The type of sequence specified with seqType is not available. Please select from: cdna, peptide, 3utr, 5utr")
+      }   
+    }
+    postRes = postForm(paste(mart@host,"?",sep=""),"query"=query)
+    
+    if(postRes != ""){
+      ## convert the serialized table into a dataframe
+      con = textConnection(postRes)
+      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+      close(con)
+      ## check and postprocess
+      if(all(is.na(result[,ncol(result)])))
+        result = result[,-ncol(result),drop=FALSE]
+      #stopifnot(ncol(result)==length(attributes))
+      #if(class(result) == "data.frame"){
+      #  colnames(result) = attributes
+      #}
+      
+    } else {
+      warning("getBM returns NULL.")
+      result=NULL
+    }
+    return(result)
+    
+  }
 }
 
 ################
@@ -835,19 +885,19 @@ getSNP <- function(chromosome, start, end, mart){
 ##################
 
 getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, to.mart) {
-    
+  
   if( missing( to.mart )|| class( to.mart ) != 'Mart' || missing( from.mart )|| class( from.mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function martConnect")
   }
-
+  
   if("ensembl" != to.mart@biomart || "ensembl" != from.mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
-
+  
   
   if(from.mart@mysql){
     if(!to.mart@mysql)stop("Both mart object should both be using mysql or not.  Your from.mart uses mysql but your to.mart not.")
-
+    
     if( !missing( id )){
       id <- as.character(id);
     }
@@ -970,13 +1020,63 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
           }
         }
         table <- data.frame(id = foundID, MappedID = MappedID)
+        ind = is.na(MappedID)
+        table = table[!ind,]
       }
     }
     return(table)
   }
   else{
     if(to.mart@mysql)stop("The mart objects should either use both mysql or not. Here your from.mart does not use mysql but you to.mart does.")
-
+    
+    #maybe replace the following code so it uses a more general getBM function
+    to.attributes = c("gene_stable_id","transcript_stable_id")
+    from.attributes = NULL
+    filter = NULL
+    if(!missing(to.array)){
+      to.attributes = c(to.attributes,to.array)
+    }
+    else{
+      to.attributes = c(to.attributes,mapFilter(to.type))
+    }
+    if(!missing(from.array)){
+      from.attributes = c(from.attributes,from.array)
+      filter = from.array
+    }
+    else{
+      from.attributes = c(from.attributes,mapFilter(from.type))
+      filter = mapFilter(from.type)
+    }
+    
+    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",from.mart@dataset,"'>",sep="")
+    attributeXML =""#  paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
+    valuesString = paste(id,"",collapse=",",sep="")
+    filterXML = paste("<ValueFilter name = '",filter,"' value = '",valuesString,"' />", sep="")
+    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset><Dataset name = '",to.mart@dataset,"'>",sep="")
+    to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
+    xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset>",sep="")
+    species = strsplit(to.mart@dataset,"_")[[1]][1]
+    xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/></Query>", sep="")
+    postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
+    
+    if(postRes != ""){
+      ## convert the serialized table into a dataframe
+      con = textConnection(postRes)
+      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+      close(con)
+      ## check and postprocess
+      if(all(is.na(result[,ncol(result)])))
+        result = result[,-ncol(result),drop=FALSE]
+      #stopifnot(ncol(result)==length(attributes))
+      #if(class(result) == "data.frame"){
+      #  colnames(result) = attributes
+      #}
+      
+    } else {
+      warning("getBM returns NULL.")
+      result=NULL
+    }
+    return(result)
   }
 } 
 
@@ -1254,7 +1354,7 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
   }
   else{
     if(missing(host)){
-      host = "http://www.ebi.ac.uk/biomart/martservice"
+      host = "http://www.biomart.org/biomart/martservice"
     }
     mart <- new("Mart", biomart = biomart, host = host, mysql= FALSE)
     if(!missing(dataset)){
@@ -1354,7 +1454,7 @@ parseAttributes <- function(xml, env){
 }
 
 parseFilters <- function(xml, env){
-
+  
   if(xmlName(xml) == "FilterPage"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden")!="true"){
@@ -1413,6 +1513,7 @@ parseFilters <- function(xml, env){
       }
     }
   }
+  
   if(xmlName(xml) == "Option"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden") != "true"){
@@ -1489,6 +1590,7 @@ useDataset <- function(dataset, mart){
 }
 
 getMainTables <- function( xml ){
+  
   writeLines("Checking main tables ...", sep=" ")
   names <- names(xml)
   
@@ -1688,27 +1790,23 @@ queryGenerator <- function(attributes, filter, values, mart){
   
   return(query)
 }
-
-
+  
 ##---------TEST FUNCTION FOR WEBSERVICE QUERIES -----
 
-testService <- function(){
-
-#  query = "  <?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_gene_ensembl'><ValueFilter name = 'chr_name' value = '22'/><ValueFilter name = 'gene_chrom_start' value = '10000000'/><ValueFilter name = 'gene_chrom_end' value = '20000000'/></Dataset><Links source = 'hsapiens_gene_ensembl' target = 'hsapiens_gene_ensembl_structure' defaultLink = 'hsapiens_internal_transcript_id' /><Dataset name = 'hsapiens_gene_ensembl_structure'><Attribute name = 'gene_stable_id'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = 'hsapiens_gene_ensembl_structure' target = 'hsapiens_genomic_sequence' defaultLink = 'cdna' /><Dataset name = 'hsapiens_genomic_sequence'><Attribute name = 'cdna'/></Dataset></Query>"
-
-#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_gene_ensembl'><ValueFilter name = 'hgnc_symbol' value = 'BRCA1'/></Dataset><Links source = 'hsapiens_gene_ensembl' target = 'hsapiens_gene_ensembl_structure' defaultLink = 'hsapiens_internal_transcript_id' /><Dataset name = 'hsapiens_gene_ensembl_structure'><Attribute name = 'gene_stable_id'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = 'hsapiens_gene_ensembl_structure' target = 'hsapiens_genomic_sequence' defaultLink = 'cdna' /><Dataset name = 'hsapiens_genomic_sequence'><Attribute name = 'cdna'/></Dataset></Query>"
-
-#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_gene_ensembl'><ValueFilter name = 'hgnc_symbol' value = 'BRCA1'/></Dataset><Links source = 'hsapiens_gene_ensembl' target = 'hsapiens_gene_ensembl_structure' defaultLink = 'hsapiens_internal_transcript_id' /><Dataset name = 'hsapiens_gene_ensembl_structure'><Attribute name = 'gene_stable_id'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = 'hsapiens_gene_ensembl_structure' target = 'hsapiens_genomic_sequence' defaultLink = 'peptide' /><Dataset name = 'hsapiens_genomic_sequence'><Attribute name = 'peptide'/></Dataset></Query>"
+testService <- function(mart){
 
 #query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_genomic_sequence'><ValueFilter name = 'chr' value = '1'/><ValueFilter name = 'start' value = '10000'/><ValueFilter name = 'end' value = '10020'/><Attribute name = 'raw_sequence'/></Dataset></Query>"
 
-query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = 'hsapiens_snp'><Attribute name = 'tscid'/><Attribute name = 'refsnp_id'/><Attribute name = 'allele'/><Attribute name = 'chrom_start'/><Attribute name = 'chrom_strand'/><ValueFilter name = 'chr_name' value = 'Y' /><ValueFilter name = 'snp_chrom_start' value = '2000' /><ValueFilter name = 'snp_chrom_end' value = '40000' /></Dataset></Query>"
-  
-  result = postForm(paste(mart@host,"?",sep=""),"query"=query)
-  result = strsplit(result,"\n")[[1]]
-  result = sapply(result,"strsplit","\t")
-  
-        #  result = as.data.frame(matrix(unlist(result), byrow=TRUE, ncol=4))
+#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = 'hsapiens_snp'><Attribute name = 'tscid'/><Attribute name = 'refsnp_id'/><Attribute name = 'allele'/><Attribute name = 'chrom_start'/><Attribute name = 'chrom_strand'/><ValueFilter name = 'chr_name' value = 'Y' /><ValueFilter name = 'snp_chrom_start' value = '2000' /><ValueFilter name = 'snp_chrom_end' value = '40000' /></Dataset></Query>"
 
-  return(result)
+#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'><Dataset name = 'mmusculus_gene_ensembl'><Attribute name = 'gene_stable_id'/></Dataset><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'entrezgene'/><ValueFilter name = 'entrezgene' value = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20' /></Dataset><Links source = 'hsapiens_gene_ensembl' target = 'mmusculus_gene_ensembl' defaultLink = 'mmusculus_internal_gene_id'/></Query>"
+
+#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'gene_stable_id'/></Dataset><Dataset name = 'mmusculus_gene_ensembl'><ValueFilter name = 'affy_mg_u74av2' value = '95919_at'/></Dataset><Links source = 'mmusculus_gene_ensembl' target = 'hsapiens_gene_ensembl' defaultLink = 'hsapiens_internal_gene_id'/></Query>"
+
+#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'gene_stable_id' /><Attribute name = 'affy_hg_u95c' /></Dataset><Dataset name = 'mmusculus_gene_ensembl'><ValueFilter name = 'affy_mg_u74av2' value = '95919_at'/></Dataset><Links source = 'mmusculus_gene_ensembl' target = 'hsapiens_gene_ensembl' defaultLink = 'hsapiens_internal_gene_id' /></Query>"
+  
+result = postForm(paste(mart@host,"?",sep=""),"query"=query)
+result = strsplit(result,"\n")[[1]]
+result = sapply(result,"strsplit","\t")
+return(result)
 }
