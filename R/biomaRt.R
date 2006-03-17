@@ -117,14 +117,19 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
     registry = xmlTreeParse(registry)
     registry = registry$doc$children[[1]]
     
-    marts = list(biomart = NULL, version = NULL)
+    marts = list(biomart = NULL, version = NULL, host = NULL)
     index = 1
     
     for(i in 1:xmlSize(registry)){
-      if(xmlGetAttr(registry[[i]],"visible") == 1){
-        marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
-        marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
-        index=index+1
+      if(xmlName(registry[[i]])=="virtualSchema"){
+        for(j in 1:xmlSize(registry[[i]])){
+          if(xmlGetAttr(registry[[i]][[j]],"visible") == 1){
+            marts$biomart[index] = xmlGetAttr(registry[[i]][[j]],"name")
+            marts$version[index] = xmlGetAttr(registry[[i]][[j]],"displayName")
+            marts$host[index] = xmlGetAttr(registry[[i]][[j]],"host")
+            index=index+1
+          }
+        }
       }
     }
     
@@ -1356,7 +1361,12 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
     if(missing(host)){
       host = "http://www.biomart.org/biomart/martservice"
     }
-    mart <- new("Mart", biomart = biomart, host = host, mysql= FALSE)
+    marts=listMarts(host = host)
+    mindex=match(biomart,marts$biomart)
+    if(is.na(mindex)){
+      stop("Incorrect biomart name")
+    }
+    mart <- new("Mart", biomart = biomart, host = paste("http://",marts$host[mindex],"/biomart/martservice",sep=""), mysql= FALSE)
     if(!missing(dataset)){
       mart = useDataset(mart = mart, dataset=dataset)
     }
