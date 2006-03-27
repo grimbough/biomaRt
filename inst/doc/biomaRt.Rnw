@@ -37,7 +37,7 @@
 \section{Introduction}
 The BioConductor \Rpackage{biomaRt} package provides and API in R to query BioMart databases such as Ensembl (http://www.ensembl.org), a software system which produces and maintains automatic annotation on metazoan genomes.  Two sets of functions are currently implemented.\\  
 A first set of functions is tailored towards Ensembl and are a set of commonly used queries in microarray data analysis.
-A second set of functions aims to mimic functionality of other BioMart API's such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart API's provide. With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy id's, locuslink, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM annotation, etc.  On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.\\
+A second set of functions aims to mimic functionality of other BioMart APIs such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart APIs provide. With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy ids, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM annotation, etc.  On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.\\
 
 \section{objects}
 
@@ -45,8 +45,15 @@ A second set of functions aims to mimic functionality of other BioMart API's suc
 
 An object of the \Robject{Mart} class stores connections to BioMart databases and aditional information about the BioMarts. It has the following slots:
 \begin{itemize}
-\item \Robject{connections}: stores the RMySQLConnections
-\item \Robject{arrayToSpecies}: Stores mapping from affy arrays to species
+\item \Robject{mysql}: Logical indicating if access to BioMart database should use MySQL or use the BioMart webservice over HTTP (default)
+\item \Robject{connections}: Stores the MySQLConnections
+\item \Robject{mysqldriver}:  Stores the MySQL driver
+\item \Robject{mainTables}:  List of the main tables in  the BioMart database
+\item \Robject{biomart}:  Name of the BioMart database
+\item \Robject{biomart}:  Hostname of the BioMart database
+\item \Robject{dataset}:  Name of the dataset that is in use
+\item \Robject{filters}:  Environment that stores information on BioMart filters
+\item \Robject{attributes}:  Environment that stores information on BioMart attributes
 \end{itemize}
 
 
@@ -68,7 +75,7 @@ mart <- useMart("ensembl")
 
 \subsubsection{\Rfunction{martDisconnect}}
 
-You can only hold a limited number of connections with different BioMarts.  The function martDisconnect can be used to close a mart connection.
+When using MySQL access, you can only hold a limited number of connections with different BioMarts.  The function martDisconnect can be used to close a mart connection.
 
 <<>>=
 
@@ -81,9 +88,8 @@ martDisconnect(mart)
 \subsection{Annotating identifiers with gene information}
 
 The function \Rfunction{getGene} uses a query id to look up the name, description and chromosomal information of the corresponding gene.
-Currently the \Rfunction{getGene} function takes identifiers from entrezgene, ensembl, refseq, affy, hugo and embl.  Besides the id argument, this function also has a species, array and type argument.\\
+Currently the \Rfunction{getGene} function takes identifiers from entrezgene, ensembl, refseq, affy, hugo, unigene and embl.\\
 The {\it id} argument is either a vector of identifiers or a single identifier to be annotated.\\
- The {\it species} argument should have the species from which the identifier originates.\\
 The {\it array} argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\
 The {\it mart} argument is a mart connection, which was obtained using the method \Rfunction{martConnect}.\\
 The {\it type} takes the values of 'entrezgene','refseq','hugo', 'ensembl' and 'embl' to clarify which type of identifier is specified in the id argument.\\
@@ -177,18 +183,7 @@ getFeature(symbol="BRCA2",array="affy_hg_u133_plus_2",mart=mart)
 @
 
 A second possible filter is to look for id's which have a certain OMIM disease term attached to them (this only works for hsapiens).
-
-<<>>=
-#getFeature(OMIM="diabetes mellitus", type="refseq",mart=mart)
-@
-
-Similarly one can look for id's that have a certain GO annotation e.g. retrieve all affy id's on the hgu133plus2 array which have protein-tyrosine kinase activity.\\
-
-<<>>=
-
-#tyrkinase <- getFeature(GO="protein-tyrosine kinase",array="hgu133plus2",mart=mart)
-
-@
+Similarly one can look for ids that have a certain GO annotation e.g. retrieve all affy id's on the hgu133plus2 array which have protein-tyrosine kinase activity.\\
 
 An other filter uses the position of genes on the genome.  One can query for all genes on a certain chromosome:
 
@@ -232,28 +227,10 @@ getSNP(chromosome = 8, start = 148350, end = 148612, mart = mart)
 This function retrieves the possible cross-references present in Ensembl.  This is a very general function to see what can be extracted from En
 sembl.  The results of this function can be used in the getXref function to extract the data of interest.
 
-<<>>=
-
-#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
-#mart=useMart("ensembl",mysql=TRUE)
-#xref <- getPossibleXrefs(mart = mart)
-#xref[1:10,]
-
-@
-
-
 \subsubsection{\Rfunction{getXref}}
 
-This powerful function retrieves any cross reference in Ensembl.  It can for example be used to map different affymetrix array within one species.
+This function retrieves any cross reference in Ensembl.  It can for example be used to map different affymetrix array within one species.
 E.g. starting from an affy id of chip hgu95av2 and id 1939\_at, look for corresponding affy identifiers on the affy hgu133plus2 chip.
-
-<<>>=
-
-#Only works with using MySQL.  The mart object should be created with mart=useMart("ensembl",mysql=TRUE) 
-#getXref(id=c("1939_at"), from.species="hsapiens", to.species = "hsapiens", from.xref ="affy_hg_u95av2", to.xref="affy_hg_u133_plus_2",mart=mart)
-#martDisconnect(mart)
-
-@
 
 
 \section{Advanced data retrieval with BioMart API functions}
@@ -271,7 +248,7 @@ marts
 
 \subsection{useMart}
 
-Here we select from the list of possible BioMart databases, a BioMart that we want to use.  You have to specify the full name of the BioMart e.g. "ensembl\_mart\_32".
+Here we select from the list of possible BioMart databases, a BioMart that we want to use.
 <<>>=
 
 mart <- useMart("ensembl")

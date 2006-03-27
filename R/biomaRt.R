@@ -31,8 +31,7 @@ setMethod("show","martTable",
     cat(strwrap(res, exdent=5), sep="\n")
     n  = min(nrShow, length(object@id))
     df = do.call("data.frame", args=lapply(object@table, "[", 1:n));
-    df = cbind(object@id[1:n],df)
-    
+    df = cbind(object@id[1:n],df)    
     show(df)
   })
 
@@ -117,7 +116,7 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
     registry = xmlTreeParse(registry)
     registry = registry$doc$children[[1]]
     
-    marts = list(biomart = NULL, version = NULL, host = NULL)
+    marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL)
     index = 1
     
     for(i in 1:xmlSize(registry)){
@@ -127,12 +126,21 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
             marts$biomart[index] = xmlGetAttr(registry[[i]][[j]],"name")
             marts$version[index] = xmlGetAttr(registry[[i]][[j]],"displayName")
             marts$host[index] = xmlGetAttr(registry[[i]][[j]],"host")
+            marts$path[index] = xmlGetAttr(registry[[i]][[j]],"path")
             index=index+1
           }
         }
       }
+      if(xmlName(registry[[i]])=="MartURLLocation"){  
+        if(xmlGetAttr(registry[[i]],"visible") == 1){
+          marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
+          marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
+          marts$host[index] = xmlGetAttr(registry[[i]],"host")
+          marts$path[index] = xmlGetAttr(registry[[i]][[j]],"path")
+          index=index+1
+        }
+      }
     }
-    
     return(marts)
   }
 }
@@ -1146,9 +1154,6 @@ getXref <- function( id, from.species, to.species, from.xref, to.xref, mart) {
                    "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
                    "') and b.dbprimary_id != 'NULL'",sep="");
   } else {
-    if (db == 'vega'){
-      stop('VEGA supports only hsapiens')
-    }
     if ( from.species == to.species) {
      query <- paste( 
                    'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
@@ -1366,7 +1371,10 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
     if(is.na(mindex)){
       stop("Incorrect biomart name")
     }
-    mart <- new("Mart", biomart = biomart, host = paste("http://",marts$host[mindex],"/biomart/martservice",sep=""), mysql= FALSE)
+
+    if(marts$path[mindex]=="")marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
+    
+    mart <- new("Mart", biomart = biomart, host = paste("http://",marts$host[mindex],marts$path[mindex],sep=""), mysql= FALSE)
     if(!missing(dataset)){
       mart = useDataset(mart = mart, dataset=dataset)
     }
