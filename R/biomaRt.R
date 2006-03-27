@@ -1707,8 +1707,7 @@ getBM <- function(attributes, filters, values, mart){
       }
       
     } else {
-      warning("getBM returns NULL.")
-      result=NULL
+      stop("The getBM query to BioMart webservice failed.  The webservice could be temporarily down, please try query again.  Also avoid running getBM in a loop involving hundreds or more iterations, you can query for multiple values at once by using a vector.")
     }
     return(result)
   }
