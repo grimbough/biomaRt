@@ -1766,7 +1766,6 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
         postRes = postForm(paste(mart@host,"?",sep=""),"query" = xmlQuery)
       }
       else{
-        print("I'm here!!")
         postRes = postForm(paste(mart@host,"?",sep=""),"query" = xmlQuery, curl = curl)
       }
       
