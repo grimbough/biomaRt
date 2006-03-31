@@ -50,7 +50,7 @@ An object of the \Robject{Mart} class stores connections to BioMart databases an
 \item \Robject{mysqldriver}:  Stores the MySQL driver
 \item \Robject{mainTables}:  List of the main tables in  the BioMart database
 \item \Robject{biomart}:  Name of the BioMart database
-\item \Robject{biomart}:  Hostname of the BioMart database
+\item \Robject{host}:  Hostname of the BioMart database
 \item \Robject{dataset}:  Name of the dataset that is in use
 \item \Robject{filters}:  Environment that stores information on BioMart filters
 \item \Robject{attributes}:  Environment that stores information on BioMart attributes
@@ -293,10 +293,7 @@ filters[1:10]
 To get the information from our example we can use the function \Rfunction{getBM}, using valid attributes and filter.
 
 <<>>=
-
-getBM(attributes="hgnc_symbol",filter="affy_hg_u95av2",values=c("1939_at","2082_s_at","1454_at","1000_at"), mart=mart)
-getBM(attributes=c("chr_name","band"),filter="affy_hg_u95av2",values=c("1939_at","2082_s_at","1454_at", "1000_at"), mart=mart)
-martDisconnect(mart)
+getBM(attributes=c("affy_hg_u95av2","hgnc_symbol", "chr_name", "band"),filter="affy_hg_u95av2",values=c("1939_at","1000_at"), mart=mart)
 @
 
 As you see multiple attributes can be retrieved at once but in the current version of biomaRt there is the restriction that the attributes which are queried together, should somehow be of a similar type, e.g. chromosome band and chromosome name or e.g. allele, SNP, and frequency of snp.\\ 

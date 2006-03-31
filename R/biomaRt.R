@@ -309,16 +309,22 @@ getGene <- function( id, type, array, mart){
 
 #Webservice-----------------------------------------------------
   else{
-    if(!missing(array)){  
-      table = getBM(attributes=c("hgnc_symbol","description","chr_name","band","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+    if(!missing(array)){
+      if(array=="affy_hg_u133a_2"){
+        attrib = "affy_hg_u133a_v2"
+      }
+      else{
+        attrib = array
+      }
+      table = getBM(attributes=c(attrib,"hgnc_symbol","description","chr_name","band","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c("hgnc_symbol","description","chr_name","band","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      table = getBM(attributes=c(filter,"hgnc_symbol","description","chr_name","band","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
-      colnames(table)=c("HUGO symbol", "description", "chromosome","band","ensembl_gene_id","ensembl_transcript_id")
+      colnames(table)=c("ID","HUGO symbol", "description", "chromosome","band","ensembl_gene_id","ensembl_transcript_id")
     }
     return(table)
   }
@@ -442,7 +448,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     filter=NULL
     attribute=NULL
     values = NULL
-    attribute = switch(type, hugo="hgcn_symbol",agilentcgh = "agilentcgh",agilentprobe="agilentprobe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="gene_stable_id")
+    attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilentcgh",agilentprobe="agilentprobe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="gene_stable_id")
     
     if(!missing(symbol)){
       filter="hgnc_symbol"
@@ -566,16 +572,39 @@ getGO <- function( id, type, array, mart){
   }
 #--webservice----------------------
   else{
+    
     if(!missing(array)){
-      table = getBM(attributes=c("go_id", "go_description", "evidence_code","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+      if(array=="affy_hg_u133a_2"){
+        attrib = "affy_hg_u133a_v2"
+      }
+      else{
+        attrib = array
+      }
+       
+      table = getBM(attributes=c(attrib,"go_id", "go_description", "evidence_code","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c("go_id", "go_description", "evidence_code","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      if(filter == "gene_stable_id" || filter == "transcript_stable_id"){
+        table = getBM(attributes=c(filter,"go_id", "go_description","evidence_code","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      }
+      else{
+        table = getBM(attributes=c(filter,"go_id", "go_description", "gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      }
     }
     if(!is.null(table)){
-      colnames(table)=c("go_id", "go_description", "evidence_code","ensembl_gene_id","ensembl_transcript_id")
+      if(!missing(array)){
+        colnames(table)=c("ID","go_id", "go_description", "evidence_code","ensembl_gene_id","ensembl_transcript_id")
+      }
+      else{
+        if(filter == "gene_stable_id" || filter == "transcript_stable_id"){
+          colnames(table)=c("ID","go_id", "go_description", "evidence_code","ensembl_gene_id","ensembl_transcript_id")
+        }
+        else{
+          colnames(table)=c("ID","go_id", "go_description","ensembl_gene_id","ensembl_transcript_id")
+        }
+      }
     }
     return(table)
   }
@@ -632,44 +661,51 @@ getOMIM <- function( id, type, array, mart){
         query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolQID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".",dbcolQID," in (",ids,")  and ",OMIMTable,".omim_id != 'NULL'",sep="");
         
       }
-    }
-    else{
-      query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".",dbcolQID," in (",ids,") and ",OMIMTable,".omim_id != 'NULL'",sep="");
-    }
-    res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-    
-    if(dim(res)[1] == 0){
-      table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
-    } 
-    else{
-      mt = match(res[,1], id)
-      if(any(is.na(mt)))
-        stop("Internal error!")
-      if(type == "ensembl"){ 
-        res = res[order(mt),c(1,3,4,1)];
-      }
       else{
-        res = res[order(mt),c(1,3,4,2)];
+        query <- paste("select distinct ",IDTable,".",dbcolQID,", ",IDTable,".",dbcolID,",",OMIMTable,".omim_id, disease from ", IDTable ," inner join ",OMIMTable," on ",IDTable,".gene_id_key = ",OMIMTable,".gene_id_key where ",IDTable,".",dbcolQID," in (",ids,") and ",OMIMTable,".omim_id != 'NULL'",sep="");
       }
-      names(res) = c("id","OMIMID", "disease", "martID")
-      table <- as.data.frame(res)
-    }  
-  
+      
+      res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
+      
+      if(dim(res)[1] == 0){
+        table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
+      } 
+      else{
+        mt = match(res[,1], id)
+        if(any(is.na(mt)))
+          stop("Internal error!")
+        if(type == "ensembl"){ 
+          res = res[order(mt),c(1,3,4,1)];
+        }
+        else{
+          res = res[order(mt),c(1,3,4,2)];
+        }
+        names(res) = c("id","OMIMID", "disease", "martID")
+        table <- as.data.frame(res)
+      }  
+    }
     return( table );
   }
   
 #------webservice-------------------------------
   else{
-    if(!missing(array)){  
-      table = getBM(attributes=c("omim_id", "disease_description","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+    if(!missing(array)){
+      if(array=="affy_hg_u133a_2"){
+        attrib = "affy_hg_u133a_v2"
+      }
+      else{
+        attrib = array
+      }
+
+      table = getBM(attributes=c(attrib,"omim_id", "disease_description","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c("omim_id", "disease_description","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      table = getBM(attributes=c(filter,"omim_id", "disease_description","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
-      colnames(table)=c("omim_id", "description", "ensembl_gene_id","ensembl_transcript_id")
+      colnames(table)=c("ID","omim_id", "description", "ensembl_gene_id","ensembl_transcript_id")
     }
     return(table)
   }
@@ -1292,16 +1328,23 @@ getINTERPRO <- function( id, type, array, mart){
 #--webservice--------------------------------
   
   else{
-    if(!missing(array)){  
-      table = getBM(attributes=c("interpro_id", "interpro_description","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+    if(!missing(array)){
+      if(array=="affy_hg_u133a_2"){
+        attrib = "affy_hg_u133a_v2"
+      }
+      else{
+        attrib = array
+      }
+
+      table = getBM(attributes=c(attrib,"interpro_id", "interpro_description","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c("interpro_id", "interpro_description","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      table = getBM(attributes=c(filter,"interpro_id", "interpro_description","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
-      colnames(table)=c("interpro_id", "description", "ensembl_gene_id","ensembl_transcript_id")
+      colnames(table)=c("ID","interpro_id", "description", "ensembl_gene_id","ensembl_transcript_id")
     }
     return(table)
   }
@@ -1645,7 +1688,7 @@ listFilters <- function( mart ){
 ## getBM
 ##------------------------------------------------------------
 
-getBM <- function(attributes, filters, values, mart){
+getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA){
 
   if(missing( mart ) || class( mart )!='Mart')
     stop("Argument 'mart' must be specified and be of class 'Mart'.")
@@ -1655,61 +1698,124 @@ getBM <- function(attributes, filters, values, mart){
     stop("Argument 'filters' must be specified.")
   if(missing( values ))
     stop("Argument 'values' must be specified.")
-
+  if(output != "data.frame" && output != "list")
+    stop("Only data.frame and list are valid output formats for this function")
+  
   ## use the mySQL interface
   if(mart@mysql){
-    if(length(filters) > 1) stop("biomaRt currently allows only one filter per query, reduce the number of filters to one")
-    query <- queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
-    res <- dbGetQuery(mart@connections$biomart,query)
-    if(dim(res)[1] == 0){
-      res <- data.frame()
+    if(output == "data.frame"){
+      if(length(filters) > 1) stop("biomaRt currently allows only one filter per query, reduce the number of filters to one")
+      query <- queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
+      res <- dbGetQuery(mart@connections$biomart,query)
+      if(dim(res)[1] == 0){
+        res <- data.frame()
+      }
+      else{
+        mt = match(res[,1], values);
+        if(any(is.na(mt)))
+          stop("Internal error!");
+        res = res[order(mt),];
+        names(res) = c(filters, attributes);     
+      }  
+      return(as.data.frame(res))
     }
     else{
-      mt = match(res[,1], values);
-      if(any(is.na(mt)))
-        stop("Internal error!");
-      res = res[order(mt),];
-      names(res) = c(filters, attributes);     
-    }  
-    return(as.data.frame(res))
+      out <- vector("list", length(attributes))
+      if(is.null(list.names))
+        names(out) <- attributes
+      else
+        names(out) <- list.names
+      
+      for(j in seq(along = attributes)){
+        tmp <- getBM(attributes[j], filters, values, mart)
+        tmp2 <- vector("list", length(values))
+        names(tmp2) <- values
+        for(i in seq(along=tmp2)){
+          tst <- tmp[tmp[,1] %in% values[i],2]
+          tst <- tst[!is.na(tst)]
+          if(length(tst) == 0) tst <- na.value
+          tmp2[[i]] <- tst
+        }
+        out[[j]] <- tmp2
+      }
+     return(out)
+    }
   }
   else{
-  ## use the http/XML interface
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",mart@dataset,"'>",sep="")
-    attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
-    if(length(filters) > 1){
-      if(class(values)!= "list")
-        stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
-      filterXML = NULL
-      for(i in 1:length(filters)){
-        valuesString = paste(values[[i]],"",collapse=",",sep="")
-        filterXML = paste(filterXML,paste("<ValueFilter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-      }
-    }
-    else{
-      valuesString = paste(values,"",collapse=",",sep="")
-      filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
-    }
-    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
-    postRes = postForm(paste(mart@host,"?",sep=""),"query"=xmlQuery)
+    if(output=="data.frame"){
     
-    if(postRes != ""){
-      ## convert the serialized table into a dataframe
-      con = textConnection(postRes)
-      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-      close(con)
-      ## check and postprocess
-      if(all(is.na(result[,ncol(result)])))
-        result = result[,-ncol(result),drop=FALSE]
-      stopifnot(ncol(result)==length(attributes))
-      if(class(result) == "data.frame"){
-        colnames(result) = attributes
+      ## use the http/XML interface
+      xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",mart@dataset,"'>",sep="")
+      attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
+      if(length(filters) > 1){
+        if(class(values)!= "list")
+          stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
+        filterXML = NULL
+        for(i in 1:length(filters)){
+          valuesString = paste(values[[i]],"",collapse=",",sep="")
+          filterXML = paste(filterXML,paste("<ValueFilter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+        }
+      }
+      else{
+        valuesString = paste(values,"",collapse=",",sep="")
+        filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
+      }
+      xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
+      
+      if(is.null(curl)){
+        postRes = postForm(paste(mart@host,"?",sep=""),"query" = xmlQuery)
+      }
+      else{
+        print("I'm here!!")
+        postRes = postForm(paste(mart@host,"?",sep=""),"query" = xmlQuery, curl = curl)
       }
       
-    } else {
-      stop("The getBM query to BioMart webservice failed.  The webservice could be temporarily down, please try query again.  Also avoid running getBM in a loop involving hundreds or more iterations, you can query for multiple values at once by using a vector.")
+      if(postRes != ""){
+        ## convert the serialized table into a dataframe
+        con = textConnection(postRes)
+        result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+        close(con)
+        if( substr(as.character(result[1]),1,5) == "ERROR"){  #Will forward the webservice error
+          stop(paste("\n",result,"The following query was attempted, use this to report this error\n",xmlQuery ,sep="\n"))
+        }
+        ## check and postprocess
+        if(all(is.na(result[,ncol(result)])))
+          result = result[,-ncol(result),drop=FALSE]
+        stopifnot(ncol(result)==length(attributes))
+        if(class(result) == "data.frame"){
+          colnames(result) = attributes
+        }
+      } else {
+        stop("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please try query again.")
+      }
+      return(result)
     }
-    return(result)
+    else{
+      out <- vector("list", length(attributes))
+      if(is.null(list.names))
+        names(out) <- attributes
+      else
+        names(out) <- list.names
+      curl <- getCurlHandle()
+      for(j in seq(along = attributes)){
+        tmp2 <- vector("list", length(values))
+        names(tmp2) <- values
+        for(k in seq(along = tmp2)){
+          tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart, curl = curl)
+          if(!is.null(tst)){
+            tmp <- unlist(unique(tst[!is.na(tst)]), use.names = FALSE)
+            if(length(tmp) > 0)
+              tmp2[[k]] <- tmp
+            else
+              tmp2[[k]] <- na.value
+          }else{
+            tmp2[[k]] <- na.value
+          }
+          out[[j]] <- tmp2
+        }
+      }
+      return(out)
+    }
   }
 }
 
@@ -1729,7 +1835,6 @@ queryGenerator <- function(attributes, filter, values, mart){
     }
   }
     
-
   ## special treatment of main table
   isMain = (Atab=="main")
   m2 = match(Akey, mart@mainTables$keys)
@@ -1739,7 +1844,7 @@ queryGenerator <- function(attributes, filter, values, mart){
 
   if(length(unique(Atable))>1)
     stop(paste("This query is currently not possible: your attributes extend over multiple tables (",
-               paste(Atable, collapse=", "), "), please only use attributes from one table per query.", sep=""))
+               paste(Atable, collapse=", "), "), please only use attributes from one table per query or do your query via the webservice.", sep=""))
   
   ## filter
   ## FIXME: I assume this is correct - filter can have only length 1?
