@@ -182,7 +182,7 @@ The function \Rfunction{getFeature} is a general function to look up identifiers
 getFeature(symbol="BRCA2",array="affy_hg_u133_plus_2",mart=mart)
 @
 
-A second possible filter is to look for id's which have a certain OMIM disease term attached to them (this only works for hsapiens).
+A second possible filter is to look for ids which have a certain OMIM disease term attached to them (this only works for hsapiens).
 Similarly one can look for ids that have a certain GO annotation e.g. retrieve all affy id's on the hgu133plus2 array which have protein-tyrosine kinase activity.\\
 
 An other filter uses the position of genes on the genome.  One can query for all genes on a certain chromosome:
@@ -201,12 +201,7 @@ getFeature(chromosome=1,start=300000, end = 3500000, type="entrezgene",mart=mart
 
 \subsection{Sequence information}
 
-The function \Rfunction{getSequence} retrieves the sequence given it's chromosome, start and end position.
-
-<<>>=
-
-getSequence(id="BRCA1",type="hugo",seqType="peptide", mart = mart)
-@
+The function \Rfunction{getSequence} retrieves the sequence given its chromosome, start and end position.
 
 
 \subsection{Single Nucleotide Polymorphisms}
@@ -224,8 +219,7 @@ getSNP(chromosome = 8, start = 148350, end = 148612, mart = mart)
 \subsection{More exotic functions}
 \subsubsection{\Rfunction{getPossibleXrefs}}
 
-This function retrieves the possible cross-references present in Ensembl.  This is a very general function to see what can be extracted from En
-sembl.  The results of this function can be used in the getXref function to extract the data of interest.
+This function retrieves the possible cross-references present in Ensembl.  This is a very general function to see what can be extracted from Ensembl.  The results of this function can be used in the getXref function to extract the data of interest.
 
 \subsubsection{\Rfunction{getXref}}
 
@@ -234,7 +228,7 @@ E.g. starting from an affy id of chip hgu95av2 and id 1939\_at, look for corresp
 
 
 \section{Advanced data retrieval with BioMart API functions}
-In this section we'll discuss functions that resemble other BioMart API's such as Martshell (see: http://www.biomart.org for more info).   These functions are very general and can be used on all BioMart databases.  The order in which the functions are discussed is the usual order of how you should use them.
+In this section we'll discuss functions that resemble other BioMart APIs such as Martshell (see: http://www.biomart.org for more info).   These functions are very general and can be used on all BioMart databases.  The order in which the functions are discussed is the usual order of how you should use them.
 
 \subsection{listMarts}
 
