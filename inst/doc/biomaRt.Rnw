@@ -202,9 +202,6 @@ getFeature(chromosome=1,start=2800000, end = 3200000, type="entrezgene",mart=mar
 \subsection{Sequence information}
 
 The function \Rfunction{getSequence} retrieves the sequence given its chromosome, start and end position.
-<<>>=
-getSequence(id="BRCA1",type="hugo",seqType="peptide", mart = mart)
-@
 \subsection{Single Nucleotide Polymorphisms}
 
 The function \Rfunction{getSNP} retrieves all SNP's between a given a start and end position on a gives chromosome..
