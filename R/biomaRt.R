@@ -1841,9 +1841,6 @@ queryGenerator <- function(attributes, filter, values, mart){
     stop("Internal error: Key does not match MainTable key")
   Atable = ifelse(isMain, mart@mainTables$tables[m2], Atab)
 
-  if(length(unique(Atable))>1)
-    stop(paste("This query is currently not possible: your attributes extend over multiple tables (",
-               paste(Atable, collapse=", "), "), please only use attributes from one table per query or do your query via the webservice.", sep=""))
   
   ## filter
   ## FIXME: I assume this is correct - filter can have only length 1?
@@ -1858,6 +1855,8 @@ queryGenerator <- function(attributes, filter, values, mart){
   Ffield = get(filter,mart@filters)$field
   Ftab   = get(filter,mart@filters)$table
   Fkey   = get(filter,mart@filters)$key
+
+
   
   ## special treatment of main table
   isMain = (Ftab=="main")
@@ -1866,6 +1865,10 @@ queryGenerator <- function(attributes, filter, values, mart){
     stop("Internal error: Key does not match MainTable key")
   Ftable = ifelse(isMain, mart@mainTables$tables[m2], Ftab)
 
+  if(length(unique(c(Atable,Ftable)))>2)
+    stop(paste("This query is currently not possible: your attributes extend over multiple tables (",
+               paste(c(Atable,Ftable), collapse=", "), "), please only use attributes from one table per query or do your query via the webservice.", sep=""))
+  
   query = paste("SELECT DISTINCT",
     paste(Ftable, Ffield, sep=".", collapse=", "), ",",
     paste(Atable, Afield, sep=".", collapse=", "),
