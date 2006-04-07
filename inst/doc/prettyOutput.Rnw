@@ -97,7 +97,7 @@ interface. See the help file for \Rfunction{useMart} for more information.
 
 <<>>=
 library("biomaRt")
-mart <- useMart("ensembl", "hsapiens_gene_ensembl", mysql = TRUE)
+mart <- useMart("ensembl", "hsapiens_gene_ensembl")
 @ 
 
 
