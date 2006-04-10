@@ -190,7 +190,6 @@ An other filter uses the position of genes on the genome.  One can query for all
 <<>>=
 ychrom <- getFeature(chromosome="Y",type="entrezgene", mart=mart)
 ychrom[1:10,]
-
 @
 
 Or query for genes that lay in a particular region:\\
