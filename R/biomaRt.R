@@ -473,12 +473,12 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     
     if(!missing(chromosome)){
       if(missing(start) && missing(end)){
-        filter = "chrom_name"
+        filter = "chr_name"
         attribute = c("transcript_stable_id","chr_name",attribute)
         values = chromosome
       }
       else{
-        filter=c("chrom_name","gene_chrom_start","gene_chrom_end")
+        filter=c("chr_name","gene_chrom_start","gene_chrom_end")
         attribute = c("transcript_stable_id","chr_name","chrom_start","chrom_end",attribute)
         values = list(chromosome, start, end)
         
@@ -1700,7 +1700,15 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
     stop("Argument 'values' must be specified.")
   if(output != "data.frame" && output != "list")
     stop("Only data.frame and list are valid output formats for this function")
-  
+
+  for(i in 1:length(attributes)){
+    if(!exists(attributes[i],mart@attributes))
+      stop(paste("attribute: ",attributes[i]," not found, please use the function 'listAttributes' to get valid attribute names",sep=""))
+  }
+  for(i in 1:length(filters)){
+    if(!exists(filters[i],mart@filters))
+      stop(paste("filter: ",filters[i]," not found, please use the function 'listFilters' to get valid filter names",sep=""))
+  }
   ## use the mySQL interface
   if(mart@mysql){
     if(output == "data.frame"){
@@ -1785,7 +1793,8 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
           colnames(result) = attributes
         }
       } else {
-        stop("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please try query again.")
+        #stop("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please try query again.")
+        result=NULL
       }
       return(result)
     }
@@ -1795,12 +1804,14 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
         names(out) <- attributes
       else
         names(out) <- list.names
-      curl <- getCurlHandle()
+      #curl <- getCurlHandle()
       for(j in seq(along = attributes)){
         tmp2 <- vector("list", length(values))
         names(tmp2) <- values
         for(k in seq(along = tmp2)){
-          tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart, curl = curl)
+       #   tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart, curl = curl)
+          tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart)
+       
           if(!is.null(tst)){
             tmp <- unlist(unique(tst[!is.na(tst)]), use.names = FALSE)
             if(length(tmp) > 0)
