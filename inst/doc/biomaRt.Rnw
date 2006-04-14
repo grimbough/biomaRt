@@ -135,7 +135,7 @@ getGene(id=100,type="entrezgene",mart=mart)
 Gene Onotology annotation can be retrieved with the function \Rfunction{getGO}.  The arguments are the same as the function \Rfunction{getGene}.
 
 <<>>=
-go <- getGO( id = upregulated[1], array = "affy_hg_u133_plus_2", mart = mart)
+go <- getGO( id = "203140_at", array = "affy_hg_u133_plus_2", mart = mart)
 go
 @
 
