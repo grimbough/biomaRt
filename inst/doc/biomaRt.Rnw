@@ -66,6 +66,9 @@ A first step in using the biomaRt package is to connect to a BioMart database. T
 
 \subsubsection{\Rfunction{useMart}}
 
+<<echo=FALSE>>=
+library(annotate)
+@
 <<>>=
 library(biomaRt)
 #select a BioMart database to use.
