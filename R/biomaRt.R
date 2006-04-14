@@ -136,7 +136,7 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
           marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
           marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
           marts$host[index] = xmlGetAttr(registry[[i]],"host")
-          marts$path[index] = xmlGetAttr(registry[[i]][[j]],"path")
+          marts$path[index] = xmlGetAttr(registry[[i]],"path")
           index=index+1
         }
       }
