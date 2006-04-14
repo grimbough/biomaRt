@@ -3,9 +3,9 @@
 % likely to be overwritten.
 %
 % \VignetteIndexEntry{HOWTO Get HTML Output}
-% \VignetteDepends{annotate, hgu95av2, biomaRt}
+% \VignetteDepends{annotate, biomaRt}
 % \VignetteKeywords{Expression Analysis, Annotation}
-% \VignettePackage{annotate}
+% \VignettePackage{biomaRt}
 \documentclass[11pt]{article}
 
 
