@@ -216,6 +216,8 @@ mapFilter <- function(type){
   return(mapf) 
 }
 
+
+
 ######### public functions ##############
 
 ###########################################################################################
@@ -309,6 +311,17 @@ getGene <- function( id, type, array, mart){
 
 #Webservice-----------------------------------------------------
   else{
+
+    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
+      chrname="chr_name"
+      geneid="gene_stable_id"
+      transid="transcript_stable_id"
+    }
+    else{
+      chrname="chromosome_name"
+      geneid="ensembl_gene_id"
+      transid="ensembl_transcript_id"
+    }
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
@@ -316,12 +329,12 @@ getGene <- function( id, type, array, mart){
       else{
         attrib = array
       }
-      table = getBM(attributes=c(attrib,"hgnc_symbol","description","chr_name","band","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+      table = getBM(attributes=c(attrib,"hgnc_symbol","description",chrname,"band",geneid,transid),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c(filter,"hgnc_symbol","description","chr_name","band","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      table = getBM(attributes=c(filter,"hgnc_symbol","description",chrname,"band",geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
       colnames(table)=c("ID","HUGO symbol", "description", "chromosome","band","ensembl_gene_id","ensembl_transcript_id")
@@ -572,7 +585,17 @@ getGO <- function( id, type, array, mart){
   }
 #--webservice----------------------
   else{
-    
+    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
+      goid="go_id"
+      geneid="gene_stable_id"
+      transid="transcript_stable_id"
+    }
+    else{
+      goid="go"
+      geneid="ensembl_gene_id"
+      transid="ensembl_transcript_id"
+    }
+   
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
@@ -581,16 +604,21 @@ getGO <- function( id, type, array, mart){
         attrib = array
       }
        
-      table = getBM(attributes=c(attrib,"go_id", "go_description", "evidence_code","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+      table = getBM(attributes=c(attrib,goid, "go_description", "evidence_code",geneid,transid),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
       if(filter == "gene_stable_id" || filter == "transcript_stable_id"){
-        table = getBM(attributes=c(filter,"go_id", "go_description","evidence_code","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+        if(filter == "gene_stable_id"){
+          table = getBM(attributes=c(geneid,goid, "go_description","evidence_code",geneid,transid),filters = filter, values = id, mart=mart)
+        }
+        else{
+          table = getBM(attributes=c(transid,goid, "go_description","evidence_code",geneid,transid),filters = filter, values = id, mart=mart)
+        }
       }
       else{
-        table = getBM(attributes=c(filter,"go_id", "go_description", "gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+        table = getBM(attributes=c(filter,goid, "go_description", geneid,transid),filters = filter, values = id, mart=mart)
       }
     }
     if(!is.null(table)){
@@ -689,6 +717,17 @@ getOMIM <- function( id, type, array, mart){
   
 #------webservice-------------------------------
   else{
+    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
+      omimid="omim_id"
+      geneid="gene_stable_id"
+      transid="transcript_stable_id"
+    }
+    else{
+      omimid="omim"
+      geneid="ensembl_gene_id"
+      transid="ensembl_transcript_id"
+    }
+   
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
@@ -696,13 +735,13 @@ getOMIM <- function( id, type, array, mart){
       else{
         attrib = array
       }
-
-      table = getBM(attributes=c(attrib,"omim_id", "disease_description","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+      table = getBM(attributes=c(attrib,omimid, "disease_description",geneid,transid),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c(filter,"omim_id", "disease_description","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      ##TEMPFIX
+      table = getBM(attributes=c(filter,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
       colnames(table)=c("ID","omim_id", "description", "ensembl_gene_id","ensembl_transcript_id")
@@ -923,8 +962,19 @@ getSNP <- function(chromosome, start, end, mart){
     return( table );
   }
   else{
-    attributes = c("tscid","refsnp_id","allele","chrom_start","chrom_strand")
-    table = getBM(attributes = attributes,filters = c("chr_name","snp_chrom_start","snp_chrom_end"), values = list(chromosome, start, end), mart=mart)    
+    if(is.na(match("tsc",listAttributes(mart)))){
+      tscid="tscid"
+      snpstart="snp_chrom_start"
+      snpend="snp_chrom_end"
+    }
+    else{
+      tscid="tsc"
+      snpstart="chrom_start"
+      snpend="chrom_end"
+    }
+   
+    attributes = c(tscid,"refsnp_id","allele","chrom_start","chrom_strand")
+    table = getBM(attributes = attributes,filters = c("chr_name",snpstart,snpend), values = list(chromosome, start, end), mart=mart)    
     return(table)
   }
 }
@@ -1328,6 +1378,18 @@ getINTERPRO <- function( id, type, array, mart){
 #--webservice--------------------------------
   
   else{
+    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
+      interproid="interpro_id"
+      geneid="gene_stable_id"
+      transid="transcript_stable_id"
+    }
+    else{
+      interproid="interpro"
+      geneid="ensembl_gene_id"
+      transid="ensembl_transcript_id"
+    }
+   
+    
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
@@ -1336,12 +1398,12 @@ getINTERPRO <- function( id, type, array, mart){
         attrib = array
       }
 
-      table = getBM(attributes=c(attrib,"interpro_id", "interpro_description","gene_stable_id","transcript_stable_id"),filters = array, values = id, mart=mart)
+      table = getBM(attributes=c(attrib,interproid, "interpro_description",geneid,transid),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c(filter,"interpro_id", "interpro_description","gene_stable_id","transcript_stable_id"),filters = filter, values = id, mart=mart)
+      table = getBM(attributes=c(filter,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
       colnames(table)=c("ID","interpro_id", "description", "ensembl_gene_id","ensembl_transcript_id")
