@@ -314,13 +314,19 @@ getGene <- function( id, type, array, mart){
 
     if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
       chrname="chr_name"
+      startpos = "chrom_start"
+      endpos = "chrom_end"
       geneid="gene_stable_id"
       transid="transcript_stable_id"
+      strand = "chrom_strand"
     }
     else{
+      startpos = "start_position"
+      endpos = "end_position"
       chrname="chromosome_name"
       geneid="ensembl_gene_id"
       transid="ensembl_transcript_id"
+      strand = "strand"
     }
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
@@ -329,15 +335,15 @@ getGene <- function( id, type, array, mart){
       else{
         attrib = array
       }
-      table = getBM(attributes=c(attrib,"hgnc_symbol","description",chrname,"band",geneid,transid),filters = array, values = id, mart=mart)
+      table = getBM(attributes=c(attrib,"hgnc_symbol","description",chrname,"band",strand,startpos,endpos,geneid,transid),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c(filter,"hgnc_symbol","description",chrname,"band",geneid,transid),filters = filter, values = id, mart=mart)
+      table = getBM(attributes=c(filter,"hgnc_symbol","description",chrname,"band",strand,startpos, endpos, geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
-      colnames(table)=c("ID","HUGO symbol", "description", "chromosome","band","ensembl_gene_id","ensembl_transcript_id")
+      colnames(table)=c("ID","HUGO symbol", "description", "chromosome","band","strand","chromosome_start","chromosome_end","ensembl_gene_id","ensembl_transcript_id")
     }
     return(table)
   }
@@ -461,7 +467,28 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     filter=NULL
     attribute=NULL
     values = NULL
-    attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilentcgh",agilentprobe="agilentprobe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="gene_stable_id")
+    
+    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
+      chrname="chr_name"
+      startpos = "chrom_start"
+      endpos = "chrom_end"
+      geneid="gene_stable_id"
+      transid="transcript_stable_id"
+      strand = "chrom_strand"
+      attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilentcgh",agilentprobe="agilentprobe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="gene_stable_id")
+    
+    }
+    else{
+      startpos = "start_position"
+      endpos = "end_position"
+      chrname="chromosome_name"
+      geneid="ensembl_gene_id"
+      transid="ensembl_transcript_id"
+      strand = "strand"
+      attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilent_cgh",agilentprobe="agilent_probe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="ensembl_gene_id")
+    
+    }
+    
     
     if(!missing(symbol)){
       filter="hgnc_symbol"
@@ -487,23 +514,17 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     if(!missing(chromosome)){
       if(missing(start) && missing(end)){
         filter = "chr_name"
-        attribute = c("transcript_stable_id","chr_name",attribute)
+        attribute = c(transid,chrname,attribute)
         values = chromosome
       }
       else{
         filter=c("chr_name","gene_chrom_start","gene_chrom_end")
-        attribute = c("transcript_stable_id","chr_name","chrom_start","chrom_end",attribute)
+        attribute = c(transid,chrname,startpos,endpos,attribute)
         values = list(chromosome, start, end)
         
       }
     }
-    
-    table = getBM(attributes = attribute, filters = filter, values = values, mart=mart)
-    
-    #duplicates = duplicated(table)
-    #table = table[!duplicates,]
-    #rownames(result) = seq(1:length(result[,1]))
-    
+    table = getBM(attributes = attribute, filters = filter, values = values, mart=mart)  
     return(table)
   }
 }
@@ -873,11 +894,12 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
     return(table)
   }
   else{
+    geneid="gene_stable_id"
     
     species = strsplit(mart@dataset,"_")[[1]][1]
     if(!missing(chromosome)){
       if(seqType %in% c("cdna","peptide","3utr","5utr")){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = 'chr_name' value = '",chromosome,"'/><ValueFilter name = 'gene_chrom_start' value = '",start,"'/><ValueFilter name = 'gene_chrom_end' value = '",end,"'/></Dataset><Links source = '",species,"_gene_ensembl' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = 'gene_stable_id'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = 'chr_name' value = '",chromosome,"'/><ValueFilter name = 'gene_chrom_start' value = '",start,"'/><ValueFilter name = 'gene_chrom_end' value = '",end,"'/></Dataset><Links source = '",species,"_gene_ensembl' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = '",geneid,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
       }
       else{
         stop("The type of sequence specified with seqType is not available. Please select from: cdna, peptide, 3utr, 5utr")
@@ -887,7 +909,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
     if(!missing(id)){
       valuesString = paste(id,"",collapse=",",sep="")
       if(seqType %in% c("cdna","peptide","3utr","5utr")){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = '",mapFilter(type),"' value = '",valuesString,"'/></Dataset><Links source = '",mart@dataset,"' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = 'gene_stable_id'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>", sep="")
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = '",mapFilter(type),"' value = '",valuesString,"'/></Dataset><Links source = '",mart@dataset,"' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = '",geneid,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>", sep="")
       }
       else{
         stop("The type of sequence specified with seqType is not available. Please select from: cdna, peptide, 3utr, 5utr")
@@ -913,7 +935,6 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
       result=NULL
     }
     return(result)
-    
   }
 }
 
@@ -930,7 +951,12 @@ getAffyArrays <- function(mart){
   }
   att=listFilters(mart)
   affy=att[grep("affy",att)]
-  affy=affy[-grep("bool",affy)]
+  if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
+    affy=affy[-grep("bool",affy)]
+  }
+  else{
+    affy=affy[-grep("with",affy)]
+  }
   print(affy)
 }
 
@@ -1128,22 +1154,39 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
   else{
     if(to.mart@mysql)stop("The mart objects should either use both mysql or not. Here your from.mart does not use mysql but you to.mart does.")
     
-    #maybe replace the following code so it uses a more general getBM function
-    to.attributes = c("gene_stable_id","transcript_stable_id")
+    if(is.na(match("ensembl_gene_id",listAttributes(to.mart)))){
+      to.attributes=c("gene_stable_id","transcript_stable_id")
+      geneid="gene_stable_id"
+    }
+    else{
+      to.attributes=c("ensembl_gene_id","ensembl_transcript_id")
+      geneid="ensembl_gene_id"
+    }
+   
     from.attributes = NULL
     filter = NULL
     if(!missing(to.array)){
       to.attributes = c(to.attributes,to.array)
     }
     else{
-      to.attributes = c(to.attributes,mapFilter(to.type))
+      if(to.type == "ensembl"){
+        to.attributes = c(to.attributes,geneid)
+      }
+      else{
+        to.attributes = c(to.attributes,mapFilter(to.type))
+      }
     }
     if(!missing(from.array)){
       from.attributes = c(from.attributes,from.array)
       filter = from.array
     }
     else{
-      from.attributes = c(from.attributes,mapFilter(from.type))
+      if(from.type == "ensembl"){
+        from.attributes = c(from.attributes,geneid)
+      }
+      else{
+        from.attributes = c(from.attributes,mapFilter(from.type))
+      }
       filter = mapFilter(from.type)
     }
     
