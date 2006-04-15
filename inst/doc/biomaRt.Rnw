@@ -71,19 +71,19 @@ library(annotate)
 @
 <<>>=
 library(biomaRt)
+@
+<<echo=TRUE, eval=FALSE>>=
 #select a BioMart database to use.
 mart <- useMart("ensembl")
- 
 @
 
 \subsubsection{\Rfunction{martDisconnect}}
 
 When using MySQL access, you can only hold a limited number of connections with different BioMarts.  The function martDisconnect can be used to close a mart connection.
 
-<<>>=
+<<echo=TRUE, eval=FALSE>>=
 
 #Disconnect from BioMart databases
-
 martDisconnect(mart)
  
 @
@@ -100,36 +100,24 @@ The {\it type} takes the values of 'entrezgene','refseq','hugo', 'ensembl' and '
 First we select the BioMart databases and the dataset we want to use.  
 
 <<>>=
-
 mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl") 
-
 @
-
 Then we check which affy arrays are available:
 
 <<>>=
-
-
 getAffyArrays(mart)
-
 @
 
 Assume now that we have some upregulated features that we want to annotate. To get the gene information on a certain affy array do:
 
 <<>>=
-
 upregulated <- c("210708_x_at","202763_at","211464_x_at")
-
-gene <- getGene( id = upregulated, array = "affy_hg_u133_plus_2", mart = mart)
-
-gene
+getGene( id = upregulated, array = "affy_hg_u133_plus_2", mart = mart)
 @
-
 When using other id's we have to specify the \texttt{type} and \texttt{species}, use the function \Rfunction{getSpecies} to find valid species names.
 
 <<>>=
 getGene(id=100,type="entrezgene",mart=mart)
-
 @
 
 
@@ -287,7 +275,7 @@ filters[1:10]
 To get the information from our example we can use the function \Rfunction{getBM}, using valid attributes and filter.
 
 <<>>=
-getBM(attributes=c("affy_hg_u95av2","hgnc_symbol", "chr_name", "band"),filter="affy_hg_u95av2",values=c("1939_at","1000_at"), mart=mart)
+getBM(attributes=c("affy_hg_u95av2","hgnc_symbol"),filter="affy_hg_u95av2",values=c("1939_at","1000_at"), mart=mart)
 @
 
 As you see multiple attributes can be retrieved at once but in the current version of biomaRt there is the restriction that the attributes which are queried together, should somehow be of a similar type, e.g. chromosome band and chromosome name or e.g. allele, SNP, and frequency of snp.\\ 
