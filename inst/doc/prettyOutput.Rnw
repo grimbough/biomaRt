@@ -173,7 +173,7 @@ writing them all out, I will simply select the correct terms using the
 \Rfunction{listAttributes} function.
 
 <<>>=
-genelist <- getBM(attributes = listAttributes(mart)[c(16,165,392,390,348)],
+genelist <- getBM(attributes = c("affy_hg_u95av2","entrezgene","uniprot_swissprot_accession","refseq_dna"),
                   filter = "affy_hg_u95av2", values = igenes, mart = mart,
                   output = "list", na.value = "&nbsp;")
 genelist[[1]] <- igenes
@@ -210,10 +210,10 @@ attrbuts[grep("^chrom", attrbuts)]
 @ 
 
 
-We want "description", "hgnc\_symbol", "go\_description" and "chrom\_name"
+We want "description", "hgnc\_symbol", "go\_description" and "band"
 
 <<>>=
-annotlist <- getBM(attributes = listAttributes(mart)[c(116, 199, 196, 81)],
+annotlist <- getBM(attributes = c("description", "hgnc_symbol", "go_description", "band"),
                    filter = "affy_hg_u95av2", values = igenes, mart = mart,
                   output = "list",na.value = "&nbsp;")
 @ 
@@ -256,11 +256,11 @@ othernames[5:8] <- list( tstat, pval, FC, dat)
 Once we have all our data in \Robject{lists}, it is simple to build the HTML table.
 
 <<>>=
-table.head <- c("Affy ID", "Entrez Gene", "SwissProt", "UniGene", "RefSeq",
-                "Name","Symbol","GO Term", "Chromosome",
+table.head <- c("Affy ID", "Entrez Gene", "SwissProt", "RefSeq",
+                "Name","Symbol","GO Term", "Band",
                 "t-statistic","p-value","Fold change", 
                 sampleNames(sample.exprSet)[1:10])
-repository  <- list("affy","en","sp","ug","gb")
+repository  <- list("affy","en","sp","gb")
 htmlpage(genelist, "Annotated genes.html", "Annotated genes", othernames, table.head,
          repository = repository)
 @ 
