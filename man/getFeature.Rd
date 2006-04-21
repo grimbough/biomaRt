@@ -27,7 +27,7 @@ mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl")
 
 #example using affy id from Ensembl
 
-feat = getFeature( symbol = "TP53", array = "affy_hg_u95a2", mart = mart)
+feat = getFeature( symbol = "TP53", array = "affy_hg_u95av2", mart = mart)
 show(feat)
 
 martDisconnect(mart = mart)
