@@ -340,7 +340,19 @@ getGene <- function( id, type, array, mart){
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c(filter,"hgnc_symbol","description",chrname,"band",strand,startpos, endpos, geneid,transid),filters = filter, values = id, mart=mart)
+      att=NULL
+      if(filter == "gene_stable_id"){
+        att = geneid
+      }
+      else{
+        if(filter == "transcript_stable_id"){
+          att = transid
+        }
+        else{
+          att = filter    
+        }
+      }
+      table = getBM(attributes=c(att,"hgnc_symbol","description",chrname,"band",strand,startpos, endpos, geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
       colnames(table)=c("ID","HUGO symbol", "description", "chromosome","band","strand","chromosome_start","chromosome_end","ensembl_gene_id","ensembl_transcript_id")
@@ -761,8 +773,17 @@ getOMIM <- function( id, type, array, mart){
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      ##TEMPFIX
-      table = getBM(attributes=c(filter,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
+      if(filter == "gene_stable_id"){
+       table = getBM(attributes=c(geneid,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
+     }
+      else{
+        if(filter == "transcript_stable_id"){
+          table = getBM(attributes=c(transid,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
+        }
+        else{
+          table = getBM(attributes=c(filter,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
+        }
+      }
     }
     if(!is.null(table)){
       colnames(table)=c("ID","omim_id", "description", "ensembl_gene_id","ensembl_transcript_id")
@@ -1446,7 +1467,17 @@ getINTERPRO <- function( id, type, array, mart){
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      table = getBM(attributes=c(filter,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
+      if(filter == "gene_stable_id"){
+        table = getBM(attributes=c(geneid,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
+      }
+      else{
+        if(filter=="transcript_stable_id"){
+          table = getBM(attributes=c(transid,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
+        }
+        else{
+          table = getBM(attributes=c(filter,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
+    }
+    }
     }
     if(!is.null(table)){
       colnames(table)=c("ID","interpro_id", "description", "ensembl_gene_id","ensembl_transcript_id")
