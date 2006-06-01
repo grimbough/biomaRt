@@ -1837,14 +1837,15 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
   if(output != "data.frame" && output != "list")
     stop("Only data.frame and list are valid output formats for this function")
 
-  for(i in 1:length(attributes)){
-    if(!exists(attributes[i],mart@attributes))
-      stop(paste("attribute: ",attributes[i]," not found, please use the function 'listAttributes' to get valid attribute names",sep=""))
-  }
-  for(i in 1:length(filters)){
-    if(!exists(filters[i],mart@filters))
-      stop(paste("filter: ",filters[i]," not found, please use the function 'listFilters' to get valid filter names",sep=""))
-  }
+  invalid = !(attributes %in% ls(mart@attributes))
+  if(any(invalid))
+    stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
+               "\nPlease use the function 'listAttributes' to get valid attribute names"))
+  invalid = !(filters %in% ls(mart@filters))
+  if(any(invalid))
+    stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
+               "\nPlease use the function 'listFilters' to get valid filter names"))
+
   ## use the mySQL interface
   if(mart@mysql){
     if(output == "data.frame"){
@@ -1886,9 +1887,8 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
     }
   }
   else{
+    ## use the http/XML interface
     if(output=="data.frame"){
-    
-      ## use the http/XML interface
       xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",mart@dataset,"'>",sep="")
       attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
       if(length(filters) > 1){
@@ -1930,6 +1930,9 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
         }
       } else {
         #stop("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please try query again.")
+        ##
+        ## FIXME (wh 1.6.2006) - do we really just want to quietly fail, without warning or error? I don't like this,
+        ## this will cause hard to trace problems in scripts and processing pipelines.
         result=NULL
       }
       return(result)
