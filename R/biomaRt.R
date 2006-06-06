@@ -311,23 +311,35 @@ getGene <- function( id, type, array, mart){
 
 #Webservice-----------------------------------------------------
   else{
-
-    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
-      chrname="chr_name"
-      startpos = "chrom_start"
-      endpos = "chrom_end"
-      geneid="gene_stable_id"
-      transid="transcript_stable_id"
-      strand = "chrom_strand"
-    }
-    else{
+     
       startpos = "start_position"
       endpos = "end_position"
       chrname="chromosome_name"
       geneid="ensembl_gene_id"
       transid="ensembl_transcript_id"
       strand = "strand"
-    }
+      symbol = switch(mart@dataset, 
+                      hsapiens_gene_ensembl = "hgnc_symbol",
+                      mmusculus_gene_ensembl = "mgi_symbol",
+                      rnorvegicus_gene_ensembl = "mgi_symbol",
+                      scerevisiae_gene_ensembl = "sgd",
+                      celegans_gene_ensembl = "external_gene_id",
+                      cintestinalis_gene_ensembl = "external_gene_id",
+                      ptroglodytes_gene_ensembl = "external_gene_id",  
+                      frubripes_gene_ensembl = "external_gene_id",
+                      agambiae_gene_ensembl = "external_gene_id",
+                      ggallus_gene_ensembl = "external_gene_id",
+                      xtropicalis_gene_ensembl = "external_gene_id",
+                      drerio_gene_ensembl = "external_gene_id",
+                      tnigroviridis_gene_ensembl = "external_gene_id",
+                      mmulatta_gene_ensembl = "external_gene_id",
+                      mdomesticus_gene_ensembl = "external_gene_id",
+                      amellifera_gene_ensembl = "external_gene_id",
+                      dmelanogaster_gene_ensembl = "external_gene_id",
+                      btaurus_gene_ensembl = "external_gene_id",
+                      cfamiliaris_gene_ensembl = "external_gene_id",
+                      )
+   
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
@@ -335,7 +347,7 @@ getGene <- function( id, type, array, mart){
       else{
         attrib = array
       }
-      table = getBM(attributes=c(attrib,"hgnc_symbol","description",chrname,"band",strand,startpos,endpos,geneid,transid),filters = array, values = id, mart=mart)
+      table = getBM(attributes=c(attrib,symbol,"description",chrname,"band",strand,startpos,endpos,geneid,transid),filters = array, values = id, mart=mart)
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
@@ -352,10 +364,10 @@ getGene <- function( id, type, array, mart){
           att = filter    
         }
       }
-      table = getBM(attributes=c(att,"hgnc_symbol","description",chrname,"band",strand,startpos, endpos, geneid,transid),filters = filter, values = id, mart=mart)
+      table = getBM(attributes=c(att,symbol,"description",chrname,"band",strand,startpos, endpos, geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
-      colnames(table)=c("ID","HUGO symbol", "description", "chromosome","band","strand","chromosome_start","chromosome_end","ensembl_gene_id","ensembl_transcript_id")
+      colnames(table)=c("ID","symbol", "description", "chromosome","band","strand","chromosome_start","chromosome_end","ensembl_gene_id","ensembl_transcript_id")
     }
     return(table)
   }
@@ -480,31 +492,39 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     attribute=NULL
     values = NULL
     
-    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
-      chrname="chr_name"
-      startpos = "chrom_start"
-      endpos = "chrom_end"
-      geneid="gene_stable_id"
-      transid="transcript_stable_id"
-      strand = "chrom_strand"
-      attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilentcgh",agilentprobe="agilentprobe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="gene_stable_id")
-    
-    }
-    else{
-      startpos = "start_position"
-      endpos = "end_position"
-      chrname="chromosome_name"
-      geneid="ensembl_gene_id"
-      transid="ensembl_transcript_id"
-      strand = "strand"
-      attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilent_cgh",agilentprobe="agilent_probe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="ensembl_gene_id")
-    
-    }
-    
+    startpos = "start_position"
+    endpos = "end_position"
+    chrname="chromosome_name"
+    geneid="ensembl_gene_id"
+    transid="ensembl_transcript_id"
+    strand = "strand"
+    attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilent_cgh",agilentprobe="agilent_probe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="ensembl_gene_id")
     
     if(!missing(symbol)){
-      filter="hgnc_symbol"
-      attribute = c("hgnc_symbol",attribute)
+     
+      filter = switch(mart@dataset, 
+                      hsapiens_gene_ensembl = "hgnc_symbol",
+                      mmusculus_gene_ensembl = "mgi_symbol",
+                      rnorvegicus_gene_ensembl = "mgi_symbol",
+                      scerevisiae_gene_ensembl = "sgd",
+                      celegans_gene_ensembl = "external_gene_id",
+                      cintestinalis_gene_ensembl = "external_gene_id",
+                      ptroglodytes_gene_ensembl = "external_gene_id",  
+                      frubripes_gene_ensembl = "external_gene_id",
+                      agambiae_gene_ensembl = "external_gene_id",
+                      ggallus_gene_ensembl = "external_gene_id",
+                      xtropicalis_gene_ensembl = "external_gene_id",
+                      drerio_gene_ensembl = "external_gene_id",
+                      tnigroviridis_gene_ensembl = "external_gene_id",
+                      mmulatta_gene_ensembl = "external_gene_id",
+                      mdomesticus_gene_ensembl = "external_gene_id",
+                      amellifera_gene_ensembl = "external_gene_id",
+                      dmelanogaster_gene_ensembl = "external_gene_id",
+                      btaurus_gene_ensembl = "external_gene_id",
+                      cfamiliaris_gene_ensembl = "external_gene_id",
+                      )
+ 
+      attribute = c(filter,attribute)
       values = symbol
     }
     
