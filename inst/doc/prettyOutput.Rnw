@@ -1,27 +1,18 @@
-%
-% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
-% likely to be overwritten.
-%
-% \VignetteIndexEntry{HOWTO Get HTML Output}
-% \VignetteDepends{annotate, biomaRt}
-% \VignetteKeywords{Expression Analysis, Annotation}
-% \VignettePackage{biomaRt}
+%\VignetteIndexEntry{How to get pretty HTML output for my gene list}
+%\VignetteDepends{annotate, biomaRt}
+%\VignetteKeywords{Expression Analysis, Annotation}
+%\VignettePackage{biomaRt}
 \documentclass[11pt]{article}
-
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[authoryear,round]{natbib}
+\bibliographystyle{plainnat}
 
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
 \newcommand{\Rmethod}[1]{{\texttt{#1}}}
-
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 \newcommand{\Rclass}[1]{{\textit{#1}}}
-
-\usepackage[authoryear,round]{natbib}
-
-
-\bibliographystyle{plainnat}
-
-\usepackage{hyperref}
 
 \begin{document}
 \title{HowTo: get pretty HTML output for my gene list}
