@@ -1,23 +1,21 @@
-%\VignetteIndexEntry{biomaRt}
+%\VignetteIndexEntry{biomaRt overview}
 %\VignetteDepends{biomaRt}
 %\VignetteKeywords{biomaRt}
 %\VignettePackage{biomaRt}
-%\documentclass[12pt, a4paper]{article}
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 
-\usepackage{amsmath,epsfig,psfig,pstricks,fullpage}
+% \usepackage{amsmath,epsfig,psfig,pstricks,fullpage}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage[authoryear,round]{natbib}
+\bibliographystyle{plainnat}
 
 \newcommand{\scscst}{\scriptscriptstyle}
 \newcommand{\scst}{\scriptstyle}
+
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
-
-
-
 
 \author{Steffen Durinck$^\ddagger$\footnote{Steffen.Durinck@esat.kuleuven.ac.be}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
 \begin{document}
