@@ -1,15 +1,14 @@
 Package: biomaRt
-Version: 1.7.1
-Date: 2006-06-07
+Version: 1.7.2
+Date: 2006-06-25
 Title: Interface to BioMart databases (e.g. Ensembl)
-Author: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>,
+Author: Steffen Durinck <durincks@mail.nih.gov>,
 	Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis <sdavis2@mail.nih.gov>
-Maintainer: Steffen Durinck <steffen.durinck@esat.kuleuven.ac.be>
+Maintainer: Steffen Durinck <durincks@mail.nih.gov>
 Depends: methods, XML, RCurl
 Suggests: annotate
 biocViews: Annotation 
 Description: The package provides and API in R to query BioMart databases such as Ensembl (http://www.ensembl.org), a software system which produces and maintains automatic annotation on metazoan genomes.  Two sets of functions are currently implemented.  A first set of functions aims to mimic functionality of other BioMart APIs such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart APIs provide.  A Second set of functions are tailored towards Ensembl and are a set of commonly used queries in microarray data analysis.  With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy ids, locuslink, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM annotation, etc. The package also provides homology mappings between these identifiers across all species present in Ensembl.  Genes can be pre-selected such that they fulfill a certain requirement e.g. give all human refseq ids of genes known to be involved in diabetes.On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.
 License: LGPL version
-URL: http://www.esat.kuleuven.ac.be/~sdurinck
 SaveImage: yes
 
