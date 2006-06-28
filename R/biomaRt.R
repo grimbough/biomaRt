@@ -145,34 +145,6 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
   }
 }
 
-#############################################
-#Connect to marts:  function will be removed#
-#############################################
-
-martConnect <- function(biomarts = "ensembl", host, user, password, mart, local = FALSE){
-  
-  writeLines("\n###############################################\n")
-  writeLines("This function will go out of use soon, please adapt by using the 'useMart' function instead.")
-  writeLines("\n###############################################\n")
-  
-  if(length(biomarts)>1){
-    stop("You can only connect to ensembl with this function.  To use the function getSNP or getSequence you need to use biomarts = 'ensembl'.  VEGA should now be accessed using the advanced biomaRt functions: useMart,useDatasets,listAttributes,listFilters and getBM.")
-  }
-  if(biomarts != "ensembl") stop("With this function you can only connect to 'ensembl'.  To use the function getSNP or getSequence you need to use biomarts = 'ensembl'.  VEGA should now be accessed using the advanced biomaRt functions: useMart,useDatasets,listAttributes,listFilters and getBM.")
-  
-  version = ""
-  marts = listMarts(mysql = TRUE)
-  for(i in 1:length(marts)){
-    if("ensembl" == strsplit(marts[i],"_")[[1]][1]){
-      version = strsplit(marts[i],"_")[[1]][3]
-    }
-  }
-  mart = useMart(paste("ensembl_mart_",version,sep=""), mysql = TRUE)
-  
-  return( mart )
-}
-
-
 ######################
 #Disconnect from mart#
 ######################
@@ -204,8 +176,8 @@ mapFilter <- function(type){
     stop("invalid type choose either affy, refseq, embl, hugo, ensembl, ensemblTrans, unigene, agilentprobe or entrezgene");
   }
   mapf = switch(type,
-    ensembl =  "gene_stable_id",
-    ensemblTrans = "transcript_stable_id",
+    ensembl =  "ensembl_gene_id",
+    ensemblTrans = "ensembl_transcript_id",
     entrezgene = "entrezgene",
     hugo = "hgnc_symbol",
     refseq = "refseq_dna",
@@ -351,20 +323,8 @@ getGene <- function( id, type, array, mart){
     }
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
-      filter = mapFilter(type)
-      att=NULL
-      if(filter == "gene_stable_id"){
-        att = geneid
-      }
-      else{
-        if(filter == "transcript_stable_id"){
-          att = transid
-        }
-        else{
-          att = filter    
-        }
-      }
-      table = getBM(attributes=c(att,symbol,"description",chrname,"band",strand,startpos, endpos, geneid,transid),filters = filter, values = id, mart=mart)
+      filter = mapFilter(type)    
+      table = getBM(attributes=c(filter,symbol,"description",chrname,"band",strand,startpos, endpos, geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
       colnames(table)=c("ID","symbol", "description", "chromosome","band","strand","chromosome_start","chromosome_end","ensembl_gene_id","ensembl_transcript_id")
@@ -391,7 +351,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
   }
   
   if( missing( mart ) || class( mart ) != 'Mart'){
-    stop("you must provide a valid Mart object, create with function martConnect");
+    stop("you must provide a valid Mart object, create with function useMart");
   }
   
   if("ensembl" != mart@biomart){
@@ -404,7 +364,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
   
   if(mart@mysql){
     if(!(type == "affy") && !(type == "entrezgene") && !(type == "refseq") && !(type == "embl")  && !(type == "hugo") && !(type == "ensembl")  && !(type == "flybase") ){
-      stop("invalid type choose either affy, refseq or entrezgene");
+      stop("invalid type choose either affy, refseq, embl, hugo or entrezgene");
     }
     
     if( type == "affy" ){
@@ -492,13 +452,13 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     attribute=NULL
     values = NULL
     
-    startpos = "start_position"
-    endpos = "end_position"
+    startpos = "start"
+    endpos = "end"
     chrname="chromosome_name"
     geneid="ensembl_gene_id"
     transid="ensembl_transcript_id"
     strand = "strand"
-    attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilent_cgh",agilentprobe="agilent_probe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="ensembl_gene_id")
+    attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilent_cgh",ensemblTrans="ensembl_transcript_id",agilentprobe="agilent_probe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="ensembl_gene_id")
     
     if(!missing(symbol)){
      
@@ -545,15 +505,14 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     
     if(!missing(chromosome)){
       if(missing(start) && missing(end)){
-        filter = "chr_name"
+        filter = "chromosome_name"
         attribute = c(transid,chrname,attribute)
         values = chromosome
       }
       else{
-        filter=c("chr_name","gene_chrom_start","gene_chrom_end")
-        attribute = c(transid,chrname,startpos,endpos,attribute)
+        filter=c(chrname,startpos,endpos)
+        attribute = c(transid,chrname,"start_position","end_position",attribute)
         values = list(chromosome, start, end)
-        
       }
     }
     table = getBM(attributes = attribute, filters = filter, values = values, mart=mart)  
@@ -572,7 +531,7 @@ getGO <- function( id, type, array, mart){
   go <- NULL;
   
   if( missing( mart ) || class( mart ) != 'Mart'){
-    stop("you must provide a valid Mart object, create with function martConnect")
+    stop("you must provide a valid Mart object, create with function useMart")
   }
   if("ensembl" != mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
@@ -638,16 +597,9 @@ getGO <- function( id, type, array, mart){
   }
 #--webservice----------------------
   else{
-    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
-      goid="go_id"
-      geneid="gene_stable_id"
-      transid="transcript_stable_id"
-    }
-    else{
       goid="go"
       geneid="ensembl_gene_id"
       transid="ensembl_transcript_id"
-    }
    
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
@@ -662,29 +614,14 @@ getGO <- function( id, type, array, mart){
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      if(filter == "gene_stable_id" || filter == "transcript_stable_id"){
-        if(filter == "gene_stable_id"){
-          table = getBM(attributes=c(geneid,goid, "go_description","evidence_code",geneid,transid),filters = filter, values = id, mart=mart)
-        }
-        else{
-          table = getBM(attributes=c(transid,goid, "go_description","evidence_code",geneid,transid),filters = filter, values = id, mart=mart)
-        }
-      }
-      else{
-        table = getBM(attributes=c(filter,goid, "go_description", geneid,transid),filters = filter, values = id, mart=mart)
-      }
+      table = getBM(attributes=c(filter,goid, "go_description", geneid,transid),filters = filter, values = id, mart=mart)
     }
     if(!is.null(table)){
       if(!missing(array)){
         colnames(table)=c("ID","go_id", "go_description", "evidence_code","ensembl_gene_id","ensembl_transcript_id")
       }
       else{
-        if(filter == "gene_stable_id" || filter == "transcript_stable_id"){
-          colnames(table)=c("ID","go_id", "go_description", "evidence_code","ensembl_gene_id","ensembl_transcript_id")
-        }
-        else{
           colnames(table)=c("ID","go_id", "go_description","ensembl_gene_id","ensembl_transcript_id")
-        }
       }
     }
     return(table)
@@ -770,16 +707,9 @@ getOMIM <- function( id, type, array, mart){
   
 #------webservice-------------------------------
   else{
-    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
-      omimid="omim_id"
-      geneid="gene_stable_id"
-      transid="transcript_stable_id"
-    }
-    else{
       omimid="omim"
       geneid="ensembl_gene_id"
       transid="ensembl_transcript_id"
-    }
    
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
@@ -793,18 +723,9 @@ getOMIM <- function( id, type, array, mart){
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      if(filter == "gene_stable_id"){
-       table = getBM(attributes=c(geneid,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
-     }
-      else{
-        if(filter == "transcript_stable_id"){
-          table = getBM(attributes=c(transid,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
-        }
-        else{
-          table = getBM(attributes=c(filter,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
-        }
-      }
+      table = getBM(attributes=c(filter,omimid, "disease_description",geneid,transid),filters = filter, values = id, mart=mart)
     }
+   
     if(!is.null(table)){
       colnames(table)=c("ID","omim_id", "description", "ensembl_gene_id","ensembl_transcript_id")
     }
@@ -820,7 +741,7 @@ getOMIM <- function( id, type, array, mart){
 getSequence <- function(chromosome, start, end, id, type, seqType, mart){
 
   if(missing( mart )|| class( mart ) != 'Mart'){
-    stop("you must provide a mart connection object, create with function martConnect")
+    stop("you must provide a mart connection object, create with function useMart")
   }
   if("ensembl" != mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
@@ -935,7 +856,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
     return(table)
   }
   else{
-    geneid="gene_stable_id"
+    geneid="ensembl_gene_id"
     
     species = strsplit(mart@dataset,"_")[[1]][1]
     if(!missing(chromosome)){
@@ -1029,17 +950,9 @@ getSNP <- function(chromosome, start, end, mart){
     return( table );
   }
   else{
-    if(is.na(match("tsc",listAttributes(mart)))){
       tscid="tscid"
-      snpstart="snp_chrom_start"
-      snpend="snp_chrom_end"
-    }
-    else{
-      tscid="tsc"
       snpstart="chrom_start"
       snpend="chrom_end"
-    }
-   
     attributes = c(tscid,"refsnp_id","allele","chrom_start","chrom_strand")
     table = getBM(attributes = attributes,filters = c("chr_name",snpstart,snpend), values = list(chromosome, start, end), mart=mart)    
     return(table)
@@ -1059,7 +972,6 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
   if("ensembl" != to.mart@biomart || "ensembl" != from.mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
-  
   
   if(from.mart@mysql){
     if(!to.mart@mysql)stop("Both mart object should both be using mysql or not.  Your from.mart uses mysql but your to.mart not.")
@@ -1195,14 +1107,8 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
   else{
     if(to.mart@mysql)stop("The mart objects should either use both mysql or not. Here your from.mart does not use mysql but you to.mart does.")
     
-    if(is.na(match("ensembl_gene_id",listAttributes(to.mart)))){
-      to.attributes=c("gene_stable_id","transcript_stable_id")
-      geneid="gene_stable_id"
-    }
-    else{
       to.attributes=c("ensembl_gene_id","ensembl_transcript_id")
       geneid="ensembl_gene_id"
-    }
    
     from.attributes = NULL
     filter = NULL
@@ -1462,17 +1368,9 @@ getINTERPRO <- function( id, type, array, mart){
 #--webservice--------------------------------
   
   else{
-    if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
-      interproid="interpro_id"
-      geneid="gene_stable_id"
-      transid="transcript_stable_id"
-    }
-    else{
       interproid="interpro"
       geneid="ensembl_gene_id"
       transid="ensembl_transcript_id"
-    }
-   
     
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
@@ -1487,17 +1385,7 @@ getINTERPRO <- function( id, type, array, mart){
     else{
       if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details")
       filter = mapFilter(type)
-      if(filter == "gene_stable_id"){
-        table = getBM(attributes=c(geneid,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
-      }
-      else{
-        if(filter=="transcript_stable_id"){
-          table = getBM(attributes=c(transid,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
-        }
-        else{
           table = getBM(attributes=c(filter,interproid, "interpro_description",geneid,transid),filters = filter, values = id, mart=mart)
-    }
-    }
     }
     if(!is.null(table)){
       colnames(table)=c("ID","interpro_id", "description", "ensembl_gene_id","ensembl_transcript_id")
