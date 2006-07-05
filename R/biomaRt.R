@@ -856,12 +856,12 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
     return(table)
   }
   else{
-    geneid="ensembl_gene_id"
+    geneid="gene_stable_id"
     
     species = strsplit(mart@dataset,"_")[[1]][1]
     if(!missing(chromosome)){
       if(seqType %in% c("cdna","peptide","3utr","5utr")){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = 'chr_name' value = '",chromosome,"'/><ValueFilter name = 'gene_chrom_start' value = '",start,"'/><ValueFilter name = 'gene_chrom_end' value = '",end,"'/></Dataset><Links source = '",species,"_gene_ensembl' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = '",geneid,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = 'chromosome_name' value = '",chromosome,"'/><ValueFilter name = 'start' value = '",start,"'/><ValueFilter name = 'end' value = '",end,"'/></Dataset><Links source = '",species,"_gene_ensembl' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = '",geneid,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
       }
       else{
         stop("The type of sequence specified with seqType is not available. Please select from: cdna, peptide, 3utr, 5utr")
@@ -1728,6 +1728,22 @@ listFilters <- function( mart ){
   return(ls(mart@filters))
 }
 
+##################################################
+#Retrieve description of attributes and filters  #
+##################################################
+
+describe = function(attribute, filter, mart){
+  if(missing( mart ) || class( mart )!='Mart')
+    stop("Argument 'mart' must be specified and be of class 'Mart'.")
+
+if(!missing(attribute)){
+  get(attribute,env=mart@attributes)$description
+}
+else{
+  get(filter,env=mart@filters)$description
+}
+}
+
 ##------------------------------------------------------------
 ## getBM
 ##------------------------------------------------------------
@@ -1874,6 +1890,18 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
       return(out)
     }
   }
+}
+
+#########################################################
+#cleanBM: Function to clear getBM output for duplicates #
+#########################################################
+
+cleanBM=function(bmresult, query_id_col=1, result_id_col=2 ){
+ sel = bmresult[,result_id_col] != ""
+ bmresult = bmresult[sel,]
+ dupli=duplicated(bmresult[,c(query_id_col,result_id_col)])
+ bmresult=bmresult[!dupli,]
+ return(bmresult)
 }
 
 
