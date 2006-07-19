@@ -18,13 +18,13 @@ setClass("Mart",
          );
 
 setClass("martTable",
-         representation(id = "character",
-                        table = "list"
-                        ));
+         representation(id = "character",	
+                        table = "list"	
+                        ));	
 
 setMethod("show","martTable",
-  function(object){
-    nrShow = 5
+  function(object){	
+    nrShow = 5	
     res = paste("Object of class 'martTable' with", length(object@id), "IDs.")
     if(length(object@id) > nrShow)
       res = paste(res, "The first", nrShow, "rows are:")
@@ -1107,45 +1107,38 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
   else{
     if(to.mart@mysql)stop("The mart objects should either use both mysql or not. Here your from.mart does not use mysql but you to.mart does.")
     
-      to.attributes=c("ensembl_gene_id","ensembl_transcript_id")
-      geneid="ensembl_gene_id"
-   
+     # to.attributes=c("ensembl_gene_id","ensembl_transcript_id")
+    to.attributes=NULL
     from.attributes = NULL
     filter = NULL
+    
     if(!missing(to.array)){
       to.attributes = c(to.attributes,to.array)
     }
     else{
-      if(to.type == "ensembl"){
-        to.attributes = c(to.attributes,geneid)
-      }
-      else{
         to.attributes = c(to.attributes,mapFilter(to.type))
-      }
     }
     if(!missing(from.array)){
       from.attributes = c(from.attributes,from.array)
       filter = from.array
     }
     else{
-      if(from.type == "ensembl"){
-        from.attributes = c(from.attributes,geneid)
-      }
-      else{
-        from.attributes = c(from.attributes,mapFilter(from.type))
-      }
+      from.attributes="ensembl_gene_id"
+      #from.attributes = c(from.attributes,mapFilter(from.type))
       filter = mapFilter(from.type)
     }
     
     xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",from.mart@dataset,"'>",sep="")
-    attributeXML =""#  paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
+    attributeXML = ""#paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
     valuesString = paste(id,"",collapse=",",sep="")
-    filterXML = paste("<ValueFilter name = '",filter,"' value = '",valuesString,"' />", sep="")
-    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset><Dataset name = '",to.mart@dataset,"'>",sep="")
-    to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
-    xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset>",sep="")
+    filterXML = paste("<Filter name = '",filter,"' value = '",valuesString,"' />", sep="")
+    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
+   
     species = strsplit(to.mart@dataset,"_")[[1]][1]
-    xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/></Query>", sep="")
+    xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/><Dataset name = '",to.mart@dataset,"' >", sep="")
+    to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
+    xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="")
+    
     postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
     
     if(postRes != ""){
