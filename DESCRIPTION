@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 1.7.4
+Version: 1.7.5
 Date: 2006-07-05
 Title: Interface to BioMart databases (e.g. Ensembl)
 Author: Steffen Durinck <durincks@mail.nih.gov>,
