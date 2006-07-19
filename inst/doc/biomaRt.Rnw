@@ -75,6 +75,11 @@ library(biomaRt)
 mart <- useMart("ensembl")
 @
 
+If the function useMart runs into proxy problems you should set your proxy first before calling any biomaRt functions.  
+You can do this using the Sys.putenv command:
+
+Sys.putenv("http\_proxy" = "http://my.proxy.org:9999")
+
 \subsubsection{\Rfunction{martDisconnect}}
 
 When using MySQL access, you can only hold a limited number of connections with different BioMarts.  The function martDisconnect can be used to close a mart connection.

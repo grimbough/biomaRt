@@ -7,6 +7,7 @@ setClass("Mart",
                         mainTables = "list",
                         biomart = "character",
                         host = "character",
+                        vschema = "character",
                         dataset = "character",
                         filters = "environment",
                         attributes = "environment"
@@ -121,12 +122,14 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
     
     for(i in 1:xmlSize(registry)){
       if(xmlName(registry[[i]])=="virtualSchema"){
+           vschema = xmlGetAttr(registry[[i]],"name")
         for(j in 1:xmlSize(registry[[i]])){
           if(xmlGetAttr(registry[[i]][[j]],"visible") == 1){
             marts$biomart[index] = xmlGetAttr(registry[[i]][[j]],"name")
             marts$version[index] = xmlGetAttr(registry[[i]][[j]],"displayName")
             marts$host[index] = xmlGetAttr(registry[[i]][[j]],"host")
             marts$path[index] = xmlGetAttr(registry[[i]][[j]],"path")
+            marts$vschema[index] = vschema
             index=index+1
           }
         }
@@ -1454,7 +1457,7 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
 
     if(marts$path[mindex]=="")marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
     
-    mart <- new("Mart", biomart = biomart, host = paste("http://",marts$host[mindex],marts$path[mindex],sep=""), mysql= FALSE)
+    mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],marts$path[mindex],sep=""), mysql= FALSE)
     if(!missing(dataset)){
       mart = useDataset(mart = mart, dataset=dataset)
     }
@@ -1667,7 +1670,7 @@ useDataset <- function(dataset, mart){
   }
   else{
 
-    config = getURL(paste(mart@host,"?type=configuration&dataset=",dataset, sep=""))
+    config = getURL(paste(mart@host,"?type=configuration&dataset=",dataset,"&virtualschema=",mart@vschema, sep=""))
     config = xmlTreeParse(config)
     config = config$doc$children[[1]]
 
