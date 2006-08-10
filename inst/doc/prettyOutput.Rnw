@@ -118,21 +118,8 @@ our set of genes.
 
 <<>>=
 attrbuts <- listAttributes(mart)
-attrbuts[grep("swiss", attrbuts)]
-attrbuts[grep("entrez", attrbuts)]
-@ 
-
-Something like adf\_entrezgene
-is a database table name, and it isn't all that 
-informative, so we can try to get more information by extracting the description
-for these database table names. We can also get the location of the attribute in
-the attributes list so we don't have to write them all out.
-
-<<>>=
-cbind(sapply(mget(attrbuts[grep("swiss",attrbuts)], mart@attributes), 
-             function(x) x$description), grep("swiss",attrbuts))
-cbind(sapply(mget(attrbuts[grep("entrez",attrbuts)], mart@attributes), 
-             function(x) x$description), grep("entrez",attrbuts))
+attrbuts[grep("swiss", attrbuts[,1]),]
+attrbuts[grep("entrez", attrbuts[,1]),]
 @ 
 
 
@@ -143,7 +130,7 @@ the HG-U95av2 chip, we need to figure out what that filter is called.
 
 <<>>=
 fltr <- listFilters(mart)
-fltr[grep("affy", fltr)]
+fltr[grep("affy", fltr[,1]),]
 @ 
 
 This one is pretty obvious - we want the affy\_hg\_u95av2 filter.
@@ -194,10 +181,10 @@ We can figure out which attribute terms to use, following the ideas presented ab
 
 
 <<>>=
-attrbuts[grep("description", attrbuts)]
-attrbuts[grep("symbol", attrbuts)]
-attrbuts[grep("go", attrbuts)]
-attrbuts[grep("^chrom", attrbuts)]
+attrbuts[grep("description", attrbuts[,1]),]
+attrbuts[grep("symbol", attrbuts[,1]),]
+attrbuts[grep("go", attrbuts[,1]),]
+attrbuts[grep("^chrom", attrbuts[,1]),]
 @ 
 
 
