@@ -14,7 +14,8 @@ setClass("Mart",
                         ),
          prototype(mysql = FALSE,
                    connections = new("list"),
-                   dataset = ""
+                   dataset = "",
+                   vschema="default"
                    )
          );
 
@@ -915,14 +916,9 @@ getAffyArrays <- function(mart){
     stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
   }
   att=listFilters(mart)
-  affy=att[grep("affy",att)]
-  if(is.na(match("ensembl_gene_id",listAttributes(mart)))){
-    affy=affy[-grep("bool",affy)]
-  }
-  else{
-    affy=affy[-grep("with",affy)]
-  }
-  print(affy)
+  affy=att[grep("affy",att[,1]),]
+  affy=affy[-grep("with",affy[,1]),]
+  return(affy)
 }
 
 #######################
@@ -1716,29 +1712,22 @@ getMainTables <- function( xml ){
 
 listAttributes <- function( mart ){
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
-  return(ls(mart@attributes))
+  attribList=mget(ls(mart@attributes), env=mart@attributes)
+  mat <- do.call(cbind, attribList)
+  frame=data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
+  colnames(frame)=c("name","description")
+  return(frame)
 }
 
 listFilters <- function( mart ){
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
-  return(ls(mart@filters))
+  filterList=mget(ls(mart@filters), env=mart@filters)
+  mat <- do.call(cbind, filterList)
+  frame=data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
+  colnames(frame)=c("name","description")
+  return(frame)
 }
 
-##################################################
-#Retrieve description of attributes and filters  #
-##################################################
-
-describe = function(attribute, filter, mart){
-  if(missing( mart ) || class( mart )!='Mart')
-    stop("Argument 'mart' must be specified and be of class 'Mart'.")
-
-if(!missing(attribute)){
-  get(attribute,env=mart@attributes)$description
-}
-else{
-  get(filter,env=mart@filters)$description
-}
-}
 
 ##------------------------------------------------------------
 ## getBM

@@ -265,7 +265,7 @@ In BioMart a list of possible attributes that we can query for can be retrieved 
 <<>>=
 
 attributes <- listAttributes(mart) 
-attributes[1:10]
+attributes[1:20,]
 
 @
 
@@ -273,7 +273,7 @@ Similarly a list of possible filters can be obtained with the function \Rfunctio
 
 <<>>=
 filters <- listFilters(mart)
-filters[1:10]
+filters[1:20,]
 @
 
 To get the information from our example we can use the function \Rfunction{getBM}, using valid attributes and filter.
