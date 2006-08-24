@@ -22,7 +22,7 @@
 \title{Description of the biomaRt package}
 
 \maketitle
-\begin{center} $^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven,\\ Kasteelpark Arenberg 10, 3001 Leuven-Heverlee, Belgium, \url{http://www.esat.kuleuven.ac.be/~dna/BioI}\\and $^\P$European Bioinformatics Institute, Hinxton, UK
+\begin{center} $^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven,\\ Kasteelpark Arenberg 10, 3001 Leuven-Heverlee, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
 
  \end{center}
 
@@ -55,234 +55,451 @@ An object of the \Robject{Mart} class stores connections to BioMart databases an
 \end{itemize}
 
 
-\section{Simple biomaRt functions for frequently used queries to Ensembl}
+\section{Selecting a BioMart database and dataset}
 In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases is described in the next section "Advanced data retrieval with BioMart API functions".
 
-\subsection{Selecting a  BioMart database to use}
-
-A first step in using the biomaRt package is to connect to a BioMart database. The function martConnect establishes a connection with one or more of the following BioMart databases: snp, ensembl, sequence and vega.  Default this function will connect to public BioMart databases.  If no biomart is specified, only a connection to ensembl will be established.  If you want to use local BioMart install you have to set the local argument to TRUE and specify host, password and user details in the corresponding arguments.   
-
-\subsubsection{\Rfunction{useMart}}
+A first step when using biomaRt, is to check which BioMart web services are available.  The function \textit{listMarts} will display all available BioMart web services   
 
 <<echo=FALSE>>=
 library(annotate)
 @
 <<>>=
 library(biomaRt)
-@
-<<echo=TRUE, eval=FALSE>>=
-#select a BioMart database to use.
-mart <- useMart("ensembl")
+listMarts()
 @
 
 If the function useMart runs into proxy problems you should set your proxy first before calling any biomaRt functions.  
 You can do this using the Sys.putenv command:
 
+\begin{verbatim}
 Sys.putenv("http\_proxy" = "http://my.proxy.org:9999")
+\end{verbatim}
 
-\subsubsection{\Rfunction{martDisconnect}}
-
-When using MySQL access, you can only hold a limited number of connections with different BioMarts.  The function martDisconnect can be used to close a mart connection.
-
-<<echo=TRUE, eval=FALSE>>=
-
-#Disconnect from BioMart databases
-martDisconnect(mart)
- 
-@
-
-\subsection{Annotating identifiers with gene information}
-
-The function \Rfunction{getGene} uses a query id to look up the name, description and chromosomal information of the corresponding gene.
-Currently the \Rfunction{getGene} function takes identifiers from entrezgene, ensembl, refseq, affy, hugo, unigene and embl.\\
-The {\it id} argument is either a vector of identifiers or a single identifier to be annotated.\\
-The {\it array} argument takes affy array identifiers as values.  A list of possible identifiers supported by the package can be obtained by executing the function \Rfunction{getAffyArrays}.\\
-The {\it mart} argument is a mart connection, which was obtained using the method \Rfunction{martConnect}.\\
-The {\it type} takes the values of 'entrezgene','refseq','hugo', 'ensembl' and 'embl' to clarify which type of identifier is specified in the id argument.\\
-
-First we select the BioMart databases and the dataset we want to use.  
+Next we need to select a BioMart database to use, which can be done with the \textit{useMart} function.  Specify the web service by its name given by \textit{listMarts}.  Here we choose to use the Ensembl BioMart web service.
 
 <<>>=
-mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl") 
-@
-Then we check which affy arrays are available:
-
-<<>>=
-getAffyArrays(mart)
+ensembl=useMart("ensembl")
 @
 
-Assume now that we have some upregulated features that we want to annotate. To get the gene information on a certain affy array do:
+BioMart databases can contain several datasets.  In a next step we look at which datasets are available in the selected BioMart by using the function \textit{listDatasets}.
 
 <<>>=
-upregulated <- c("210708_x_at","202763_at","211464_x_at")
-getGene( id = upregulated, array = "affy_hg_u133_plus_2", mart = mart)
+listDatasets(ensembl)
 @
-When using other id's we have to specify the \texttt{type} and \texttt{species}, use the function \Rfunction{getSpecies} to find valid species names.
+
+To select a dataset we can update the Mart object using the function \textit{useDataset}.
+\begin{verbatim}
+ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
+\end{verbatim}
+
+Alternatively if the dataset one wants to use is known in advance this can be specified in the \textit{useMart} function by:
 
 <<>>=
-getGene(id=100,type="entrezgene",mart=mart)
+ensembl = useMart("ensembl",dataset="hsapiens_gene_ensembl")
 @
 
 
-\subsubsection{GO annotation}
+\section{Simple biomaRt functions for frequently used queries to Ensembl}
+Now that we selected a BioMart database and dataset, we can make biomaRt queries.
+In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases are described in a later section: "Advanced data retrieval with BioMart".
 
-Gene Onotology annotation can be retrieved with the function \Rfunction{getGO}.  The arguments are the same as the function \Rfunction{getGene}.
+\subsection{getGene}
+
+The function \textit{getGene} uses a vector of query ids to look up the name, description and chromosomal information of the corresponding gene.  When using \textit{getGene} with affymetrix identifiers, we have to specify the chipname by using the \textit{array} argument.  When using any other type of identifier the type should be specified with the \textit{type} argument (this can have values like: entrezgene, refseq, unigene,...).  The \textit{mart} argument should be used to specify which \textit{Mart} object (which we generated above) to use.
 
 <<>>=
-go <- getGO( id = "203140_at", array = "affy_hg_u133_plus_2", mart = mart)
+affyids=c("202763_at","209310_s_at","207500_at")
+getGene(id=affyids, array="affy_hg_u133_plus_2",mart=ensembl)
+@
+
+To know which values to use to specify the affy array you can use the function \textit{getAffyArrays}.
+
+
+<<>>=
+getAffyArrays(ensembl)
+@
+Next we use \textit{getGene} with a list of entrezgene identifiers.
+
+<<>>=
+entrez=c("673","7157","837")
+getGene(id=entrez, type="entrezgene",mart=ensembl)
+@
+
+\subsection{getGO}
+
+The function \textit{getGO} enables one to retrieve GO identifiers, descriptions and evidence codes starting from a variety of identifiers.
+Identical to the \textit{getGene} function, \textit{getGO} takes the \textit{array}, \textit{type} and \textit{mart} arguments.
+
+<<>>=
+go = getGO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
 go
 @
 
-\subsubsection{OMIM annotation}
-
-OMIM annotation can be retrieved with the function \Rfunction{getOMIM}.  The arguments are the same as the function \Rfunction{getGene}.
-
+\subsection{getINTERPRO}
+INTERPRO is an integrated resource for protein families, domains and functional sites.  It integrates secondary structure databases such as PROSITE, PRINTS, SMART, Pfam, ProDom, etc. Identical to the \textit{getGene} function, \textit{getINTERPRO} takes the \textit{array}, \textit{type} and \textit{mart} arguments.
 <<>>=
-#omim <- getOMIM( id = "203140_at" , array = "affy_hg_u133_plus_2", mart = mart)
-#omim
-writeLines("getOMIM is temporary unavailable")
+getINTERPRO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
 @
 
-\subsubsection{INTERPRO protein domains}
+\section{getSequence}
 
-INTERPRO protein domains of the corresponding proteins can be searched with the function \Rfunction{getINTERPRO}. Again the arguments are the same as the function \Rfunction{getGene}.  
+Sequences can be retrieved using the \textit{getSequence} function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the \textit{chromosome} argument.  The \textit{start} and \textit{end} arguments are used to specify \textit{start} and \textit{end} positions on the chromosome. The \textit{seqType} argument enables one to specify which sequence type should be retrieved (cdna, 5utr, 3utr or protein).
 
-<<>>=
+First we retrieve the 5'UTR sequences of all genes on chromosome 3 between a given start and end position
+\begin{small}
+\begin{verbatim}
+> utr5 = getSequence(chromosome=3, start=185514033, end=185535839,
+                     seqType="5utr", mart=ensembl)
+> utr5
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
 
-getINTERPRO(id="1939_at",array="affy_hg_u95av2",mart=mart)
+               V1 V2             V3
+1 ENSG00000114867  3 protein_coding
+.....
+1 CCGGCTGCGCCTGCGGAGAAGCGGTGGCCGCCGAGCGGGATCTGTGCGGGGAGCCGGAAATGGTTGTGGACT
+  ACGTCTGTGCGGCTGCGTGGGGCTCGGCCGCGCGGACTGAAGG....
+  
+\end{verbatim}
+\end{scriptsize}
+Lets now retrieve the complete cDNA sequences in this region.
+\begin{small}
+\begin{verbatim}
+> cdna = getSequence(chromosome=3,start=185514033,end=185535839,
+                     seqType="cdna", mart=ensembl)
+> cdna
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
 
-@
+               V1 V2             V3
+1 ENSG00000114867  3 protein_coding
+...
+1 CCGGCTGCGCCTGCGGAGAAGCGGTGGCCGCCGAGCGGGATCTGTGCGGGGAGCCGGAAATGGTTGTGGACT
+  ACGTCTGTGCGGCTGCGTGGGGCTCGGCCGCGCGGACTGAAGG....
+  
+\end{verbatim}
+\end{scriptsize}
 
+Finally we retrieve the protein sequences in this region.
 
-\subsection{Homology mapping}
+\begin{small}
+\begin{verbatim}
+> protein = getSequence(chromosome=3,start=185514033,end=185535839,
+                        seqType="peptide", mart=ensembl)
+> protein
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
 
-This function maps homologs of genes of one species to another species.
-To use the function one needs two instances of a mart object where two different datasets are selected e.g. hsapiens\_gene\_ensembl and mmusculus\_gene\_ensembl if you want to map homologues between these two species.
-Now we can look for homologs:
+               V1 V2             V3
+1 ENSG00000114867  3 protein_coding
+....
 
-<<>>=
-from.mart=useMart("ensembl",dataset="hsapiens_gene_ensembl")
-to.mart=useMart("ensembl",dataset="mmusculus_gene_ensembl")
+\end{verbatim}
+\end{scriptsize}
 
-getHomolog(id = 2,from.type = 'entrezgene', to.type = 'refseq',from.mart = from.mart, to.mart = to.mart)
+\subsection{getFeature}
+The \textit{getFeature} function enables us to select a set of features based on chromosomal coordinates or GO identifiers.
+Select all Affymetrix identifiers on the hgu133plus2 chip for genes located on chromosome 16 between basepair 1100000 and 1250000.
+\textit{getFeature} takes the \textit{array} or \textit{type} arguments if one wants to retrieve affy identifiers or other identifiers respectively.
+\begin{small}
+\begin{verbatim}
+> features = getFeature( array = "affy_hg_u133_plus_2",
+                         chromosome = "16", start = "1100000",
+                         end = "1250000", mart=ensembl)
+> features
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
 
-@
+  ensembl_transcript_id chromosome_name start_position end_position affy_hg_u133_plus_2
+1        ENST00000358590              16        1143739      1211772           222960_at
+2        ENST00000358590              16        1143739      1211772           205845_at
+3        ENST00000356546              16        1143739      1211772           222960_at
+4        ENST00000356546              16        1143739      1211772           205845_at
+5        ENST00000234798              16        1211659      1215257         220339_s_at
+6        ENST00000357113              16        1218338      1220215         207741_x_at
+7        ENST00000357113              16        1218338      1220215         215382_x_at
+8        ENST00000357113              16        1218338      1220215         210084_x_at
+9        ENST00000357113              16        1218338      1220215         205683_x_at
+10       ENST00000357113              16        1218338      1220215         207134_x_at
+11       ENST00000357113              16        1218338      1220215         217023_x_at
+12       ENST00000357113              16        1218338      1220215         216474_x_at
+13       ENST00000339687              16        1218338      1220215         215382_x_at
+14       ENST00000339687              16        1218338      1220215         217023_x_at
+15       ENST00000339687              16        1218338      1220215         216474_x_at
+16       ENST00000338844              16        1230679      1232556         207741_x_at
+17       ENST00000338844              16        1230679      1232556         215382_x_at
+18       ENST00000338844              16        1230679      1232556         210084_x_at
+19       ENST00000338844              16        1230679      1232556         205683_x_at
+20       ENST00000338844              16        1230679      1232556         207134_x_at
+21       ENST00000338844              16        1230679      1232556         217023_x_at
+22       ENST00000338844              16        1230679      1232556         216474_x_at
+23       ENST00000382804              16        1230679      1232556         207741_x_at
+24       ENST00000382804              16        1230679      1232556         215382_x_at
+25       ENST00000382804              16        1230679      1232556         210084_x_at
+26       ENST00000382804              16        1230679      1232556         205683_x_at
+27       ENST00000382804              16        1230679      1232556         207134_x_at
+28       ENST00000382804              16        1230679      1232556         217023_x_at
+29       ENST00000382804              16        1230679      1232556         216474_x_at
+30       ENST00000382797              16        1246274      1248610           214568_at
+31       ENST00000211076              16        1246274      1248610           214568_at
+\end{verbatim}
+\end{scriptsize}
 
+Select all entrezgene ids which have a "MAP kinase activity" GO term associated with it.
 
-\subsection{Identify subsets of genes for further analysis with the \Rfunction{getFeature} function}
-
-The function \Rfunction{getFeature} is a general function to look up identifiers which pass a certain filter.  A first such a filter is to look for identifiers that correspond to genes with a given symbol.  If the array argument is given then affy identifiers from that array will be returned.  For retrieving other identifiers one has to specify the species and the type of identifier to retrieve.\\
-
-<<>>=
-getFeature(symbol="BRCA2",array="affy_hg_u133_plus_2",mart=mart)
-@
-
-A second possible filter is to look for ids which have a certain OMIM disease term attached to them (this only works for hsapiens).
-Similarly one can look for ids that have a certain GO annotation e.g. retrieve all affy id's on the hgu133plus2 array which have protein-tyrosine kinase activity.\\
-
-An other filter uses the position of genes on the genome.  One can query for all genes on a certain chromosome:
-
-<<>>=
-ychrom <- getFeature(chromosome="Y",type="entrezgene", mart=mart)
-ychrom[1:10,]
-@
-
-Or query for genes that lay in a particular region:\\
-
-<<>>=
-getFeature(chromosome=1,start=2800000, end = 3200000, type="entrezgene",mart=mart)
-@
-
-\subsection{Sequence information}
-
-The function \Rfunction{getSequence} retrieves the sequence given its chromosome, start and end position.
-\subsection{Single Nucleotide Polymorphisms}
-
-The function \Rfunction{getSNP} retrieves all SNP's between a given a start and end position on a gives chromosome..
-Note:  make sure you have a Mart object with connections to ensembl and snp
-
-<<>>=
-
-mart=useMart("snp", dataset="hsapiens_snp")
-getSNP(chromosome = 8, start = 148350, end = 148612, mart = mart)
-
-@
-
-\subsection{More exotic functions}
-\subsubsection{\Rfunction{getPossibleXrefs}}
-
-This function retrieves the possible cross-references present in Ensembl.  This is a very general function to see what can be extracted from Ensembl.  The results of this function can be used in the getXref function to extract the data of interest.
-
-\subsubsection{\Rfunction{getXref}}
-
-This function retrieves any cross reference in Ensembl.  It can for example be used to map different affymetrix array within one species.
-E.g. starting from an affy id of chip hgu95av2 and id 1939\_at, look for corresponding affy identifiers on the affy hgu133plus2 chip.
-
-
-\section{Advanced data retrieval with BioMart API functions}
-In this section we'll discuss functions that resemble other BioMart APIs such as Martshell (see: http://www.biomart.org for more info).   These functions are very general and can be used on all BioMart databases.  The order in which the functions are discussed is the usual order of how you should use them.
-
-\subsection{listMarts}
-
-The \Rfunction{listMarts} lists the possible BioMarts where we can connect to.
-
-<<>>=
-library(biomaRt)
-marts <- listMarts()
-marts
-@
-
-\subsection{useMart}
-
-Here we select from the list of possible BioMart databases, a BioMart that we want to use.
-<<>>=
-
-mart <- useMart("ensembl")
-@
-\subsection{listDatasets}
-
-Next we want to select a specific dataset of the selected BioMart. To see which dataset is available we use the function \Rfunction{listDatasets}.
-
-<<>>=
-listDatasets(mart)
-@
-
-\subsection{useDataset}
-
-To actually use a dataset we use the function \Rfunction{useDataset} to update our Mart object so it contains the configuration information of the dataset of interest.
-
-<<>>=
-
-mart<-useDataset(dataset="hsapiens_gene_ensembl",mart=mart)
-
-@
-
-\subsection{Filter, Values and Attributes}
-
-In BioMart, a filter is used to search a set of attributes that have a specified value for that filter.  To explain this better lets consider the following use case.  We want to get the gene symbol, chromosome name and band of the following features on the affy hgu95av2 chip: 1939\_at,2082\_s\_at and 1454\_at.  In this case the attributes are gene symbol, chromosome name and band, they are the information we want to retrieve.  The filter is the hgu95av2 chip and as values for this filter we use the affy identifiers we want to retrieve the information from.   
-In BioMart a list of possible attributes that we can query for can be retrieved by using the function \Rfunction{listAttributes}
 
 <<>>=
-
-attributes <- listAttributes(mart) 
-attributes[1:20,]
-
+features=getFeature(type="entrezgene", GOID="GO:0004707", mart=ensembl)
+features
 @
 
-Similarly a list of possible filters can be obtained with the function \Rfunction{listFilters}.
+\subsection{getSNP}
+To retrieve SNP data we first have to connect to the snp BioMart database of Ensembl.
+
+\begin{small}
+\begin{verbatim}
+> snpmart = useMart("snp", dataset = "hsapiens_snp")
+Checking attributes and filters ... ok
+> snp=getSNP(chromosome = 8, start = 148350, end = 148612,  mart = snpmart)
+> snp
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
+
+        tscid  refsnp_id allele chrom_start chrom_strand
+1  TSC1723456  rs3969741    C/A      148394            1
+2  TSC1421398  rs4046274    C/A      148394            1
+3  TSC1421399  rs4046275    A/G      148411            1
+4                rs13291    C/T      148462            1
+5  TSC1421400  rs4046276    C/T      148462            1
+6              rs4483971    C/T      148462            1
+7             rs17355217    C/T      148462            1
+8             rs12019378    T/G      148471            1
+9  TSC1421401  rs4046277    G/A      148499            1
+10            rs11136408    G/A      148525            1
+11 TSC1421402  rs4046278    G/A      148533            1
+12            rs17419210    C/T      148533           -1
+13            rs28735600    G/A      148533            1
+14 TSC1737607  rs3965587    C/T      148535            1
+15             rs4378731    G/A      148601            1
+\end{verbatim}
+\end{scriptsize}
+
+\subsection{getHomolog}
+BioMart takes advantage of the many species present in Ensembl to do homology mappings.  By using two datasets (i.e. two species), we can apply the \textit{getHomolog} function to map identifiers from one species to the other.
+Similar as the \textit{getGene} function, we have to specify the identifier we start from using either the \textit{from.array} argument if the identifier comes from an affy array or else the \textit{from.type} argument if we use an other identifier.  The identifier we want to retrieve has to be specified by using the \textit{to.array} or \textit{to.type} arguments.\\
+
+In a first example we start from a affy identifier of a human chip and we want to retrieve the identifiers of the corresponding homolog on a mouse chip. 
+\begin{small}
+\begin{verbatim}
+> human = useMart("ensembl","hsapiens_gene_ensembl")
+> mouse = useMart("ensembl","mmusculus_gene_ensembl")
+> homolog = getHomolog( id = "1939_at", to.array = "affy_mouse430_2", from.array = 
+                        "affy_hg_u95av2", from.mart = human, to.mart = mouse )
+
+> homolog
+                  V1                 V2           V3
+1 ENSMUSG00000059552 ENSMUST00000005371 1427739_a_at
+2 ENSMUSG00000059552 ENSMUST00000005371 1426538_a_at
+ 
+\end{verbatim}
+\end{small}
+An other example starts from a human RefSeq id and we want to retrieve the corresponding affy ids on the affy mouse430\_2 chip.
+
+\begin{small}
+\begin{verbatim}
+> homolog = getHomolog( id = "NM_007294", to.array = "affy_mouse430_2",
+                        from.type = "refseq", from.mart = human,
+                        to.mart = mouse )
+
+> homolog
+                  V1                 V2           V3
+1 ENSMUSG00000017146 ENSMUST00000017290   1424629_at
+2 ENSMUSG00000017146 ENSMUST00000017290   1451417_at
+3 ENSMUSG00000017146 ENSMUST00000017290 1424630_a_at
+
+\end{verbatim}
+\end{small}
+
+\section{Advanced data retrieval with BioMart}
+
+The previous functions were all tailored to the Ensembl BioMart web service.  In this section we will see biomaRt functions that can be used to retrieve everything that is available by any BioMart.  Three terms have to be introduced first: filters, attributes and values.
+A filter defines a restriction on the query.  For example you want to restrict the output to all genes located on the human X chromosome then the filter \textit{chromosome\_name} can be used with value 'X'.\\
+Attributes define the values we are interested in to retrieve.  For example we want to retrieve the gene symbols or chromosomal coordinates.\\
+We will first demonstrate the use of filters and attributes with Ensembl and use it with other BioMarts.
+
+\subsection{listFilters}
+The function \textit{listFilters} can be used to retrieve all available filters in a dataset.
 
 <<>>=
-filters <- listFilters(mart)
-filters[1:20,]
+filters =  listFilters(ensembl)
+filters[1:10,]
 @
-
-To get the information from our example we can use the function \Rfunction{getBM}, using valid attributes and filter.
+\subsection{listAttributes}
+The \textit{listAttributes} function can be used to see which attributes are available in the selected dataset.
 
 <<>>=
-getBM(attributes=c("affy_hg_u95av2","hgnc_symbol"),filter="affy_hg_u95av2",values=c("1939_at","1000_at"), mart=mart)
+attrib = listAttributes(ensembl)
+attrib[1:10,]
+@
+\subsection{getBM}
+Now that we know what filters and attributes are we can make a biomaRt query using the \textit{getBM} function. An easy query could be to retrieve  the HUGO symbols, chromosome name and band for a set of affy identifiers.
+
+<<>>=
+getBM(attributes = c("affy_hg_u95av2","hgnc_symbol","chromosome_name","band"),
+            filters="affy_hg_u95av2",
+             values=c("1939_at","1503_at","1454_at"), mart=ensembl)
 @
 
-As you see multiple attributes can be retrieved at once but in the current version of biomaRt there is the restriction that the attributes which are queried together, should somehow be of a similar type, e.g. chromosome band and chromosome name or e.g. allele, SNP, and frequency of snp.\\ 
+\subsection{Example queries getBM}
+
+Below we describe some more complicated examples.
+
+\subsubsection{Retrieving information on homologs}
+Within one Ensembl dataset there are attributes providing homology mappings to the other Ensembl species.
+In the next example, we start from the hsapiens dataset and a list of entrezgene ids.
+We can now query chromosomal positions of the corresponding genes in human, zebrafish, mouse and mosquito.
+\begin{small}
+\begin{verbatim}
+>getBM(attributes=c("hgnc_symbol","chromosome_name","start_position",
+                    "mouse_chromosome","mouse_chrom_start",
+                    "zebrafish_chromosome","zebrafish_chrom_start",
+                    "mosquito_chromosome","mosquito_chrom_start"),
+                    filter="entrezgene",values = c("673","7157","837"),
+                    mart=ensembl)
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
+  hgnc_symbol chromosome_name start_position mouse_chromosome mouse_chrom_start 
+1        BRAF               7      140080754                6          39543731 
+2        TP53              17        7512464               11          69396600 
+3       CASP4              11      104318810                9           5308874 
+
+zebrafish_chromosome zebrafish_chrom_start	  mosquito_chromosome mosquito_chrom_start
+	      4               9473158	                 2L                    1974599
+        5              16155000	                 2R                   20538788
+       16              47717138	                                            NA
+
+\end{verbatim}
+\end{scriptsize}
+
+\subsubsection{Using more than one filter}
+The \textit{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
+\begin{small}
+\begin{verbatim}
+ go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082",
+       "GO:0000083","GO:0045023","GO:0031568","GO:0031657")
+ chrom=c(1,2,"Y")
+ getBM(attributes=c("hgnc_symbol","agilent_probe","chromosome_name",
+                     "ensembl_transcript_id"),
+        filters=c("go","chromosome_name"),
+        values=list(go,chrom), mart=ensembl)
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
+   hgnc_symbol agilent_probe chromosome_name ensembl_transcript_id
+1         CUL3  A_24_P140030               2       ENST00000264414
+2         CUL3  A_23_P209288               2       ENST00000264414
+3                                          1       ENST00000373834
+4                A_23_P46309               1       ENST00000344184
+5                A_23_P46306               1       ENST00000344184
+6         RCC1   A_23_P46309               1       ENST00000373833
+7         RCC1   A_23_P46306               1       ENST00000373833
+8                A_23_P46309               1       ENST00000373832
+9                A_23_P46306               1       ENST00000373832
+10              A_23_P148807               1       ENST00000370415
+11        CDC7  A_23_P148807               1       ENST00000234626
+12        RHOU  A_23_P114814               1       ENST00000366691
+13        RHOU   A_24_P62530               1       ENST00000366691
+14        RHOU  A_23_P114814               1       ENST00000366691
+15        RHOU   A_24_P62530               1       ENST00000366691
+16        E2F6   A_32_P12610               2       ENST00000307236
+17        E2F6  A_23_P170774               2       ENST00000307236
+18        E2F6   A_32_P27271               2       ENST00000307236
+19        E2F6  A_32_P230720               2       ENST00000307236
+20        E2F6    A_23_P6312               2       ENST00000307236
+21        E2F6   A_32_P12610               2       ENST00000307236
+22        E2F6  A_23_P170774               2       ENST00000307236
+23        E2F6   A_32_P27271               2       ENST00000307236
+24        E2F6  A_32_P230720               2       ENST00000307236
+25        E2F6    A_23_P6312               2       ENST00000307236
+26              A_23_P257365               1       ENST00000370332
+27        GFI1  A_23_P257365               1       ENST00000358323
+28              A_23_P257365               1       ENST00000294702
+29        MDM4  A_24_P927377               1       ENST00000367183
+30        MDM4  A_24_P778649               1       ENST00000367183
+31        MDM4  A_24_P362432               1       ENST00000367183
+32        MDM4  A_23_P103503               1       ENST00000367183
+33        MDM4  A_23_P103502               1       ENST00000367183
+34        MDM4  A_23_P170969               1       ENST00000367183
+35              A_24_P362432               1       ENST00000356466
+36              A_23_P103503               1       ENST00000356466
+37              A_23_P103502               1       ENST00000356466
+
+\end{verbatim}
+\end{scriptsize}
+
+\subsubsection{Using a BioMart other than Ensembl}
+
+To demonstrate the use of the biomaRt package with non-Ensembl databases the next query is performed using the Wormbase BioMart (WormMart).
+We connect to Wormbase, select the gene dataset to use and have a look at the available attributes and filters.  Then we use a list of gene names as filter and retrieve associated RNAi identifiers together with a description of the RNAi phenotype.
+<<echo=TRUE, eval=FALSE>>=
+wormbase=useMart("wormbase",dataset="gene")
+listFilters(wormbase)
+listAttributes(wormbase)
+getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
+                     filters="gene_name", values=c("unc-26","his-33"),
+                     mart=wormbase)
+     
+@
+\begin{scriptsize}
+\begin{verbatim}
+     name  rnai               rnai_phenotype                                     phenotype_desc
+
+1  his-33 WBRNAi00000104   Emb | Nmo         embryonic lethal | Nuclear morphology alteration in early embryo
+2  his-33 WBRNAi00012233   WT                                             wild type morphology
+3  his-33 WBRNAi00024356   Ste                                                          sterile
+4  his-33 WBRNAi00025036   Emb                                                 embryonic lethal
+5  his-33 WBRNAi00025128   Emb                                                 embryonic lethal
+6  his-33 WBRNAi00025393   Emb                                                 embryonic lethal
+7  his-33 WBRNAi00025515   Emb | Lva | Unc                 embryonic lethal | larval arrest | uncoordinated
+8  his-33 WBRNAi00025632   Gro | Ste                                            slow growth | sterile
+9  his-33 WBRNAi00025686   Gro | Ste                                            slow growth | sterile
+10 his-33 WBRNAi00025785   Gro | Ste                                            slow growth | sterile
+11 his-33 WBRNAi00026259   Emb | Gro | Unc                   embryonic lethal | slow growth | uncoordinated
+12 his-33 WBRNAi00026375   Emb                                                 embryonic lethal
+13 his-33 WBRNAi00026376   Emb                                                 embryonic lethal
+14 his-33 WBRNAi00027053   Emb | Unc                                 embryonic lethal | uncoordinated
+15 his-33 WBRNAi00030041   WT                                             wild type morphology
+16 his-33 WBRNAi00031078   Emb                                                 embryonic lethal
+17 his-33 WBRNAi00032317   Emb                                                 embryonic lethal
+18 his-33 WBRNAi00032894   Emb                                                 embryonic lethal
+19 his-33 WBRNAi00033648   Emb                                                 embryonic lethal
+20 his-33 WBRNAi00035430   Emb                                                 embryonic lethal
+21 his-33 WBRNAi00035860   Egl | Emb                             egg laying defect | embryonic lethal
+22 his-33 WBRNAi00048335   Emb | Sister Chromatid Separation abnormal (Cross-eyed)   embryonic lethal |
+23 his-33 WBRNAi00049266   Emb | Sister Chromatid Separation abnormal (Cross-eyed)     embryonic lethal |
+24 his-33 WBRNAi00053026   Emb | Sister Chromatid Separation abnormal (Cross-eyed)     embryonic lethal |
+25 unc-26 WBRNAi00021278   WT                                             wild type morphology
+26 unc-26 WBRNAi00026915   WT                                             wild type morphology
+27 unc-26 WBRNAi00026916   WT                                             wild type morphology
+28 unc-26 WBRNAi00027544   Unc                                                    uncoordinated
+29 unc-26 WBRNAi00049565   WT                                             wild type morphology
+30 unc-26 WBRNAi00049566   WT                                             wild type morphology
+\end{verbatim}
+\end{scriptsize}
+
 \section{Local BioMart databases}
 The biomaRt package can be used with a local install of a public BioMart database or a locally developed BioMart database.
 In order for biomaRt to recognize the database as a BioMart, make sure that the local database you create has a name conform with \begin{verbatim} database_mart_version \end{verbatim} where database is the name of the database and version is a version number.  No more underscores than the ones showed should be present in this name. A possible name is for example \begin{verbatim} ensemblLocal_mart_36 \end{verbatim}.

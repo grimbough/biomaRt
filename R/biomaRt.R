@@ -145,7 +145,14 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
         }
       }
     }
-    return(marts)
+    if(includeHosts){
+     return(marts)
+    }
+    else{
+     ret = data.frame(marts$biomart, marts$version)
+     colnames(ret)=c("name","version")
+     return(ret)
+    } 
   }
 }
 
@@ -208,7 +215,7 @@ mapFilter <- function(type){
 getGene <- function( id, type, array, mart){
   
   if( missing( mart ) || class( mart ) != 'Mart'){
-    stop("you must provide a valid Mart object, create with function martConnect")
+    stop("you must provide a valid Mart object, create with function useMart")
   }
   
   if(mart@biomart != "ensembl"){
@@ -640,7 +647,7 @@ getGO <- function( id, type, array, mart){
 getOMIM <- function( id, type, array, mart){
   
   if( missing( mart )|| class( mart ) != 'Mart'){
-    stop("you must provide a valid Mart object, create with function martConnect")
+    stop("you must provide a valid Mart object, create with function useMart")
   }
   if("ensembl" != mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
@@ -910,7 +917,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
 
 getAffyArrays <- function(mart){
   if(missing(mart)){
-    stop("no Mart object found, create this first using the function martConnect and then give as argument in the function")
+    stop("no Mart object found, create this first using the function useMart and then give as argument in the function")
   }
   if(is.null(mart@dataset)){
     stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
@@ -927,7 +934,7 @@ getAffyArrays <- function(mart){
 
 getSNP <- function(chromosome, start, end, mart){
   if( missing( mart )|| class( mart ) != 'Mart'){
-    stop("you must provide a mart connection object, create with function martConnect")
+    stop("you must provide a mart connection object, create with function useMart")
   }
   if("snp" != mart@biomart){
     stop("This function only works when using to snp. To use this function use: mart =  useMart('snp')")
@@ -965,7 +972,7 @@ getSNP <- function(chromosome, start, end, mart){
 getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, to.mart) {
   
   if( missing( to.mart )|| class( to.mart ) != 'Mart' || missing( from.mart )|| class( from.mart ) != 'Mart'){
-    stop("you must provide a mart connection object, create with function martConnect")
+    stop("you must provide a mart connection object, create with function useMart")
   }
   
   if("ensembl" != to.mart@biomart || "ensembl" != from.mart@biomart){
@@ -1136,8 +1143,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
     species = strsplit(to.mart@dataset,"_")[[1]][1]
     xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/><Dataset name = '",to.mart@dataset,"' >", sep="")
     to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
-    xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="")
-    
+    xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="") 
     postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
     
     if(postRes != ""){
@@ -1170,7 +1176,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
 
 getPossibleXrefs <-  function( mart ) {
   if ( missing( mart ) || class( mart ) != 'Mart') {
-    stop('You must supply a valid mart object.  You can use martConnect to produce one')
+    stop('You must supply a valid mart object.  You can use useMart to produce one')
   }
   if("ensembl" != mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
@@ -1191,7 +1197,7 @@ getPossibleXrefs <-  function( mart ) {
 getXref <- function( id, from.species, to.species, from.xref, to.xref, mart) {
   
   if ( missing( mart ) || class( mart )!='Mart'){
-    stop('You must specify a valid Mart object which can be created using martConnect().');
+    stop('You must specify a valid Mart object which can be created using useMart.');
   }
   if("ensembl" != mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
@@ -1285,7 +1291,7 @@ exportFASTA <- function( martTable, file ){
 getINTERPRO <- function( id, type, array, mart){
      
   if( missing( mart )|| class(mart)!='Mart'){
-    stop("you must provide a valid Mart object, create with function martConnect")
+    stop("you must provide a valid Mart object, create with function useMart")
   }
 
   if("ensembl" != mart@biomart){
@@ -1445,10 +1451,10 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
     if(missing(host)){
       host = "http://www.biomart.org/biomart/martservice"
     }
-    marts=listMarts(host = host)
+    marts=listMarts(host = host, includeHosts = TRUE)
     mindex=match(biomart,marts$biomart)
     if(is.na(mindex)){
-      stop("Incorrect biomart name")
+      stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
     }
 
     if(marts$path[mindex]=="")marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
