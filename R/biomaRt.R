@@ -1811,13 +1811,28 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
           stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
         filterXML = NULL
         for(i in 1:length(filters)){
-          valuesString = paste(values[[i]],"",collapse=",",sep="")
-          filterXML = paste(filterXML,paste("<ValueFilter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+         
+          filtmp = strsplit(get(filters[i],env=mart@filters)$field, "_")
+          if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
+            filterXML = paste(filterXML,paste("<BooleanFilter name = '",filters[i],"' />", collapse="",sep=""),sep="")
+          }
+          else{
+            valuesString = paste(values[[i]],"",collapse=",",sep="")
+            filterXML = paste(filterXML,paste("<ValueFilter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+          }
         }
       }
       else{
-        valuesString = paste(values,"",collapse=",",sep="")
-        filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
+       
+        filtmp = strsplit(get(filters,env=mart@filters)$field, "_")
+        if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
+         filterXML = paste("<BooleanFilter name = '",filters,"' />", collapse="",sep="")
+        }
+        else{
+         valuesString = paste(values,"",collapse=",",sep="")
+         filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
+        }
+
       }
       xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
       
