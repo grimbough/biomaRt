@@ -781,7 +781,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
     sequence <- NULL;  
     speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" ); 
     
-    if(missing( martTable ) && !missing( chromosome ) && !missing( start ) && !missing( end )){
+    if(!missing( chromosome ) && !missing( start ) && !missing( end )){
       for(i in 1:length( chromosome )){
         
         if(end[i] - start[i] > 100000){
@@ -818,51 +818,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
       }
     }
     
-    else{
-      if(!missing( martTable )){
-                                        #check class!!
-        chromosome = martTable@table$chromosome;
-        start = martTable@table$start;
-        end = martTable@table$end;
-        
-        for(i in 1:length( chromosome )){
-          
-          if(end[i] - start[i] > 100000){
-            stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
-          }
-          
-          chunkStart <- (floor((start[i] - 1)/100000)*100000) + 1;
-          chunkEnd <- (floor((end[i] - 1)/100000)*100000) + 1;
-          
-          if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
-            
-            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-            chunkseq <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
-            newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
-            
-            sequence <- c(sequence,substr(as.character(chunkseq), newstart, newend));
-            
-          }
-          
-          else{   #query sequence is on 2 sequence chuncks
-            
-            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-            chunkseq1 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-            query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkEnd,"'",sep="");
-            chunkseq2 <- dbGetQuery(conn = mart@connections$biomart, statement = query);
-            chunkseq <- paste(as.character(chunkseq1),as.character(chunkseq2), sep=""); 
-            
-            newstart <- start[i] - (floor((start[i]-1)/100000) * 100000);
-            newend <- end[i] - (floor((start[i]-1)/100000) * 100000);
-            sequence <- c(sequence,substr(chunkseq, start = newstart, stop = newend));
-            
-          }
-        } 
-      }
-    }
-    
-    table <- new("martTable", id = paste(chromosome, start, end, sep = "_") ,table = list(chromosome = chromosome, start = start, end = end, sequence = sequence))
+    table <- data.frame(chromosome = chromosome, start = start, end = end, sequence = sequence)
     
     return(table)
   }
