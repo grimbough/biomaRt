@@ -2,23 +2,23 @@
 \alias{exportFASTA}
 \title{Exports getSequence results to FASTA format}
 \description{Exports getSequence results to FASTA format}
-\usage{exportFASTA(martTable, file)}
+\usage{exportFASTA(sequences, file)}
 
 \arguments{
-\item{martTable}{A martTable that was the output of the getSequence function}
+\item{sequences}{A data.frame that was the output of the getSequence function}
 \item{file}{File to which you want to write the data}
  
 
 }
 
-\author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck} 
 
 \examples{
 
 if(interactive()){
-mart <- useMart("ensembl")
+mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
 
-#seq<-getSequence(chromosome=c(2,2),start=c(100000,30000),end=c(100300,30500),species="hsapiens",mart=mart)
+#seq<-getSequence(chromosome=c(2,2),start=c(100000,30000),end=c(100300,30500),mart=mart)
 #exportFASTA(seq,file="test.fasta")
 
 martDisconnect(mart = mart)
