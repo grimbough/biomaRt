@@ -823,8 +823,11 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
     return(table)
   }
   else{
+    if(missing(seqType)){
+      stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either cdna, peptide, 3utr or 5utr")
+    }
+
     geneid="gene_stable_id"
-    
     species = strsplit(mart@dataset,"_")[[1]][1]
     if(!missing(chromosome)){
       if(seqType %in% c("cdna","peptide","3utr","5utr")){
@@ -912,10 +915,15 @@ getSNP <- function(chromosome, start, end, mart){
     return( table );
   }
   else{
-      tscid="tscid"
-      snpstart="chrom_start"
-      snpend="chrom_end"
-    attributes = c(tscid,"refsnp_id","allele","chrom_start","chrom_strand")
+    tscid="tscid"
+    snpstart="chrom_start"
+    snpend="chrom_end"
+    if(exists("tscid",envir=mart@attributes)){
+     attributes = c(tscid,"refsnp_id","allele","chrom_start","chrom_strand")
+    }
+    else{
+      attributes = c("refsnp_id","allele","chrom_start","chrom_strand")
+    } 
     table = getBM(attributes = attributes,filters = c("chr_name",snpstart,snpend), values = list(chromosome, start, end), mart=mart)    
     return(table)
   }
@@ -1225,16 +1233,16 @@ getXref <- function( id, from.species, to.species, from.xref, to.xref, mart) {
 #export FASTA      #
 ####################
 
-exportFASTA <- function( martTable, file ){
-  if( missing( martTable ) || class( martTable ) != "martTable"){
-    stop("No martTable given to write");
+exportFASTA <- function( sequences, file ){
+  if( missing( sequences ) || class( sequences ) != "data.frame"){
+    stop("No data.frame given to write FASTA.  The data.frame should be the output of the getSequence function.");
   }
   if( missing(file)){
     stop("Please provide filename to write to");
   }
-  for(i in 1:length(martTable@id)){
-    cat(paste(">",martTable@id[i],"\n",sep=""),file = file, append=TRUE);
-    cat(martTable@table$sequence[i],file = file, append = TRUE);
+  for(i in 1:length(sequences[,1])){
+    cat(paste(">",sequences[i,1],"_",sequences[i,2],"_",sequences[i,3],"\n",sep=""),file = file, append=TRUE);
+    cat(as.character(sequences[i,4]),file = file, append = TRUE);
     cat("\n\n", file = file, append = TRUE);
   }  
 }
