@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 1.9.1
+Version: 1.9.2
 Title: Interface to BioMart databases (e.g. Ensembl)
 Author: Steffen Durinck <durincks@mail.nih.gov>,
 	Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis <sdavis2@mail.nih.gov>

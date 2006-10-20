@@ -43,7 +43,7 @@ setMethod("show","martTable",
 #######################
 
 
-listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql = FALSE){
+listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql = FALSE, archive = FALSE){
   
   if(mysql){
     
@@ -68,7 +68,8 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
       res <- dbGetQuery(connection,"show databases like '%mart%'"); 
                                         #Search latest releases of marts
       if(dim(res)[1] >= 1){
-        for(j in 1:length(mart)){ 
+        if(!archive){
+         for(j in 1:length(mart)){ 
           matches <- grep(mart[j],res[,1]);
           if(length(matches) > 1){
             version <- 1;
@@ -94,16 +95,19 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
             if(sum(matches)> 0){
               if(!includeHosts){
                 database <- c(database,res[matches,1]);
-                v <- as.numeric(strsplit(res[matches,1],"_")[[1]][3]);
               }
               else{
-                database <- rbind(database,cbind(res[matches,1],host[i]));
+               database <- rbind(database,cbind(res[matches,1],host[i]));
               }
             }
           }
           
           dbDisconnect(connection);
+         }
         }
+        else{
+         database = rbind(database,res)
+       } 
       }
     }
     return( database );
@@ -199,6 +203,39 @@ mapFilter <- function(type){
   return(mapf) 
 }
 
+mapSymbol = function(dataset){
+ symbol = switch(dataset, 
+                      hsapiens_gene_ensembl = "hgnc_symbol",
+                      mmusculus_gene_ensembl = "mgi_symbol",
+                      rnorvegicus_gene_ensembl = "mgi_symbol",
+                      scerevisiae_gene_ensembl = "sgd",
+                      celegans_gene_ensembl = "external_gene_id",
+                      cintestinalis_gene_ensembl = "external_gene_id",
+                      ptroglodytes_gene_ensembl = "external_gene_id",  
+                      frubripes_gene_ensembl = "external_gene_id",
+                      agambiae_gene_ensembl = "external_gene_id",
+                      ggallus_gene_ensembl = "external_gene_id",
+                      xtropicalis_gene_ensembl = "external_gene_id",
+                      drerio_gene_ensembl = "external_gene_id",
+                      tnigroviridis_gene_ensembl = "external_gene_id",
+                      mmulatta_gene_ensembl = "external_gene_id",
+                      mdomesticus_gene_ensembl = "external_gene_id",
+                      amellifera_gene_ensembl = "external_gene_id",
+                      dmelanogaster_gene_ensembl = "external_gene_id",
+                      btaurus_gene_ensembl = "external_gene_id",
+                      cfamiliaris_gene_ensembl = "external_gene_id",
+                      gaculeatus_gene_ensembl  = "external_gene_id",
+                      lafricana_gene_ensembl  = "external_gene_id",
+                      etelfairi_gene_ensembl  = "external_gene_id",
+                      ocuniculus_gene_ensembl  = "external_gene_id",
+                      aaegypti_gene_ensembl  = "external_gene_id",
+                      csavignyi_gene_ensembl  = "external_gene_id",
+                      trubripes_gene_ensembl  = "external_gene_id",
+                      dnovemcinctus_gene_ensembl  = "external_gene_id",
+                      mdomestica_gene_ensembl  = "external_gene_id"
+                      )
+   return(symbol);
+}
 
 
 ######### public functions ##############
@@ -217,11 +254,10 @@ getGene <- function( id, type, array, mart){
   if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function useMart")
   }
-  
-  if(mart@biomart != "ensembl"){
-    stop("you can only use ensembl for this query.  Please do: useMart('ensembl').  To access VEGA you have to use the more advanced biomaRt function:  useMart. listDatasets, useDataset, listFilters, listAttributes and getBM.");
+  if("ensembl" != mart@biomart){
+    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
-  
+    
   if(mart@dataset==""){
     stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
   }
@@ -236,10 +272,6 @@ getGene <- function( id, type, array, mart){
   
 #MySQL-----------------------------------------------------------
   if(mart@mysql){
-    
-    if("ensembl" != mart@biomart){
-      stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-    }
     
     speciesTable <- unique(mart@mainTables$tables[mart@mainTables$keys == "gene_id_key"]);
     
@@ -301,28 +333,8 @@ getGene <- function( id, type, array, mart){
       geneid="ensembl_gene_id"
       transid="ensembl_transcript_id"
       strand = "strand"
-      symbol = switch(mart@dataset, 
-                      hsapiens_gene_ensembl = "hgnc_symbol",
-                      mmusculus_gene_ensembl = "mgi_symbol",
-                      rnorvegicus_gene_ensembl = "mgi_symbol",
-                      scerevisiae_gene_ensembl = "sgd",
-                      celegans_gene_ensembl = "external_gene_id",
-                      cintestinalis_gene_ensembl = "external_gene_id",
-                      ptroglodytes_gene_ensembl = "external_gene_id",  
-                      frubripes_gene_ensembl = "external_gene_id",
-                      agambiae_gene_ensembl = "external_gene_id",
-                      ggallus_gene_ensembl = "external_gene_id",
-                      xtropicalis_gene_ensembl = "external_gene_id",
-                      drerio_gene_ensembl = "external_gene_id",
-                      tnigroviridis_gene_ensembl = "external_gene_id",
-                      mmulatta_gene_ensembl = "external_gene_id",
-                      mdomesticus_gene_ensembl = "external_gene_id",
-                      amellifera_gene_ensembl = "external_gene_id",
-                      dmelanogaster_gene_ensembl = "external_gene_id",
-                      btaurus_gene_ensembl = "external_gene_id",
-                      cfamiliaris_gene_ensembl = "external_gene_id",
-                      )
-   
+      symbol = mapSymbol(mart@dataset)
+
     if(!missing(array)){
       if(array=="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
@@ -473,28 +485,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     
     if(!missing(symbol)){
      
-      filter = switch(mart@dataset, 
-                      hsapiens_gene_ensembl = "hgnc_symbol",
-                      mmusculus_gene_ensembl = "mgi_symbol",
-                      rnorvegicus_gene_ensembl = "mgi_symbol",
-                      scerevisiae_gene_ensembl = "sgd",
-                      celegans_gene_ensembl = "external_gene_id",
-                      cintestinalis_gene_ensembl = "external_gene_id",
-                      ptroglodytes_gene_ensembl = "external_gene_id",  
-                      frubripes_gene_ensembl = "external_gene_id",
-                      agambiae_gene_ensembl = "external_gene_id",
-                      ggallus_gene_ensembl = "external_gene_id",
-                      xtropicalis_gene_ensembl = "external_gene_id",
-                      drerio_gene_ensembl = "external_gene_id",
-                      tnigroviridis_gene_ensembl = "external_gene_id",
-                      mmulatta_gene_ensembl = "external_gene_id",
-                      mdomesticus_gene_ensembl = "external_gene_id",
-                      amellifera_gene_ensembl = "external_gene_id",
-                      dmelanogaster_gene_ensembl = "external_gene_id",
-                      btaurus_gene_ensembl = "external_gene_id",
-                      cfamiliaris_gene_ensembl = "external_gene_id",
-                      )
- 
+      filter = mapSymbol(mart@dataset)                      
       attribute = c(filter,attribute)
       values = symbol
     }
@@ -1363,7 +1354,7 @@ getINTERPRO <- function( id, type, array, mart){
 #
 ######################################################################################
 
-useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql = FALSE){
+useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql = FALSE, archive = FALSE){
 
   if(mysql){
     
@@ -1377,9 +1368,10 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
 
     if(local){
       if(!missing(host) && !missing(user) && !missing(password)){
-        database <- listMarts(mart = biomart, host = host, user = user, password = password);
+        database <- listMarts(mart = biomart, host = host, user = user, password = password, mysql=TRUE);
+        mart@biomart = strsplit(biomart,"_")[[1]][1]
         mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = user, host = host, dbname = database, password = password)
-        writeLines(paste("connected to: ",database[1,1]))
+       # writeLines(paste("connected to: ",database[1,1]))
       }
       else{
         stop(sprintf("Please provide host, user and password for using local database '%s'.", biomart))
@@ -1388,19 +1380,28 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
     else {
       
       version = "0"
-      marts = listMarts(mysql = TRUE)
-      for(i in 1:length(marts)){
+      marts=NULL
+      
+      if(!archive){ 
+       marts = listMarts(mysql = TRUE)
+       for(i in 1:length(marts)){
         if(biomart == strsplit(marts[i],"_")[[1]][1]){
           version = strsplit(marts[i],"_")[[1]][3]
         }
-      }
-      martdb=""
-      if(version > 0){
-        martdb = paste(biomart,"_mart_",version,sep="")
+       }
+       martdb=""
+       if(version > 0){
+         martdb = paste(biomart,"_mart_",version,sep="")
+       }
+       else{
+         martdb = biomart
+       }
       }
       else{
-        martdb = biomart
-      }
+        marts = listMarts(mysql = TRUE, archive = archive)
+        marts=marts[,1]  
+        martdb = biomart    
+      }    
 
       if(!martdb %in% marts) stop("Requested BioMart database is not available please use the function listMarts(mysql=TRUE) to see the valid biomart names you can query using mysql access")
       mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = martdb, password = "")
