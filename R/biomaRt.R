@@ -118,7 +118,7 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
     if(missing(host)){
       host = "http://www.biomart.org/biomart/martservice"
     }
-    registry = RCurl::getURL(paste(host,"?type=registry", sep=""))
+    registry = getURL(paste(host,"?type=registry", sep=""))
     registry = xmlTreeParse(registry)
     registry = registry$doc$children[[1]]
     
@@ -1637,7 +1637,7 @@ useDataset <- function(dataset, mart){
   }
   else{
 
-    config = RCurl::getURL(paste(mart@host,"?type=configuration&dataset=",dataset,"&virtualschema=",mart@vschema, sep=""))
+    config = getURL(paste(mart@host,"?type=configuration&dataset=",dataset,"&virtualschema=",mart@vschema, sep=""))
     config = xmlTreeParse(config)
     config = config$doc$children[[1]]
 
