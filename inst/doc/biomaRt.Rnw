@@ -17,7 +17,7 @@
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 
-\author{Steffen Durinck$^\ddagger$\footnote{Steffen.Durinck@esat.kuleuven.ac.be}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
+\author{Steffen Durinck$^\ddagger$\footnote{durincks@mail.nih.gov}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
 \begin{document}
 \title{Description of the biomaRt package}
 
@@ -373,7 +373,7 @@ We can now query chromosomal positions of the corresponding genes in human, zebr
 >getBM(attributes=c("hgnc_symbol","chromosome_name","start_position",
                     "mouse_chromosome","mouse_chrom_start",
                     "zebrafish_chromosome","zebrafish_chrom_start",
-                    "mosquito_chromosome","mosquito_chrom_start"),
+                    "aedes_chromosome","aedes_chrom_start"),
                     filter="entrezgene",values = c("673","7157","837"),
                     mart=ensembl)
 \end{verbatim}
@@ -385,7 +385,7 @@ We can now query chromosomal positions of the corresponding genes in human, zebr
 2        TP53              17        7512464               11          69396600 
 3       CASP4              11      104318810                9           5308874 
 
-zebrafish_chromosome zebrafish_chrom_start	  mosquito_chromosome mosquito_chrom_start
+zebrafish_chromosome zebrafish_chrom_start	  aedes_chromosome aedes_chrom_start
 	      4               9473158	                 2L                    1974599
         5              16155000	                 2R                   20538788
        16              47717138	                                            NA
