@@ -1084,13 +1084,13 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
       filter = from.array
     }
     else{
-      from.attributes="ensembl_gene_id"
-      #from.attributes = c(from.attributes,mapFilter(from.type))
+#      from.attributes="ensembl_gene_id"
+      from.attributes = c(from.attributes,mapFilter(from.type))
       filter = mapFilter(from.type)
     }
     
     xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",from.mart@dataset,"'>",sep="")
-    attributeXML = ""#paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
+    attributeXML = "" # paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
     valuesString = paste(id,"",collapse=",",sep="")
     filterXML = paste("<Filter name = '",filter,"' value = '",valuesString,"' />", sep="")
     xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
@@ -1099,6 +1099,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
     xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/><Dataset name = '",to.mart@dataset,"' >", sep="")
     to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
     xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="") 
+ #   print(xmlQuery)
     postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
     
     if(postRes != ""){
