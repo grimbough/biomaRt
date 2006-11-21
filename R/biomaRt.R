@@ -1730,19 +1730,14 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
   ## use the mySQL interface
   if(mart@mysql){
     if(output == "data.frame"){
-      if(length(filters) > 1) stop("biomaRt currently allows only one filter per query, reduce the number of filters to one")
       query <- queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
       res <- dbGetQuery(mart@connections$biomart,query)
       if(dim(res)[1] == 0){
         res <- data.frame()
       }
       else{
-        mt = match(res[,1], values);
-        if(any(is.na(mt)))
-          stop("Internal error!");
-        res = res[order(mt),];
-        names(res) = c(filters, attributes);     
-      }  
+       colnames(res) = attributes
+      }
       return(as.data.frame(res))
     }
     else{
@@ -1753,7 +1748,7 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
         names(out) <- list.names
       
       for(j in seq(along = attributes)){
-        tmp <- getBM(attributes[j], filters, values, mart)
+        tmp <- getBM(c(filters,attributes[j]), filters, values, mart)
         tmp2 <- vector("list", length(values))
         names(tmp2) <- values
         for(i in seq(along=tmp2)){
@@ -1825,11 +1820,18 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
           colnames(result) = attributes
         }
       } else {
-        #stop("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please try query again.")
+        
         ##
         ## FIXME (wh 1.6.2006) - do we really just want to quietly fail, without warning or error? I don't like this,
         ## this will cause hard to trace problems in scripts and processing pipelines.
-        result=NULL
+        ## FIX:  in case of failure we test if the host is down.  If host is down we report error if not then we give the result NULL    
+        geturl = getURL(mart@host)
+        if(geturl == "" || is.null(geturl)){
+          stop(paste("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please check if the following URL is active: ",mart@host,".  If this URL is not active then try your query again at a later time when this URL is active.", sep=""))
+        }
+        else{ 
+         result = NULL
+        }
       }
       return(result)
     }
@@ -1898,14 +1900,13 @@ queryGenerator <- function(attributes, filter, values, mart){
   if(any(is.na(m2) & isMain))
     stop("Internal error: Key does not match MainTable key")
   Atable = ifelse(isMain, mart@mainTables$tables[m2], Atab)
-
   
   ## filter
   ## FIXME: I assume this is correct - filter can have only length 1?
   ## YES when accessing BioMart databases via MySQL the number of filters is currently limited to 1.  Access via the webservice however allows more filters to be used
   
   if(length(filter)!=1)
-    stop(sprintf("'length(filter)' must be 1 when using MySQL queries."))
+    stop(sprintf("'length(filter)' must be 1 when using biomaRt in MySQL mode."))
   
   if(!exists(filter,mart@filters))
     stop(paste("filter(s)",filter," not found, please use the function 'listFilters' to get valid filter names",sep=""))
@@ -1913,8 +1914,6 @@ queryGenerator <- function(attributes, filter, values, mart){
   Ffield = get(filter,mart@filters)$field
   Ftab   = get(filter,mart@filters)$table
   Fkey   = get(filter,mart@filters)$key
-
-
   
   ## special treatment of main table
   isMain = (Ftab=="main")
@@ -1923,14 +1922,10 @@ queryGenerator <- function(attributes, filter, values, mart){
     stop("Internal error: Key does not match MainTable key")
   Ftable = ifelse(isMain, mart@mainTables$tables[m2], Ftab)
 
-  if(length(unique(c(Atable,Ftable)))>2)
-    stop(paste("This query is currently not possible: your attributes extend over multiple tables (",
-               paste(c(Atable,Ftable), collapse=", "), "), please only use attributes from one table per query or do your query via the webservice.", sep=""))
-  
-  query = paste("SELECT DISTINCT",
-    paste(Ftable, Ffield, sep=".", collapse=", "), ",",
+query = paste("SELECT DISTINCT",
     paste(Atable, Afield, sep=".", collapse=", "),
     "FROM")
+
 
   ########################################
   # Ensembl Key Order: gene overrides transcript #
@@ -1947,29 +1942,19 @@ queryGenerator <- function(attributes, filter, values, mart){
   ### end Ensembl specific part #######
   
   tables <- unique(c(Atable, Ftable));
- 
-  ## FIXME: why only for tables[1:2] and Akey[1] and not for all?
-
   query = paste(query, tables[1])
 
   if(length(tables) > 1){
 
-     query = paste(query, " INNER JOIN ",tables[2], " ON ", tables[1], ".", Akey[1], " = ",tables[2], ".", Fkey[1], sep="")  #old query
+   #  query = paste(query, " INNER JOIN ",tables[2], " ON ", tables[1], ".", Akey[1], " = ",tables[2], ".", Fkey[1], sep="")  #old query
     
-   # query = paste(query, " INNER JOIN (",paste("",tables[-1],sep="",collapse=","), ") ON (",paste(paste(tables[-1],Akey[1],sep="."), paste(tables[1], Akey[1], sep="."),sep=" = ", collapse=" AND "))
-     #query = paste(query, ")", sep="")
+    query = paste(query, " INNER JOIN (",paste("",tables[-1],sep="",collapse=","), ") ON (",paste(paste(tables[-1],Akey[1],sep="."), paste(tables[1], Akey[1], sep="."),sep=" = ", collapse=" AND "))
+     query = paste(query, ")", sep="")
   }
   
   query = paste(query, " WHERE ", paste(Ftable, Ffield[1], sep =".")," IN (",
     paste("'", values, "'", collapse=", ", sep=""), ")", sep="")
 
-  #The last part of the query is to avoid returning duplicate results that are the same but where one of the returned values is NULL due to multiple entries in the database
-  #By commenting this you can see it's effect
-  
-  #for(j in 1:length(Afield)){
-  # query = paste(query," AND ",paste(Atable[j], Afield[j], sep="."),"!='NULL'")
-  #}
-  
   return(query)
 }
   
@@ -1985,7 +1970,7 @@ testService <- function(mart){
 
 #query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'gene_stable_id'/></Dataset><Dataset name = 'mmusculus_gene_ensembl'><ValueFilter name = 'affy_mg_u74av2' value = '95919_at'/></Dataset><Links source = 'mmusculus_gene_ensembl' target = 'hsapiens_gene_ensembl' defaultLink = 'hsapiens_internal_gene_id'/></Query>"
 
-#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'gene_stable_id' /><Attribute name = 'affy_hg_u95c' /></Dataset><Dataset name = 'mmusculus_gene_ensembl'><ValueFilter name = 'affy_mg_u74av2' value = '95919_at'/></Dataset><Links source = 'mmusculus_gene_ensembl' target = 'hsapiens_gene_ensembl' defaultLink = 'hsapiens_internal_gene_id' /></Query>"
+query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'ensembl_gene_id' /><Attribute name = 'affy_hg_u133_plus_2' /></Dataset><Dataset name = 'mmusculus_gene_ensembl'><ValueFilter name = 'chromosome_name' value = '1'/></Dataset><Links source = 'mmusculus_gene_ensembl' target = 'hsapiens_gene_ensembl' defaultLink = 'hsapiens_internal_gene_id' /></Query>"
   
 result = postForm(paste(mart@host,"?",sep=""),"query"=query)
 result = strsplit(result,"\n")[[1]]
