@@ -1810,6 +1810,7 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
       }
       
       if(postRes != ""){
+        if(postRes != "\n"){
         ## convert the serialized table into a dataframe
         con = textConnection(postRes)
         result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
@@ -1818,12 +1819,16 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
           stop(paste("\n",result,"The following query was attempted, use this to report this error\n",xmlQuery ,sep="\n"))
         }
         ## check and postprocess
-        if(all(is.na(result[,ncol(result)])))
-          result = result[,-ncol(result),drop=FALSE]
+        #if(all(is.na(result[,ncol(result)])))
+        #  result = result[,-ncol(result),drop=FALSE]
         stopifnot(ncol(result)==length(attributes))
         if(class(result) == "data.frame"){
           colnames(result) = attributes
         }
+       }
+       else{
+        result = NA
+       } 
       } else {
         
         ##
