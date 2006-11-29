@@ -145,6 +145,12 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
           marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
           marts$host[index] = xmlGetAttr(registry[[i]],"host")
           marts$path[index] = xmlGetAttr(registry[[i]],"path")
+          if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
+           marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
+          }
+          else{
+           marts$vschema[index] = vschema
+          }
           index=index+1
         }
       }
@@ -1068,7 +1074,6 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
   else{
     if(to.mart@mysql)stop("The mart objects should either use both mysql or not. Here your from.mart does not use mysql but you to.mart does.")
     
-     # to.attributes=c("ensembl_gene_id","ensembl_transcript_id")
     to.attributes=NULL
     from.attributes = NULL
     filter = NULL
@@ -1084,22 +1089,22 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
       filter = from.array
     }
     else{
-#      from.attributes="ensembl_gene_id"
       from.attributes = c(from.attributes,mapFilter(from.type))
       filter = mapFilter(from.type)
     }
     
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",from.mart@dataset,"'>",sep="")
+    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",from.mart@dataset,"'>",sep="")
     attributeXML = "" # paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
     valuesString = paste(id,"",collapse=",",sep="")
     filterXML = paste("<Filter name = '",filter,"' value = '",valuesString,"' />", sep="")
     xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
    
     species = strsplit(to.mart@dataset,"_")[[1]][1]
-    xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/><Dataset name = '",to.mart@dataset,"' >", sep="")
+  #  xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/><Dataset name = '",to.mart@dataset,"' >", sep="")
+     xmlQuery = paste(xmlQuery, "<Dataset name = '",to.mart@dataset,"' >", sep="")
     to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
     xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="") 
- #   print(xmlQuery)
+    print(xmlQuery)
     postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
     
     if(postRes != ""){
@@ -1765,7 +1770,7 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
   else{
     ## use the http/XML interface
     if(output=="data.frame"){
-      xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = '",mart@dataset,"'>",sep="")
+      xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",mart@dataset,"'>",sep="")
       attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
       if(length(filters) > 1){
         if(class(values)!= "list")
