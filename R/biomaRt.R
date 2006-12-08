@@ -212,8 +212,8 @@ mapFilter <- function(type){
 mapSymbol = function(dataset){
  symbol = switch(dataset, 
                       hsapiens_gene_ensembl = "hgnc_symbol",
-                      mmusculus_gene_ensembl = "mgi_symbol",
-                      rnorvegicus_gene_ensembl = "mgi_symbol",
+                      mmusculus_gene_ensembl = "external_gene_id",
+                      rnorvegicus_gene_ensembl = "external_gene_id",
                       scerevisiae_gene_ensembl = "sgd",
                       celegans_gene_ensembl = "external_gene_id",
                       cintestinalis_gene_ensembl = "external_gene_id",
@@ -1094,7 +1094,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
     }
     
     xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",from.mart@dataset,"'>",sep="")
-    attributeXML = "" # paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
+    attributeXML = paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
     valuesString = paste(id,"",collapse=",",sep="")
     filterXML = paste("<Filter name = '",filter,"' value = '",valuesString,"' />", sep="")
     xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
@@ -1104,7 +1104,6 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
      xmlQuery = paste(xmlQuery, "<Dataset name = '",to.mart@dataset,"' >", sep="")
     to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
     xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="") 
-    print(xmlQuery)
     postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
     
     if(postRes != ""){
@@ -1874,18 +1873,6 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
       return(out)
     }
   }
-}
-
-#########################################################
-#cleanBM: Function to clear getBM output for duplicates #
-#########################################################
-
-cleanBM=function(bmresult, query_id_col=1, result_id_col=2 ){
- sel = bmresult[,result_id_col] != ""
- bmresult = bmresult[sel,]
- dupli=duplicated(bmresult[,c(query_id_col,result_id_col)])
- bmresult=bmresult[!dupli,]
- return(bmresult)
 }
 
 
