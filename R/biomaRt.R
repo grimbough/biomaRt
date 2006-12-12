@@ -118,7 +118,7 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
     if(missing(host)){
       host = "http://www.biomart.org/biomart/martservice"
     }
-    registry = getURL(paste(host,"?type=registry", sep=""))
+    registry = getURL(paste(host,"?type=registry&requestid=biomaRt", sep=""))
     registry = xmlTreeParse(registry)
     registry = registry$doc$children[[1]]
     
@@ -1448,7 +1448,7 @@ listDatasets <- function( mart ){
   }
   else{
     
-    datasetsTemp = scan(paste(mart@host,"?type=datasets&mart=",mart@biomart,sep=""),
+    datasetsTemp = scan(paste(mart@host,"?type=datasets&requestid=biomaRt&mart=",mart@biomart,sep=""),
       sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
     dataset = NULL
     version = NULL
@@ -1642,7 +1642,7 @@ useDataset <- function(dataset, mart){
   }
   else{
 
-    config = getURL(paste(mart@host,"?type=configuration&dataset=",dataset,"&virtualschema=",mart@vschema, sep=""))
+    config = getURL(paste(mart@host,"?type=configuration&requestid=biomaRt&dataset=",dataset,"&virtualschema=",mart@vschema, sep=""))
     config = xmlTreeParse(config)
     config = config$doc$children[[1]]
 
