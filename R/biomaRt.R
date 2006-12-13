@@ -1726,11 +1726,13 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
   if(any(invalid))
     stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
                "\nPlease use the function 'listAttributes' to get valid attribute names"))
-  invalid = !(filters %in% ls(mart@filters))
-  if(any(invalid))
+  if(filters[1] != ""){
+   invalid = !(filters %in% ls(mart@filters))
+   if(any(invalid))
     stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
                "\nPlease use the function 'listFilters' to get valid filter names"))
-
+  }
+  
   ## use the mySQL interface
   if(mart@mysql){
     if(output == "data.frame"){
@@ -1788,7 +1790,7 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
         }
       }
       else{
-       
+       if(filters != ""){       
         filtmp = strsplit(get(filters,env=mart@filters)$field, "_")
         if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
          filterXML = paste("<BooleanFilter name = '",filters,"' />", collapse="",sep="")
@@ -1797,7 +1799,10 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
          valuesString = paste(values,"",collapse=",",sep="")
          filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
         }
-
+       }
+       else{
+         filterXML=""
+       }
       }
       xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
       
