@@ -2,7 +2,7 @@
 \alias{getBM}
 \title{Retrieves information from the BioMart database}
 \description{This function retrieves information from the BioMart database}
-\usage{getBM(attributes, filters, values, mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA)}
+\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, verbose = FALSE)}
 
 \arguments{
   \item{attributes}{Attributes you want to retrieve.  A possible list of attributes can be retrieved using the function listAttributes.}
@@ -13,9 +13,10 @@
   \item{output}{Determines the output of getBM which can be either a data.frame (default) or a list.}
   \item{list.names}{In case a list was selected as output the different elements in the list can be given user defined names with this argument}
   \item{na.value}{In case a list was selected as output, the value of na.value will used when missing elements are present in the output}
+ \item{verbose}{When using biomaRt in webservice mode and setting verbose to TRUE, the XML query to the webservice will be printed.  Alternatively in MySQL mode the MySQL query will be printed.}
 }
 
-\author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){

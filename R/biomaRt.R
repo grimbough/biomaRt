@@ -1709,7 +1709,7 @@ listFilters <- function( mart ){
 ## getBM
 ##------------------------------------------------------------
 
-getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA){
+getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, verbose=FALSE){
 
   if(missing( mart ) || class( mart )!='Mart')
     stop("Argument 'mart' must be specified and be of class 'Mart'.")
@@ -1737,6 +1737,7 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
   if(mart@mysql){
     if(output == "data.frame"){
       query <- queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
+      if(verbose) print(query)
       res <- dbGetQuery(mart@connections$biomart,query)
       if(dim(res)[1] == 0){
         res <- data.frame()
@@ -1805,7 +1806,10 @@ getBM <- function(attributes, filters, values, mart, curl = NULL, output = "data
        }
       }
       xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
-      
+      if(verbose){
+       print(xmlQuery)
+      }      
+
       if(is.null(curl)){
         postRes = postForm(paste(mart@host,"?",sep=""),"query" = xmlQuery)
       }

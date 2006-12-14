@@ -9,7 +9,7 @@
 \item{mart}{Mart object created with the function useMart}
 }
 
-\author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){

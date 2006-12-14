@@ -14,7 +14,7 @@
   \item{to.mart}{Mart object using dataset from species you want to find the homologs off.} 
 }
 
-\author{Sean Davis, Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck, Sean Davis} 
 
 \examples{
 if(interactive()){
