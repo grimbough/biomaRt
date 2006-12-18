@@ -478,7 +478,6 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
   else{
     
     filter=NULL
-    attribute=NULL
     values = NULL
     
     startpos = "start"
@@ -492,7 +491,7 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     if(!missing(symbol)){
      
       filter = mapSymbol(mart@dataset)                      
-      attribute = c(filter,attribute)
+      attributes = c(filter,attribute)
       values = symbol
     }
     
@@ -506,25 +505,38 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
       stop("getFeature currently can only query for go descriptions using mysql access.  create a mart object using useMart('ensembl',mysql=TRUE)")
     }
     if(!missing(GOID)){
-      filter="go"
-      attribute = c("go",attribute)
-      values = GOID
+       filter = c("go", paste("with_", attribute, sep=""))
+       attributes = c("go",attribute)
+       values = list(GOID,"")
     }
     
     if(!missing(chromosome)){
       if(missing(start) && missing(end)){
-        filter = "chromosome_name"
-        attribute = c(transid,chrname,attribute)
-        values = chromosome
+        if(attribute == "ensembl_gene_id" || attribute == "ensembl_transcript_id"){
+         filter = "chromosome_name"
+         values = chromosome
+        }
+        else{
+         filter = c("chromosome_name", paste("with_", attribute, sep=""))
+         values = list(chromosome,"")
+        }
+        attributes = c(chrname,attribute)
       }
       else{
-        filter=c(chrname,startpos,endpos)
-        attribute = c(transid,chrname,"start_position","end_position",attribute)
-        values = list(chromosome, start, end)
+        if(attribute == "ensembl_gene_id" || attribute == "ensembl_transcript_id"){
+         filter=c(chrname,startpos,endpos)
+         values = list(chromosome, start, end)
+        }
+        else{
+         filter=c(chrname,startpos,endpos,paste("with_", attribute, sep=""))
+         values = list(chromosome, start, end,"")
+        }
+        attributes = c(chrname,"start_position","end_position",attribute)  
       }
     }
-    table = getBM(attributes = attribute, filters = filter, values = values, mart=mart)  
-    return(table)
+    table = getBM(attributes = attributes, filters = filter, values = values, mart=mart)
+    output=(unique(table))
+    return(output)
   }
 }
 
@@ -1098,10 +1110,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
     valuesString = paste(id,"",collapse=",",sep="")
     filterXML = paste("<Filter name = '",filter,"' value = '",valuesString,"' />", sep="")
     xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
-   
-    species = strsplit(to.mart@dataset,"_")[[1]][1]
-  #  xmlQuery = paste(xmlQuery, "<Links source = '",from.mart@dataset,"' target = '",to.mart@dataset,"' defaultLink = '",species,"_internal_gene_id'/><Dataset name = '",to.mart@dataset,"' >", sep="")
-     xmlQuery = paste(xmlQuery, "<Dataset name = '",to.mart@dataset,"' >", sep="")
+    xmlQuery = paste(xmlQuery, "<Dataset name = '",to.mart@dataset,"' >", sep="")
     to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
     xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="") 
     postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
@@ -1452,17 +1461,19 @@ listDatasets <- function( mart ){
       sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
     dataset = NULL
     version = NULL
+    description = NULL 
     index = 0
     for(i in 1:(length(datasetsTemp)-3)){
       if(datasetsTemp[i] == "TableSet"){
         if(datasetsTemp[i+3] == "1"){
           index=index+1;
           dataset[index]=datasetsTemp[i+1]
+          description[index]=datasetsTemp[i+2]  
           version[index]=datasetsTemp[i+4]
         }
       }
     }
-    datasets=data.frame(dataset=dataset, version=version)
+    datasets=data.frame(dataset=dataset,description = description ,version=version)
     return(datasets)
   }
 }
@@ -1715,9 +1726,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
     stop("Argument 'mart' must be specified and be of class 'Mart'.")
   if(missing( attributes ))
     stop("Argument 'attributes' must be specified.")
-  if(missing( filters )) 
-    stop("Argument 'filters' must be specified.")
-  if(missing( values ))
+  if(filters != "" && missing( values ))
     stop("Argument 'values' must be specified.")
   if(output != "data.frame" && output != "list")
     stop("Only data.frame and list are valid output formats for this function")
