@@ -62,11 +62,15 @@ A first step when using biomaRt, is to check which BioMart web services are avai
 
 <<echo=FALSE>>=
 library(annotate)
+options(width=120)
 @
+
+\begin{small}
 <<>>=
 library(biomaRt)
 listMarts()
 @
+\end{small}
 
 If the function useMart runs into proxy problems you should set your proxy first before calling any biomaRt functions.  
 You can do this using the Sys.putenv command:
@@ -83,9 +87,11 @@ ensembl=useMart("ensembl")
 
 BioMart databases can contain several datasets.  In a next step we look at which datasets are available in the selected BioMart by using the function \textit{listDatasets}.
 
+\begin{small}
 <<>>=
 listDatasets(ensembl)
 @
+\end{small}
 
 To select a dataset we can update the Mart object using the function \textit{useDataset}.
 \begin{verbatim}
@@ -106,40 +112,46 @@ In this section we describe a set of simple functions which are frequently used 
 \subsection{getGene}
 
 The function \textit{getGene} uses a vector of query ids to look up the name, description and chromosomal information of the corresponding gene.  When using \textit{getGene} with affymetrix identifiers, we have to specify the chipname by using the \textit{array} argument.  When using any other type of identifier the type should be specified with the \textit{type} argument (this can have values like: entrezgene, refseq, unigene,...).  The \textit{mart} argument should be used to specify which \textit{Mart} object (which we generated above) to use.
-
+\begin{small}
 <<>>=
 affyids=c("202763_at","209310_s_at","207500_at")
 getGene(id=affyids, array="affy_hg_u133_plus_2",mart=ensembl)
 @
-
+\end{small}
 To know which values to use to specify the affy array you can use the function \textit{getAffyArrays}.
 
-
+\begin{small}
 <<>>=
 getAffyArrays(ensembl)
 @
+\end{small}
 Next we use \textit{getGene} with a list of entrezgene identifiers.
-
+\begin{small}
 <<>>=
 entrez=c("673","7157","837")
 getGene(id=entrez, type="entrezgene",mart=ensembl)
 @
-
+\end{small}
 \subsection{getGO}
 
 The function \textit{getGO} enables one to retrieve GO identifiers, descriptions and evidence codes starting from a variety of identifiers.
 Identical to the \textit{getGene} function, \textit{getGO} takes the \textit{array}, \textit{type} and \textit{mart} arguments.
 
+\begin{scriptsize}
 <<>>=
 go = getGO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
 go
 @
+\end{scriptsize}
 
 \subsection{getINTERPRO}
 INTERPRO is an integrated resource for protein families, domains and functional sites.  It integrates secondary structure databases such as PROSITE, PRINTS, SMART, Pfam, ProDom, etc. Identical to the \textit{getGene} function, \textit{getINTERPRO} takes the \textit{array}, \textit{type} and \textit{mart} arguments.
+
+\begin{small}
 <<>>=
 getINTERPRO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
 @
+\end{small}
 
 \section{getSequence}
 
@@ -255,11 +267,12 @@ Select all Affymetrix identifiers on the hgu133plus2 chip for genes located on c
 
 Select all entrezgene ids which have a "MAP kinase activity" GO term associated with it.
 
-
+\begin{small}
 <<>>=
 features=getFeature(type="entrezgene", GOID="GO:0004707", mart=ensembl)
 features
 @
+\end{small}
 
 \subsection{getSNP}
 To retrieve SNP data we first have to connect to the snp BioMart database of Ensembl.
@@ -307,10 +320,10 @@ In a first example we start from a affy identifier of a human chip and we want t
                         "affy_hg_u95av2", from.mart = human, to.mart = mouse )
 
 > homolog
-                  V1                 V2           V3
-1 ENSMUSG00000059552 ENSMUST00000005371 1427739_a_at
-2 ENSMUSG00000059552 ENSMUST00000005371 1426538_a_at
- 
+       V1           V2
+1 1939_at 1427739_a_at
+2 1939_at 1426538_a_at
+
 \end{verbatim}
 \end{small}
 An other example starts from a human RefSeq id and we want to retrieve the corresponding affy ids on the affy mouse430\_2 chip.
@@ -322,10 +335,10 @@ An other example starts from a human RefSeq id and we want to retrieve the corre
                         to.mart = mouse )
 
 > homolog
-                  V1                 V2           V3
-1 ENSMUSG00000017146 ENSMUST00000017290   1424629_at
-2 ENSMUSG00000017146 ENSMUST00000017290   1451417_at
-3 ENSMUSG00000017146 ENSMUST00000017290 1424630_a_at
+        V1           V2
+1 NM_007294   1424629_at
+2 NM_007294   1451417_at
+3 NM_007294 1424630_a_at
 
 \end{verbatim}
 \end{small}
@@ -340,58 +353,65 @@ We will first demonstrate the use of filters and attributes with Ensembl and use
 \subsection{listFilters}
 The function \textit{listFilters} can be used to retrieve all available filters in a dataset.
 
+\begin{small}
 <<>>=
 filters =  listFilters(ensembl)
 filters[1:10,]
 @
+\end{small}
+
 \subsection{listAttributes}
 The \textit{listAttributes} function can be used to see which attributes are available in the selected dataset.
 
+\begin{small}
 <<>>=
 attrib = listAttributes(ensembl)
 attrib[1:10,]
 @
+\end{small}
+
 \subsection{getBM}
 Now that we know what filters and attributes are we can make a biomaRt query using the \textit{getBM} function. An easy query could be to retrieve  the HUGO symbols, chromosome name and band for a set of affy identifiers.
 
+\begin{small}
 <<>>=
 getBM(attributes = c("affy_hg_u95av2","hgnc_symbol","chromosome_name","band"),
             filters="affy_hg_u95av2",
              values=c("1939_at","1503_at","1454_at"), mart=ensembl)
 @
+\end{small}
 
 \subsection{Example queries getBM}
 
 Below we describe some more complicated examples.
 
-\subsubsection{Retrieving information on homologs}
-Within one Ensembl dataset there are attributes providing homology mappings to the other Ensembl species.
-In the next example, we start from the hsapiens dataset and a list of entrezgene ids.
-We can now query chromosomal positions of the corresponding genes in human, zebrafish, mouse and mosquito.
-\begin{small}
-\begin{verbatim}
->getBM(attributes=c("hgnc_symbol","chromosome_name","start_position",
-                    "mouse_chromosome","mouse_chrom_start",
-                    "zebrafish_chromosome","zebrafish_chrom_start",
-                    "aedes_chromosome","aedes_chrom_start"),
-                    filter="entrezgene",values = c("673","7157","837"),
-                    mart=ensembl)
-\end{verbatim}
-\end{small}
-\begin{scriptsize}
-\begin{verbatim}
-  hgnc_symbol chromosome_name start_position mouse_chromosome mouse_chrom_start 
-1        BRAF               7      140080754                6          39543731 
-2        TP53              17        7512464               11          69396600 
-3       CASP4              11      104318810                9           5308874 
-
-zebrafish_chromosome zebrafish_chrom_start	  aedes_chromosome aedes_chrom_start
-	      4               9473158	                 2L                    1974599
-        5              16155000	                 2R                   20538788
-       16              47717138	                                            NA
-
-\end{verbatim}
-\end{scriptsize}
+%\subsubsection{Retrieving information on homologs}
+%Within one Ensembl dataset there are attributes providing homology mappings to the other Ensembl species.
+%In the next example, we start from the hsapiens dataset and a list of entrezgene ids.
+%We can now query chromosomal positions of the corresponding genes in human, zebrafish, mouse and mosquito.
+%\begin{small}
+%\begin{verbatim}
+%>getBM(attributes=c("hgnc_symbol","chromosome_name","start_position",
+%                    "mouse_chromosome","mouse_chrom_start",
+%                    "zebrafish_chromosome","zebrafish_chrom_start",
+%                    "aedes_chromosome","aedes_chrom_start"),
+%                    filter="entrezgene",values = c("673","7157","837"),
+%                    mart=ensembl)
+%\end{verbatim}
+%\end{small}
+%\begin{scriptsize}
+%\begin{verbatim}
+%  hgnc_symbol chromosome_name start_position mouse_chromosome mouse_chrom_start 
+%1        BRAF               7      140080754                6          39543731 
+%2        TP53              17        7512464               11          69396600 
+%3       CASP4              11      104318810                9           5308874 
+%zebrafish_chromosome zebrafish_chrom_start	  aedes_chromosome aedes_chrom_start
+%	      4               9473158	                 2L                    1974599
+%        5              16155000	                 2R                   20538788
+%       16              47717138	                                            NA
+%
+%\end{verbatim}
+%\end{scriptsize}
 
 \subsubsection{Using more than one filter}
 The \textit{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
