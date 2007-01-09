@@ -1827,7 +1827,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
       }
       
       if(postRes != ""){
-        if(postRes != "\n"){
+        if(postRes != "\n" && postRes != "\n\n"){
         ## convert the serialized table into a dataframe
         con = textConnection(postRes)
         result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
@@ -1874,9 +1874,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
         names(tmp2) <- values
         for(k in seq(along = tmp2)){
        #   tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart, curl = curl)
-          tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart)
+          tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart, verbose = verbose)
        
-          if(!is.null(tst)){
+          if(class(tst) == "data.frame"){
             tmp <- unlist(unique(tst[!is.na(tst)]), use.names = FALSE)
             if(length(tmp) > 0)
               tmp2[[k]] <- tmp
