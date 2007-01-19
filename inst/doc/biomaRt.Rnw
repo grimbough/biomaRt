@@ -310,6 +310,7 @@ Checking attributes and filters ... ok
 \subsection{getHomolog}
 BioMart takes advantage of the many species present in Ensembl to do homology mappings.  By using two datasets (i.e. two species), we can apply the \textit{getHomolog} function to map identifiers from one species to the other.
 Similar as the \textit{getGene} function, we have to specify the identifier we start from using either the \textit{from.array} argument if the identifier comes from an affy array or else the \textit{from.type} argument if we use an other identifier.  The identifier we want to retrieve has to be specified by using the \textit{to.array} or \textit{to.type} arguments.\\
+A generalized version of the getHomolog function is the getLDS function (see Advanced Queries section). getLDS enables one to combine two datasets (=species in Ensembl) and query any field from one dataset based on the other.
 
 In a first example we start from a affy identifier of a human chip and we want to retrieve the identifiers of the corresponding homolog on a mouse chip. 
 \begin{small}
@@ -520,9 +521,62 @@ getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
 \end{verbatim}
 \end{scriptsize}
 
+\subsection{getLDS and linking BioMart datasets}
+
+The getLDS (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.
+The usage of getLDS is very similar to getBM.  The linked dataset is provided by a separate Mart object and one has to specify filters and attributes for the linked dataset.  Note that this function only works in web service mode.  Filters can either be applied to both datasets or to one of the datasets. When used with Ensembl, getLDS is a generalized version of the getHomolog function.
+Below is an example on how  to use getLDS.
+
+\begin{scriptsize}
+\begin{verbatim}
+human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
+       filters = "hgnc_symbol", values = "TP53",mart = human,
+      attributesL = c("chromosome_name","start_position"), martL = mouse)
+
+   V1 V2      V3 V4       V5
+1 TP53 17 7512464 11 69396600
+2 TP53 17 7512464 11 69396600
+\end{verbatim}
+\end{scriptsize}
+
 \section{Local BioMart databases}
+
 The biomaRt package can be used with a local install of a public BioMart database or a locally developed BioMart database.
-In order for biomaRt to recognize the database as a BioMart, make sure that the local database you create has a name conform with \begin{verbatim} database_mart_version \end{verbatim} where database is the name of the database and version is a version number.  No more underscores than the ones showed should be present in this name. A possible name is for example \begin{verbatim} ensemblLocal_mart_36 \end{verbatim}.
+In order for biomaRt to recognize the database as a BioMart, make sure that the local database you create has a name conform with \begin{verbatim} database_mart_version \end{verbatim} where database is the name of the database and version is a version number.  No more underscores than the ones showed should be present in this name. A possible name is for example \begin{verbatim} ensemblLocal\_mart\_42 \end{verbatim}.
+\subsection{Minimum requirements for local database installation}
+One needs to first download the sql code to generate the database.  For ensembl\_mart\_42 this was in the file ensembl\_mart\_42.sql.gz. 
+Then run this SQL code to generate the tables of your local database:
+
+\begin{verbatim}
+mysql -D ensembl_mart_42 -u username -p < ensembl_mart_42.sql
+\end{verbatim}
+
+Once the tables are created you need to fill the following tables with the downloaded data:
+\begin{scriptsize}
+\begin{verbatim}
+Essential tables:
+
+meta_conf__dataset__main.txt.table
+meta_conf__xml__dm.txt.table
+
+You can install them from your MySQL command line with:
+
+LOAD DATA INFILE 'meta_conf__dataset__main.txt.table' INTO TABLE meta_conf__dataset__main;
+LOAD DATA INFILE 'meta_conf__xml__dm.txt.table' INTO TABLE meta_conf__xml__dm;
+\end{verbatim}
+\end{scriptsize}
+
+Next you load all the tables that have the name of your species of interest with with the corresponding table data.
+Once the local database is installed you can use biomaRt on this database by:
+\begin{scriptsize}
+\begin{verbatim}
+mart=useMart("ensembl_mart_42", mysql=TRUE, host="localhost", user="****", password="****", local=TRUE, dataset="hsapiens_gene_ensembl")
+\end{verbatim}
+\end{scriptsize}
+
 For more information on how to install a public BioMart database see:  http://www.biomart.org/install.html and follow link databases.
+
 
 \end{document}
