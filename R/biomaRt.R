@@ -335,14 +335,14 @@ getGene <- function( id, type, array, mart){
      
       startpos = "start_position"
       endpos = "end_position"
-      chrname="chromosome_name"
-      geneid="ensembl_gene_id"
-      transid="ensembl_transcript_id"
+      chrname ="chromosome_name"
+      geneid ="ensembl_gene_id"
+      transid ="ensembl_transcript_id"
       strand = "strand"
       symbol = mapSymbol(mart@dataset)
 
     if(!missing(array)){
-      if(array=="affy_hg_u133a_2"){
+      if(array =="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
       }
       else{
@@ -482,9 +482,9 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     
     startpos = "start"
     endpos = "end"
-    chrname="chromosome_name"
-    geneid="ensembl_gene_id"
-    transid="ensembl_transcript_id"
+    chrname ="chromosome_name"
+    geneid = "ensembl_gene_id"
+    transid = "ensembl_transcript_id"
     strand = "strand"
     attribute = switch(type, hugo="hgnc_symbol",agilentcgh = "agilent_cgh",ensemblTrans="ensembl_transcript_id",agilentprobe="agilent_probe", entrezgene = "entrezgene", locuslink = "entrezgene", embl = "embl", refseq ="refseq_dna", unigene="unigene", affy = array, ensembl="ensembl_gene_id")
     
@@ -524,18 +524,18 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
       }
       else{
         if(attribute == "ensembl_gene_id" || attribute == "ensembl_transcript_id"){
-         filter=c(chrname,startpos,endpos)
+         filter = c(chrname,startpos,endpos)
          values = list(chromosome, start, end)
         }
         else{
-         filter=c(chrname,startpos,endpos,paste("with_", attribute, sep=""))
+         filter = c(chrname,startpos,endpos,paste("with_", attribute, sep=""))
          values = list(chromosome, start, end,"")
         }
         attributes = c(chrname,"start_position","end_position",attribute)  
       }
     }
     table = getBM(attributes = attributes, filters = filter, values = values, mart=mart)
-    output=(unique(table))
+    output = (unique(table))
     return(output)
   }
 }
@@ -572,7 +572,7 @@ getGO <- function( id, type, array, mart){
     }
     GOTable <- get("go",mart@filters)$table;
     IDTable = NULL
-    dbcolQID=NULL
+    dbcolQID = NULL
     if(!missing(array)){
       IDTable = get(array,mart@filters)$table
       dbcolQID <- get(array,mart@filters)$field;
@@ -617,12 +617,12 @@ getGO <- function( id, type, array, mart){
   }
 #--webservice----------------------
   else{
-      goid="go"
-      geneid="ensembl_gene_id"
-      transid="ensembl_transcript_id"
+      goid = "go"
+      geneid = "ensembl_gene_id"
+      transid = "ensembl_transcript_id"
    
     if(!missing(array)){
-      if(array=="affy_hg_u133a_2"){
+      if(array =="affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
       }
       else{
@@ -661,7 +661,7 @@ getOMIM <- function( id, type, array, mart){
   if("ensembl" != mart@biomart){
     stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
   }
-  if(mart@dataset==""){
+  if(mart@dataset == ""){
     stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
   }
   
@@ -727,12 +727,12 @@ getOMIM <- function( id, type, array, mart){
   
 #------webservice-------------------------------
   else{
-      omimid="omim"
-      geneid="ensembl_gene_id"
-      transid="ensembl_transcript_id"
+      omimid = "omim"
+      geneid = "ensembl_gene_id"
+      transid = "ensembl_transcript_id"
    
     if(!missing(array)){
-      if(array=="affy_hg_u133a_2"){
+      if(array == "affy_hg_u133a_2"){
         attrib = "affy_hg_u133a_v2"
       }
       else{
@@ -1893,6 +1893,135 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
   }
 }
 
+
+###########################
+#Multiple dataset linking #
+###########################
+
+
+getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE) {
+  
+  if( missing( mart )|| class( mart ) != 'Mart' || missing( martL )|| class( martL ) != 'Mart'){
+    stop("you must provide a Mart object, create with function useMart")
+  }
+  
+  if(mart@mysql || martL@mysql)stop("This function only works with biomaRt in webservice mode")
+  
+  invalid = !(attributes %in% ls(mart@attributes))
+  if(any(invalid))
+    stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
+               "\nPlease use the function 'listAttributes' to get valid attribute names"))
+
+  invalid = !(attributesL %in% ls(martL@attributes))
+  if(any(invalid))
+    stop(paste("Invalid attribute(s):", paste(attributesL[invalid], collapse=", "),
+               "\nPlease use the function 'listAttributes' to get valid attribute names"))
+ 
+  if(filters[1] != ""){
+   invalid = !(filters %in% ls(mart@filters))
+   if(any(invalid))
+    stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
+               "\nPlease use the function 'listFilters' to get valid filter names"))
+  }
+  if(filtersL[1] != ""){
+   invalid = !(filtersL %in% ls(martL@filters))
+   if(any(invalid))
+    stop(paste("Invalid filters(s):", paste(filtersL[invalid], collapse=", "),
+               "\nPlease use the function 'listFilters' to get valid filter names"))
+  }
+   
+    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",mart@dataset,"'>",sep="")
+    attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
+    if(length(filters) > 1){
+        if(class(values)!= "list")
+          stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
+        filterXML = NULL
+        for(i in 1:length(filters)){
+         
+          filtmp = strsplit(get(filters[i],env=mart@filters)$field, "_")
+          if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
+            filterXML = paste(filterXML,paste("<BooleanFilter name = '",filters[i],"' />", collapse="",sep=""),sep="")
+          }
+          else{
+            valuesString = paste(values[[i]],"",collapse=",",sep="")
+            filterXML = paste(filterXML,paste("<ValueFilter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+          }
+        }
+      }
+      else{
+       if(filters != ""){       
+        filtmp = strsplit(get(filters,env=mart@filters)$field, "_")
+        if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
+         filterXML = paste("<BooleanFilter name = '",filters,"' />", collapse="",sep="")
+        }
+        else{
+         valuesString = paste(values,"",collapse=",",sep="")
+         filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
+        }
+       }
+       else{
+         filterXML=""
+       }
+      }
+
+    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
+    xmlQuery = paste(xmlQuery, "<Dataset name = '",martL@dataset,"' >", sep="")
+    linkedAttributeXML =  paste("<Attribute name = '", attributesL, "'/>", collapse="", sep="")
+    
+    if(length(filtersL) > 1){
+        if(class(valuesL)!= "list")
+          stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
+        linkedFilterXML = NULL
+        for(i in 1:length(filtersL)){
+          filtmp = strsplit(get(filtersL[i],env=martL@filters)$field, "_")
+          if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
+            linkedFilterXML = paste(linkedFilterXML,paste("<BooleanFilter name = '",filtersL[i],"' />", collapse="",sep=""),sep="")
+          }
+          else{
+            valuesString = paste(valuesL[[i]],"",collapse=",",sep="")
+            linkedFilterXML = paste(linkedFilterXML,paste("<ValueFilter name = '",filtersL[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+          }
+        }
+      }
+      else{
+       if(filtersL != ""){       
+        filtmp = strsplit(get(filtersL,env=martL@filters)$field, "_")
+        if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
+         linkedFilterXML = paste("<BooleanFilter name = '",filtersL,"' />", collapse="",sep="")
+        }
+        else{
+         valuesString = paste(valuesL,"",collapse=",",sep="")
+         linkedFilterXML = paste("<ValueFilter name = '",filtersL,"' value = '",valuesString,"' />", collapse="",sep="")
+        }
+       }
+       else{
+         linkedFilterXML=""
+       }
+      }
+
+    xmlQuery = paste(xmlQuery, linkedAttributeXML, linkedFilterXML,"</Dataset></Query>",sep="")
+
+    if(verbose){
+      print(xmlQuery)
+    }
+    postRes = postForm(paste(mart@host,"?",sep=""),"query"=xmlQuery)
+    
+    if(postRes != ""){
+      con = textConnection(postRes)
+      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+      close(con)
+      if(all(is.na(result[,ncol(result)])))
+        result = result[,-ncol(result),drop=FALSE]
+     } else {
+      warning("getLDS returns NULL.")
+      result=NULL
+    }
+    return(result)
+} 
+
+########################
+#MySQL query generator #
+########################
 
 queryGenerator <- function(attributes, filter, values, mart){
 
