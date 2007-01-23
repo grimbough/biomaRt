@@ -204,7 +204,7 @@ mapFilter <- function(type){
     refseq = "refseq_dna",
     embl = "embl",
     unigene = "unigene",
-    agilentprobe = "agilentprobe"
+    agilentprobe = "agilent_probe"
     );
   return(mapf) 
 }
