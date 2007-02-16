@@ -43,7 +43,7 @@ setMethod("show","martTable",
 #######################
 
 
-listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql = FALSE, archive = FALSE){
+listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, mysql = FALSE, archive = FALSE){
   
   if(mysql){
     
@@ -51,53 +51,53 @@ listMarts <- function( mart, host, user, password, includeHosts = FALSE, mysql =
     require(RMySQL)
     
     if(missing(mart)){
-      mart <- c("ensembl","vega","snp","msd","uniprot","sequence","wormbase")
+      mart = c("ensembl","vega","snp","msd","uniprot","sequence","wormbase")
     }
     if(missing(host)){
-      host <- c("ensembldb.ensembl.org", "martdb.ebi.ac.uk")
-      user <- c("anonymous","anonymous")
-      password <- c("","")
+      host = c("martdb.ensembl.org", "martdb.ebi.ac.uk")
+      user = c("anonymous","anonymous")
+      password = c("","")
+      port = c(3316, 3306) 
     }
     
-    database <- NULL
-    driv <- dbDriver("MySQL", force.reload = FALSE);
+    database = NULL
+    driv = dbDriver("MySQL", force.reload = FALSE);
     
     for(i in 1:length(host)){
-      connection <- dbConnect(driv, user = user[i], host = host[i], password = password[i]);
+      connection = dbConnect(driv, user = user[i], host = host[i], password = password[i], port = port[i]);
   
-      res <- dbGetQuery(connection,"show databases like '%mart%'"); 
+      res = dbGetQuery(connection,"show databases like '%mart%'"); 
                                         #Search latest releases of marts
       if(dim(res)[1] >= 1){
         if(!archive){
          for(j in 1:length(mart)){ 
-          matches <- grep(mart[j],res[,1]);
+          matches = grep(mart[j],res[,1]);
           if(length(matches) > 1){
-            version <- 1;
-            latest <- 1;
+            version = 1;
+            latest = 1;
             for(j in 1:length(matches)){
-              v <- suppressWarnings(as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]));
+              v = suppressWarnings(as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]));
               if(!is.na(v)){
-                
                 if(v > version){
-                  latest <- j;
-                  version <- v;
+                  latest = j;
+                  version = v;
                 }
               }
             }
             if(!includeHosts){
-              database <- c(database,res[matches[latest],1])
+              database = c(database,res[matches[latest],1])
             }
             else{
-              database <- rbind(database,cbind(res[matches[latest],1],host[i]))
+              database = rbind(database,cbind(res[matches[latest],1],host[i]))
             }
           }
           else{
             if(sum(matches)> 0){
               if(!includeHosts){
-                database <- c(database,res[matches,1]);
+                database = c(database,res[matches,1]);
               }
               else{
-               database <- rbind(database,cbind(res[matches,1],host[i]));
+               database = rbind(database,cbind(res[matches,1],host[i]));
               }
             }
           }
@@ -175,7 +175,7 @@ martDisconnect <- function( mart ){
   if(missing(mart)){
     stop("no Mart object to disconnect");
   }
-  openConnections <- names(mart@connections);
+  openConnections = names(mart@connections);
   
   if(match("biomart",openConnections,nomatch = 0) != 0){
     dbDisconnect( mart@connections$biomart );
@@ -186,8 +186,8 @@ martDisconnect <- function( mart ){
 
 mapSpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
   
-  table <- NULL;
-  table <- paste(fromESpecies,"_gene_ensembl__homologs_",toESpecies,"__dm",sep="");
+  table = NULL;
+  table = paste(fromESpecies,"_gene_ensembl__homologs_",toESpecies,"__dm",sep="");
   return(table);
 }
 
@@ -1368,7 +1368,7 @@ getINTERPRO <- function( id, type, array, mart){
 #
 ######################################################################################
 
-useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql = FALSE, archive = FALSE){
+useMart <- function(biomart, dataset, host, user, password, port, local = FALSE, mysql = FALSE, archive = FALSE){
 
   if(mysql){
     
@@ -1381,14 +1381,14 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
       stop("'biomart' should be a single character string.")
 
     if(local){
-      if(!missing(host) && !missing(user) && !missing(password)){
-        database <- listMarts(mart = biomart, host = host, user = user, password = password, mysql=TRUE);
+      if(!missing(host) && !missing(user) && !missing(password) && !missing(port)){
+        database <- listMarts(mart = biomart, host = host, user = user, password = password, port = port, mysql=TRUE);
         mart@biomart = strsplit(biomart,"_")[[1]][1]
         mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = user, host = host, dbname = database, password = password)
        # writeLines(paste("connected to: ",database[1,1]))
       }
       else{
-        stop(sprintf("Please provide host, user and password for using local database '%s'.", biomart))
+        stop(sprintf("Please provide host, user, password and port for using local database '%s'.", biomart))
       }
     }
     else {
@@ -1418,7 +1418,7 @@ useMart <- function(biomart, dataset, host, user, password, local = FALSE, mysql
       }    
 
       if(!martdb %in% marts) stop("Requested BioMart database is not available please use the function listMarts(mysql=TRUE) to see the valid biomart names you can query using mysql access")
-      mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = martdb, password = "")
+      mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "martdb.ensembl.org" , dbname = martdb, password = "", port = 3316)
       writeLines(paste("connected to: ",biomart))
     }
     if(!missing(dataset)){
@@ -1628,26 +1628,26 @@ useDataset <- function(dataset, mart){
   if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function"))
   
   if(mart@mysql){
-    res <- dbGetQuery(mart@connections$biomart,paste("select xml from meta_conf__dataset__main inner join meta_conf__xml__dm on meta_conf__dataset__main.dataset_id_key = meta_conf__xml__dm.dataset_id_key where dataset = '",dataset,"'",sep=""))
+    res = dbGetQuery(mart@connections$biomart,paste("select xml from meta_conf__dataset__main inner join meta_conf__xml__dm on meta_conf__dataset__main.dataset_id_key = meta_conf__xml__dm.dataset_id_key where dataset = '",dataset,"'",sep=""))
     writeLines(paste("Reading database configuration of:",dataset))
     if(dim(res)[1] == 0) stop("This dataset is not accessible from biomaRt as not xml description of dataset is available")
 
-    xml <- xmlTreeParse(res[1,])
-    xml <- xml$doc$children[[1]]
+    xml = xmlTreeParse(res[1,])
+    xml = xml$doc$children[[1]]
    
     filtersEnv = new.env()
     attributesEnv = new.env()
 
     parseAttributes(xml, attributesEnv)
     parseFilters(xml, filtersEnv)
-    mainTables <- getMainTables(xml)
+    mainTables = getMainTables(xml)
 
     writeLines("Checking attributes and filters ...", sep=" ")
-    mart@attributes <- attributesEnv
-    mart@filters <- filtersEnv
+    mart@attributes = attributesEnv
+    mart@filters = filtersEnv
     writeLines("ok")
     mart@dataset = dataset
-    mart@mainTables <- mainTables
+    mart@mainTables = mainTables
     
     return(mart)
   }
@@ -1676,20 +1676,20 @@ useDataset <- function(dataset, mart){
 getMainTables <- function( xml ){
   
   writeLines("Checking main tables ...", sep=" ")
-  names <- names(xml)
+  names = names(xml)
   
-  tableM <- NULL
-  keyM <- NULL
-  i<-1
-  j<-1
+  tableM = NULL
+  keyM = NULL
+  i=1
+  j=1
   for(h in 1:(xmlSize(xml)-1)){
     if(names[h] == "MainTable"){
       tableM[i] = xmlValue(xml[[h]])
-      i <- i+1
+      i = i+1
     }
     if(names[h] == "Key"){
       keyM[j] = xmlValue(xml[[h]])
-      j <- j+1
+      j = j+1
     }
   }
   writeLines("ok")
@@ -1699,19 +1699,19 @@ getMainTables <- function( xml ){
 
 listAttributes <- function( mart ){
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
-  attribList=mget(ls(mart@attributes), env=mart@attributes)
-  mat <- do.call(cbind, attribList)
-  frame=data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
-  colnames(frame)=c("name","description")
+  attribList = mget(ls(mart@attributes), env=mart@attributes)
+  mat = do.call(cbind, attribList)
+  frame = data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
+  colnames(frame) = c("name","description")
   return(frame)
 }
 
 listFilters <- function( mart ){
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
-  filterList=mget(ls(mart@filters), env=mart@filters)
-  mat <- do.call(cbind, filterList)
-  frame=data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
-  colnames(frame)=c("name","description")
+  filterList = mget(ls(mart@filters), env=mart@filters)
+  mat = do.call(cbind, filterList)
+  frame = data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
+  colnames(frame) = c("name","description")
   return(frame)
 }
 
@@ -1745,11 +1745,11 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
   ## use the mySQL interface
   if(mart@mysql){
     if(output == "data.frame"){
-      query <- queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
+      query = queryGenerator(attributes=attributes, filter=filters, values=values, mart=mart)
       if(verbose) print(query)
-      res <- dbGetQuery(mart@connections$biomart,query)
+      res = dbGetQuery(mart@connections$biomart,query)
       if(dim(res)[1] == 0){
-        res <- data.frame()
+        res = data.frame()
       }
       else{
        colnames(res) = attributes
@@ -1757,30 +1757,30 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
       return(as.data.frame(res))
     }
     else{
-      out <- vector("list", length(attributes))
+      out = vector("list", length(attributes))
       if(is.null(list.names))
-        names(out) <- attributes
+        names(out) = attributes
       else
-        names(out) <- list.names
+        names(out) = list.names
       
       for(j in seq(along = attributes)){
-        tmp <- getBM(c(filters,attributes[j]), filters, values, mart)
-        tmp2 <- vector("list", length(values))
-        names(tmp2) <- values
+        tmp = getBM(c(filters,attributes[j]), filters, values, mart)
+        tmp2 = vector("list", length(values))
+        names(tmp2) = values
         for(i in seq(along=tmp2)){
-          tst <- tmp[tmp[,1] %in% values[i],2]
-          tst <- tst[!is.na(tst)]
+          tst = tmp[tmp[,1] %in% values[i],2]
+          tst = tst[!is.na(tst)]
           if(length(tst) == 0) tst <- na.value
-          tmp2[[i]] <- tst
+          tmp2[[i]] = tst
         }
-        out[[j]] <- tmp2
+        out[[j]] = tmp2
       }
      return(out)
     }
   }
   else{
     ## use the http/XML interface
-    if(output=="data.frame"){
+    if(output == "data.frame"){
       xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",mart@dataset,"'>",sep="")
       attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
       if(length(filters) > 1){
