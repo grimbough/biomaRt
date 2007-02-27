@@ -19,22 +19,11 @@ setClass("Mart",
                    )
          );
 
-setClass("martTable",
-         representation(id = "character",	
-                        table = "list"	
-                        ));	
 
-setMethod("show","martTable",
+setMethod("show","Mart",
   function(object){	
-    nrShow = 5	
-    res = paste("Object of class 'martTable' with", length(object@id), "IDs.")
-    if(length(object@id) > nrShow)
-      res = paste(res, "The first", nrShow, "rows are:")
-    cat(strwrap(res, exdent=5), sep="\n")
-    n  = min(nrShow, length(object@id))
-    df = do.call("data.frame", args=lapply(object@table, "[", 1:n));
-    df = cbind(object@id[1:n],df)    
-    show(df)
+    res = paste("Object of class 'Mart':\n Connected to BioMart:",object@biomart,"\n Using dataset:",object@dataset, sep="")
+    cat(res)
   })
 
 
@@ -454,17 +443,20 @@ getFeature <- function( symbol, OMIM, OMIMID, GO, GOID, array, chromosome, start
     
     if(dim(res)[1] != 0){
       if(!missing(symbol)){
-        table <- new("martTable", id = as.vector(as.character(res[,2])), table = list(symbol = as.vector(res[,1]), description = as.vector(res[,3])))
+        names(res) = c("id","symbol", "description");
+        table <- as.data.frame(res)
       }
       if(!missing(OMIM) || !missing(OMIMID)){
-        table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(OMIMID = as.vector(res[,2]), description = as.vector(res[,3])))
+        names(res) = c("id","OMIM ID", "description");
+        table <- as.data.frame(res)
       }
       if(!missing(GO) || !missing(GOID)){
-        table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(GOID = as.vector(res[,2]), description = as.vector(res[,3]), evidence = as.vector(res[,4])))
-        
+        names(res) = c("id","GO ID", "description", "evidence");
+        table <- as.data.frame(res)     
       } 
       if(!missing(chromosome)){
-        table <- new("martTable", id = as.vector(as.character(res[,1])), table = list(chromosome = as.vector(res[,2]), start = as.vector(res[,3]), end = as.vector(res[,4])))
+        names(res) = c("id","chromosome", "start", "end");
+        table <- as.data.frame(res)     
       }
     }
     else{
@@ -596,8 +588,7 @@ getGO <- function( id, type, array, mart){
       res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
       
       if(dim(res)[1] == 0){
-        table <- new("martTable", id = id, table = list(GOID = NA, description = NA, evidence = NA, martID = NA))
-        
+        table <- NULL
       }
       else{
         mt = match(res[,1], id)
@@ -706,7 +697,7 @@ getOMIM <- function( id, type, array, mart){
       res <- dbGetQuery(conn = mart@connections$biomart, statement = query);
       
       if(dim(res)[1] == 0){
-        table <- new("martTable", id = id, table = list(OMIMID = NA, disease = NA, martID = NA))
+        NULL
       } 
       else{
         mt = match(res[,1], id)
@@ -758,7 +749,7 @@ getOMIM <- function( id, type, array, mart){
 #####################
 
 
-getSequence <- function(chromosome, start, end, id, type, seqType, mart){
+getSequence <- function(chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE){
 
   if(missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function useMart")
@@ -832,30 +823,46 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
     return(table)
   }
   else{
-    if(missing(seqType)){
-      stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either cdna, peptide, 3utr or 5utr")
-    }
+    if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon","transcript_exon_intron","gene_exon_intron","coding","coding_transcript_flank","coding_gene_flank","transcript_flank","gene_flank")){
+    stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either gene_exon, transcript_exon,transcript_exon_intron, gene_exon_intron, cdna, coding,coding_transcript_flank,coding_gene_flank,transcript_flank,gene_flank,peptide, 3utr or 5utr")
+    }   
 
-    geneid="gene_stable_id"
     species = strsplit(mart@dataset,"_")[[1]][1]
     if(!missing(chromosome)){
-      if(seqType %in% c("cdna","peptide","3utr","5utr")){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = 'chromosome_name' value = '",chromosome,"'/><ValueFilter name = 'start' value = '",start,"'/><ValueFilter name = 'end' value = '",end,"'/></Dataset><Links source = '",species,"_gene_ensembl' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = '",geneid,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
-      }
-      else{
-        stop("The type of sequence specified with seqType is not available. Please select from: cdna, peptide, 3utr, 5utr")
+        if(missing(upstream) && missing(downstream)){
+         query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+        }
+       else{
+          if(!missing(upstream)){
+             query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+          }
+          if(!missing(downstream)){
+               query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+         }
       }
     }
     
     if(!missing(id)){
-      valuesString = paste(id,"",collapse=",",sep="")
-      if(seqType %in% c("cdna","peptide","3utr","5utr")){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><ValueFilter name = '",mapFilter(type),"' value = '",valuesString,"'/></Dataset><Links source = '",mart@dataset,"' target = '",species,"_gene_ensembl_structure' defaultLink = '",species,"_internal_transcript_id' /><Dataset name = '",species,"_gene_ensembl_structure'><Attribute name = '",geneid,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/></Dataset><Links source = '",species,"_gene_ensembl_structure' target = '",species,"_genomic_sequence' defaultLink = '",seqType,"' /><Dataset name = '",species,"_genomic_sequence'><Attribute name = '",seqType,"'/></Dataset></Query>", sep="")
+      if((type %in% c("affy","entrezgene","agilentprobe","refseq","embl","hugo","ensembl","ensemblTrans","flybase", "unigene"))){
+        type=mapFilter(type)
       }
-      else{
-        stop("The type of sequence specified with seqType is not available. Please select from: cdna, peptide, 3utr, 5utr")
-      }   
+      valuesString = paste(id,"",collapse=",",sep="")
+        if(missing(upstream) && missing(downstream)){
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+        }
+        else{
+          if(!missing(upstream)){
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+          }
+           if(!missing(downstream)){
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+          }
+        }
     }
+    if(verbose){ 
+      print(query)
+    }
+
     postRes = postForm(paste(mart@host,"?",sep=""),"query"=query)
     
     if(postRes != ""){
@@ -866,11 +873,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, mart){
       ## check and postprocess
       if(all(is.na(result[,ncol(result)])))
         result = result[,-ncol(result),drop=FALSE]
-      #stopifnot(ncol(result)==length(attributes))
-      #if(class(result) == "data.frame"){
-      #  colnames(result) = attributes
-      #}
-      
+       
     } else {
       warning("getBM returns NULL.")
       result=NULL
@@ -1138,100 +1141,100 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
 
 
 ###########################
-#Xref functions           #
+#Old Xref functions       #
 ###########################
 #
 #Should become getBM
 
-getPossibleXrefs <-  function( mart ) {
-  if ( missing( mart ) || class( mart ) != 'Mart') {
-    stop('You must supply a valid mart object.  You can use useMart to produce one')
-  }
-  if("ensembl" != mart@biomart){
-    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-  }
-  if(!mart@mysql)stop("This function only works via MySQL access to the BioMart.  Create a new Mart object using the function useMart('ensembl',mysql=TRUE)")
+#getPossibleXrefs <-  function( mart ) {
+#  if ( missing( mart ) || class( mart ) != 'Mart') {
+#    stop('You must supply a valid mart object.  You can use useMart to produce one')
+#  }
+#  if("ensembl" != mart@biomart){
+#    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+#  }
+#  if(!mart@mysql)stop("This function only works via MySQL access to the BioMart.  Create a new Mart object using the function useMart('ensembl',mysql=TRUE)")
   
-  res <- dbGetQuery( mart@connections$biomart, "show tables like '%_gene_ensembl__xref%'")
-  xref <- strsplit(res[,1],'_gene_ensembl__xref_')
-  xref <- lapply(xref,function(s) {
-    s[2] <- gsub('__dm','',s[2])
-    return(s)
-  })
-  xrefdf <- do.call('rbind',xref)
-  colnames(xrefdf) <- c('species','xref')
-  return(xrefdf)
-} 
+#  res <- dbGetQuery( mart@connections$biomart, "show tables like '%_gene_ensembl__xref%'")
+#  xref <- strsplit(res[,1],'_gene_ensembl__xref_')
+#  xref <- lapply(xref,function(s) {
+#    s[2] <- gsub('__dm','',s[2])
+#    return(s)
+#  })
+#  xrefdf <- do.call('rbind',xref)
+#  colnames(xrefdf) <- c('species','xref')
+#  return(xrefdf)
+#} 
 
-getXref <- function( id, from.species, to.species, from.xref, to.xref, mart) {
-  
-  if ( missing( mart ) || class( mart )!='Mart'){
-    stop('You must specify a valid Mart object which can be created using useMart.');
-  }
-  if("ensembl" != mart@biomart){
-    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-  }
-  if(!mart@mysql)stop("This function only works via MySQL access to the BioMart.  Create a new Mart object using the function useMart('ensembl',mysql=TRUE)")
-  if ( missing( id )) {
-    stop('You need to give ID(s) to map from');
-  }
-  if ( missing( from.species )) {
-    writeLines('fromspecies is a necessary argument\nValid species for this mart are:');
-    #print( getSpecies(mart = mart, db = "ensembl" ));
-    stop();
-  }
-  if ( missing( from.xref ) || missing( to.xref ) ) {
-    writeLines('Both fromxref and toxref are required.\nPossible crossreferences are:');
-    print(getPossibleXrefs(mart = mart));
-    stop();
-  }
-  
-  xp <- paste(id, collapse="','")
-  
-  if (missing( to.species )) {
-    query <- paste( 
-                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
-                   'a.gene_stable_id as ensemblgene ',
-                   'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
-                   'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
-                   "') and b.dbprimary_id != 'NULL'",sep="");
-  } else {
-    if ( from.species == to.species) {
-     query <- paste( 
-                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
-                   'a.gene_stable_id as ensemblgene ',
-                   'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
-                   'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
-                   "') and b.dbprimary_id != 'NULL'",sep="");
-   
-    }
-    else{
-      query <- paste(
-                     'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,c.* ',
-                     'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
-                     'left join ',from.species,'_gene_ensembl__homologs_',to.species,'__dm as c ',
-                     'on a.gene_id_key=c.gene_id_key ',
-                     'left join ',to.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-                     "on c.homol_id=b.gene_id_key where a.dbprimary_id in ('",xp,
-                     "') and b.dbprimary_id != 'NULL'",sep="");
-    }
-  }
-  
-  res <- dbGetQuery(con = mart@connections$biomart, query);
-  
-  if (dim(res)[1]>0){
-
-    table <- new("martTable", id = res[,1], table = list(from.id = res[,1], to.id = res[,2], martID = res[,3]));
-
-  }
-  
-  else{
-    table <- new("martTable", id = id, table = list(from.id = NA, to.id = NA, martID = NA));
-  }
-  return( table )
-}
+#getXref <- function( id, from.species, to.species, from.xref, to.xref, mart) {
+#  
+#  if ( missing( mart ) || class( mart )!='Mart'){
+#    stop('You must specify a valid Mart object which can be created using useMart.');
+#  }
+#  if("ensembl" != mart@biomart){
+#    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+#  }
+#  if(!mart@mysql)stop("This function only works via MySQL access to the BioMart.  Create a new Mart object using the function useMart('ensembl',mysql=TRUE)")
+#  if ( missing( id )) {
+#    stop('You need to give ID(s) to map from');
+#  }
+#  if ( missing( from.species )) {
+#    writeLines('fromspecies is a necessary argument\nValid species for this mart are:');
+#    #print( getSpecies(mart = mart, db = "ensembl" ));
+#    stop();
+#  }
+#  if ( missing( from.xref ) || missing( to.xref ) ) {
+#    writeLines('Both fromxref and toxref are required.\nPossible crossreferences are:');
+#    print(getPossibleXrefs(mart = mart));
+#    stop();
+#  }
+#  
+#  xp <- paste(id, collapse="','")
+#  
+#  if (missing( to.species )) {
+#    query <- paste( 
+#                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
+#                   'a.gene_stable_id as ensemblgene ',
+#                   'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
+#                   'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
+#                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
+#                   "') and b.dbprimary_id != 'NULL'",sep="");
+#  } else {
+#    if ( from.species == to.species) {
+#     query <- paste( 
+#                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
+#                   'a.gene_stable_id as ensemblgene ',
+#                   'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
+#                   'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
+#                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
+#                   "') and b.dbprimary_id != 'NULL'",sep="");
+#   
+#    }
+#    else{
+#      query <- paste(
+#                     'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,c.* ',
+#                     'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
+#                     'left join ',from.species,'_gene_ensembl__homologs_',to.species,'__dm as c ',
+#                     'on a.gene_id_key=c.gene_id_key ',
+#                     'left join ',to.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
+#                     "on c.homol_id=b.gene_id_key where a.dbprimary_id in ('",xp,
+#                     "') and b.dbprimary_id != 'NULL'",sep="");
+#    }
+#  }
+#  
+#  res <- dbGetQuery(con = mart@connections$biomart, query);
+#  
+#  if (dim(res)[1]>0){
+#
+#    table <- new("martTable", id = res[,1], table = list(from.id = res[,1], to.id = res[,2], martID = res[,3]));
+#
+#  }
+#  
+#  else{
+#    table <- new("martTable", id = id, table = list(from.id = NA, to.id = NA, martID = NA));
+#  }
+#  return( table )
+#}
 
 
 ####################
@@ -1245,9 +1248,9 @@ exportFASTA <- function( sequences, file ){
   if( missing(file)){
     stop("Please provide filename to write to");
   }
-  for(i in 1:length(sequences[,1])){
-    cat(paste(">",sequences[i,1],"_",sequences[i,2],"_",sequences[i,3],"\n",sep=""),file = file, append=TRUE);
-    cat(as.character(sequences[i,4]),file = file, append = TRUE);
+  for(i in 1:length(sequences[,3])){
+    cat(paste(">",sequences[i,3],"\n",sep=""),file = file, append=TRUE);
+    cat(as.character(sequences[i,1]),file = file, append = TRUE);
     cat("\n\n", file = file, append = TRUE);
   }  
 }
