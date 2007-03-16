@@ -155,7 +155,8 @@ getINTERPRO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
 
 \section{getSequence}
 
-Sequences can be retrieved using the \textit{getSequence} function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the \textit{chromosome} argument.  The \textit{start} and \textit{end} arguments are used to specify \textit{start} and \textit{end} positions on the chromosome. The \textit{seqType} argument enables one to specify which sequence type should be retrieved (cdna, 5utr, 3utr or protein).
+Sequences can be retrieved using the \textit{getSequence} function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the \textit{chromosome} argument.  The \textit{start} and \textit{end} arguments are used to specify \textit{start} and \textit{end} positions on the chromosome. The type of sequence returned can be specified by the seqType argument which takes the following values: 'cdna';'peptide' for protein sequences;'3utr' for 3' UTR sequences,'5utr' for 5' UTR sequences; 'gene\_exon' for exon sequences only; 'transcript\_exon' for transcript specific exonic sequences only;'transcript\_exon\_intron' gives the full unspliced transcript, that is exons + introns;'gene\_exon\_intron' gives the exons + introns of a gene;'coding' gives the coding sequence only;'coding\_transcript\_flank' gives the flanking region of the transcript including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute;'coding\_gene\_flank' gives the flanking region of the gene including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'transcript\_flank' gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'gene\_flank' gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute.
+In MySQL mode the getSequence function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
 
 First we retrieve the 5'UTR sequences of all genes on chromosome 3 between a given start and end position
 \begin{small}
@@ -215,7 +216,12 @@ Finally we retrieve the protein sequences in this region.
 \end{verbatim}
 \end{scriptsize}
 
-\subsection{getFeature}
+\section{exportFASTA}
+
+The data.frames obtained by the getSequence function can be exported to FASTA files using the exportFASTA function.
+One has to specify the data.frame to export and the filename using the file argument.
+
+\section{getFeature}
 The \textit{getFeature} function enables us to select a set of features based on chromosomal coordinates or GO identifiers.
 Select all Affymetrix identifiers on the hgu133plus2 chip for genes located on chromosome 16 between basepair 1100000 and 1250000.
 \textit{getFeature} takes the \textit{array} or \textit{type} arguments if one wants to retrieve affy identifiers or other identifiers respectively.
