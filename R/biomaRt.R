@@ -763,6 +763,16 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
   if(mart@mysql){
   
     martdb = "";
+    if(exists(upstream)){
+     stop("Use of the upstream argument only works when using biomaRt in webservice mode")
+    }
+    if(exists(downstream)){
+     stop("Use of the downstream argument only works when using biomaRt in webservice mode")
+    }
+    if(exists(seqType)){
+     stop("seqType only has to be specified when using biomaRt in webservice mode.  In MySQL mode biomaRt will retrieve genomic sequences only")
+    }
+
     if(mart@biomart != "sequence"){
       version = "0"
       marts = listMarts(mysql = TRUE)
@@ -833,29 +843,35 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
          query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
         }
        else{
-          if(!missing(upstream)){
+          if(!missing(upstream) && missing(downstream)){
              query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
           }
-          if(!missing(downstream)){
+          if(!missing(downstream) && missing(upstream)){
                query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+         }
+         if(!missing(downstream) && !missing(upstream)){
+               query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
          }
       }
     }
     
     if(!missing(id)){
       if((type %in% c("affy","entrezgene","agilentprobe","refseq","embl","hugo","ensembl","ensemblTrans","flybase", "unigene"))){
-        type=mapFilter(type)
+        type = mapFilter(type)
       }
       valuesString = paste(id,"",collapse=",",sep="")
         if(missing(upstream) && missing(downstream)){
         query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
         }
         else{
-          if(!missing(upstream)){
+          if(!missing(upstream) && missing(downstream)){
         query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
           }
-           if(!missing(downstream)){
+           if(!missing(downstream) && missing(upstream)){
         query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+          }
+          if(!missing(downstream) && !missing(upstream)){
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
           }
         }
     }
@@ -1139,104 +1155,6 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
   }
 } 
 
-
-###########################
-#Old Xref functions       #
-###########################
-#
-#Should become getBM
-
-#getPossibleXrefs <-  function( mart ) {
-#  if ( missing( mart ) || class( mart ) != 'Mart') {
-#    stop('You must supply a valid mart object.  You can use useMart to produce one')
-#  }
-#  if("ensembl" != mart@biomart){
-#    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-#  }
-#  if(!mart@mysql)stop("This function only works via MySQL access to the BioMart.  Create a new Mart object using the function useMart('ensembl',mysql=TRUE)")
-  
-#  res <- dbGetQuery( mart@connections$biomart, "show tables like '%_gene_ensembl__xref%'")
-#  xref <- strsplit(res[,1],'_gene_ensembl__xref_')
-#  xref <- lapply(xref,function(s) {
-#    s[2] <- gsub('__dm','',s[2])
-#    return(s)
-#  })
-#  xrefdf <- do.call('rbind',xref)
-#  colnames(xrefdf) <- c('species','xref')
-#  return(xrefdf)
-#} 
-
-#getXref <- function( id, from.species, to.species, from.xref, to.xref, mart) {
-#  
-#  if ( missing( mart ) || class( mart )!='Mart'){
-#    stop('You must specify a valid Mart object which can be created using useMart.');
-#  }
-#  if("ensembl" != mart@biomart){
-#    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-#  }
-#  if(!mart@mysql)stop("This function only works via MySQL access to the BioMart.  Create a new Mart object using the function useMart('ensembl',mysql=TRUE)")
-#  if ( missing( id )) {
-#    stop('You need to give ID(s) to map from');
-#  }
-#  if ( missing( from.species )) {
-#    writeLines('fromspecies is a necessary argument\nValid species for this mart are:');
-#    #print( getSpecies(mart = mart, db = "ensembl" ));
-#    stop();
-#  }
-#  if ( missing( from.xref ) || missing( to.xref ) ) {
-#    writeLines('Both fromxref and toxref are required.\nPossible crossreferences are:');
-#    print(getPossibleXrefs(mart = mart));
-#    stop();
-#  }
-#  
-#  xp <- paste(id, collapse="','")
-#  
-#  if (missing( to.species )) {
-#    query <- paste( 
-#                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
-#                   'a.gene_stable_id as ensemblgene ',
-#                   'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
-#                   'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-#                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
-#                   "') and b.dbprimary_id != 'NULL'",sep="");
-#  } else {
-#    if ( from.species == to.species) {
-#     query <- paste( 
-#                   'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,',
-#                   'a.gene_stable_id as ensemblgene ',
-#                   'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
-#                   'left join ',from.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-#                   "on a.gene_id_key=b.gene_id_key where a.dbprimary_id in ('",xp,
-#                   "') and b.dbprimary_id != 'NULL'",sep="");
-#   
-#    }
-#    else{
-#      query <- paste(
-#                     'SELECT distinct a.dbprimary_id as fromid,b.dbprimary_id as toid,c.* ',
-#                     'from ',from.species,'_gene_ensembl__xref_',from.xref,'__dm as a ',
-#                     'left join ',from.species,'_gene_ensembl__homologs_',to.species,'__dm as c ',
-#                     'on a.gene_id_key=c.gene_id_key ',
-#                     'left join ',to.species,'_gene_ensembl__xref_',to.xref,'__dm as b ',
-#                     "on c.homol_id=b.gene_id_key where a.dbprimary_id in ('",xp,
-#                     "') and b.dbprimary_id != 'NULL'",sep="");
-#    }
-#  }
-#  
-#  res <- dbGetQuery(con = mart@connections$biomart, query);
-#  
-#  if (dim(res)[1]>0){
-#
-#    table <- new("martTable", id = res[,1], table = list(from.id = res[,1], to.id = res[,2], martID = res[,3]));
-#
-#  }
-#  
-#  else{
-#    table <- new("martTable", id = id, table = list(from.id = NA, to.id = NA, martID = NA));
-#  }
-#  return( table )
-#}
-
-
 ####################
 #export FASTA      #
 ####################
@@ -1487,51 +1405,67 @@ listDatasets <- function( mart ){
 ##########################################
 
 
-parseAttributes <- function(xml, env){
+parseAttributes <- function(xml, env, group = "", page = ""){
   
    if(xmlName(xml) == "AttributePage"){
      if(!is.null(xmlGetAttr(xml,"hidden"))){
        if(xmlGetAttr(xml,"hidden") != "true"){
-         xmlSApply(xml,"parseAttributes",env)
+         page = xmlGetAttr(xml,"displayName")
+         xmlSApply(xml,"parseAttributes",env, page = page)
        }
      }
      else{
-       xmlSApply(xml,"parseAttributes",env)
+       if(!is.null(xmlGetAttr(xml,"hideDisplay"))){
+         if(xmlGetAttr(xml,"hideDisplay") != "true"){
+            page = xmlGetAttr(xml,"displayName")
+            xmlSApply(xml,"parseAttributes",env, page = page)
+         }
+       }
+       else{  
+         page = xmlGetAttr(xml,"displayName")
+         xmlSApply(xml,"parseAttributes",env, page = page)
+       }
      }
    }
    if(xmlName(xml) == "AttributeDescription"){
      if(!is.null(xmlGetAttr(xml,"hidden"))){
        if(xmlGetAttr(xml,"hidden") != "true"){
-         if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-           assign(xmlGetAttr(xml,"internalName"),list(description = xmlGetAttr(xml,"displayName"), table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field")),env = env)
-         }
+         description = xmlGetAttr(xml,"displayName")
+         if(is.null(description)){
+           description = ""
+         } 
+         assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
        }
      }
      else{
-       if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-         assign(xmlGetAttr(xml,"internalName"),list(description = xmlGetAttr(xml,"displayName"), table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field")),env = env)
+       description = xmlGetAttr(xml,"displayName")
+       if(is.null(description)){
+          description = ""
        }
+       assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
      }
    }
    if(xmlName(xml)=="AttributeCollection"){
      if(!is.null(xmlGetAttr(xml,"hidden"))){
        if(xmlGetAttr(xml,"hidden")!="true"){
-          xmlSApply(xml,"parseAttributes",env)
+          xmlSApply(xml,"parseAttributes",env, group = group, page = page)
        }
      }
      else{
-       xmlSApply(xml,"parseAttributes",env)
+       xmlSApply(xml,"parseAttributes",env, group = group, page = page)
      }
    }
    
    if(xmlName(xml)=="AttributeGroup"){
      if(!is.null(xmlGetAttr(xml,"hidden"))){
        if(xmlGetAttr(xml,"hidden")!="true"){
-         xmlSApply(xml,"parseAttributes",env)
+         group = xmlGetAttr(xml,"displayName") 
+         xmlSApply(xml,"parseAttributes",env, group = group, page = page)
        }
      }
      else{
-       xmlSApply(xml,"parseAttributes",env)
+       group = xmlGetAttr(xml,"displayName") 
+       xmlSApply(xml,"parseAttributes",env, group = group, page = page)
      }
    }
    if(xmlName(xml)=="DatasetConfig"){
@@ -1540,63 +1474,79 @@ parseAttributes <- function(xml, env){
    return()
 }
 
-parseFilters <- function(xml, env){
+parseFilters <- function(xml, env, group = "", page = ""){
   
   if(xmlName(xml) == "FilterPage"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden")!="true"){
         if(!is.null(xmlGetAttr(xml,"displayName"))){
           if(xmlGetAttr(xml,"displayName")=="FILTERS"){
-            xmlSApply(xml,"parseFilters",env)
+            page = xmlGetAttr(xml,"displayName")
+            xmlSApply(xml,"parseFilters",env, page = page)
           }
         }
       }
     }
     else{
-      if(!is.null(xmlGetAttr(xml,"displayName"))){
-        if(xmlGetAttr(xml,"displayName")=="FILTERS"){
-          xmlSApply(xml,"parseFilters",env)
-        }
+      if(!is.null(xmlGetAttr(xml,"hideDisplay"))){
+        if(xmlGetAttr(xml,"hideDisplay")!="true"){
+         if(!is.null(xmlGetAttr(xml,"displayName"))){
+           if(xmlGetAttr(xml,"displayName")=="FILTERS"){
+             page = xmlGetAttr(xml,"displayName")
+             xmlSApply(xml,"parseFilters",env, page = page)
+           }
+         }
+       }
+      }
+      else{ 
+       if(!is.null(xmlGetAttr(xml,"displayName"))){
+         if(xmlGetAttr(xml,"displayName")=="FILTERS"){
+           page = xmlGetAttr(xml,"displayName") 
+           xmlSApply(xml,"parseFilters",env, page = page)
+         }
+       }
       }
     }
   }
   if(xmlName(xml)=="FilterGroup"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden")!="true"){
-        xmlSApply(xml,"parseFilters",env)
+        group = xmlGetAttr(xml,"displayName") 
+        xmlSApply(xml,"parseFilters",env, group = group, page = page)
       }
     }
     else{
-      xmlSApply(xml,"parseFilters",env)
+      group = xmlGetAttr(xml,"displayName") 
+      xmlSApply(xml,"parseFilters",env, group = group, page = page)
     }
   }
   if(xmlName(xml)=="FilterCollection"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden")!="true"){
-        xmlSApply(xml,"parseFilters",env)
+        xmlSApply(xml,"parseFilters",env, group = group, page = page)
       }
     }
     else{
-      xmlSApply(xml,"parseFilters",env)
+      xmlSApply(xml,"parseFilters",env, group = group, page = page)
     }
   }
   if(xmlName(xml) == "FilterDescription"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden") != "true"){
         if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-          assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field")),env = env)
+          assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
         }
         else{
-          xmlSApply(xml,"parseFilters",env)
+          xmlSApply(xml,"parseFilters",env, group = group, page = page)
         }
       }
     }
     else{
       if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-        assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field")),env = env)
+        assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
       }
       else{
-        xmlSApply(xml,"parseFilters",env)
+        xmlSApply(xml,"parseFilters",env, group = group, page = page)
       }
     }
   }
@@ -1605,13 +1555,13 @@ parseFilters <- function(xml, env){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden") != "true"){
         if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-          assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field")),env = env)
+          assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
         }
       }
     }
     else{
       if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-        assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field")),env = env)
+        assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
       }
     }
   }
@@ -1700,22 +1650,76 @@ getMainTables <- function( xml ){
   return(list(tables=tableM,keys=keyM))
 }
 
-listAttributes <- function( mart ){
+listAttributes = function( mart , group, category, showGroups = FALSE){
+
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   attribList = mget(ls(mart@attributes), env=mart@attributes)
   mat = do.call(cbind, attribList)
-  frame = data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
-  colnames(frame) = c("name","description")
-  return(frame)
+  frame = data.frame(cbind(colnames(mat),mat[1,], mat[5,], mat[6,]), row.names=NULL) 
+  colnames(frame) = c("name","description","group","category")
+  if(!missing(category)){
+   frame = frame[frame[,4] == category,]
+  }
+  if(!missing(group)){
+   frame = frame[frame[,3] == group,]
+  }
+  ord = order(unlist(frame[,4]))
+  frameOut = frame[ord,]
+  if(!showGroups) frameOut = frameOut[,-c(3,4)]
+  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  return(frameOut)
+
 }
 
-listFilters <- function( mart ){
+attributeSummary = function( mart ){
+
+  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+  attribList = mget(ls(mart@attributes), env=mart@attributes)
+  mat = do.call(cbind, attribList)
+  frame = data.frame(cbind(mat[6,], mat[5,]), row.names=NULL)
+  frame = unique(frame)
+  colnames(frame) = c("Attribute Categories","Attribute Groups")
+  ord = order(unlist(frame[,1]))
+  frameOut = frame[ord,]
+  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  return(frameOut)
+
+}
+
+listFilters = function( mart , group, category, showGroups = FALSE){
+
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   filterList = mget(ls(mart@filters), env=mart@filters)
   mat = do.call(cbind, filterList)
-  frame = data.frame(cbind(colnames(mat),mat[1,]), row.names=NULL) 
-  colnames(frame) = c("name","description")
-  return(frame)
+  frame = data.frame(cbind(colnames(mat),mat[1,], mat[5,], mat[6,]), row.names=NULL) 
+  colnames(frame) = c("name","description", "group","category")
+   if(!missing(category)){
+   frame = frame[frame[,4] == category,]
+  }
+  if(!missing(group)){
+   frame = frame[frame[,3] == group,]
+  }
+  ord = order(unlist(frame[,4]))
+  frameOut = frame[ord,]
+  if(!showGroups) frameOut = frameOut[,-c(3,4)]
+  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  return(frameOut)
+
+}
+
+filterSummary = function( mart ){
+
+ if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+  filterList = mget(ls(mart@filters), env=mart@filters)
+  mat = do.call(cbind, filterList)
+  frame = data.frame(cbind(mat[6,], mat[5,]), row.names=NULL)
+  frame = unique(frame)
+  colnames(frame) = c("Filter Categories","Filter Groups")
+  ord = order(unlist(frame[,1]))
+  frameOut = frame[ord,]
+  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  return(frameOut)
+
 }
 
 
