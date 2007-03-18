@@ -1666,7 +1666,7 @@ listAttributes = function( mart , group, category, showGroups = FALSE){
   ord = order(unlist(frame[,4]))
   frameOut = frame[ord,]
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
-  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(1:length(frameOut[,1]))
   return(frameOut)
 
 }
@@ -1681,7 +1681,7 @@ attributeSummary = function( mart ){
   colnames(frame) = c("Attribute Categories","Attribute Groups")
   ord = order(unlist(frame[,1]))
   frameOut = frame[ord,]
-  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(1:length(frameOut[,1]))
   return(frameOut)
 
 }
@@ -1702,7 +1702,7 @@ listFilters = function( mart , group, category, showGroups = FALSE){
   ord = order(unlist(frame[,4]))
   frameOut = frame[ord,]
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
-  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(1:length(frameOut[,1]))
   return(frameOut)
 
 }
@@ -1717,7 +1717,7 @@ filterSummary = function( mart ){
   colnames(frame) = c("Filter Categories","Filter Groups")
   ord = order(unlist(frame[,1]))
   frameOut = frame[ord,]
-  rownames(frameOut) = rep(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(1:length(frameOut[,1]))
   return(frameOut)
 
 }
