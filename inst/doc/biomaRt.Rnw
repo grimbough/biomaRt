@@ -35,7 +35,7 @@
 \section{Introduction}
 The BioConductor \Rpackage{biomaRt} package provides and API in R to query BioMart databases such as Ensembl (http://www.ensembl.org), a software system which produces and maintains automatic annotation on metazoan genomes.  Two sets of functions are currently implemented.\\  
 A first set of functions is tailored towards Ensembl and are a set of commonly used queries in microarray data analysis.
-A second set of functions aims to mimic functionality of other BioMart APIs such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart APIs provide. With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy ids, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM annotation, etc.  On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.\\
+A second set of functions aims to mimic functionality of other BioMart APIs such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart APIs provide. With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy ids, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM, protein domains etc.  On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.\\
 
 \section{objects}
 
@@ -104,7 +104,6 @@ Alternatively if the dataset one wants to use is known in advance this can be sp
 ensembl = useMart("ensembl",dataset="hsapiens_gene_ensembl")
 @
 
-
 \section{Simple biomaRt functions for frequently used queries to Ensembl}
 Now that we selected a BioMart database and dataset, we can make biomaRt queries.
 In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases are described in a later section: "Advanced data retrieval with BioMart".
@@ -143,15 +142,6 @@ go = getGO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
 go
 @
 \end{scriptsize}
-
-\subsection{getINTERPRO}
-INTERPRO is an integrated resource for protein families, domains and functional sites.  It integrates secondary structure databases such as PROSITE, PRINTS, SMART, Pfam, ProDom, etc. Identical to the \textit{getGene} function, \textit{getINTERPRO} takes the \textit{array}, \textit{type} and \textit{mart} arguments.
-
-\begin{small}
-<<>>=
-getINTERPRO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
-@
-\end{small}
 
 \section{getSequence}
 
@@ -357,7 +347,7 @@ A filter defines a restriction on the query.  For example you want to restrict t
 Attributes define the values we are interested in to retrieve.  For example we want to retrieve the gene symbols or chromosomal coordinates.\\
 We will first demonstrate the use of filters and attributes with Ensembl and use it with other BioMarts.
 
-\subsection{listFilters}
+\subsection{listFilters and filterSummary}
 The function \textit{listFilters} can be used to retrieve all available filters in a dataset.
 
 \begin{small}
@@ -367,7 +357,29 @@ filters[1:10,]
 @
 \end{small}
 
-\subsection{listAttributes}
+In BioMart databases, filters can be grouped.
+Ensembl for example contains the filter groups GENE:, REGION:, ...
+An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the filterSummary function.
+
+\begin{small}
+<<>>=
+summaryF = filterSummary(ensembl)
+summaryF[1:10,]
+@
+\end{small}
+
+To show us a smaller list of filters which belog to a specified group or category we can now specify this in the listFilters function as follows:
+
+\begin{small}
+<<>>=
+listFilters(ensembl, group = "REGION:")
+@
+\end{small}
+
+We now get a short list of filters related to the region where the genes are located.
+
+
+\subsection{listAttributes and attributeSummary}
 The \textit{listAttributes} function can be used to see which attributes are available in the selected dataset.
 
 \begin{small}
@@ -376,6 +388,29 @@ attrib = listAttributes(ensembl)
 attrib[1:10,]
 @
 \end{small}
+
+For large BioMart databases such as Ensembl, the number of attributes displayed by the listAttributes function can be very large. 
+In BioMart databases, attributes are put together in categories, such as Sequences, Features, Homologs for Ensembl, and within these categories, attributes can be grouped.
+The Features category of Ensembl for example contains the attribute groups GENE:, REGION:, ...
+An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the attributeSummary function.
+
+\begin{small}
+<<>>=
+summaryA = attributeSummary(ensembl)
+summaryA[1:10,]
+@
+\end{small}
+
+To show us a smaller list of attributes which belog to a specified group or category we can now specify this in the listAttributes function as follows:
+
+\begin{small}
+<<>>=
+listAttributes(ensembl, category  = "Features", group = "REGION:")
+@
+\end{small}
+
+We now get a short list of attributes related to the region where the genes are located.
+
 
 \subsection{getBM}
 Now that we know what filters and attributes are we can make a biomaRt query using the \textit{getBM} function. An easy query could be to retrieve  the HUGO symbols, chromosome name and band for a set of affy identifiers.
@@ -391,34 +426,6 @@ getBM(attributes = c("affy_hg_u95av2","hgnc_symbol","chromosome_name","band"),
 \subsection{Example queries getBM}
 
 Below we describe some more complicated examples.
-
-%\subsubsection{Retrieving information on homologs}
-%Within one Ensembl dataset there are attributes providing homology mappings to the other Ensembl species.
-%In the next example, we start from the hsapiens dataset and a list of entrezgene ids.
-%We can now query chromosomal positions of the corresponding genes in human, zebrafish, mouse and mosquito.
-%\begin{small}
-%\begin{verbatim}
-%>getBM(attributes=c("hgnc_symbol","chromosome_name","start_position",
-%                    "mouse_chromosome","mouse_chrom_start",
-%                    "zebrafish_chromosome","zebrafish_chrom_start",
-%                    "aedes_chromosome","aedes_chrom_start"),
-%                    filter="entrezgene",values = c("673","7157","837"),
-%                    mart=ensembl)
-%\end{verbatim}
-%\end{small}
-%\begin{scriptsize}
-%\begin{verbatim}
-%  hgnc_symbol chromosome_name start_position mouse_chromosome mouse_chrom_start 
-%1        BRAF               7      140080754                6          39543731 
-%2        TP53              17        7512464               11          69396600 
-%3       CASP4              11      104318810                9           5308874 
-%zebrafish_chromosome zebrafish_chrom_start	  aedes_chromosome aedes_chrom_start
-%	      4               9473158	                 2L                    1974599
-%        5              16155000	                 2R                   20538788
-%       16              47717138	                                            NA
-%
-%\end{verbatim}
-%\end{scriptsize}
 
 \subsubsection{Using more than one filter}
 The \textit{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
