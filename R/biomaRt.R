@@ -658,13 +658,13 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
   if(mart@mysql){
   
     martdb = "";
-    if(exists(upstream)){
+    if(!missing(upstream)){
      stop("Use of the upstream argument only works when using biomaRt in webservice mode")
     }
-    if(exists(downstream)){
+    if(!missing(downstream)){
      stop("Use of the downstream argument only works when using biomaRt in webservice mode")
     }
-    if(exists(seqType)){
+    if(!missing(seqType)){
      stop("seqType only has to be specified when using biomaRt in webservice mode.  In MySQL mode biomaRt will retrieve genomic sequences only")
     }
 
@@ -680,7 +680,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
       mart@biomart="sequence"
       
     }
-    mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "ensembldb.ensembl.org" , dbname = martdb, password = "")
+    mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "martdb.ensembl.org" , port = 3316, dbname = martdb, password = "")
     
     species = strsplit(mart@dataset,"_")[[1]][1]
     sequence <- NULL;  
@@ -735,17 +735,17 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
     species = strsplit(mart@dataset,"_")[[1]][1]
     if(!missing(chromosome)){
         if(missing(upstream) && missing(downstream)){
-         query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+         query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
         }
        else{
           if(!missing(upstream) && missing(downstream)){
-             query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+             query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
           }
           if(!missing(downstream) && missing(upstream)){
-               query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+               query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
          }
          if(!missing(downstream) && !missing(upstream)){
-               query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Attribute name = '",type,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
+               query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Filter name = 'chromosome_name' value = '",chromosome,"'/><Filter name = 'start' value = '",start,"'/><Filter name = 'end' value = '",end,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Attribute name = 'str_chrom_name'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/></Dataset></Query>",sep="")
          }
       }
     }
@@ -756,22 +756,22 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
       }
       valuesString = paste(id,"",collapse=",",sep="")
         if(missing(upstream) && missing(downstream)){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
         }
         else{
           if(!missing(upstream) && missing(downstream)){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
           }
            if(!missing(downstream) && missing(upstream)){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
           }
           if(!missing(downstream) && !missing(upstream)){
-        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
+        query = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"><Dataset name = '",species,"_gene_ensembl'><Attribute name = 'str_chrom_name'/><Attribute name = '",type,"'/><Attribute name = 'biotype'/><Attribute name = '",seqType,"'/><Filter name = 'upstream_flank' value='",upstream,"'/><Filter name = 'downstream_flank' value='",downstream,"'/><Filter name = '",type,"' value = '",valuesString,"'/></Dataset></Query>", sep="")
           }
         }
     }
     if(verbose){ 
-      print(query)
+      cat(paste(query,"\n", sep=""))
     }
 
     postRes = postForm(paste(mart@host,"?",sep=""),"query"=query)
@@ -784,6 +784,12 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
       ## check and postprocess
       if(all(is.na(result[,ncol(result)])))
         result = result[,-ncol(result),drop=FALSE]
+        if(!missing(chromosome)){ 
+          colnames(result) = c("sequence","chromosome name","biotype")
+        }
+        if(!missing(type)){ 
+          colnames(result) = c("sequence","chromosome name",type,"biotype")
+        }
        
     } else {
       warning("getBM returns NULL.")
@@ -1019,7 +1025,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
       filter = mapFilter(from.type)
     }
     
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",from.mart@dataset,"'>",sep="")
+    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"> <Dataset name = '",from.mart@dataset,"'>",sep="")
     attributeXML = paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
     valuesString = paste(id,"",collapse=",",sep="")
     filterXML = paste("<Filter name = '",filter,"' value = '",valuesString,"' />", sep="")
@@ -1410,7 +1416,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
   else{
     ## use the http/XML interface
     if(output == "data.frame"){
-      xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",mart@dataset,"'>",sep="")
+      xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"> <Dataset name = '",mart@dataset,"'>",sep="")
       attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
       if(length(filters) > 1){
         if(class(values)!= "list")
@@ -1458,8 +1464,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
        }
       }
       xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
+       
       if(verbose){
-       print(xmlQuery)
+       cat(paste(xmlQuery,"\n", sep=""))
       }      
 
       if(is.null(curl)){
@@ -1571,7 +1578,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
                "\nPlease use the function 'listFilters' to get valid filter names"))
   }
    
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestId= 'biomaRt'> <Dataset name = '",mart@dataset,"'>",sep="")
+    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"> <Dataset name = '",mart@dataset,"'>",sep="")
     attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
     if(length(filters) > 1){
         if(class(values)!= "list")
@@ -1643,7 +1650,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     xmlQuery = paste(xmlQuery, linkedAttributeXML, linkedFilterXML,"</Dataset></Query>",sep="")
 
     if(verbose){
-      print(xmlQuery)
+      cat(paste(xmlQuery,"\n", sep=""))
     }
     postRes = postForm(paste(mart@host,"?",sep=""),"query"=xmlQuery)
     
