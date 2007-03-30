@@ -364,7 +364,7 @@ An overview of the categories and groups for attributes present in the respectiv
 \begin{small}
 <<>>=
 summaryF = filterSummary(ensembl)
-summaryF[1:10,]
+summaryF[1:5,]
 @
 \end{small}
 
