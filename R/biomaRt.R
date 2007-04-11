@@ -10,7 +10,8 @@ setClass("Mart",
                         vschema = "character",
                         dataset = "character",
                         filters = "environment",
-                        attributes = "environment"
+                        attributes = "environment",
+                        attributePointer = "environment"   
                         ),
          prototype(mysql = FALSE,
                    connections = new("list"),
@@ -22,10 +23,20 @@ setClass("Mart",
 
 setMethod("show","Mart",
   function(object){	
-    res = paste("Object of class 'Mart':\n Connected to BioMart:",object@biomart,"\n Using dataset:",object@dataset, sep="")
+    res = paste("Object of class 'Mart':\n Using BioMart: ",object@biomart,"\n Using dataset: ",object@dataset,"\n", sep="")
     cat(res)
-  })
+})
 
+
+###############
+#messageToUser#
+###############
+
+messageToUser <- function(message){
+ if(interactive()){
+  cat(message)
+ }
+}
 
 ##############
 #list marts  #
@@ -1210,7 +1221,7 @@ useDataset <- function(dataset, mart){
   
   if(mart@mysql){
     res = dbGetQuery(mart@connections$biomart,paste("select xml from meta_conf__dataset__main inner join meta_conf__xml__dm on meta_conf__dataset__main.dataset_id_key = meta_conf__xml__dm.dataset_id_key where dataset = '",dataset,"'",sep=""))
-    writeLines(paste("Reading database configuration of:",dataset))
+    messageToUser(paste("Reading database configuration of:",dataset,"\n"))
     if(dim(res)[1] == 0) stop("This dataset is not accessible from biomaRt as not xml description of dataset is available")
 
     xml = xmlTreeParse(res[1,])
@@ -1218,15 +1229,18 @@ useDataset <- function(dataset, mart){
    
     filtersEnv = new.env()
     attributesEnv = new.env()
+    attributePointerEnv = new.env()
 
-    parseAttributes(xml, attributesEnv)
+    parseAttributes(xml, env = attributesEnv, attributePointer = attributePointerEnv)
     parseFilters(xml, filtersEnv)
+ 
     mainTables = getMainTables(xml)
 
-    writeLines("Checking attributes and filters ...", sep=" ")
+    messageToUser("Checking attributes and filters ...")
     mart@attributes = attributesEnv
+    mart@attributePointer = attributePointerEnv 
     mart@filters = filtersEnv
-    writeLines("ok")
+    messageToUser(" ok\n")
     mart@dataset = dataset
     mart@mainTables = mainTables
     
@@ -1240,19 +1254,27 @@ useDataset <- function(dataset, mart){
 
     filtersEnv = new.env()
     attributesEnv = new.env()
+    attributePointerEnv = new.env()
     
-    writeLines("Checking attributes and filters ...", sep=" ")
-    parseAttributes(config, attributesEnv)
+    messageToUser("Checking attributes and filters ...")
+    parseAttributes(config, env = attributesEnv, attributePointer = attributePointerEnv)
     parseFilters(config, filtersEnv)
-    writeLines("ok")
+    messageToUser(" ok\n")
     
     mart@dataset = dataset
     mart@attributes = attributesEnv
+    mart@attributePointer = attributePointerEnv 
     mart@filters = filtersEnv
     
     return( mart )
   }
 }
+
+###################
+#getName          #
+###################
+
+getName = function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]] 
 
 #####################
 #listAttributes     #
@@ -1266,16 +1288,14 @@ listAttributes = function( mart , group, category, showGroups = FALSE){
   if(!missing(group) && !group %in% summaryA[,2]) stop(paste("The chosen group: ",group," is not valid, please use the right group name using the attributeSummary function",sep=""))
 
   attribList = mget(ls(mart@attributes), env=mart@attributes)
-  mat = do.call(cbind, attribList)
-  frame = data.frame(cbind(colnames(mat),mat[1,], mat[5,], mat[6,]), row.names=NULL) 
-  colnames(frame) = c("name","description","group","category")
+  frame = data.frame(name = names(attribList),description = sapply(attribList, getName, 1), group = sapply(attribList, getName, 5), category = sapply(attribList, getName, 6),  row.names=NULL, stringsAsFactors=FALSE) 
   if(!missing(category)){
    frame = frame[frame[,4] == category,]
   }
   if(!missing(group)){
    frame = frame[frame[,3] == group,]
   }
-  ord = order(unlist(frame[,4]))
+  ord = order(frame[,4])
   frameOut = frame[ord,]
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
   rownames(frameOut) = seq(1:length(frameOut[,1]))
@@ -1291,11 +1311,9 @@ attributeSummary = function( mart ){
 
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   attribList = mget(ls(mart@attributes), env=mart@attributes)
-  mat = do.call(cbind, attribList)
-  frame = data.frame(cbind(mat[6,], mat[5,]), row.names=NULL)
+  frame = data.frame(category = sapply(attribList, getName, 6), group = sapply(attribList, getName, 5),  row.names=NULL, stringsAsFactors=FALSE) 
   frame = unique(frame)
-  colnames(frame) = c("Attribute Categories","Attribute Groups")
-  ord = order(unlist(frame[,1]))
+  ord = order(frame[,1])
   frameOut = frame[ord,]
   rownames(frameOut) = seq(1:length(frameOut[,1]))
   return(frameOut)
@@ -1314,16 +1332,15 @@ listFilters = function( mart , group, category, showGroups = FALSE){
   if(!missing(group) && !group %in% summaryF[,2]) stop(paste("The chosen group: ",group," is not valid, please use the right group name using the filterSummary function",sep=""))
 
   filterList = mget(ls(mart@filters), env=mart@filters)
-  mat = do.call(cbind, filterList)
-  frame = data.frame(cbind(colnames(mat),mat[1,], mat[5,], mat[6,]), row.names=NULL) 
-  colnames(frame) = c("name","description", "group","category")
+  frame = data.frame(name = names(filterList),description = sapply(filterList, getName, 1), group = sapply(filterList, getName, 5), category = sapply(filterList, getName, 6),  row.names=NULL, stringsAsFactors=FALSE) 
+
    if(!missing(category)){
    frame = frame[frame[,4] == category,]
   }
   if(!missing(group)){
    frame = frame[frame[,3] == group,]
   }
-  ord = order(unlist(frame[,4]))
+  ord = order(frame[,4])
   frameOut = frame[ord,]
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
   rownames(frameOut) = seq(1:length(frameOut[,1]))
@@ -1339,11 +1356,9 @@ filterSummary = function( mart ){
 
  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   filterList = mget(ls(mart@filters), env=mart@filters)
-  mat = do.call(cbind, filterList)
-  frame = data.frame(cbind(mat[6,], mat[5,]), row.names=NULL)
+  frame = data.frame(category = sapply(filterList, getName, 6), group = sapply(filterList, getName, 5),  row.names=NULL, stringsAsFactors=FALSE) 
   frame = unique(frame)
-  colnames(frame) = c("Filter Categories","Filter Groups")
-  ord = order(unlist(frame[,1]))
+  ord = order(frame[,1])
   frameOut = frame[ord,]
   rownames(frameOut) = seq(1:length(frameOut[,1]))
   return(frameOut)
@@ -1376,6 +1391,10 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
     stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
                "\nPlease use the function 'listFilters' to get valid filter names"))
   }
+
+  for(k in 1:length(attributes)){
+   if(attributes[k] %in% ls(mart@attributePointer)) attributes[k] = get(attributes[k], env = mart@attributePointer)
+  }  
   
   ## use the mySQL interface
   if(mart@mysql){
@@ -1673,25 +1692,25 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
 ##########################################
 
 
-parseAttributes <- function(xml, env, group = "", page = ""){
+parseAttributes <- function(xml, env, attributePointer, group = "", page = ""){
   
    if(xmlName(xml) == "AttributePage"){
      if(!is.null(xmlGetAttr(xml,"hidden"))){
        if(xmlGetAttr(xml,"hidden") != "true"){
          page = xmlGetAttr(xml,"displayName")
-         xmlSApply(xml,"parseAttributes",env, page = page)
+         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, page = page)
        }
      }
      else{
        if(!is.null(xmlGetAttr(xml,"hideDisplay"))){
          if(xmlGetAttr(xml,"hideDisplay") != "true"){
             page = xmlGetAttr(xml,"displayName")
-            xmlSApply(xml,"parseAttributes",env, page = page)
+            xmlSApply(xml,"parseAttributes",env,attributePointer = attributePointer,page = page)
          }
        }
        else{  
          page = xmlGetAttr(xml,"displayName")
-         xmlSApply(xml,"parseAttributes",env, page = page)
+         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, page = page)
        }
      }
    }
@@ -1700,27 +1719,36 @@ parseAttributes <- function(xml, env, group = "", page = ""){
        if(xmlGetAttr(xml,"hidden") != "true"){
          description = xmlGetAttr(xml,"displayName")
          if(is.null(description)){
-           description = ""
+           description = NA
          } 
+         if(!is.null(xmlGetAttr(xml,"pointerAttribute"))){
+          assign(xmlGetAttr(xml,"internalName"),xmlGetAttr(xml,"pointerAttribute"),env = attributePointer)
+         }
+        
          assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+       
        }
      }
      else{
        description = xmlGetAttr(xml,"displayName")
        if(is.null(description)){
-          description = ""
+          description = NA
        }
-       assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+       if(!is.null(xmlGetAttr(xml,"pointerAttribute"))){
+          assign(xmlGetAttr(xml,"internalName"),xmlGetAttr(xml,"pointerAttribute"),env = attributePointer)
+       }
+       
+       assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env) 
      }
    }
    if(xmlName(xml)=="AttributeCollection"){
      if(!is.null(xmlGetAttr(xml,"hidden"))){
        if(xmlGetAttr(xml,"hidden")!="true"){
-          xmlSApply(xml,"parseAttributes",env, group = group, page = page)
+          xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
        }
      }
      else{
-       xmlSApply(xml,"parseAttributes",env, group = group, page = page)
+       xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
      }
    }
    
@@ -1728,16 +1756,16 @@ parseAttributes <- function(xml, env, group = "", page = ""){
      if(!is.null(xmlGetAttr(xml,"hidden"))){
        if(xmlGetAttr(xml,"hidden")!="true"){
          group = xmlGetAttr(xml,"displayName") 
-         xmlSApply(xml,"parseAttributes",env, group = group, page = page)
+         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
        }
      }
      else{
        group = xmlGetAttr(xml,"displayName") 
-       xmlSApply(xml,"parseAttributes",env, group = group, page = page)
+       xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
      }
    }
    if(xmlName(xml)=="DatasetConfig"){
-         xmlSApply(xml,"parseAttributes",env)
+         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer)
    }
    return()
 }
@@ -1747,32 +1775,20 @@ parseFilters <- function(xml, env, group = "", page = ""){
   if(xmlName(xml) == "FilterPage"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden")!="true"){
-        if(!is.null(xmlGetAttr(xml,"displayName"))){
-          if(xmlGetAttr(xml,"displayName")=="FILTERS"){
             page = xmlGetAttr(xml,"displayName")
             xmlSApply(xml,"parseFilters",env, page = page)
-          }
-        }
       }
     }
     else{
       if(!is.null(xmlGetAttr(xml,"hideDisplay"))){
         if(xmlGetAttr(xml,"hideDisplay")!="true"){
-         if(!is.null(xmlGetAttr(xml,"displayName"))){
-           if(xmlGetAttr(xml,"displayName")=="FILTERS"){
              page = xmlGetAttr(xml,"displayName")
              xmlSApply(xml,"parseFilters",env, page = page)
-           }
-         }
        }
       }
       else{ 
-       if(!is.null(xmlGetAttr(xml,"displayName"))){
-         if(xmlGetAttr(xml,"displayName")=="FILTERS"){
            page = xmlGetAttr(xml,"displayName") 
            xmlSApply(xml,"parseFilters",env, page = page)
-         }
-       }
       }
     }
   }
@@ -1802,35 +1818,39 @@ parseFilters <- function(xml, env, group = "", page = ""){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden") != "true"){
         if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-          assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
-        }
+         description = xmlGetAttr(xml,"displayName")
+         if(is.null(description))description = NA 
+         assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+        } 
         else{
-          xmlSApply(xml,"parseFilters",env, group = group, page = page)
-        }
+         xmlSApply(xml,"parseFilters",env, group = group, page = page)
+       }
       }
     }
     else{
       if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-        assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
-      }
+       description = xmlGetAttr(xml,"displayName")
+       if(is.null(description))description = NA
+       assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+      } 
       else{
-        xmlSApply(xml,"parseFilters",env, group = group, page = page)
-      }
+       xmlSApply(xml,"parseFilters",env, group = group, page = page)
+     }
     }
   }
   
   if(xmlName(xml) == "Option"){
     if(!is.null(xmlGetAttr(xml,"hidden"))){
       if(xmlGetAttr(xml,"hidden") != "true"){
-        if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-          assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
-        }
+          description = xmlGetAttr(xml,"displayName");
+          if(is.null(description))description = NA
+          assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
       }
     }
     else{
-      if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-        assign(xmlGetAttr(xml,"internalName"),list(descr= xmlGetAttr(xml,"displayName"), table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
-      }
+        description = xmlGetAttr(xml,"displayName");
+        if(is.null(description))description = NA
+        assign(xmlGetAttr(xml,"internalName"),list(descr= description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
     }
   }
   
@@ -1843,7 +1863,7 @@ parseFilters <- function(xml, env, group = "", page = ""){
 
 getMainTables <- function( xml ){
   
-  writeLines("Checking main tables ...", sep=" ")
+  messageToUser("Checking main tables ...", sep=" ")
   names = names(xml)
   
   tableM = NULL
@@ -1860,7 +1880,7 @@ getMainTables <- function( xml ){
       j = j+1
     }
   }
-  writeLines("ok")
+  messageToUser("ok\n")
  
   return(list(tables=tableM,keys=keyM))
 }
@@ -1915,11 +1935,6 @@ queryGenerator <- function(attributes, filter, values, mart){
 query = paste("SELECT DISTINCT",
     paste(Atable, Afield, sep=".", collapse=", "),
     "FROM")
-
-
-  ########################################
-  # Ensembl Key Order: gene overrides transcript #
-  ########################################
   
   matchGeneKey=match("gene_id_key",c(Akey,Fkey))
   matchTransKey=match("transcript_id_key",c(Akey,Fkey))
@@ -1946,24 +1961,4 @@ query = paste("SELECT DISTINCT",
     paste("'", values, "'", collapse=", ", sep=""), ")", sep="")
 
   return(query)
-}
-  
-##---------TEST FUNCTION FOR WEBSERVICE QUERIES -----
-
-testService <- function(mart){
-
-#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_genomic_sequence'><ValueFilter name = 'chr' value = '1'/><ValueFilter name = 'start' value = '10000'/><ValueFilter name = 'end' value = '10020'/><Attribute name = 'raw_sequence'/></Dataset></Query>"
-
-#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'> <Dataset name = 'hsapiens_snp'><Attribute name = 'tscid'/><Attribute name = 'refsnp_id'/><Attribute name = 'allele'/><Attribute name = 'chrom_start'/><Attribute name = 'chrom_strand'/><ValueFilter name = 'chr_name' value = 'Y' /><ValueFilter name = 'snp_chrom_start' value = '2000' /><ValueFilter name = 'snp_chrom_end' value = '40000' /></Dataset></Query>"
-
-#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'><Dataset name = 'mmusculus_gene_ensembl'><Attribute name = 'gene_stable_id'/></Dataset><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'entrezgene'/><ValueFilter name = 'entrezgene' value = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20' /></Dataset><Links source = 'hsapiens_gene_ensembl' target = 'mmusculus_gene_ensembl' defaultLink = 'mmusculus_internal_gene_id'/></Query>"
-
-#query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0'><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'gene_stable_id'/></Dataset><Dataset name = 'mmusculus_gene_ensembl'><ValueFilter name = 'affy_mg_u74av2' value = '95919_at'/></Dataset><Links source = 'mmusculus_gene_ensembl' target = 'hsapiens_gene_ensembl' defaultLink = 'hsapiens_internal_gene_id'/></Query>"
-
-query = "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' ><Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'ensembl_gene_id' /><Attribute name = 'affy_hg_u133_plus_2' /></Dataset><Dataset name = 'mmusculus_gene_ensembl'><ValueFilter name = 'chromosome_name' value = '1'/></Dataset><Links source = 'mmusculus_gene_ensembl' target = 'hsapiens_gene_ensembl' defaultLink = 'hsapiens_internal_gene_id' /></Query>"
-  
-result = postForm(paste(mart@host,"?",sep=""),"query"=query)
-result = strsplit(result,"\n")[[1]]
-result = sapply(result,"strsplit","\t")
-return(result)
 }
