@@ -1112,7 +1112,6 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
         database <- listMarts(mart = biomart, host = host, user = user, password = password, port = port, mysql=TRUE);
         mart@biomart = strsplit(biomart,"_")[[1]][1]
         mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = user, host = host, dbname = database, password = password)
-       # writeLines(paste("connected to: ",database[1,1]))
       }
       else{
         stop(sprintf("Please provide host, user, password and port for using local database '%s'.", biomart))
@@ -1146,7 +1145,7 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
 
       if(!martdb %in% marts) stop("Requested BioMart database is not available please use the function listMarts(mysql=TRUE) to see the valid biomart names you can query using mysql access")
       mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "martdb.ensembl.org" , dbname = martdb, password = "", port = 3316)
-      writeLines(paste("connected to: ",biomart))
+      messageToUser(paste("connected to: ",biomart,"\n"))
     }
     if(!missing(dataset)){
       mart = useDataset(mart = mart,dataset = dataset)
@@ -1863,7 +1862,7 @@ parseFilters <- function(xml, env, group = "", page = ""){
 
 getMainTables <- function( xml ){
   
-  messageToUser("Checking main tables ...", sep=" ")
+  messageToUser("Checking main tables ...")
   names = names(xml)
   
   tableM = NULL
@@ -1899,6 +1898,9 @@ queryGenerator <- function(attributes, filter, values, mart){
     }
     else{
       Afield = c(Afield,get(attributes[i],mart@attributes)$field)
+      if(is.null(get(attributes[i],mart@attributes)$table)){
+          stop(paste("attribute: ",attributes[i]," is not retrievable via BioMart in MySQL mode, please perform query in the default web service mode", sep=""))
+      }
       Atab   = c(Atab,get(attributes[i],mart@attributes)$table)
       Akey   = c(Akey,get(attributes[i],mart@attributes)$key)
     }
