@@ -1035,34 +1035,7 @@ getHomolog <- function(id, from.type, to.type, from.array, to.array, from.mart, 
       from.attributes = c(from.attributes,mapFilter(from.type))
       filter = mapFilter(from.type)
     }
-    
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"> <Dataset name = '",from.mart@dataset,"'>",sep="")
-    attributeXML = paste("<Attribute name = '", from.attributes, "'/>", collapse="", sep="")
-    valuesString = paste(id,"",collapse=",",sep="")
-    filterXML = paste("<Filter name = '",filter,"' value = '",valuesString,"' />", sep="")
-    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
-    xmlQuery = paste(xmlQuery, "<Dataset name = '",to.mart@dataset,"' >", sep="")
-    to.attributeXML =  paste("<Attribute name = '", to.attributes, "'/>", collapse="", sep="") 
-    xmlQuery = paste(xmlQuery, to.attributeXML,"</Dataset></Query>",sep="") 
-    postRes = postForm(paste(to.mart@host,"?",sep=""),"query"=xmlQuery)
-    
-    if(postRes != ""){
-      ## convert the serialized table into a dataframe
-      con = textConnection(postRes)
-      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-      close(con)
-      ## check and postprocess
-      if(all(is.na(result[,ncol(result)])))
-        result = result[,-ncol(result),drop=FALSE]
-      #stopifnot(ncol(result)==length(attributes))
-      #if(class(result) == "data.frame"){
-      #  colnames(result) = attributes
-      #}
-      
-    } else {
-      warning("getBM returns NULL.")
-      result=NULL
-    }
+    result = getLDS(attributes = from.attributes, filters = filter, values = id, mart = from.mart, attributesL = to.attributes, martL = to.mart) 
     return(result)
   }
 } 
@@ -1217,7 +1190,11 @@ useDataset <- function(dataset, mart){
   if(missing(dataset)) stop("No valid dataset to use given")
   validDatasets=listDatasets(mart)
   if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function"))
-  
+
+  filtersEnv = new.env(parent = emptyenv(), hash = TRUE)
+  attributesEnv = new.env(parent = emptyenv(), hash = TRUE)
+  attributePointerEnv = new.env(parent = emptyenv(), hash = TRUE)
+   
   if(mart@mysql){
     res = dbGetQuery(mart@connections$biomart,paste("select xml from meta_conf__dataset__main inner join meta_conf__xml__dm on meta_conf__dataset__main.dataset_id_key = meta_conf__xml__dm.dataset_id_key where dataset = '",dataset,"'",sep=""))
     messageToUser(paste("Reading database configuration of:",dataset,"\n"))
@@ -1225,21 +1202,17 @@ useDataset <- function(dataset, mart){
 
     xml = xmlTreeParse(res[1,])
     xml = xml$doc$children[[1]]
-   
-    filtersEnv = new.env()
-    attributesEnv = new.env()
-    attributePointerEnv = new.env()
 
+    messageToUser("Checking attributes and filters ...")   
     parseAttributes(xml, env = attributesEnv, attributePointer = attributePointerEnv)
     parseFilters(xml, filtersEnv)
+    messageToUser(" ok\n")
  
     mainTables = getMainTables(xml)
 
-    messageToUser("Checking attributes and filters ...")
     mart@attributes = attributesEnv
     mart@attributePointer = attributePointerEnv 
     mart@filters = filtersEnv
-    messageToUser(" ok\n")
     mart@dataset = dataset
     mart@mainTables = mainTables
     
@@ -1250,11 +1223,7 @@ useDataset <- function(dataset, mart){
     config = getURL(paste(mart@host,"?type=configuration&requestid=biomaRt&dataset=",dataset,"&virtualschema=",mart@vschema, sep=""))
     config = xmlTreeParse(config)
     config = config$doc$children[[1]]
-
-    filtersEnv = new.env()
-    attributesEnv = new.env()
-    attributePointerEnv = new.env()
-    
+ 
     messageToUser("Checking attributes and filters ...")
     parseAttributes(config, env = attributesEnv, attributePointer = attributePointerEnv)
     parseFilters(config, filtersEnv)
