@@ -17,12 +17,12 @@
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 
-\author{Steffen Durinck$^\ddagger$\footnote{durincks@mail.nih.gov}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
+\author{Steffen Durinck$^\star$\footnote{durincks@mail.nih.gov}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
 \begin{document}
 \title{Description of the biomaRt package}
 
 \maketitle
-\begin{center} $^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven,\\ Kasteelpark Arenberg 10, 3001 Leuven-Heverlee, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
+\begin{center} $^\star$Oncogenomics lab, NCI/NIH, Gaithersburg, MD, USA\\$^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
 
  \end{center}
 
@@ -110,35 +110,29 @@ In this section we describe a set of simple functions which are frequently used 
 
 \subsection{getGene}
 
-The function \textit{getGene} uses a vector of query ids to look up the name, description and chromosomal information of the corresponding gene.  When using \textit{getGene} with affymetrix identifiers, we have to specify the chipname by using the \textit{array} argument.  When using any other type of identifier the type should be specified with the \textit{type} argument (this can have values like: entrezgene, refseq, unigene,...).  The \textit{mart} argument should be used to specify which \textit{Mart} object (which we generated above) to use.
-\begin{small}
+The function \textit{getGene} uses a vector of query ids to look up the name, description and chromosomal information of the corresponding gene. The type of identifier should be specified with the \textit{type} argument (this can have values like: entrezgene, refseq\_dna, unigene,affy\_hg\_u133\_plus\_2, etc...).  Possible values for the type argument can be retrieved with the listFilters function. The \textit{mart} argument should be used to specify which \textit{Mart} object (which we generated above) to use.
+\begin{scriptsize}
 <<>>=
 affyids=c("202763_at","209310_s_at","207500_at")
-getGene(id=affyids, array="affy_hg_u133_plus_2",mart=ensembl)
+getGene(id=affyids, type="affy_hg_u133_plus_2",mart=ensembl)
 @
-\end{small}
-To know which values to use to specify the affy array you can use the function \textit{getAffyArrays}.
+\end{scriptsize}
 
-\begin{small}
-<<>>=
-getAffyArrays(ensembl)
-@
-\end{small}
 Next we use \textit{getGene} with a list of entrezgene identifiers.
-\begin{small}
+\begin{scriptsize}
 <<>>=
 entrez=c("673","7157","837")
 getGene(id=entrez, type="entrezgene",mart=ensembl)
 @
-\end{small}
+\end{scriptsize}
 \subsection{getGO}
 
 The function \textit{getGO} enables one to retrieve GO identifiers, descriptions and evidence codes starting from a variety of identifiers.
-Identical to the \textit{getGene} function, \textit{getGO} takes the \textit{array}, \textit{type} and \textit{mart} arguments.
+Identical to the \textit{getGene} function, \textit{getGO} takes the \textit{type} and \textit{mart} arguments.
 
 \begin{scriptsize}
 <<>>=
-go = getGO(id=affyids[1], array="affy_hg_u133_plus_2",mart=ensembl)
+go = getGO(id=affyids[1], type="affy_hg_u133_plus_2",mart=ensembl)
 go
 @
 \end{scriptsize}
@@ -148,60 +142,36 @@ go
 Sequences can be retrieved using the \textit{getSequence} function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the \textit{chromosome} argument.  The \textit{start} and \textit{end} arguments are used to specify \textit{start} and \textit{end} positions on the chromosome. The type of sequence returned can be specified by the seqType argument which takes the following values: 'cdna';'peptide' for protein sequences;'3utr' for 3' UTR sequences,'5utr' for 5' UTR sequences; 'gene\_exon' for exon sequences only; 'transcript\_exon' for transcript specific exonic sequences only;'transcript\_exon\_intron' gives the full unspliced transcript, that is exons + introns;'gene\_exon\_intron' gives the exons + introns of a gene;'coding' gives the coding sequence only;'coding\_transcript\_flank' gives the flanking region of the transcript including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute;'coding\_gene\_flank' gives the flanking region of the gene including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'transcript\_flank' gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'gene\_flank' gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute.
 In MySQL mode the getSequence function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
 
-First we retrieve the 5'UTR sequences of all genes on chromosome 3 between a given start and end position
+First we retrieve the 5'UTR sequences of all genes on chromosome 3 between a given start and end position.  We also have to specify which type of identifier we want to retrieve together with the sequences, here we choose for entrezgene identifiers.
 \begin{small}
 \begin{verbatim}
 > utr5 = getSequence(chromosome=3, start=185514033, end=185535839,
-                     seqType="5utr", mart=ensembl)
+                      type="entrezgene",seqType="5utr", mart=ensembl)
 > utr5
 \end{verbatim}
 \end{small}
 \begin{scriptsize}
 \begin{verbatim}
-
-               V1 V2             V3
-1 ENSG00000114867  3 protein_coding
-.....
-1 CCGGCTGCGCCTGCGGAGAAGCGGTGGCCGCCGAGCGGGATCTGTGCGGGGAGCCGGAAATGGTTGTGGACT
-  ACGTCTGTGCGGCTGCGTGGGGCTCGGCCGCGCGGACTGAAGG....
-  
-\end{verbatim}
-\end{scriptsize}
-Lets now retrieve the complete cDNA sequences in this region.
-\begin{small}
-\begin{verbatim}
-> cdna = getSequence(chromosome=3,start=185514033,end=185535839,
-                     seqType="cdna", mart=ensembl)
-> cdna
-\end{verbatim}
-\end{small}
-\begin{scriptsize}
-\begin{verbatim}
-
-               V1 V2             V3
-1 ENSG00000114867  3 protein_coding
-...
-1 CCGGCTGCGCCTGCGGAGAAGCGGTGGCCGCCGAGCGGGATCTGTGCGGGGAGCCGGAAATGGTTGTGGACT
-  ACGTCTGTGCGGCTGCGTGGGGCTCGGCCGCGCGGACTGAAGG....
-  
+          V1               V2
+  .....GAAGCGGTGGC ....   1981
 \end{verbatim}
 \end{scriptsize}
 
-Finally we retrieve the protein sequences in this region.
+Next we retrieve the protein sequences given a list of entrezgene identifiers.  In  this case the type argument specifies which type of identifiers we are using.
+To get an overview of other valid identifier types we refer to the listFilters function.
 
 \begin{small}
 \begin{verbatim}
-> protein = getSequence(chromosome=3,start=185514033,end=185535839,
+> protein = getSequence(id=c(100, 5728),type="entrezgene",
                         seqType="peptide", mart=ensembl)
 > protein
 \end{verbatim}
 \end{small}
 \begin{scriptsize}
 \begin{verbatim}
-
-               V1 V2             V3
-1 ENSG00000114867  3 protein_coding
-....
+ peptide               entrezgene
+ MAQTPAFDKPKVEL ...    100
+ MTAIIKEIVSRNKRR ...   5728
 
 \end{verbatim}
 \end{scriptsize}
@@ -214,10 +184,11 @@ One has to specify the data.frame to export and the filename using the file argu
 \section{getFeature}
 The \textit{getFeature} function enables us to select a set of features based on chromosomal coordinates or GO identifiers.
 Select all Affymetrix identifiers on the hgu133plus2 chip for genes located on chromosome 16 between basepair 1100000 and 1250000.
-\textit{getFeature} takes the \textit{array} or \textit{type} arguments if one wants to retrieve affy identifiers or other identifiers respectively.
+\textit{getFeature} takes the \textit{type} argument to specify the type of identifiers that need to be retrieved.
+
 \begin{small}
 \begin{verbatim}
-> features = getFeature( array = "affy_hg_u133_plus_2",
+> features = getFeature( type = "affy_hg_u133_plus_2",
                          chromosome = "16", start = "1100000",
                          end = "1250000", mart=ensembl)
 > features
@@ -313,7 +284,7 @@ In a first example we start from a affy identifier of a human chip and we want t
 \begin{verbatim}
 > human = useMart("ensembl","hsapiens_gene_ensembl")
 > mouse = useMart("ensembl","mmusculus_gene_ensembl")
-> homolog = getHomolog( id = "1939_at", to.array = "affy_mouse430_2", from.array = 
+> homolog = getHomolog( id = "1939_at", to.type = "affy_mouse430_2", from.type = 
                         "affy_hg_u95av2", from.mart = human, to.mart = mouse )
 
 > homolog
@@ -327,8 +298,8 @@ An other example starts from a human RefSeq id and we want to retrieve the corre
 
 \begin{small}
 \begin{verbatim}
-> homolog = getHomolog( id = "NM_007294", to.array = "affy_mouse430_2",
-                        from.type = "refseq", from.mart = human,
+> homolog = getHomolog( id = "NM_007294", to.type = "affy_mouse430_2",
+                        from.type = "refseq_dna", from.mart = human,
                         to.mart = mouse )
 
 > homolog
@@ -559,7 +530,7 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 The biomaRt package can be used with a local install of a public BioMart database or a locally developed BioMart database.
 In order for biomaRt to recognize the database as a BioMart, make sure that the local database you create has a name conform with \begin{verbatim} database_mart_version \end{verbatim} where database is the name of the database and version is a version number.  No more underscores than the ones showed should be present in this name. A possible name is for example \begin{verbatim} ensemblLocal\_mart\_42 \end{verbatim}.
 \subsection{Minimum requirements for local database installation}
-One needs to first download the sql code to generate the database.  For ensembl\_mart\_42 this was in the file ensembl\_mart\_42.sql.gz. 
+One needs to first download the SQL code to generate the database.  For ensembl\_mart\_42 this was in the file ensembl\_mart\_42.sql.gz. 
 Then run this SQL code to generate the tables of your local database:
 
 \begin{verbatim}
@@ -585,7 +556,8 @@ Next you load all the tables that have the name of your species of interest with
 Once the local database is installed you can use biomaRt on this database by:
 \begin{scriptsize}
 \begin{verbatim}
-mart=useMart("ensembl_mart_42", mysql=TRUE, host="localhost", user="****", password="****", local=TRUE, dataset="hsapiens_gene_ensembl")
+mart=useMart("ensembl_mart_42", mysql=TRUE, host="localhost", user="****", password="****", 
+              local=TRUE, dataset="hsapiens_gene_ensembl")
 \end{verbatim}
 \end{scriptsize}
 
