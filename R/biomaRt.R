@@ -318,7 +318,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
     if(!missing(GOID) && !mart@mysql){
        filter = c("go", paste("with_",type,sep=""))
        attributes = c("go",attribute)
-       values = list(GOID,1)
+       values = list(GOID,TRUE)
     }
     
     if(!missing(chromosome)){
@@ -329,7 +329,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
         }
         else{
          filter = c("chromosome_name", paste("with_", attribute, sep=""))
-         values = list(chromosome,1)
+         values = list(chromosome,TRUE)
         }
         attributes = c(chrname,attribute)
       }
@@ -340,7 +340,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
         }
         else{
          filter = c(chrname,startpos,endpos,paste("with_", attribute, sep=""))
-         values = list(chromosome, start, end,1)
+         values = list(chromosome, start, end,TRUE)
         }
         attributes = c(chrname,"start_position","end_position",attribute)  
       }
@@ -1090,7 +1090,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
           
           if(filters[i] %in% ls(mart@filters)){
             if(get(filters[i],env=mart@filters)$type == 'boolean' || get(filters[i],env=mart@filters)$type == 'boolean_num'){
-              if(as.numeric(values[[i]]) == 0){
+              if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="")  
+              if(!values[[i]]){
                 values[[i]] = 1
               }
               else{
@@ -1113,7 +1114,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
        if(filters != ""){
         if(filters %in% ls(mart@filters)){
           if(get(filters,env=mart@filters)$type == 'boolean' || get(filters,env=mart@filters)$type == 'boolean_num'){
-           if(as.numeric(values) == 0){
+           if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
+           if(!values){
             values = 1
            }
            else{
@@ -1255,7 +1257,8 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
         filterXML = NULL
         for(i in 1:length(filters)){
           if(get(filters[i],env=mart@filters)$type == 'boolean' || get(filters[i],env=mart@filters)$type == 'boolean_num'){
-            if(as.numeric(values[[i]]) == 0){
+            if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
+            if(!values[[i]]){
               values[[i]] = 1
             }
             else{
@@ -1272,7 +1275,8 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
       else{
        if(filters != ""){       
         if(get(filters,env=mart@filters)$type == 'boolean' || get(filters,env=mart@filters)$type == 'boolean_num'){
-          if(as.numeric(values) == 0){
+          if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
+          if(!values){
             values = 1
           }
           else{
@@ -1301,7 +1305,8 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
         linkedFilterXML = NULL
         for(i in 1:length(filtersL)){
           if(get(filtersL[i],env=martL@filters)$type == 'boolean' || get(filtersL[i],env=martL@filters)$type == 'boolean_num'){
-            if(as.numeric(valuesL[[i]]) == 0){
+            if(!is.logical(valuesL[[i]])) stop(paste("biomaRt error: ",filtersL[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
+            if(!valuesL[[i]]){
               valuesL[[i]] = 1
             }
             else{
@@ -1318,7 +1323,8 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
       else{
        if(filtersL != ""){       
         if(get(filtersL,env=martL@filters)$type == 'boolean' || get(filtersL,env=martL@filters)$type == 'boolean_num'){
-          if(as.numeric(valuesL) == 0){
+          if(!is.logical(valuesL)) stop(paste("biomaRt error: ",filtersL," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
+          if(!valuesL){
             valuesL = 1
           }
           else{

@@ -1,3 +1,7 @@
+%\VignetteIndexEntry{Overview of the biomaRt package}
+%\VignetteDepends{biomaRt}
+%\VignetteKeywords{Annotation}
+%\VignettePackage{biomaRt}
 \documentclass[11pt]{article}
 \usepackage{hyperref}
 \usepackage{url}
