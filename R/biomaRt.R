@@ -218,7 +218,12 @@ getGene <- function( id, type, mart){
    attrib = c("hgnc_symbol",attrib)
   }
   else{
-   attrib = c("external_gene_id", attrib)
+   if(strsplit(mart@dataset, "_")[[1]][1] == "mmusculus"){
+    attrib = c("markersymbol",attrib)
+   }
+   else{ 
+    attrib = c("external_gene_id", attrib)
+   }
   }
   if(type =="affy_hg_u133a_2"){
     attrib = c("affy_hg_u133a_v2",attrib)
@@ -288,7 +293,12 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
         filter = "hgnc_symbol"
       } 
       else{
-       filter = "external_gene_id"
+       if(strsplit(mart@dataset, "_")[[1]][1] == "mmusculus"){
+         filter = "markersymbol"
+       }
+       else{ 
+         filter = "external_gene_id"
+       }
       }                      
       attributes = c(filter,attribute)
       values = symbol
@@ -308,7 +318,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
     if(!missing(GOID) && !mart@mysql){
        filter = c("go", paste("with_",type,sep=""))
        attributes = c("go",attribute)
-       values = list(GOID,"")
+       values = list(GOID,1)
     }
     
     if(!missing(chromosome)){
@@ -319,7 +329,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
         }
         else{
          filter = c("chromosome_name", paste("with_", attribute, sep=""))
-         values = list(chromosome,"")
+         values = list(chromosome,1)
         }
         attributes = c(chrname,attribute)
       }
@@ -330,7 +340,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
         }
         else{
          filter = c(chrname,startpos,endpos,paste("with_", attribute, sep=""))
-         values = list(chromosome, start, end,"")
+         values = list(chromosome, start, end,1)
         }
         attributes = c(chrname,"start_position","end_position",attribute)  
       }
@@ -958,7 +968,7 @@ attributeSummary = function( mart ){
 #listFilters      #
 ###################
 
-listFilters = function( mart , group, category, showGroups = FALSE){
+listFilters = function( mart , group, category, showGroups = FALSE, showType = FALSE){
 
   if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
   summaryF = filterSummary(mart)
@@ -966,9 +976,9 @@ listFilters = function( mart , group, category, showGroups = FALSE){
   if(!missing(group) && !group %in% summaryF[,2]) stop(paste("The chosen group: ",group," is not valid, please use the right group name using the filterSummary function",sep=""))
 
   filterList = mget(ls(mart@filters), env=mart@filters)
-  frame = data.frame(name = names(filterList),description = sapply(filterList, getName, 1), group = sapply(filterList, getName, 5), category = sapply(filterList, getName, 6),  row.names=NULL, stringsAsFactors=FALSE) 
+  frame = data.frame(name = names(filterList),description = sapply(filterList, getName, 1), group = sapply(filterList, getName, 5), category = sapply(filterList, getName, 6),type =  sapply(filterList, getName, 7),  row.names=NULL, stringsAsFactors=FALSE) 
 
-   if(!missing(category)){
+  if(!missing(category)){
    frame = frame[frame[,4] == category,]
   }
   if(!missing(group)){
@@ -976,6 +986,7 @@ listFilters = function( mart , group, category, showGroups = FALSE){
   }
   ord = order(frame[,4])
   frameOut = frame[ord,]
+  if(!showType) frameOut = frameOut[,-5]
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
   rownames(frameOut) = seq(1:length(frameOut[,1]))
   return(frameOut)
@@ -1073,19 +1084,23 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
       attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
       if(length(filters) > 1){
         if(class(values)!= "list")
-          stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
+          stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
         filterXML = NULL
         for(i in 1:length(filters)){
           
           if(filters[i] %in% ls(mart@filters)){
-
-            filtmp = strsplit(get(filters[i],env=mart@filters)$field, "_")
-            if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
-                filterXML = paste(filterXML,paste("<BooleanFilter name = '",filters[i],"' />", collapse="",sep=""),sep="")
+            if(get(filters[i],env=mart@filters)$type == 'boolean' || get(filters[i],env=mart@filters)$type == 'boolean_num'){
+              if(as.numeric(values[[i]]) == 0){
+                values[[i]] = 1
+              }
+              else{
+               values[[i]] = 0 
+              }
+              filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
             }
             else{
               valuesString = paste(values[[i]],"",collapse=",",sep="")
-              filterXML = paste(filterXML,paste("<ValueFilter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+              filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
             }
           }
           else{ #used for attributes with values as these are treated as filters in BioMart
@@ -1097,14 +1112,18 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
       else{
        if(filters != ""){
         if(filters %in% ls(mart@filters)){
- 
-          filtmp = strsplit(get(filters,env=mart@filters)$field, "_")
-          if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
-           filterXML = paste("<BooleanFilter name = '",filters,"' />", collapse="",sep="")
+          if(get(filters,env=mart@filters)$type == 'boolean' || get(filters,env=mart@filters)$type == 'boolean_num'){
+           if(as.numeric(values) == 0){
+            values = 1
+           }
+           else{
+            values = 0 
+           }
+           filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
           }
           else{
            valuesString = paste(values,"",collapse=",",sep="")
-           filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
+           filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
           }
         }
         else{ #used for attributes with values as these are treated as filters in BioMart
@@ -1138,9 +1157,6 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, outp
         if( substr(as.character(result[1]),1,5) == "ERROR"){  #Will forward the webservice error
           stop(paste("\n",result,"The following query was attempted, use this to report this error\n",xmlQuery ,sep="\n"))
         }
-        ## check and postprocess
-        #if(all(is.na(result[,ncol(result)])))
-        #  result = result[,-ncol(result),drop=FALSE]
 
         if(checkFilters){
         stopifnot(ncol(result)==length(attributes))
@@ -1238,26 +1254,36 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
           stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
         filterXML = NULL
         for(i in 1:length(filters)){
-         
-          filtmp = strsplit(get(filters[i],env=mart@filters)$field, "_")
-          if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
-            filterXML = paste(filterXML,paste("<BooleanFilter name = '",filters[i],"' />", collapse="",sep=""),sep="")
+          if(get(filters[i],env=mart@filters)$type == 'boolean' || get(filters[i],env=mart@filters)$type == 'boolean_num'){
+            if(as.numeric(values[[i]]) == 0){
+              values[[i]] = 1
+            }
+            else{
+              values[[i]] = 0 
+            }
+            filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
           }
           else{
             valuesString = paste(values[[i]],"",collapse=",",sep="")
-            filterXML = paste(filterXML,paste("<ValueFilter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+            filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
           }
         }
       }
       else{
        if(filters != ""){       
-        filtmp = strsplit(get(filters,env=mart@filters)$field, "_")
-        if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
-         filterXML = paste("<BooleanFilter name = '",filters,"' />", collapse="",sep="")
+        if(get(filters,env=mart@filters)$type == 'boolean' || get(filters,env=mart@filters)$type == 'boolean_num'){
+          if(as.numeric(values) == 0){
+            values = 1
+          }
+          else{
+            values = 0 
+          }
+ 
+         filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
         }
         else{
          valuesString = paste(values,"",collapse=",",sep="")
-         filterXML = paste("<ValueFilter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
+         filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
         }
        }
        else{
@@ -1274,25 +1300,36 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
           stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
         linkedFilterXML = NULL
         for(i in 1:length(filtersL)){
-          filtmp = strsplit(get(filtersL[i],env=martL@filters)$field, "_")
-          if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
-            linkedFilterXML = paste(linkedFilterXML,paste("<BooleanFilter name = '",filtersL[i],"' />", collapse="",sep=""),sep="")
+          if(get(filtersL[i],env=martL@filters)$type == 'boolean' || get(filtersL[i],env=martL@filters)$type == 'boolean_num'){
+            if(as.numeric(valuesL[[i]]) == 0){
+              valuesL[[i]] = 1
+            }
+            else{
+              valuesL[[i]] = 0 
+            } 
+            linkedFilterXML = paste(linkedFilterXML,paste("<Filter name = '",filtersL[i],"' excluded = \"",valuesL[[i]],"\" />", collapse="",sep=""),sep="")
           }
           else{
             valuesString = paste(valuesL[[i]],"",collapse=",",sep="")
-            linkedFilterXML = paste(linkedFilterXML,paste("<ValueFilter name = '",filtersL[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+            linkedFilterXML = paste(linkedFilterXML,paste("<Filter name = '",filtersL[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
           }
         }
       }
       else{
        if(filtersL != ""){       
-        filtmp = strsplit(get(filtersL,env=martL@filters)$field, "_")
-        if(filtmp[[1]][length(filtmp[[1]])] == 'bool'){
-         linkedFilterXML = paste("<BooleanFilter name = '",filtersL,"' />", collapse="",sep="")
+        if(get(filtersL,env=martL@filters)$type == 'boolean' || get(filtersL,env=martL@filters)$type == 'boolean_num'){
+          if(as.numeric(valuesL) == 0){
+            valuesL = 1
+          }
+          else{
+            valuesL = 0 
+          }
+
+         linkedFilterXML = paste("<Filter name = '",filtersL,"' excluded = \"",valuesL,"\" />", collapse="",sep="")
         }
         else{
          valuesString = paste(valuesL,"",collapse=",",sep="")
-         linkedFilterXML = paste("<ValueFilter name = '",filtersL,"' value = '",valuesString,"' />", collapse="",sep="")
+         linkedFilterXML = paste("<Filter name = '",filtersL,"' value = '",valuesString,"' />", collapse="",sep="")
         }
        }
        else{
@@ -1454,7 +1491,7 @@ parseFilters <- function(xml, env, group = "", page = ""){
         if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
          description = xmlGetAttr(xml,"displayName")
          if(is.null(description))description = NA 
-         assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+         assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
         } 
         else{
          xmlSApply(xml,"parseFilters",env, group = group, page = page)
@@ -1465,7 +1502,7 @@ parseFilters <- function(xml, env, group = "", page = ""){
       if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
        description = xmlGetAttr(xml,"displayName")
        if(is.null(description))description = NA
-       assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+       assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
       } 
       else{
        xmlSApply(xml,"parseFilters",env, group = group, page = page)
@@ -1478,13 +1515,13 @@ parseFilters <- function(xml, env, group = "", page = ""){
       if(xmlGetAttr(xml,"hidden") != "true"){
           description = xmlGetAttr(xml,"displayName");
           if(is.null(description))description = NA
-          assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+          assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
       }
     }
     else{
         description = xmlGetAttr(xml,"displayName");
         if(is.null(description))description = NA
-        assign(xmlGetAttr(xml,"internalName"),list(descr= description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
+        assign(xmlGetAttr(xml,"internalName"),list(descr= description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
     }
   }
   
@@ -1514,7 +1551,7 @@ getMainTables <- function( xml ){
       j = j+1
     }
   }
-  messageToUser("ok\n")
+  messageToUser(" ok\n")
  
   return(list(tables=tableM,keys=keyM))
 }
