@@ -213,8 +213,13 @@ getGene <- function( id, type, mart){
 
   if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details.  Note that the array argument is now depricated and should be specified with the type argument.") 
   if(!type %in% ls(mart@filters))stop("Invalid type of identifier see ?getGene for details of use listFilters function to get the valid value for type")   
-  attrib = c("external_gene_id","description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
-
+  attrib = c("description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
+  if(strsplit(mart@dataset, "_")[[1]][1] == "hsapiens"){
+   attrib = c("hgnc_symbol",attrib)
+  }
+  else{
+   attrib = c("external_gene_id", attrib)
+  }
   if(type =="affy_hg_u133a_2"){
     attrib = c("affy_hg_u133a_v2",attrib)
   }
@@ -279,7 +284,12 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
     attribute = type
 
     if(!missing(symbol)){
-      filter = "external_gene_id"                      
+      if(strsplit(mart@dataset, "_")[[1]][1] == "hsapiens"){
+        filter = "hgnc_symbol"
+      } 
+      else{
+       filter = "external_gene_id"
+      }                      
       attributes = c(filter,attribute)
       values = symbol
     }
