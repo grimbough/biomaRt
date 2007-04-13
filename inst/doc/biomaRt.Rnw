@@ -1,10 +1,4 @@
-%\VignetteIndexEntry{biomaRt overview}
-%\VignetteDepends{biomaRt}
-%\VignetteKeywords{biomaRt}
-%\VignettePackage{biomaRt}
 \documentclass[11pt]{article}
-
-% \usepackage{amsmath,epsfig,psfig,pstricks,fullpage}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage[authoryear,round]{natbib}
@@ -25,10 +19,6 @@
 \begin{center} $^\star$Oncogenomics lab, NCI/NIH, Gaithersburg, MD, USA\\$^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
 
  \end{center}
-
-%library(tools)
-%Rnwfile<- file.path("/home/steffen/programming/R/biomaRt/inst/doc/biomaRt.Rnw")
-%Sweave(Rnwfile,pdf=TRUE,eps=TRUE,stylepath=TRUE,driver=RweaveLatex())
 
 \tableofcontents
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,7 +48,7 @@ An object of the \Robject{Mart} class stores connections to BioMart databases an
 \section{Selecting a BioMart database and dataset}
 In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases is described in the next section "Advanced data retrieval with BioMart API functions".
 
-A first step when using biomaRt, is to check which BioMart web services are available.  The function \textit{listMarts} will display all available BioMart web services   
+A first step when using biomaRt, is to check which BioMart web services are available.  The function \Rfunction{listMarts} will display all available BioMart web services   
 
 <<echo=FALSE>>=
 library(annotate)
@@ -72,20 +62,20 @@ listMarts()
 @
 \end{small}
 
-If the function useMart runs into proxy problems you should set your proxy first before calling any biomaRt functions.  
+If the function \Rfunction{useMart} runs into proxy problems you should set your proxy first before calling any biomaRt functions.  
 You can do this using the Sys.putenv command:
 
 \begin{verbatim}
 Sys.putenv("http\_proxy" = "http://my.proxy.org:9999")
 \end{verbatim}
 
-Next we need to select a BioMart database to use, which can be done with the \textit{useMart} function.  Specify the web service by its name given by \textit{listMarts}.  Here we choose to use the Ensembl BioMart web service.
+Next we need to select a BioMart database to use, which can be done with the \Rfunction{useMart} function.  Specify the web service by its name given by \Rfunction{listMarts}.  Here we choose to use the Ensembl BioMart web service.
 
 <<>>=
 ensembl=useMart("ensembl")
 @
 
-BioMart databases can contain several datasets.  In a next step we look at which datasets are available in the selected BioMart by using the function \textit{listDatasets}.
+BioMart databases can contain several datasets.  In a next step we look at which datasets are available in the selected BioMart by using the function \Rfunction{listDatasets}.
 
 \begin{small}
 <<>>=
@@ -93,12 +83,12 @@ listDatasets(ensembl)
 @
 \end{small}
 
-To select a dataset we can update the Mart object using the function \textit{useDataset}.
+To select a dataset we can update the Mart object using the function \Rfunction{useDataset}.
 \begin{verbatim}
 ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
 \end{verbatim}
 
-Alternatively if the dataset one wants to use is known in advance this can be specified in the \textit{useMart} function by:
+Alternatively if the dataset one wants to use is known in advance this can be specified in the \Rfunction{useMart} function by:
 
 <<>>=
 ensembl = useMart("ensembl",dataset="hsapiens_gene_ensembl")
@@ -110,7 +100,7 @@ In this section we describe a set of simple functions which are frequently used 
 
 \subsection{getGene}
 
-The function \textit{getGene} uses a vector of query ids to look up the name, description and chromosomal information of the corresponding gene. The type of identifier should be specified with the \textit{type} argument (this can have values like: entrezgene, refseq\_dna, unigene,affy\_hg\_u133\_plus\_2, etc...).  Possible values for the type argument can be retrieved with the listFilters function. The \textit{mart} argument should be used to specify which \textit{Mart} object (which we generated above) to use.
+The function \Rfunction{getGene} uses a vector of query ids to look up the name, description and chromosomal information of the corresponding gene. The type of identifier should be specified with the \textit{type} argument (this can have values like: entrezgene, refseq\_dna, unigene,affy\_hg\_u133\_plus\_2, etc...).  Possible values for the type argument can be retrieved with the listFilters function. The \textit{mart} argument should be used to specify which \Robject{Mart} object (which we generated above) to use.
 \begin{scriptsize}
 <<>>=
 affyids=c("202763_at","209310_s_at","207500_at")
@@ -118,7 +108,7 @@ getGene(id=affyids, type="affy_hg_u133_plus_2",mart=ensembl)
 @
 \end{scriptsize}
 
-Next we use \textit{getGene} with a list of entrezgene identifiers.
+Next we use \Rfunction{getGene} with a list of entrezgene identifiers.
 \begin{scriptsize}
 <<>>=
 entrez=c("673","7157","837")
@@ -127,8 +117,8 @@ getGene(id=entrez, type="entrezgene",mart=ensembl)
 \end{scriptsize}
 \subsection{getGO}
 
-The function \textit{getGO} enables one to retrieve GO identifiers, descriptions and evidence codes starting from a variety of identifiers.
-Identical to the \textit{getGene} function, \textit{getGO} takes the \textit{type} and \textit{mart} arguments.
+The function \Rfunction{getGO} enables one to retrieve GO identifiers, descriptions and evidence codes starting from a variety of identifiers.
+Identical to the \Rfunction{getGene} function, \Rfunction{getGO} takes the \textit{type} and \textit{mart} arguments.
 
 \begin{scriptsize}
 <<>>=
@@ -139,8 +129,8 @@ go
 
 \section{getSequence}
 
-Sequences can be retrieved using the \textit{getSequence} function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the \textit{chromosome} argument.  The \textit{start} and \textit{end} arguments are used to specify \textit{start} and \textit{end} positions on the chromosome. The type of sequence returned can be specified by the seqType argument which takes the following values: 'cdna';'peptide' for protein sequences;'3utr' for 3' UTR sequences,'5utr' for 5' UTR sequences; 'gene\_exon' for exon sequences only; 'transcript\_exon' for transcript specific exonic sequences only;'transcript\_exon\_intron' gives the full unspliced transcript, that is exons + introns;'gene\_exon\_intron' gives the exons + introns of a gene;'coding' gives the coding sequence only;'coding\_transcript\_flank' gives the flanking region of the transcript including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute;'coding\_gene\_flank' gives the flanking region of the gene including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'transcript\_flank' gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'gene\_flank' gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute.
-In MySQL mode the getSequence function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
+Sequences can be retrieved using the \Rfunction{getSequence} function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the \textit{chromosome} argument.  The \textit{start} and \textit{end} arguments are used to specify \textit{start} and \textit{end} positions on the chromosome. The type of sequence returned can be specified by the seqType argument which takes the following values: 'cdna';'peptide' for protein sequences;'3utr' for 3' UTR sequences,'5utr' for 5' UTR sequences; 'gene\_exon' for exon sequences only; 'transcript\_exon' for transcript specific exonic sequences only;'transcript\_exon\_intron' gives the full unspliced transcript, that is exons + introns;'gene\_exon\_intron' gives the exons + introns of a gene;'coding' gives the coding sequence only;'coding\_transcript\_flank' gives the flanking region of the transcript including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute;'coding\_gene\_flank' gives the flanking region of the gene including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'transcript\_flank' gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'gene\_flank' gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute.
+In MySQL mode the \Rfunction{getSequence} function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
 
 First we retrieve the 5'UTR sequences of all genes on chromosome 3 between a given start and end position.  We also have to specify which type of identifier we want to retrieve together with the sequences, here we choose for entrezgene identifiers.
 \begin{small}
@@ -158,7 +148,7 @@ First we retrieve the 5'UTR sequences of all genes on chromosome 3 between a giv
 \end{scriptsize}
 
 Next we retrieve the protein sequences given a list of entrezgene identifiers.  In  this case the type argument specifies which type of identifiers we are using.
-To get an overview of other valid identifier types we refer to the listFilters function.
+To get an overview of other valid identifier types we refer to the \Rfunction{listFilters} function.
 
 \begin{small}
 \begin{verbatim}
@@ -178,11 +168,11 @@ To get an overview of other valid identifier types we refer to the listFilters f
 
 \section{exportFASTA}
 
-The data.frames obtained by the getSequence function can be exported to FASTA files using the exportFASTA function.
+The data.frames obtained by the getSequence function can be exported to FASTA files using the \Rfunction{exportFASTA} function.
 One has to specify the data.frame to export and the filename using the file argument.
 
 \section{getFeature}
-The \textit{getFeature} function enables us to select a set of features based on chromosomal coordinates or GO identifiers.
+The \Rfunction{getFeature} function enables us to select a set of features based on chromosomal coordinates or GO identifiers.
 Select all Affymetrix identifiers on the hgu133plus2 chip for genes located on chromosome 16 between basepair 1100000 and 1250000.
 \textit{getFeature} takes the \textit{type} argument to specify the type of identifiers that need to be retrieved.
 
@@ -275,9 +265,9 @@ Checking attributes and filters ... ok
 \end{scriptsize}
 
 \subsection{getHomolog}
-BioMart takes advantage of the many species present in Ensembl to do homology mappings.  By using two datasets (i.e. two species), we can apply the \textit{getHomolog} function to map identifiers from one species to the other.
-Similar as the \textit{getGene} function, we have to specify the identifier we start from using either the \textit{from.array} argument if the identifier comes from an affy array or else the \textit{from.type} argument if we use an other identifier.  The identifier we want to retrieve has to be specified by using the \textit{to.array} or \textit{to.type} arguments.\\
-A generalized version of the getHomolog function is the getLDS function (see Advanced Queries section). getLDS enables one to combine two datasets (=species in Ensembl) and query any field from one dataset based on the other.
+BioMart takes advantage of the many species present in Ensembl to do homology mappings.  By using two datasets (i.e. two species), we can apply the \Rfunction{getHomolog} function to map identifiers from one species to the other.
+Similar as the \Rfunction{getGene} function, we have to specify the identifier we start from using either the \textit{from.array} argument if the identifier comes from an affy array or else the \textit{from.type} argument if we use an other identifier.  The identifier we want to retrieve has to be specified by using the \textit{to.array} or \textit{to.type} arguments.\\
+A generalized version of the \Rfunction{getHomolog} function is the \Rfunction{getLDS} function (see Advanced Queries section). \Rfunction{getLDS} enables one to combine two datasets (=species in Ensembl) and query any field from one dataset based on the other.
 
 In a first example we start from a affy identifier of a human chip and we want to retrieve the identifiers of the corresponding homolog on a mouse chip. 
 \begin{small}
@@ -319,7 +309,7 @@ Attributes define the values we are interested in to retrieve.  For example we w
 We will first demonstrate the use of filters and attributes with Ensembl and use it with other BioMarts.
 
 \subsection{listFilters and filterSummary}
-The function \textit{listFilters} can be used to retrieve all available filters in a dataset.
+The function \Rfunction{listFilters} can be used to retrieve all available filters in a dataset.
 
 \begin{small}
 <<>>=
@@ -330,7 +320,7 @@ filters[1:10,]
 
 In BioMart databases, filters can be grouped.
 Ensembl for example contains the filter groups GENE:, REGION:, ...
-An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the filterSummary function.
+An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the \Rfunction{filterSummary} function.
 
 \begin{small}
 <<>>=
@@ -339,7 +329,7 @@ summaryF[1:5,]
 @
 \end{small}
 
-To show us a smaller list of filters which belog to a specified group or category we can now specify this in the listFilters function as follows:
+To show us a smaller list of filters which belog to a specified group or category we can now specify this in the \Rfunction{listFilters} function as follows:
 
 \begin{small}
 <<>>=
@@ -351,7 +341,7 @@ We now get a short list of filters related to the region where the genes are loc
 
 
 \subsection{listAttributes and attributeSummary}
-The \textit{listAttributes} function can be used to see which attributes are available in the selected dataset.
+The \Rfunction{listAttributes} function can be used to see which attributes are available in the selected dataset.
 
 \begin{small}
 <<>>=
@@ -360,10 +350,10 @@ attrib[1:10,]
 @
 \end{small}
 
-For large BioMart databases such as Ensembl, the number of attributes displayed by the listAttributes function can be very large. 
+For large BioMart databases such as Ensembl, the number of attributes displayed by the \Rfunction{listAttributes} function can be very large. 
 In BioMart databases, attributes are put together in categories, such as Sequences, Features, Homologs for Ensembl, and within these categories, attributes can be grouped.
 The Features category of Ensembl for example contains the attribute groups GENE:, REGION:, ...
-An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the attributeSummary function.
+An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the \Rfunction{attributeSummary} function.
 
 \begin{small}
 <<>>=
@@ -372,7 +362,7 @@ summaryA[1:10,]
 @
 \end{small}
 
-To show us a smaller list of attributes which belog to a specified group or category we can now specify this in the listAttributes function as follows:
+To show us a smaller list of attributes which belog to a specified group or category we can now specify this in the \Rfunction{listAttributes} function as follows:
 
 \begin{small}
 <<>>=
@@ -384,7 +374,7 @@ We now get a short list of attributes related to the region where the genes are 
 
 
 \subsection{getBM}
-Now that we know what filters and attributes are we can make a biomaRt query using the \textit{getBM} function. An easy query could be to retrieve  the HUGO symbols, chromosome name and band for a set of affy identifiers.
+Now that we know what filters and attributes are we can make a biomaRt query using the \Rfunction{getBM} function. An easy query could be to retrieve  the HUGO symbols, chromosome name and band for a set of affy identifiers.
 
 \begin{small}
 <<>>=
@@ -399,7 +389,7 @@ getBM(attributes = c("affy_hg_u95av2","hgnc_symbol","chromosome_name","band"),
 Below we describe some more complicated examples.
 
 \subsubsection{Using more than one filter}
-The \textit{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
+The \Rfunction{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
 \begin{small}
 \begin{verbatim}
  go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082",
@@ -416,41 +406,42 @@ The \textit{getBM} function enables you to use more than one filter.  In this ca
    hgnc_symbol agilent_probe chromosome_name ensembl_transcript_id
 1         CUL3  A_24_P140030               2       ENST00000264414
 2         CUL3  A_23_P209288               2       ENST00000264414
-3                                          1       ENST00000373834
-4                A_23_P46309               1       ENST00000344184
-5                A_23_P46306               1       ENST00000344184
+3        ACVR1   A_23_P79221               2       ENST00000263640
+4        ACVR1   A_23_P79218               2       ENST00000263640
+5         RCC1                             1       ENST00000373834
 6         RCC1   A_23_P46309               1       ENST00000373833
 7         RCC1   A_23_P46306               1       ENST00000373833
-8                A_23_P46309               1       ENST00000373832
-9                A_23_P46306               1       ENST00000373832
-10              A_23_P148807               1       ENST00000370415
+8         RCC1   A_23_P46309               1       ENST00000373832
+9         RCC1   A_23_P46306               1       ENST00000373832
+10        CDC7  A_23_P148807               1       ENST00000370415
 11        CDC7  A_23_P148807               1       ENST00000234626
-12        RHOU  A_23_P114814               1       ENST00000366691
-13        RHOU   A_24_P62530               1       ENST00000366691
-14        RHOU  A_23_P114814               1       ENST00000366691
-15        RHOU   A_24_P62530               1       ENST00000366691
-16        E2F6   A_32_P12610               2       ENST00000307236
-17        E2F6  A_23_P170774               2       ENST00000307236
-18        E2F6   A_32_P27271               2       ENST00000307236
-19        E2F6  A_32_P230720               2       ENST00000307236
-20        E2F6    A_23_P6312               2       ENST00000307236
-21        E2F6   A_32_P12610               2       ENST00000307236
-22        E2F6  A_23_P170774               2       ENST00000307236
-23        E2F6   A_32_P27271               2       ENST00000307236
-24        E2F6  A_32_P230720               2       ENST00000307236
-25        E2F6    A_23_P6312               2       ENST00000307236
-26              A_23_P257365               1       ENST00000370332
-27        GFI1  A_23_P257365               1       ENST00000358323
-28              A_23_P257365               1       ENST00000294702
-29        MDM4  A_24_P927377               1       ENST00000367183
-30        MDM4  A_24_P778649               1       ENST00000367183
-31        MDM4  A_24_P362432               1       ENST00000367183
-32        MDM4  A_23_P103503               1       ENST00000367183
-33        MDM4  A_23_P103502               1       ENST00000367183
-34        MDM4  A_23_P170969               1       ENST00000367183
-35              A_24_P362432               1       ENST00000356466
-36              A_23_P103503               1       ENST00000356466
-37              A_23_P103502               1       ENST00000356466
+12      PPP1CB  A_23_P425579               2       ENST00000379582
+13      PPP1CB  A_32_P102935               2       ENST00000379582
+14       SPDYA  A_23_P425579               2       ENST00000379582
+15       SPDYA  A_32_P102935               2       ENST00000379582
+16      PPP1CB  A_23_P425579               2       ENST00000379580
+17      PPP1CB  A_32_P102935               2       ENST00000379580
+18       SPDYA  A_23_P425579               2       ENST00000379580
+19       SPDYA  A_32_P102935               2       ENST00000379580
+20      PPP1CB  A_23_P425579               2       ENST00000334056
+21      PPP1CB  A_32_P102935               2       ENST00000334056
+22       SPDYA  A_23_P425579               2       ENST00000334056
+23       SPDYA  A_32_P102935               2       ENST00000334056
+24        RHOU  A_23_P114814               1       ENST00000366691
+25        RHOU   A_24_P62530               1       ENST00000366691
+26        E2F6   A_32_P12610               2       ENST00000307236
+27        E2F6  A_23_P170774               2       ENST00000307236
+28        E2F6   A_32_P27271               2       ENST00000307236
+29        E2F6  A_32_P230720               2       ENST00000307236
+30        E2F6    A_23_P6312               2       ENST00000307236
+31        GFI1  A_23_P257365               1       ENST00000370332
+32        GFI1  A_23_P257365               1       ENST00000294702
+33        MDM4  A_24_P927377               1       ENST00000367183
+34        MDM4  A_24_P778649               1       ENST00000367183
+35        MDM4  A_24_P362432               1       ENST00000367183
+36        MDM4  A_23_P103503               1       ENST00000367183
+37        MDM4  A_23_P103502               1       ENST00000367183
+38        MDM4  A_23_P170969               1       ENST00000367183
 
 \end{verbatim}
 \end{scriptsize}
@@ -507,9 +498,9 @@ getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
 
 \subsection{getLDS and linking BioMart datasets}
 
-The getLDS (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.
-The usage of getLDS is very similar to getBM.  The linked dataset is provided by a separate Mart object and one has to specify filters and attributes for the linked dataset.  Note that this function only works in web service mode.  Filters can either be applied to both datasets or to one of the datasets. When used with Ensembl, getLDS is a generalized version of the getHomolog function.
-Below is an example on how  to use getLDS.
+The \Rfunction{getLDS} (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.
+The usage of getLDS is very similar to \Rfunction{getBM}.  The linked dataset is provided by a separate Mart object and one has to specify filters and attributes for the linked dataset.  Note that this function only works in web service mode.  Filters can either be applied to both datasets or to one of the datasets. When used with Ensembl, \Rfunction{getLDS} is a generalized version of the \Rfunction{getHomolog} function.
+Below is an example on how to use \Rfunction{getLDS}.
 
 \begin{scriptsize}
 \begin{verbatim}
@@ -562,6 +553,8 @@ mart=useMart("ensembl_mart_42", mysql=TRUE, host="localhost", user="****", passw
 \end{scriptsize}
 
 For more information on how to install a public BioMart database see:  http://www.biomart.org/install.html and follow link databases.
-
-
+\section{Session Info}
+<<>>=
+sessionInfo()
+@
 \end{document}
