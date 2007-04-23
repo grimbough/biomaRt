@@ -1,0 +1,263 @@
+%\VignetteIndexEntry{How to get pretty HTML output for my gene list}
+%\VignetteDepends{annotate, biomaRt}
+%\VignetteKeywords{Expression Analysis, Annotation}
+%\VignettePackage{biomaRt}
+\documentclass[11pt]{article}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[authoryear,round]{natbib}
+\bibliographystyle{plainnat}
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+\begin{document}
+\title{HowTo: get pretty HTML output for my gene list}
+\author{James W. MacDonald}
+\maketitle{}
+\SweaveOpts{keep.source=TRUE}
+
+\section{Overview}
+The intent of this vignette is to show how to make reasonably nice
+looking HTML tables for presenting the results of a microarray
+analysis. These tables are a very nice format because you can insert
+clickable links to various public annotation databases, which
+facilitates the downstream analysis.  In addition, the format is quite
+compact, can be posted on the web, and can be viewed using any number
+of free web browsers. One caveat; an HTML table is probably not the
+best format for presenting the results for \emph{all} of the genes on
+a chip. For even a small (5000 gene) chip, the file could be 10 Mb or
+more, which would take an inordinate amount of time to open and
+view. Also note that the Bioconductor project supplies annotation
+packages for many of the more popular Affymetrix chips, as well as for
+many commercial spotted cDNA chips. For chips that have annotation
+packages, the \Rpackage{annaffy} package is the preferred method for
+making HTML tables.
+
+To make an annotated HTML table, the only requirement is that we have
+some sort of annotation data for the microarray that we are
+using. Most manufacturers supply data in various formats that can be
+read into \Rpackage{R}. For instance, Affymetrix supplies CSV files
+that can be read into \Rpackage{R} using the \Rmethod{read.csv()}
+function
+\url{http://www.affymetrix.com/support/technical/byproduct.affx?cat=arrays}.
+
+Another alternative is to annotate using functionality in the \Rpackage{biomaRt}
+package. This allows one to get the most current annotations interactively.
+In addition, the output can be used directly with functions in \Rpackage{annotate}
+to make HTML tables. We will use these functions in this vignette.
+
+\section{Data Analysis}
+I will assume that the reader is familiar with the analysis of
+microarray data, and has a set of genes that she would like to use. In
+addition, I will assume that the reader is familiar enough with
+\Rpackage{R} that she can subset the data based on a list of genes,
+and reorder based on a particular statistic. For any questions about
+subsetting or ordering data, please see ``An Introduction to R''. For
+questions regarding microarray analysis, please consult the vignettes
+for, say \Rpackage{limma}, \Rpackage{multtest}, or \Rpackage{marray}.
+
+\section{Getting Started}
+We first load the \Rpackage{annotate} package, as well as some
+data. These data will be from the Affymetrix HG-U95Av2 chip (for which
+we would normally use \Rpackage{annaffy}). To keep the HTML table
+small, we will take a subset of fifteen genes as an example.
+
+<<echo=FALSE, eval=TRUE>>=
+options(width=70)
+@
+
+<<>>=
+library("annotate")
+data(sample.ExpressionSet)
+igenes <- featureNames(sample.ExpressionSet)[246:260]
+@
+
+We also have to load the \Rpackage{biomaRt} package and connect to 
+a Biomart database, using the \Rfunction{useMart} function. Note that
+there are two interfaces that \Rpackage{biomaRt} can use to connect to a 
+Biomart database, using either the \Rpackage{RCurl} package to connect
+via http protocols, or the \Rpackage{RMySQL} package to connect via 
+database protocols. The default is to use \Rpackage{RCurl} because it can
+be difficult to get \Rpackage{RMySQL} set up on Windows computers. However,
+I find the database connectivity to be much faster, so for those who want
+to annotate a large number of genes, I would recommend using the \Rpackage{RMySQL}
+interface. See the help file for \Rfunction{useMart} for more information.
+
+<<>>=
+library("biomaRt")
+mart <- useMart("ensembl", "hsapiens_gene_ensembl")
+@ 
+
+
+\section{Annotation Data}
+
+The \Rfunction{htmlpage} function is designed to take two sets of input;
+data that will be converted to clickable links to various online databases,
+and data that will simply be put into the HTML table as is. For the clickable
+links we need an \Robject{list} of character vectors for each database. For
+the data, we need a \Robject{list} of either \Robject{vectors}, \Robject{data.frames}
+or a mixture of the two. We will explore this topic more later. First, we
+will see how to get data using \Rpackage{biomaRt} functionality.
+
+We first need to see exactly what sort of data we can get from Ensembl's
+Biomart. Note that some of the information can be a bit cryptic, so we can
+parse out a more reasonable description. We also need to see what things we
+can use as identifiers in our query of the Biomart server.
+
+First, a bit of terminology. An 'attribute' is a data type that can be returned
+from a query of a Biomart server. A 'filter' is the identifier that we use to 
+query the server. For instance, we can get GO terms and Entrez Gene IDs (the 
+attributes) by querying on the Affy Probe ID (the filter).
+
+There are too many attributes to list here, so we can parse out things that may
+be interesting to us. Let's say we want to get Entrez Gene and SwissProt IDs for
+our set of genes.
+
+<<>>=
+attrbuts <- listAttributes(mart)
+attrbuts[grep("swiss", attrbuts[,1]),]
+attrbuts[grep("entrez", attrbuts[,1]),]
+@ 
+
+
+So the attributes we want are uniprot\_swissprot\_accession and entrezgene.
+
+The same basic idea can be used to figure out which filter to use. Since we are using
+the HG-U95av2 chip, we need to figure out what that filter is called.
+
+<<>>=
+fltr <- listFilters(mart)
+fltr[grep("affy", fltr[,1]),]
+@ 
+
+This one is pretty obvious - we want the affy\_hg\_u95av2 filter.
+ 
+Now to get back to the task at hand; we have 15 Affy Probeset IDs that we want to 
+use to create our HTML table. Let's say we want to create an HTML table in which we
+map the Affy IDs to Entrez Gene, SwissProt, UniGene, and RefSeq IDs (all clickable links)
+and in addition we want to include the gene description and symbol, the
+Gene Ontology terms, and  chromosome location,
+as well as the $t$-statistic, $p$-value, fold change and expression values. That would
+be a nice compact format for presenting the data to someone.
+
+We need to collect all this information in two lists; one that will be used to make the
+hyperlinks, and one that will just be static information. First, we do the hyperlinks.
+By using the ideas presented above, I figured out which attributes correspond to 
+Entrez Gene, SwissProt, UniGene, and RefSeq IDs, so I will use them here. Instead of
+writing them all out, I will simply select the correct terms using the 
+\Rfunction{listAttributes} function.
+
+<<>>=
+genelist <- getBM(attributes = c("affy_hg_u95av2","entrezgene","uniprot_swissprot_accession","refseq_dna"),
+                  filter = "affy_hg_u95av2", values = igenes, mart = mart,
+                  output = "list", na.value = "&nbsp;")
+genelist[[1]] <- igenes
+
+## let's look at genelist values
+lapply(genelist, function(x) x[5:10])
+@ 
+
+Here we can see that genelist is a \Robject{list} of \Robject{lists}, with each
+sub-list being made up of a character vector. I substituted the 'igenes' vector back into the 
+first position of the list because the Biomart server we are using doesn't have
+data for all Affy IDs (including the Affy ID itself). Since we want links for 
+all of the Affy IDs, I simply substituted the original vector into the 
+genelist.
+
+Two important things to note about the call to \Rfunction{getBM}. First, we have
+to use the argument output = ``list''. Second, we have to use na.value = ``\&nbsp;'',
+which will create an empty table entry for any missing data. This is much nicer
+than leaving the NAs, which will tend to clutter up the table without adding any
+information.
+
+Making the second \Robject{list} is a bit more complicated. We need to get some annotation from
+the Biomart database, and append that to some data we have from our experiment. 
+The first step is to get the annotation data. As noted above, we want the gene name and
+symbol, as well as the GO terms and chromosome location for these probesets.
+We can figure out which attribute terms to use, following the ideas presented above.
+
+
+<<>>=
+attrbuts[grep("description", attrbuts[,1]),]
+attrbuts[grep("symbol", attrbuts[,1]),]
+attrbuts[grep("go", attrbuts[,1]),]
+attrbuts[grep("^chrom", attrbuts[,1]),]
+@ 
+
+
+We want "description", "hgnc\_symbol", "go\_description" and "band"
+
+<<>>=
+annotlist <- getBM(attributes = c("description", "hgnc_symbol", "go_description", "band"),
+                   filter = "affy_hg_u95av2", values = igenes, mart = mart,
+                  output = "list",na.value = "&nbsp;")
+@ 
+
+<<eval=false>>=
+lapply(annotlist, function(x) x[5:10])
+@ 
+
+<<echo=false>>=
+prntlist <- vector("list", 4)
+prntlist <- lapply(annotlist[1:3], function(x) lapply(x[5:10], strwrap))
+prntlist[[4]] <- annotlist[[4]][5:10]
+prntlist
+@ 
+
+Now we have the annotation data, it is time to add in the experimental data.
+As an example, we will only use the first ten samples. We also use the \Rfunction{round}
+function to truncate the data to a reasonable number of decimal points.
+
+<<expDat>>=
+dat <- round(exprs(sample.ExpressionSet)[igenes,1:10], 3)
+FC <- round(rowMeans(dat[igenes,1:5]) - rowMeans(dat[igenes,6:10]), 2)
+pval <- round(esApply(sample.ExpressionSet[igenes,1:10], 1, 
+                      function(x) t.test(x[1:5], x[6:10])$p.value), 3)
+tstat <- round(esApply(sample.ExpressionSet[igenes,1:10], 1, 
+                       function(x) t.test(x[1:5], x[6:10])$statistic), 2)
+@
+
+We now need to put all this into one list. 
+
+<<>>=
+othernames <- vector("list", length = 8)
+othernames[1:4] <- annotlist
+othernames[5:8] <- list( tstat, pval, FC, dat)
+@ 
+
+
+\section{Build the Table}
+
+Once we have all our data in \Robject{lists}, it is simple to build the HTML table.
+
+<<>>=
+table.head <- c("Affy ID", "Entrez Gene", "SwissProt", "RefSeq",
+                "Name","Symbol","GO Term", "Band",
+                "t-statistic","p-value","Fold change", 
+                sampleNames(sample.ExpressionSet)[1:10])
+repository  <- list("affy","en","sp","gb")
+htmlpage(genelist, "Annotated genes.html", "Annotated genes", othernames, table.head,
+         repository = repository)
+@ 
+
+The resulting HTML table should be in R\_HOME/library/annotate/doc. If not, you can
+reproduce it using the \Rfunction{vExplorer} function in the \Rpackage{tkWidgets} package,
+which will allow you to step through the code in this vignette and examine all the 
+objects that are made. Alternatively, one could use \Rfunction{getwd} to change the 
+working directory to R\_HOME/library/annotate/doc, then use \Rfunction{Stangle} 
+on the vignette and then source the resulting R code (e.g., Stangle("prettyOutput.Rnw")
+followed by source("prettyOutput.R").
+
+\section{Session Information}
+
+The version number of R and packages loaded for generating the vignette were:
+
+<<echo=FALSE>>=
+sessionInfo()
+@
+
+\end{document}
