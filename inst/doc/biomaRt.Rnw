@@ -560,5 +560,6 @@ For more information on how to install a public BioMart database see:  http://ww
 \section{Session Info}
 <<>>=
 sessionInfo()
+warnings()
 @
 \end{document}
