@@ -839,12 +839,12 @@ listDatasets <- function(mart) {
     txt = scan(paste(mart@host,"?type=datasets&requestid=biomaRt&mart=",mart@biomart,sep=""),
       sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
 
-    its = grep("TableSet", txt)
-    its = its[ txt[its+3]=="1" ]  ## only visible ones
-
-    res = data.frame(dataset     = I(txt[its+1L]),
-                     description = I(txt[its+2L]),
-                     version     = I(txt[its+4L]))
+    ## select visible ("1") table sets
+    i = intersect(which(txt=="TableSet"), which(txt=="1")-3L)
+                                         
+    res = data.frame(dataset     = I(txt[i+1L]),
+                     description = I(txt[i+2L]),
+                     version     = I(txt[i+4L]))
 
   }
 
