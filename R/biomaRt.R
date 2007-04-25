@@ -7,6 +7,7 @@ setClass("Mart",
                         mainTables = "list",
                         biomart = "character",
                         host = "character",
+                        port = "character",
                         vschema = "character",
                         dataset = "character",
                         filters = "environment",
@@ -134,6 +135,7 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
             marts$version[index] = xmlGetAttr(registry[[i]][[j]],"displayName")
             marts$host[index] = xmlGetAttr(registry[[i]][[j]],"host")
             marts$path[index] = xmlGetAttr(registry[[i]][[j]],"path")
+            marts$port[index] = xmlGetAttr(registry[[i]][[j]],"port")
             marts$vschema[index] = vschema
             index=index+1
           }
@@ -145,6 +147,7 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
           marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
           marts$host[index] = xmlGetAttr(registry[[i]],"host")
           marts$path[index] = xmlGetAttr(registry[[i]],"path")
+          marts$port[index] = xmlGetAttr(registry[[i]],"port")
           if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
            marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
           }
@@ -813,7 +816,7 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
 
     if(marts$path[mindex]=="")marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
     
-    mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],marts$path[mindex],sep=""), mysql= FALSE)
+    mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), mysql= FALSE)
     if(!missing(dataset)){
       mart = useDataset(mart = mart, dataset=dataset)
     }
