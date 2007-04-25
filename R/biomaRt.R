@@ -825,35 +825,30 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
 #listDatasets      #
 ####################
 
-listDatasets <- function( mart ){
-  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+listDatasets <- function(mart) {
+  if(missing(mart) || !is(mart, 'Mart'))
+    stop("No Mart object given or object not of class 'Mart'")
+
   if(mart@mysql){
     
-    res <- dbGetQuery(mart@connections$biomart,"select dataset, version from meta_conf__dataset__main where visible = 1")
-    return(res)
+    res = dbGetQuery(mart@connections$biomart,
+      "select dataset, version from meta_conf__dataset__main where visible = 1")
     
-  }
-  else{
+  } else{
     
-    datasetsTemp = scan(paste(mart@host,"?type=datasets&requestid=biomaRt&mart=",mart@biomart,sep=""),
+    txt = scan(paste(mart@host,"?type=datasets&requestid=biomaRt&mart=",mart@biomart,sep=""),
       sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
-    dataset = NULL
-    version = NULL
-    description = NULL 
-    index = 0
-    for(i in 1:(length(datasetsTemp)-3)){
-      if(datasetsTemp[i] == "TableSet"){
-        if(datasetsTemp[i+3] == "1"){
-          index=index+1;
-          dataset[index]=datasetsTemp[i+1]
-          description[index]=datasetsTemp[i+2]  
-          version[index]=datasetsTemp[i+4]
-        }
-      }
-    }
-    datasets=data.frame(dataset=dataset,description = description ,version=version)
-    return(datasets)
+
+    its = grep("TableSet", txt)
+    its = its[ txt[its+3]=="1" ]  ## only visible ones
+
+    res = data.frame(dataset     = I(txt[its+1L]),
+                     description = I(txt[its+2L]),
+                     version     = I(txt[its+4L]))
+
   }
+
+  return(res)
 }
 
 ############################################
