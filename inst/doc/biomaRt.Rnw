@@ -114,21 +114,86 @@ getGene(id=affyids, type="affy_hg_u133_plus_2",mart=ensembl)
 
 Next we use \Rfunction{getGene} with a list of entrezgene identifiers.
 \begin{scriptsize}
-<<>>=
-entrez=c("673","7157","837")
-getGene(id=entrez, type="entrezgene",mart=ensembl)
-@
+\begin{verbatim}
+> entrez=c("673","7157","837")
+> getGene(id=entrez, type="entrezgene",mart=ensembl)
+ entrezgene hgnc_symbol
+1       7157        TP53
+2        673        BRAF
+3        837       CASP4
+                                                                                                                                                                          description
+ Cellular tumor antigen p53 (Tumor suppressor p53) (Phosphoprotein p53) (Antigen NY-CO-13). [Source:Uniprot/SWISSPROT;Acc:P04637]
+ B-Raf proto-oncogene serine/threonine-protein kinase (EC 2.7.11.1) (p94) (v-Raf murine sarcoma viral oncogene homolog B1). [Source:Uniprot/SWISSPROT;Acc:P15056]
+ Caspase-4 precursor (EC 3.4.22.-) (CASP-4) (ICH-2 protease) (TX protease) (ICE(rel)-II) [Contains: Caspase-4 subunit 1; Caspase-4 subunit 2]. [Source:Uniprot/SWISSPROT;Acc:P49662]
+
+  chromosome_name  band strand start_position end_position ensembl_gene_id ensembl_transcript_id
+1              17 p13.1     -1        7512464      7531642 ENSG00000141510       ENST00000269305
+2               7   q34     -1      140080754    140271033 ENSG00000157764       ENST00000288602
+3              11 q22.3     -1      104318810    104345373 ENSG00000196954       ENST00000355546
+
+\end{verbatim}
 \end{scriptsize}
+
 \subsection{getGO}
 
 The function \Rfunction{getGO} enables one to retrieve GO identifiers, descriptions and evidence codes starting from a variety of identifiers.
 Identical to the \Rfunction{getGene} function, \Rfunction{getGO} takes the \textit{type} and \textit{mart} arguments.
 
 \begin{scriptsize}
-<<>>=
-go = getGO(id=affyids[1], type="affy_hg_u133_plus_2",mart=ensembl)
-go
-@
+\begin{verbatim}
+
+> go = getGO(id=affyids[1], type="affy_hg_u133_plus_2",mart=ensembl)
+> go
+   affy_hg_u133_plus_2         go                                                  go_description
+1            202763_at GO:0001782                                              B cell homeostasis
+2            202763_at GO:0001836                       release of cytochrome c from mitochondria
+3            202763_at GO:0004861              cyclin-dependent protein kinase inhibitor activity
+4            202763_at GO:0005515                                                 protein binding
+5            202763_at GO:0005737                                                       cytoplasm
+6            202763_at GO:0006309                              DNA fragmentation during apoptosis
+7            202763_at GO:0006508                                                     proteolysis
+8            202763_at GO:0006915                                                       apoptosis
+9            202763_at GO:0006917                                          induction of apoptosis
+10           202763_at GO:0007507                                               heart development
+11           202763_at GO:0007605                                     sensory perception of sound
+12           202763_at GO:0008234                                cysteine-type peptidase activity
+13           202763_at GO:0008625               induction of apoptosis via death domain receptors
+14           202763_at GO:0008631                      induction of apoptosis by oxidative stress
+15           202763_at GO:0009411                                                  response to UV
+16           202763_at GO:0009611                                            response to wounding
+17           202763_at GO:0030216                                    keratinocyte differentiation
+18           202763_at GO:0030693                                                caspase activity
+19           202763_at GO:0030889                     negative regulation of B cell proliferation
+20           202763_at GO:0043029                                              T cell homeostasis
+21           202763_at GO:0045165                                            cell fate commitment
+22           202763_at GO:0045736 negative regulation of cyclin-dependent protein kinase activity
+23           202763_at GO:0046007           negative regulation of activated T cell proliferation
+   evidence_code ensembl_gene_id ensembl_transcript_id
+1            IEA ENSG00000164305       ENST00000308394
+2            IEA ENSG00000164305       ENST00000308394
+3            IEA ENSG00000164305       ENST00000308394
+4            IPI ENSG00000164305       ENST00000308394
+5            IEA ENSG00000164305       ENST00000308394
+6            IEA ENSG00000164305       ENST00000308394
+7            IDA ENSG00000164305       ENST00000308394
+8            IEA ENSG00000164305       ENST00000308394
+9            TAS ENSG00000164305       ENST00000308394
+10           IEA ENSG00000164305       ENST00000308394
+11           IEA ENSG00000164305       ENST00000308394
+12           IEA ENSG00000164305       ENST00000308394
+13           IEA ENSG00000164305       ENST00000308394
+14           IEA ENSG00000164305       ENST00000308394
+15           IEA ENSG00000164305       ENST00000308394
+16           IEA ENSG00000164305       ENST00000308394
+17           IEA ENSG00000164305       ENST00000308394
+18           TAS ENSG00000164305       ENST00000308394
+19           IEA ENSG00000164305       ENST00000308394
+20           IEA ENSG00000164305       ENST00000308394
+21           IEA ENSG00000164305       ENST00000308394
+22           IEA ENSG00000164305       ENST00000308394
+23           IEA ENSG00000164305       ENST00000308394
+
+\end{verbatim}
 \end{scriptsize}
 
 \section{getSequence}
@@ -342,6 +407,30 @@ listFilters(ensembl, group = "REGION:")
 \end{small}
 
 We now get a short list of filters related to the region where the genes are located.
+
+\subsection{filterType}
+
+Boolean filters need a value TRUE or FALSE in biomaRt.  Setting the value TRUE will include all information that fulfill the filter requirement.  Setting FALSE will exclude the information that fulfills the filter requirement and will return all values that don't fulfill the filter.
+For most of the filters, their name indicates if the type is a boolean or not and they will usually start with "with".  However this is not a rule and to make sure you got the type right you can use the function \Rfunction{filterType} to investigate the type of the filter you want to use.
+
+\begin{small}
+<<>>=
+filterType("with_affy_hg_u133_plus_2",ensembl)
+@
+\end{small}
+
+\subsection{filterOptions}
+
+Some filters have a limited set of values that can be given to them.  To know which values these are one can use the \Rfunction{filterOptions} function to retrieve the predetermed values of the respective filter.
+
+\begin{small}
+<<>>=
+filterOptions("biotype",ensembl)
+@
+
+\end{small}
+
+If there are no predetermed values e.g. for the entrezgene filter, then \Rfunction{filterOptions} will return the type of filter it is. And most of the times the filter name or it's description will suggest what values one case use for the respective filter (e.g. entrezgene filter will work with enterzgene identifiers as values)
 
 
 \subsection{listAttributes and attributeSummary}

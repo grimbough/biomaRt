@@ -1008,12 +1008,31 @@ filterSummary = function( mart ){
 
 }
 
+###################
+#filterOptions    #
+###################
+
+filterOptions = function(filter, mart){
+ if(!filter %in% ls(mart@filters))stop("Filter not valid")
+ options = get(filter, env=mart@filters)$options
+ return(options)
+}
+
+###################
+#filterType       #
+###################
+
+filterType = function(filter, mart){
+ if(!filter %in% ls(mart@filters))stop("Filter not valid")
+ type = get(filter, env=mart@filters)$type
+ return(type)
+}
 
 ##########################################
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, checkFilters = TRUE, verbose=FALSE){
+getBM = function(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, checkFilters = TRUE, verbose=FALSE){
 
   if(missing( mart ) || class( mart )!='Mart')
     stop("Argument 'mart' must be specified and be of class 'Mart'.")
@@ -1367,167 +1386,109 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
 ##########################################
 
 
-parseAttributes <- function(xml, env, attributePointer, group = "", page = ""){
-  
-   if(xmlName(xml) == "AttributePage"){
-     if(!is.null(xmlGetAttr(xml,"hidden"))){
-       if(xmlGetAttr(xml,"hidden") != "true"){
-         page = xmlGetAttr(xml,"displayName")
-         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, page = page)
-       }
-     }
-     else{
-       if(!is.null(xmlGetAttr(xml,"hideDisplay"))){
-         if(xmlGetAttr(xml,"hideDisplay") != "true"){
-            page = xmlGetAttr(xml,"displayName")
-            xmlSApply(xml,"parseAttributes",env,attributePointer = attributePointer,page = page)
-         }
-       }
-       else{  
-         page = xmlGetAttr(xml,"displayName")
-         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, page = page)
-       }
-     }
-   }
-   if(xmlName(xml) == "AttributeDescription"){
-     if(!is.null(xmlGetAttr(xml,"hidden"))){
-       if(xmlGetAttr(xml,"hidden") != "true"){
-         description = xmlGetAttr(xml,"displayName")
-         if(is.null(description)){
-           description = NA
-         } 
-         if(!is.null(xmlGetAttr(xml,"pointerAttribute"))){
-          assign(xmlGetAttr(xml,"internalName"),xmlGetAttr(xml,"pointerAttribute"),env = attributePointer)
-         }
-        
-         assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)
-       
-       }
-     }
-     else{
-       description = xmlGetAttr(xml,"displayName")
-       if(is.null(description)){
-          description = NA
-       }
-       if(!is.null(xmlGetAttr(xml,"pointerAttribute"))){
-          assign(xmlGetAttr(xml,"internalName"),xmlGetAttr(xml,"pointerAttribute"),env = attributePointer)
-       }
-       
-       assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env) 
-     }
-   }
-   if(xmlName(xml)=="AttributeCollection"){
-     if(!is.null(xmlGetAttr(xml,"hidden"))){
-       if(xmlGetAttr(xml,"hidden")!="true"){
-          xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
-       }
-     }
-     else{
-       xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
-     }
-   }
+parseAttributes = function(xml, env, attributePointer, group = "", page = ""){
    
-   if(xmlName(xml)=="AttributeGroup"){
-     if(!is.null(xmlGetAttr(xml,"hidden"))){
-       if(xmlGetAttr(xml,"hidden")!="true"){
-         group = xmlGetAttr(xml,"displayName") 
+   select = TRUE
+   
+    if(xmlName(xml) == "AttributePage"){
+      if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE
+      if(!is.null(xmlGetAttr(xml,"hideDisplay")) && xmlGetAttr(xml,"hideDisplay") == "true") select = FALSE
+      if(select){
+        page = xmlGetAttr(xml,"displayName")
+        xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, page = page)
+      }
+    }
+
+    if(xmlName(xml) == "AttributeDescription"){
+      if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE
+      if(select){
+        description = xmlGetAttr(xml,"displayName")
+        if(is.null(description)) description = NA
+        if(!is.null(xmlGetAttr(xml,"pointerAttribute"))) assign(xmlGetAttr(xml,"internalName"),xmlGetAttr(xml,"pointerAttribute"),env = attributePointer)
+        assign(xmlGetAttr(xml,"internalName"),list(description = description, table = xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page),env = env)        
+      } 
+    }
+
+    if(xmlName(xml)=="AttributeCollection"){
+      if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE
+      if(select){
          xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
-       }
-     }
-     else{
-       group = xmlGetAttr(xml,"displayName") 
-       xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
-     }
-   }
+      }
+    }    
+    
+    if(xmlName(xml)=="AttributeGroup"){
+      if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE
+      if(select){
+        group = xmlGetAttr(xml,"displayName") 
+        xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
+      }
+    } 
+
    if(xmlName(xml)=="DatasetConfig"){
-         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer)
+        xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer)
    }
+
    return()
 }
 
-parseFilters <- function(xml, env, group = "", page = ""){
+parseFilters = function(xml, env, group = "", page = ""){
   
+  select = TRUE
+
   if(xmlName(xml) == "FilterPage"){
-    if(!is.null(xmlGetAttr(xml,"hidden"))){
-      if(xmlGetAttr(xml,"hidden")!="true"){
-            page = xmlGetAttr(xml,"displayName")
-            xmlSApply(xml,"parseFilters",env, page = page)
-      }
-    }
-    else{
-      if(!is.null(xmlGetAttr(xml,"hideDisplay"))){
-        if(xmlGetAttr(xml,"hideDisplay")!="true"){
-             page = xmlGetAttr(xml,"displayName")
-             xmlSApply(xml,"parseFilters",env, page = page)
-       }
-      }
-      else{ 
-           page = xmlGetAttr(xml,"displayName") 
-           xmlSApply(xml,"parseFilters",env, page = page)
-      }
+    if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE 
+    if(!is.null(xmlGetAttr(xml,"hideDisplay")) && xmlGetAttr(xml,"hideDisplay") == "true") select = FALSE 
+    if(select){
+      page = xmlGetAttr(xml,"displayName")
+      xmlSApply(xml,"parseFilters",env, page = page)
     }
   }
+
   if(xmlName(xml)=="FilterGroup"){
-    if(!is.null(xmlGetAttr(xml,"hidden"))){
-      if(xmlGetAttr(xml,"hidden")!="true"){
-        group = xmlGetAttr(xml,"displayName") 
-        xmlSApply(xml,"parseFilters",env, group = group, page = page)
-      }
-    }
-    else{
+    if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE 
+    if(select){
       group = xmlGetAttr(xml,"displayName") 
       xmlSApply(xml,"parseFilters",env, group = group, page = page)
     }
   }
+
   if(xmlName(xml)=="FilterCollection"){
-    if(!is.null(xmlGetAttr(xml,"hidden"))){
-      if(xmlGetAttr(xml,"hidden")!="true"){
-        xmlSApply(xml,"parseFilters",env, group = group, page = page)
-      }
-    }
-    else{
+    if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE 
+    if(select){
       xmlSApply(xml,"parseFilters",env, group = group, page = page)
     }
   }
-  if(xmlName(xml) == "FilterDescription"){
-    if(!is.null(xmlGetAttr(xml,"hidden"))){
-      if(xmlGetAttr(xml,"hidden") != "true"){
-        if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-         description = xmlGetAttr(xml,"displayName")
-         if(is.null(description))description = NA 
-         assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
-        } 
-        else{
-         xmlSApply(xml,"parseFilters",env, group = group, page = page)
-       }
-      }
-    }
-    else{
-      if(!is.null(xmlGetAttr(xml,"tableConstraint"))){
-       description = xmlGetAttr(xml,"displayName")
-       if(is.null(description))description = NA
-       assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
-      } 
-      else{
-       xmlSApply(xml,"parseFilters",env, group = group, page = page)
-     }
-    }
-  }
-  
-  if(xmlName(xml) == "Option"){
-    if(!is.null(xmlGetAttr(xml,"hidden"))){
-      if(xmlGetAttr(xml,"hidden") != "true"){
-          description = xmlGetAttr(xml,"displayName");
-          if(is.null(description))description = NA
-          assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
-      }
-    }
-    else{
-        description = xmlGetAttr(xml,"displayName");
-        if(is.null(description))description = NA
-        assign(xmlGetAttr(xml,"internalName"),list(descr= description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = xmlGetAttr(xml,"type")),env = env)
-    }
-  }
+
+ if(xmlName(xml) == "FilterDescription"){
+   hidden = xmlGetAttr(xml,"hidden")
+   if(!is.null(hidden) && hidden == "true") select = FALSE
+   displayType = xmlGetAttr(xml,"displayType")
+   
+   if(select && !is.null(displayType) && displayType == "container"){
+     xmlSApply(xml,"parseFilters",env, group = group, page = page)
+   }
+
+   if((select && !is.null(displayType) && displayType != "container") || (select && is.null(displayType))){
+     description = xmlGetAttr(xml,"displayName")
+     if(is.null(description))description = NA
+     type = xmlGetAttr(xml,"type")
+     options = type 
+     if(!is.null(displayType) && xmlGetAttr(xml,"displayType") == "list" && type != "boolean") options = parseOptions(xml)
+     assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = type, options = options), env = env)
+   }
+ } 
+
+ if(xmlName(xml) == "Option"){
+   if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE
+   if(select){
+     description = xmlGetAttr(xml,"displayName");
+     if(is.null(description))description = NA
+     type = xmlGetAttr(xml,"type")
+     options = type   
+     if( xmlGetAttr(xml,"displayType") == "list" && type != "boolean") options = parseOptions(xml)
+     assign(xmlGetAttr(xml,"internalName"),list(descr = description, table= xmlGetAttr(xml,"tableConstraint"), key = xmlGetAttr(xml,"key"), field= xmlGetAttr(xml,"field"), group = group, page = page, type = type, options = options),env = env)
+   }
+ }
   
   if(xmlName(xml)=="DatasetConfig"){
     xmlSApply(xml,"parseFilters",env)
@@ -1535,8 +1496,18 @@ parseFilters <- function(xml, env, group = "", page = ""){
   return()  
 }
 
+parseOptions = function(xml){
+ options = NULL
+ for(h in 1:xmlSize(xml)){
+    if(!is.null(xmlGetAttr(xml[[h]],"isSelectable")) && xmlGetAttr(xml[[h]],"isSelectable") == "true"){
+      options = c(options,xmlGetAttr(xml[[h]],"value"))
+    }
+ }
+ return(options)
+}
 
-getMainTables <- function( xml ){
+
+getMainTables = function( xml ){
   
   messageToUser("Checking main tables ...")
   names = names(xml)
