@@ -445,7 +445,7 @@ attrib[1:10,]
 
 For large BioMart databases such as Ensembl, the number of attributes displayed by the \Rfunction{listAttributes} function can be very large. 
 In BioMart databases, attributes are put together in categories, such as Sequences, Features, Homologs for Ensembl, and within these categories, attributes can be grouped.
-The Features category of Ensembl for example contains the attribute groups GENE:, REGION:, ...
+The Features category of Ensembl for example contains the attribute groups GENE:, PROTEIN:, ...
 An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the \Rfunction{attributeSummary} function.
 
 \begin{small}
@@ -459,7 +459,7 @@ To show us a smaller list of attributes which belog to a specified group or cate
 
 \begin{small}
 <<>>=
-listAttributes(ensembl, category  = "Features", group = "REGION:")
+listAttributes(ensembl, category  = "Features", group = "GENE:")
 @
 \end{small}
 
