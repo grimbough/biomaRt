@@ -206,10 +206,8 @@ getGene <- function( id, type, mart){
   if( missing( mart ) || class( mart ) != 'Mart'){
     stop("you must provide a valid Mart object, create with function useMart")
   }
-  if("ensembl" != mart@biomart){
-    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-  }
-    
+  martcheck = strsplit(mart@biomart,"_")[[1]][1]
+  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.") 
   if(mart@dataset==""){
     stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
   }
@@ -251,8 +249,8 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
   if( missing( type ))stop("you must provide the identifier type using the type argument.  Note that the array argument is now depricated and should be specified with the type argument.")
 
   if( missing( mart ) || class( mart ) != 'Mart')stop("you must provide a valid Mart object, create with function useMart");
-  
-  if("ensembl" != mart@biomart)stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+  martcheck = strsplit(mart@biomart,"_")[[1]][1]
+  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
 
   if(mart@dataset == "")stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
 
@@ -331,7 +329,12 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
          values = chromosome
         }
         else{
-         filter = c("chromosome_name", paste("with_", attribute, sep=""))
+         if(!mart@mysql){
+          filter = c("chromosome_name", paste("with_", attribute, sep=""))
+         }
+         else{
+          filter = "chromosome_name"
+         }
          values = list(chromosome,TRUE)
         }
         attributes = c(chrname,attribute)
@@ -362,8 +365,8 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
 getGO <- function( id, type, mart){
    
   if( missing( mart ) || class( mart ) != 'Mart') stop("you must provide a valid Mart object, create with function useMart")
-
-  if("ensembl" != mart@biomart) stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
+  martcheck = strsplit(mart@biomart,"_")[[1]][1]
+  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
 
   if(mart@dataset=="") stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
 
@@ -396,9 +399,9 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
   if(missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function useMart")
   }
-  if("ensembl" != mart@biomart){
-    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-  }
+  martcheck = strsplit(mart@biomart,"_")[[1]][1]
+  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
+ 
   if(mart@dataset==""){
     stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
   }  
@@ -548,7 +551,10 @@ getSNP <- function(chromosome, start, end, mart){
   if( missing( mart )|| class( mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function useMart")
   }
-  if("snp" != mart@biomart){
+  martcheck = strsplit(mart@biomart,"_")[[1]][1]
+  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
+ 
+  if("snp" != martcheck){
     stop("This function only works when using to snp. To use this function use: mart =  useMart('snp')")
   }
   if(missing(chromosome) || missing(start) || missing(end) ){
@@ -591,10 +597,12 @@ getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
   if( missing( to.mart )|| class( to.mart ) != 'Mart' || missing( from.mart )|| class( from.mart ) != 'Mart'){
     stop("you must provide a mart connection object, create with function useMart")
   }
-  
-  if("ensembl" != to.mart@biomart || "ensembl" != from.mart@biomart){
-    stop("This function only works when using to ensembl. To use this function use: mart =  useMart('ensembl')")
-  }
+  martcheck = strsplit(to.mart@biomart,"_")[[1]][1]
+  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
+  martcheck = strsplit(from.mart@biomart,"_")[[1]][1]
+  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
+ 
+ 
   if ( missing( from.type )) stop("You must provide the identifier type using the from.type argument")
   if (!from.type %in% ls(from.mart@filters)) stop("Invalid from.type, use the listFilters function on the from.mart to get valid from.type values")
 
@@ -815,7 +823,7 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
     }
 
     if(marts$path[mindex]=="")marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
-    
+    biomart = sub(" ","%20",biomart)
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), mysql= FALSE)
     if(!missing(dataset)){
       mart = useDataset(mart = mart, dataset=dataset)
