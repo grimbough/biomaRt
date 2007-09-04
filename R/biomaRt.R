@@ -1040,7 +1040,7 @@ filterType = function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM = function(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, checkFilters = TRUE, verbose=FALSE){
+getBM = function(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE){
 
   if(missing( mart ) || class( mart )!='Mart')
     stop("Argument 'mart' must be specified and be of class 'Mart'.")
@@ -1050,6 +1050,8 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
     stop("Argument 'values' must be specified.")
   if(output != "data.frame" && output != "list")
     stop("Only data.frame and list are valid output formats for this function")
+  if(class(uniqueRows) != "logical")
+    stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
 
   invalid = !(attributes %in% ls(mart@attributes))
   if(any(invalid))
@@ -1105,7 +1107,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
   else{
     ## use the http/XML interface
     if(output == "data.frame"){
-      xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"> <Dataset name = '",mart@dataset,"'>",sep="")
+      xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' requestid= \"biomaRt\"> <Dataset name = '",mart@dataset,"'>",sep="")
       attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
       if(length(filters) > 1){
         if(class(values)!= "list")
