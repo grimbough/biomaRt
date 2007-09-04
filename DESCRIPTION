@@ -1,9 +1,9 @@
 Package: biomaRt
 Version: 1.11.4
 Title: Interface to BioMart databases (e.g. Ensembl, Wormbase, Gramene and Uniprot)
-Author: Steffen Durinck <durincks@mail.nih.gov>,
+Author: Steffen Durinck <sdurinck@lbl.gov>,
 	Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis <sdavis2@mail.nih.gov>
-Maintainer: Steffen Durinck <durincks@mail.nih.gov>
+Maintainer: Steffen Durinck <sdurinck@lbl.gov>
 Depends: methods, XML, RCurl
 Suggests: annotate
 biocViews: Annotation 

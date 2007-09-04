@@ -2,7 +2,7 @@
 \alias{getBM}
 \title{Retrieves information from the BioMart database}
 \description{This function retrieves information from the BioMart database}
-\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, checkFilters = TRUE, verbose = FALSE)}
+\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, checkFilters = TRUE, verbose = FALSE, uniqueRows = TRUE)}
 
 \arguments{
   \item{attributes}{Attributes you want to retrieve.  A possible list of attributes can be retrieved using the function listAttributes.}
@@ -15,6 +15,7 @@
   \item{na.value}{In case a list was selected as output, the value of na.value will used when missing elements are present in the output}
   \item{checkFilters}{Sometimes attributes where a value needs to be specified, for example upstream\_flank with value 20 for obtaining upstream sequence flank regions of length 20bp, are treated as filters in BioMarts.  To enable such a query to work, one must specify the attribute as a filter and set checkFilters = FALSE for the query to work.}
  \item{verbose}{When using biomaRt in webservice mode and setting verbose to TRUE, the XML query to the webservice will be printed.  Alternatively in MySQL mode the MySQL query will be printed.}
+ \item{uniqueRows}{If the result of a query contains multiple identical rows, setting this argument to TRUE (default) will result in deleting the duplicated rows in the query result at the server side.}
 }
 
 \author{Steffen Durinck} 
