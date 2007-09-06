@@ -24,7 +24,7 @@ setClass("Mart",
 
 setMethod("show","Mart",
   function(object){	
-    res = paste("Object of class 'Mart':\n Using BioMart: ",object@biomart,"\n Using dataset: ",object@dataset,"\n", sep="")
+    res = paste("Object of class 'Mart':\n Using the ",object@biomart," BioMart database\n Using the ",object@dataset," dataset\n", sep="")
     cat(res)
 })
 
@@ -37,6 +37,28 @@ messageToUser <- function(message){
  if(interactive()){
   cat(message)
  }
+}
+
+##############################################################
+#martCheck                                                   # 
+#                                                            #
+#This function checks if there is a valid Mart object,       # 
+#if a dataset is selected and                                #
+#if the correct BioMart database has been selected (optional)# 
+##############################################################
+
+martCheck = function(mart, biomart = NULL){
+  if( missing( mart ) || class( mart ) != 'Mart'){
+    stop("You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information.")
+  }
+  if(!is.null(biomart)){
+    martcheck = strsplit(mart@biomart,"_")[[1]][1]
+    if(martcheck[1] != biomart)stop(paste("This function only works when used with the ",biomart," BioMart.",sep="")) 
+   
+  }
+  if(mart@dataset==""){
+    stop("No dataset selected, please select a dataset first.  You can see the available datasets by using the listDatasets function see ?listDatasets for more information.  Then you should create the Mart object by using the useMart function.  See ?useMart for more information");
+  }
 }
 
 ##############
@@ -64,19 +86,19 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
     database = NULL
     driv = dbDriver("MySQL", force.reload = FALSE);
     
-    for(i in 1:length(host)){
+    for(i in seq(along=host)){
       connection = dbConnect(driv, user = user[i], host = host[i], password = password[i], port = port[i]);
   
       res = dbGetQuery(connection,"show databases like '%mart%'"); 
                                         #Search latest releases of marts
       if(dim(res)[1] >= 1){
         if(!archive){
-         for(j in 1:length(mart)){ 
+         for(j in seq(along=mart)){ 
           matches = grep(mart[j],res[,1]);
           if(length(matches) > 1){
             version = 1;
             latest = 1;
-            for(j in 1:length(matches)){
+            for(j in seq(along=matches)){
               v = suppressWarnings(as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]));
               if(!is.na(v)){
                 if(v > version){
@@ -126,10 +148,10 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
     marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL)
     index = 1
     
-    for(i in 1:xmlSize(registry)){
+    for(i in seq(len=xmlSize(registry))){
       if(xmlName(registry[[i]])=="virtualSchema"){
            vschema = xmlGetAttr(registry[[i]],"name")
-        for(j in 1:xmlSize(registry[[i]])){
+        for(j in seq(len=xmlSize(registry[[i]]))){
           if(xmlGetAttr(registry[[i]][[j]],"visible") == 1){
             marts$biomart[index] = xmlGetAttr(registry[[i]][[j]],"name")
             marts$version[index] = xmlGetAttr(registry[[i]][[j]],"displayName")
@@ -176,7 +198,7 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
 martDisconnect <- function( mart ){
   
   if(missing(mart)){
-    stop("no Mart object to disconnect");
+    stop("No Mart object to disconnect");
   }
   openConnections = names(mart@connections);
   
@@ -203,38 +225,13 @@ mapSpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
 
 getGene <- function( id, type, mart){
   
-  if( missing( mart ) || class( mart ) != 'Mart'){
-    stop("you must provide a valid Mart object, create with function useMart")
-  }
-  martcheck = strsplit(mart@biomart,"_")[[1]][1]
-  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.") 
-  if(mart@dataset==""){
-    stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
-  }
+  martCheck(mart,"ensembl") 
 
   if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details.  Note that the array argument is now depricated and should be specified with the type argument.") 
   if(!type %in% ls(mart@filters))stop("Invalid type of identifier see ?getGene for details of use listFilters function to get the valid value for type")   
-  attrib = c("description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
-  if(strsplit(mart@dataset, "_")[[1]][1] == "hsapiens"){
-   attrib = c("hgnc_symbol",attrib)
-  }
-  else{
-   if(strsplit(mart@dataset, "_")[[1]][1] == "mmusculus"){
-    attrib = c("markersymbol",attrib)
-   }
-   else{ 
-    attrib = c("external_gene_id", attrib)
-   }
-  }
-  if(type =="affy_hg_u133a_2"){
-    attrib = c("affy_hg_u133a_v2",attrib)
-  }
-  else{
-    attrib = c(type,attrib)
-  }
- 
-  if(!mart@mysql)attrib = c(attrib, "ensembl_transcript_id")
-
+  symbolAttrib = switch(strsplit(mart@dataset, "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "markersymbol","external_gene_id")
+  typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
+  attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
   table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
 
   return(table)
@@ -245,19 +242,15 @@ getGene <- function( id, type, mart){
 ########################
 
 getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mart){
+
+  martCheck(mart,"ensembl") 
+
+  if( missing( type ))stop("You must provide the identifier type using the type argument.  Values for the type argument are given by the listAttributes function, see ?listAttributes for more information.")
   
-  if( missing( type ))stop("you must provide the identifier type using the type argument.  Note that the array argument is now depricated and should be specified with the type argument.")
-
-  if( missing( mart ) || class( mart ) != 'Mart')stop("you must provide a valid Mart object, create with function useMart");
-  martcheck = strsplit(mart@biomart,"_")[[1]][1]
-  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
-
-  if(mart@dataset == "")stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
-
   if(!type %in% ls(mart@filters))stop("Invalid type of identifier see ?getGene for details of use listFilters function to get the valid value for type")
-
+  
   if(mart@mysql && !missing(chromosome) && !missing(start)){    
-
+    
     speciesTable <- unique(mart@mainTables$tables[mart@mainTables$keys == "gene_id_key"]);
     
     IDTable <- get(type,mart@filters)$table
@@ -267,94 +260,78 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
     res <- dbGetQuery( conn = mart@connections$biomart,statement = query);
     
     if(dim(res)[1] != 0){
-        names(res) = c("id","chromosome", "start", "end");
-        table <- as.data.frame(res)     
+      names(res) = c("id","chromosome", "start", "end");
+      table <- as.data.frame(res)     
     }
     else{
       writeLines("No match found")
     }
     return( table )
   }
-
+  
   else{
     
     filter=NULL
-    values = NULL
-    
     startpos = "start"
     endpos = "end"
     chrname = "chromosome_name"
-    geneid = "ensembl_gene_id"
-    transid = "ensembl_transcript_id"
-    strand = "strand"
     attribute = type
-
+    
     if(!missing(symbol)){
-      if(strsplit(mart@dataset, "_")[[1]][1] == "hsapiens"){
-        filter = "hgnc_symbol"
-      } 
-      else{
-       if(strsplit(mart@dataset, "_")[[1]][1] == "mmusculus"){
-         filter = "markersymbol"
-       }
-       else{ 
-         filter = "external_gene_id"
-       }
-      }                      
+      filter = switch(strsplit(mart@dataset, "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "markersymbol","external_gene_id")
       attributes = c(filter,attribute)
       values = symbol
     }
-    
+  
     if(!missing(OMIMID)){
       filter = "mim_gene_ac"                      
       attributes = c(filter,attribute)
       values = OMIMID
     }
-      
+    
     if(!missing(GOID) && mart@mysql){
-       filter = c("go")
-       attributes = c("go",attribute)
-       values = GOID
+      filter = c("go")
+      attributes = c("go",attribute)
+      values = GOID
     }
     if(!missing(GOID) && !mart@mysql){
-       filter = c("go", paste("with_",type,sep=""))
-       attributes = c("go",attribute)
-       values = list(GOID,TRUE)
+      filter = c("go", paste("with_",type,sep=""))
+      attributes = c("go",attribute)
+      values = list(GOID,TRUE)
     }
     
     if(!missing(chromosome)){
       if(missing(start) && missing(end)){
         if(attribute == "ensembl_gene_id" || attribute == "ensembl_transcript_id"){
-         filter = "chromosome_name"
-         values = chromosome
+          filter = "chromosome_name"
+          values = chromosome
         }
         else{
-         if(!mart@mysql){
-          filter = c("chromosome_name", paste("with_", attribute, sep=""))
-         }
-         else{
-          filter = "chromosome_name"
-         }
-         values = list(chromosome,TRUE)
+          if(!mart@mysql){
+            filter = c("chromosome_name", paste("with_", attribute, sep=""))
+          }
+          else{
+            filter = "chromosome_name"
+          }
+          values = list(chromosome,TRUE)
         }
         attributes = c(chrname,attribute)
       }
       else{
         if(attribute == "ensembl_gene_id" || attribute == "ensembl_transcript_id"){
-         filter = c(chrname,startpos,endpos)
-         values = list(chromosome, start, end)
+          filter = c(chrname,startpos,endpos)
+          values = list(chromosome, start, end)
         }
         else{
-         filter = c(chrname,startpos,endpos,paste("with_", attribute, sep=""))
-         values = list(chromosome, start, end,TRUE)
+          filter = c(chrname,startpos,endpos,paste("with_", attribute, sep=""))
+          values = list(chromosome, start, end,TRUE)
         }
         attributes = c(chrname,"start_position","end_position",attribute)  
       }
     }
     table = getBM(attributes = attributes, filters = filter, values = values, mart=mart)
-    output = (unique(table))
-    return(output)
- }
+    return(table)
+  }
 }
 
 ###################
@@ -364,28 +341,10 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
 
 getGO <- function( id, type, mart){
    
-  if( missing( mart ) || class( mart ) != 'Mart') stop("you must provide a valid Mart object, create with function useMart")
-  martcheck = strsplit(mart@biomart,"_")[[1]][1]
-  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
-
-  if(mart@dataset=="") stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
-
-  transid = "ensembl_transcript_id"
-  attrib = c("go","go_description","evidence_code","ensembl_gene_id")   
-
-  if(type =="affy_hg_u133a_2"){
-   attrib = c("affy_hg_u133a_v2", attrib)
-  }
-  else{
-    attrib = c(type, attrib)
-  }          
-  table = NULL
-  if(!mart@mysql){
-   table = getBM(attributes=c(attrib,transid),filters = type, values = id, mart=mart)
-  } 
-  else{
-   table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
-  }
+  martCheck(mart,"ensembl")
+  typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
+  attrib = c(typeAttrib,"go","go_description","evidence_code","ensembl_gene_id")   
+  table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
   return(table)
 }
 
@@ -396,15 +355,8 @@ getGO <- function( id, type, mart){
 
 getSequence <- function(chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE){
 
-  if(missing( mart )|| class( mart ) != 'Mart'){
-    stop("you must provide a mart connection object, create with function useMart")
-  }
-  martcheck = strsplit(mart@biomart,"_")[[1]][1]
-  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
- 
-  if(mart@dataset==""){
-    stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
-  }  
+  martCheck(mart,"ensembl")
+
   if(mart@mysql){
   
     martdb = "";
@@ -424,7 +376,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
     if(mart@biomart != "sequence"){
       version = "0"
       marts = listMarts(mysql = TRUE)
-      for(i in 1:length(marts)){
+      for(i in seq(along=marts)){
         if("sequence" == strsplit(marts[i],"_")[[1]][1]){
           version = strsplit(marts[i],"_")[[1]][3]
         }
@@ -440,7 +392,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
     speciesTable <- paste( species,"_genomic_sequence__dna_chunks__main",sep="" ); 
     
     if(!missing( chromosome ) && !missing( start ) && !missing( end )){
-      for(i in 1:length( chromosome )){
+      for(i in seq(along = chromosome )){
         
         if(end[i] - start[i] > 100000){
           stop("maximum sequence length is 100000 nucleotides, change start and end arguments to make the sequence size smaller")
@@ -518,7 +470,6 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
           }
           if(!missing(downstream) && !missing(upstream)){
           stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
-     #      sequence = getBM(c(seqType,type), filters = c(type, "upstream_flank","downstream_flank"), values = list(id, upstream, downstream), mart = mart, verbose=TRUE, checkFilters = FALSE)
           }
         }
     }
@@ -531,12 +482,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
 ###############################
 
 getAffyArrays <- function(mart){
-  if(missing(mart)){
-    stop("no Mart object found, create this first using the function useMart and then give as argument in the function")
-  }
-  if(is.null(mart@dataset)){
-    stop("Please select a dataset first.  You an see the available datasets by:  listDatasets('ensembl').  Then you should create the mart object with e.g.: mart = useMart(biomart='ensembl',dataset='hsapiens_gene_ensembl')");
-  }
+  martCheck(mart,"ensembl")
   att=listFilters(mart)
   affy=att[grep("affy",att[,1]),]
   affy=affy[-grep("with",affy[,1]),]
@@ -548,17 +494,9 @@ getAffyArrays <- function(mart){
 #######################
 
 getSNP <- function(chromosome, start, end, mart){
-  if( missing( mart )|| class( mart ) != 'Mart'){
-    stop("you must provide a mart connection object, create with function useMart")
-  }
-  martcheck = strsplit(mart@biomart,"_")[[1]][1]
-  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
- 
-  if("snp" != martcheck){
-    stop("This function only works when using to snp. To use this function use: mart =  useMart('snp')")
-  }
+  martCheck(mart,"snp")
   if(missing(chromosome) || missing(start) || missing(end) ){
-    stop("you have to give chromosome, start and end positions as arguments, see ?getSNP for more information")
+    stop("You have to give chromosome, start and end positions as arguments, see ?getSNP for more information")
   }
   
   if(mart@mysql){ 
@@ -593,16 +531,10 @@ getSNP <- function(chromosome, start, end, mart){
 ##################
 
 getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
+
+  martCheck(to.mart,"ensembl")
+  martCheck(from.mart,"ensembl")
   
-  if( missing( to.mart )|| class( to.mart ) != 'Mart' || missing( from.mart )|| class( from.mart ) != 'Mart'){
-    stop("you must provide a mart connection object, create with function useMart")
-  }
-  martcheck = strsplit(to.mart@biomart,"_")[[1]][1]
-  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
-  martcheck = strsplit(from.mart@biomart,"_")[[1]][1]
-  if(martcheck[1] != "ensembl")stop("This function only works when using to ensembl.")
- 
- 
   if ( missing( from.type )) stop("You must provide the identifier type using the from.type argument")
   if (!from.type %in% ls(from.mart@filters)) stop("Invalid from.type, use the listFilters function on the from.mart to get valid from.type values")
 
@@ -616,7 +548,7 @@ getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
       id <- as.character(id);
     }
     else{
-      stop("No ids to search for homologs given");
+      stop("No ids to search for homologs");
     }
     
     fromIDTable <- get(from.type, from.mart@filters)$table
@@ -687,7 +619,7 @@ getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
         isNA <- is.na(res[ ,2])
         res <- res[!isNA ,]
         
-        for (j in 1:length(id)) {
+        for (j in seq(along=id)) {
           
           m <- match(res[, 1], id[j], nomatch = 0)
           
@@ -712,7 +644,7 @@ getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
     return(table)
   }
   else{
-    if(to.mart@mysql)stop("The mart objects should either use both mysql or not. Here your from.mart does not use mysql but you to.mart does.")
+    if(to.mart@mysql)stop("The Mart objects should either use both mysql or not. Here your from.mart does not use mysql but your to.mart does.")
     result = getLDS(attributes = from.type, filters = from.type, values = id, mart = from.mart, attributesL = to.type, martL = to.mart) 
     return(result)
   }
@@ -730,14 +662,14 @@ exportFASTA <- function( sequences, file ){
     stop("Please provide filename to write to");
   }
   if(length(sequences[1,]) == 2){
-   for(i in 1:length(sequences[,2])){
+   for(i in seq(along = sequences[,2])){
      cat(paste(">",sequences[i,2],"\n",sep=""),file = file, append=TRUE);
      cat(as.character(sequences[i,1]),file = file, append = TRUE);
      cat("\n\n", file = file, append = TRUE);
    }
   }
   else{
-   for(i in 1:length(sequences[,2])){
+   for(i in seq(along = sequences[,2])){
      cat(paste(">chromosome_",sequences[i,1],"_start_",sequences[i,2],"_end_",sequences[i,3],"\n",sep=""),file = file, append=TRUE);
      cat(as.character(sequences[i,4]),file = file, append = TRUE);
      cat("\n\n", file = file, append = TRUE);
@@ -784,7 +716,7 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
       
       if(!archive){ 
        marts = listMarts(mysql = TRUE)
-       for(i in 1:length(marts)){
+       for(i in seq(along=marts)){
         if(biomart == strsplit(marts[i],"_")[[1]][1]){
           version = strsplit(marts[i],"_")[[1]][3]
         }
@@ -932,7 +864,7 @@ getName = function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]]
 
 listAttributes = function( mart , group, category, showGroups = FALSE){
 
-  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+  martCheck(mart)
   summaryA = attributeSummary(mart)
   if(!missing(category) && !category %in% summaryA[,1]) stop(paste("The chosen category: ",category," is not valid, please use the right category name using the attributeSummary function",sep=""))
   if(!missing(group) && !group %in% summaryA[,2]) stop(paste("The chosen group: ",group," is not valid, please use the right group name using the attributeSummary function",sep=""))
@@ -948,7 +880,7 @@ listAttributes = function( mart , group, category, showGroups = FALSE){
   ord = order(frame[,4])
   frameOut = frame[ord,]
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
-  rownames(frameOut) = seq(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(len=length(frameOut[,1]))
   return(frameOut)
 
 }
@@ -959,13 +891,13 @@ listAttributes = function( mart , group, category, showGroups = FALSE){
 
 attributeSummary = function( mart ){
 
-  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+  martCheck(mart)
   attribList = mget(ls(mart@attributes), env=mart@attributes)
   frame = data.frame(category = sapply(attribList, getName, 6), group = sapply(attribList, getName, 5),  row.names=NULL, stringsAsFactors=FALSE) 
   frame = unique(frame)
   ord = order(frame[,1])
   frameOut = frame[ord,]
-  rownames(frameOut) = seq(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(len=length(frameOut[,1]))
   return(frameOut)
 
 }
@@ -976,7 +908,7 @@ attributeSummary = function( mart ){
 
 listFilters = function( mart , group, category, showGroups = FALSE, showType = FALSE){
 
-  if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+  martCheck(mart)
   summaryF = filterSummary(mart)
   if(!missing(category) && !category %in% summaryF[,1]) stop(paste("The chosen category: ",category," is not valid, please use the right category name using the filterSummary function",sep=""))
   if(!missing(group) && !group %in% summaryF[,2]) stop(paste("The chosen group: ",group," is not valid, please use the right group name using the filterSummary function",sep=""))
@@ -994,7 +926,7 @@ listFilters = function( mart , group, category, showGroups = FALSE, showType = F
   frameOut = frame[ord,]
   if(!showType) frameOut = frameOut[,-5]
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
-  rownames(frameOut) = seq(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(len=length(frameOut[,1]))
   return(frameOut)
 
 }
@@ -1004,14 +936,13 @@ listFilters = function( mart , group, category, showGroups = FALSE, showType = F
 #################
 
 filterSummary = function( mart ){
-
- if(missing( mart ) || class( mart )!='Mart') stop("No Mart object given or object not of class 'Mart'")
+  martCheck(mart)
   filterList = mget(ls(mart@filters), env=mart@filters)
   frame = data.frame(category = sapply(filterList, getName, 6), group = sapply(filterList, getName, 5),  row.names=NULL, stringsAsFactors=FALSE) 
   frame = unique(frame)
   ord = order(frame[,1])
   frameOut = frame[ord,]
-  rownames(frameOut) = seq(1:length(frameOut[,1]))
+  rownames(frameOut) = seq(len=length(frameOut[,1]))
   return(frameOut)
 
 }
@@ -1021,9 +952,10 @@ filterSummary = function( mart ){
 ###################
 
 filterOptions = function(filter, mart){
- if(!filter %in% ls(mart@filters))stop("Filter not valid")
- options = get(filter, env=mart@filters)$options
- return(options)
+  martCheck(mart)
+  if(!filter %in% ls(mart@filters))stop("Filter not valid")
+  options = get(filter, env=mart@filters)$options
+  return(options)
 }
 
 ###################
@@ -1031,9 +963,10 @@ filterOptions = function(filter, mart){
 ###################
 
 filterType = function(filter, mart){
- if(!filter %in% ls(mart@filters))stop("Filter not valid")
- type = get(filter, env=mart@filters)$type
- return(type)
+  martCheck(mart)
+  if(!filter %in% ls(mart@filters))stop("Filter not valid")
+  type = get(filter, env=mart@filters)$type
+  return(type)
 }
 
 ##########################################
@@ -1042,8 +975,7 @@ filterType = function(filter, mart){
 
 getBM = function(attributes, filters = "", values = "", mart, curl = NULL, output = "data.frame", list.names = NULL, na.value = NA, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE){
 
-  if(missing( mart ) || class( mart )!='Mart')
-    stop("Argument 'mart' must be specified and be of class 'Mart'.")
+  martCheck(mart)
   if(missing( attributes ))
     stop("Argument 'attributes' must be specified.")
   if(filters != "" && missing( values ))
@@ -1064,7 +996,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
                "\nPlease use the function 'listFilters' to get valid filter names"))
   }
 
-  for(k in 1:length(attributes)){
+  for(k in seq(along=attributes)){
    if(attributes[k] %in% ls(mart@attributePointer)) attributes[k] = get(attributes[k], env = mart@attributePointer)
   }  
   
@@ -1113,7 +1045,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
         if(class(values)!= "list")
           stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
         filterXML = NULL
-        for(i in 1:length(filters)){
+        for(i in seq(along = filters)){
           
           if(filters[i] %in% ls(mart@filters)){
             if(get(filters[i],env=mart@filters)$type == 'boolean' || get(filters[i],env=mart@filters)$type == 'boolean_num'){
@@ -1247,10 +1179,9 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
 
 getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE) {
   
-  if( missing( mart )|| class( mart ) != 'Mart' || missing( martL )|| class( martL ) != 'Mart'){
-    stop("you must provide a Mart object, create with function useMart")
-  }
-  
+  martCheck(mart)
+  martCheck(martL)
+
   if(mart@mysql || martL@mysql)stop("This function only works with biomaRt in webservice mode")
   
   invalid = !(attributes %in% ls(mart@attributes))
@@ -1282,7 +1213,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
         if(class(values)!= "list")
           stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
         filterXML = NULL
-        for(i in 1:length(filters)){
+        for(i in seq(along=filters)){
           if(get(filters[i],env=mart@filters)$type == 'boolean' || get(filters[i],env=mart@filters)$type == 'boolean_num'){
             if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
             if(!values[[i]]){
@@ -1330,7 +1261,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
         if(class(valuesL)!= "list")
           stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
         linkedFilterXML = NULL
-        for(i in 1:length(filtersL)){
+        for(i in seq(along=filtersL)){
           if(get(filtersL[i],env=martL@filters)$type == 'boolean' || get(filtersL[i],env=martL@filters)$type == 'boolean_num'){
             if(!is.logical(valuesL[[i]])) stop(paste("biomaRt error: ",filtersL[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
             if(!valuesL[[i]]){
@@ -1508,7 +1439,7 @@ parseFilters = function(xml, env, group = "", page = ""){
 
 parseOptions = function(xml){
  options = NULL
- for(h in 1:xmlSize(xml)){
+ for(h in seq(len=xmlSize(xml))){
     if(!is.null(xmlGetAttr(xml[[h]],"isSelectable")) && xmlGetAttr(xml[[h]],"isSelectable") == "true"){
       options = c(options,xmlGetAttr(xml[[h]],"value"))
     }
@@ -1526,7 +1457,7 @@ getMainTables = function( xml ){
   keyM = NULL
   i=1
   j=1
-  for(h in 1:(xmlSize(xml)-1)){
+  for(h in seq(len = xmlSize(xml)-1)){
     if(names[h] == "MainTable"){
       tableM[i] = xmlValue(xml[[h]])
       i = i+1
@@ -1549,14 +1480,14 @@ queryGenerator <- function(attributes, filter, values, mart){
 
   ## attributes
   Afield <- Atab <- Akey <- NULL
-  for(i in 1:length(attributes)){
+  for(i in seq(along = attributes)){
     if(!exists(attributes[i],mart@attributes)){
-      stop(paste("attribute: ",attributes[i]," not found, please use the function 'listAttributes' to get valid attribute names",sep=""))
+      stop(paste("Attribute: ",attributes[i]," not found, please use the function 'listAttributes' to get valid attribute names",sep=""))
     }
     else{
       Afield = c(Afield,get(attributes[i],mart@attributes)$field)
       if(is.null(get(attributes[i],mart@attributes)$table)){
-          stop(paste("attribute: ",attributes[i]," is not retrievable via BioMart in MySQL mode, please perform query in the default web service mode", sep=""))
+          stop(paste("Attribute: ",attributes[i]," is not retrievable via BioMart in MySQL mode, please perform query in the default web service mode", sep=""))
       }
       Atab   = c(Atab,get(attributes[i],mart@attributes)$table)
       Akey   = c(Akey,get(attributes[i],mart@attributes)$key)
