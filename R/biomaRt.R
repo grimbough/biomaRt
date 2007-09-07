@@ -1177,7 +1177,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
 ###################################
 
 
-getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE) {
+getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE) {
   
   martCheck(mart)
   martCheck(martL)
@@ -1207,7 +1207,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
                "\nPlease use the function 'listFilters' to get valid filter names"))
   }
    
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' count = '0' softwareVersion = '0.5' requestid= \"biomaRt\"> <Dataset name = '",mart@dataset,"'>",sep="")
+    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' requestid= \"biomaRt\"> <Dataset name = '",mart@dataset,"'>",sep="")
     attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
     if(length(filters) > 1){
         if(class(values)!= "list")

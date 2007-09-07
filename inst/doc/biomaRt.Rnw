@@ -15,12 +15,12 @@
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 
-\author{Steffen Durinck$^\star$\footnote{durincks@mail.nih.gov}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
+\author{Steffen Durinck$^\star$\footnote{steffen@stat.berkeley.edu}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
 \begin{document}
 \title{Description of the biomaRt package}
 
 \maketitle
-\begin{center} $^\star$Oncogenomics lab, NCI/NIH, Gaithersburg, MD, USA\\$^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
+\begin{center} $^\star$Lawrence Berkeley National Laboratory and UC Berkeley\\$^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
 
  \end{center}
 
