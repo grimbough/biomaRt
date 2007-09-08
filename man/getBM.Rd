@@ -18,7 +18,7 @@
  \item{uniqueRows}{If the result of a query contains multiple identical rows, setting this argument to TRUE (default) will result in deleting the duplicated rows in the query result at the server side.}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
 
 \examples{
 if(interactive()){

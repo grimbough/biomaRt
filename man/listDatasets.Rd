@@ -8,7 +8,7 @@
 \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
 }
 
-\author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
 
 \examples{
 
