@@ -1,8 +1,8 @@
-#setMethod("show",signature("Mart"),
-#  function(obj){	
-#    res = paste("Object of class 'Mart':\n Using the ",obj@biomart," BioMart database\n Using the ",obj@dataset," dataset\n", sep="")
-#    cat(res)
-#})
+setMethod("show",signature(object="Mart"),
+  function(object){	
+    res = paste("Object of class 'Mart':\n Using the ",object@biomart," BioMart database\n Using the ",object@dataset," dataset\n", sep="")
+    cat(res)
+})
 
 setGeneric("martBM",def=function(obj,...) standardGeneric("martBM"))
 setMethod("martBM",signature("Mart"), function(obj) obj@biomart)

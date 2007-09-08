@@ -20,7 +20,7 @@
 \title{Description of the biomaRt package}
 
 \maketitle
-\begin{center} $^\star$Lawrence Berkeley National Laboratory and UC Berkeley\\$^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
+\begin{center} $^\star$Lawrence Berkeley National Laboratory and Biostatistics Division, UC Berkeley\\$^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
 
  \end{center}
 

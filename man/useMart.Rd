@@ -16,7 +16,7 @@
 \item{archive}{Boolean to indicate if you want to access archived versions od BioMart databases.  This currently only works with mysql=TRUE and the ensembl BioMart database}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck,\url{http://www.stat.berkeley.edu/~steffen}} 
 
 \examples{
 if(interactive()){

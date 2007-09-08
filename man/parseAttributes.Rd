@@ -12,6 +12,6 @@
 \item{page}{Pass the attribute page}
 }
 
-\author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
 \keyword{methods}
 

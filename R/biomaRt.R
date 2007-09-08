@@ -198,8 +198,8 @@ getGene <- function( id, type, mart){
   
   martCheck(mart,"ensembl") 
 
-  if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details.  Note that the array argument is now depricated and should be specified with the type argument.") 
-  if(!type %in% ls(martFilters(mart)))stop("Invalid type of identifier see ?getGene for details of use listFilters function to get the valid value for type")   
+  if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details. Valid values for the type agument can be found with the listFilters function.") 
+  if(!type %in% ls(martFilters(mart)))stop("Invalid type of identifier see ?getGene for details of use listFilters function to get the valid value for type.")   
   symbolAttrib = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "markersymbol","external_gene_id")
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
   attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
@@ -218,9 +218,9 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
 
   if( missing( type ))stop("You must provide the identifier type using the type argument.  Values for the type argument are given by the listAttributes function, see ?listAttributes for more information.")
   
-  if(!type %in% ls(martFilters(mart)))stop("Invalid type of identifier see ?getGene for details of use listFilters function to get the valid value for type")
+  if(!type %in% ls(martAttributes(mart)))stop("Invalid type of identifier see ?getGene for details. Use listAttributes function to get the valid values for the type argument")
   
-  if(mart@mysql && !missing(chromosome) && !missing(start)){    
+  if(martMySQL(mart) && !missing(chromosome) && !missing(start)){    
     
     speciesTable <- unique(martMainT(mart)$tables[martMainT(mart)$keys == "gene_id_key"]);
     
@@ -313,6 +313,9 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
 getGO <- function( id, type, mart){
    
   martCheck(mart,"ensembl")
+  if(missing(type))stop("Specify the type of identifier you are using, see ?getGO for details. Valid values for the type agument can be found with the listFilters function.") 
+  if(!type %in% ls(martFilters(mart)))stop("Invalid type of identifier see ?getGO for details of use listFilters function to get the valid value for type.")   
+  
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
   attrib = c(typeAttrib,"go","go_description","evidence_code","ensembl_gene_id")   
   table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
@@ -513,13 +516,13 @@ getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
   if (!to.type %in% ls(martAttributes(to.mart))) stop("Invalid to.type, use the listAttributes function on the to.mart to get valid to.type values")
   
   if(martMySQL(from.mart)){
-    if(!martMySQL(to.mart))stop("Both mart object should both be using mysql or not.  Your from.mart uses mysql but your to.mart not.")
+    if(!martMySQL(to.mart))stop("Both Mart objects should be using mysql or not.  Your from.mart uses mysql but your to.mart not.")
     
     if( !missing( id )){
       id <- as.character(id);
     }
     else{
-      stop("No ids to search for homologs");
+      stop("No identifiers given to search for homologs");
     }
     
     fromIDTable <- get(from.type, martFilters(from.mart))$table
@@ -1153,7 +1156,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
   martCheck(mart)
   martCheck(martL)
 
-  if(mart@mysql || martL@mysql)stop("This function only works with biomaRt in webservice mode")
+  if(martMySQL(mart) || martMySQL(martL))stop("This function only works with biomaRt in webservice mode")
   
   invalid = !(attributes %in% ls(martAttributes(mart)))
   if(any(invalid))

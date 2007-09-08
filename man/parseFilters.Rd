@@ -10,6 +10,6 @@
 \item{group}{Pass the filter group}
 \item{page}{Pass the filter page}
 }
-\author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
 \keyword{methods}
 

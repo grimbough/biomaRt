@@ -8,7 +8,7 @@
 \item{mart}{Mart object created with function martConnect}
 }
 
-\author{Steffen Durinck, \url{http://www.esat.kuleuven.ac.be/~sdurinck}} 
+\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
 
 \examples{
 if(interactive()){
