@@ -356,10 +356,10 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
         }
       }
       martdb = paste("sequence_mart_",version,sep="")
-      mart@biomart="sequence"
+      martBM(mart)="sequence"
       
     }
-    mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "martdb.ensembl.org" , port = 3316, dbname = martdb, password = "")
+    martConnection(mart)[["biomart"]] <- dbConnect(drv = martMySQLDriver(mart)$driver,user = "anonymous", host = "martdb.ensembl.org" , port = 3316, dbname = martdb, password = "")
     
     species = strsplit(martDataset(mart),"_")[[1]][1]
     sequence <- NULL;  
@@ -676,8 +676,8 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
     if(local){
       if(!missing(host) && !missing(user) && !missing(password) && !missing(port)){
         database <- listMarts(mart = biomart, host = host, user = user, password = password, port = port, mysql=TRUE);
-        mart@biomart = strsplit(biomart,"_")[[1]][1]
-        mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = user, host = host, dbname = database, password = password)
+        martBM(mart) <- strsplit(biomart,"_")[[1]][1]
+        martConnection(mart)[["biomart"]] <- dbConnect(drv = martMySQLDriver(mart)$driver,user = user, host = host, dbname = database, password = password)
       }
       else{
         stop(sprintf("Please provide host, user, password and port for using local database '%s'.", biomart))
@@ -710,7 +710,7 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
       }    
 
       if(!martdb %in% marts) stop("Requested BioMart database is not available please use the function listMarts(mysql=TRUE) to see the valid biomart names you can query using mysql access")
-      mart@connections[["biomart"]] <- dbConnect(drv = mart@mysqldriver$driver,user = "anonymous", host = "martdb.ensembl.org" , dbname = martdb, password = "", port = 3316)
+      martConnection(mart)[["biomart"]] <- dbConnect(drv = martMySQLDriver(mart)$driver,user = "anonymous", host = "martdb.ensembl.org" , dbname = martdb, password = "", port = 3316)
       messageToUser(paste("connected to: ",biomart,"\n"))
     }
     if(!missing(dataset)){
@@ -798,11 +798,11 @@ useDataset <- function(dataset, mart){
  
     mainTables = getMainTables(xml)
 
-    mart@attributes = attributesEnv
-    mart@attributePointer = attributePointerEnv 
-    mart@filters = filtersEnv
-    mart@dataset = dataset
-    mart@mainTables = mainTables
+    martAttributes(mart) <- attributesEnv
+    martAttribPointers(mart) <- attributePointerEnv 
+    martFilters(mart) <- filtersEnv
+    martDataset(mart) <- dataset
+    martMainT(mart) <- mainTables
     
     return(mart)
   }
@@ -817,10 +817,10 @@ useDataset <- function(dataset, mart){
     parseFilters(config, filtersEnv)
     messageToUser(" ok\n")
     
-    mart@dataset = dataset
-    mart@attributes = attributesEnv
-    mart@attributePointer = attributePointerEnv 
-    mart@filters = filtersEnv
+    martDataset(mart) = dataset
+    martAttributes(mart) = attributesEnv
+    martAttribPointers(mart) = attributePointerEnv 
+    martFilters(mart) = filtersEnv
     
     return( mart )
   }
