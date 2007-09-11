@@ -27,8 +27,6 @@ show(g)
 
 g = getGene( id = "100", type = "entrezgene", mart = mart)
 show(g)
-
-}
 }
 }
 \keyword{methods}
