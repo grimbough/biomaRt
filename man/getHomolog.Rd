@@ -41,6 +41,5 @@ show(homolog)
 
 }
 }
-}
 \keyword{methods}
 

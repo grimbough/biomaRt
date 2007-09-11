@@ -378,7 +378,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
         if(chunkStart == chunkEnd ){  #we only need to get one sequence chunck of 100000 nucleotides
           
           query <- paste("select sequence from ", speciesTable ," where chr_name = '", chromosome[i],"' and chr_start = '",chunkStart,"'",sep="");
-          chunkseq <- dbGetQuery(conn = mart@connections$biomart, statement = query);
+          chunkseq <- dbGetQuery(conn = martConnection(mart)$biomart, statement = query);
           newstart <- start[i] - (floor((start[i]-1)/100000) * 100000)
           newend <- end[i] - (floor((end[i]-1)/100000) * 100000)
           
@@ -1156,7 +1156,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
   martCheck(mart)
   martCheck(martL)
 
-  if(martMySQL(mart) || martMySQL(martL))stop("This function only works with biomaRt in webservice mode")
+  if(martMySQL(mart) || martMySQL(martL))stop("This function only works with biomaRt in web service mode")
   
   invalid = !(attributes %in% ls(martAttributes(mart)))
   if(any(invalid))
