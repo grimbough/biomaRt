@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Overview of the biomaRt package}
+%\VignetteIndexEntry{The biomaRt users guide}
 %\VignetteDepends{biomaRt}
 %\VignetteKeywords{Annotation}
 %\VignettePackage{biomaRt}
@@ -15,44 +15,21 @@
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 
-\author{Steffen Durinck$^\star$\footnote{steffen@stat.berkeley.edu}, Wolfgang Huber$^\P$\footnote{huber@ebi.ac.uk},\\Yves Moreau$^\ddagger$, Bart De Moor$^\ddagger$}
+\author{Steffen Durinck\footnote{steffen@stat.berkeley.edu}}
 \begin{document}
-\title{Description of the biomaRt package}
+\title{The biomaRt users guide}
 
 \maketitle
-\begin{center} $^\star$Lawrence Berkeley National Laboratory and Biostatistics Division, UC Berkeley\\$^\ddagger$Department of Electronical Engineering, ESAT-SCD, K.U.Leuven, Belgium\\and $^\P$European Bioinformatics Institute, Hinxton, UK
-
- \end{center}
 
 \tableofcontents
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-The BioConductor \Rpackage{biomaRt} package provides and API in R to query BioMart databases such as Ensembl (http://www.ensembl.org), a software system which produces and maintains automatic annotation on metazoan genomes.  Two sets of functions are currently implemented.\\  
-A first set of functions is tailored towards Ensembl and are a set of commonly used queries in microarray data analysis.
-A second set of functions aims to mimic functionality of other BioMart APIs such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart APIs provide. With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as affy ids, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM, protein domains etc.  On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R.\\
 
-\section{objects}
-
-\subsection{Mart-class}
-
-An object of the \Robject{Mart} class stores connections to BioMart databases and aditional information about the BioMarts. It has the following slots:
-\begin{itemize}
-\item \Robject{mysql}: Logical indicating if access to BioMart database should use MySQL or use the BioMart webservice over HTTP (default)
-\item \Robject{connections}: Stores the MySQLConnections
-\item \Robject{mysqldriver}:  Stores the MySQL driver
-\item \Robject{mainTables}:  List of the main tables in  the BioMart database
-\item \Robject{biomart}:  Name of the BioMart database
-\item \Robject{host}:  Hostname of the BioMart database
-\item \Robject{dataset}:  Name of the dataset that is in use
-\item \Robject{filters}:  Environment that stores information on BioMart filters
-\item \Robject{attributes}:  Environment that stores information on BioMart attributes
-\end{itemize}
-
+In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The \Rpackage{biomaRt} package,  provides an interface to a growing collection of databases implementing the BioMart software suite (\url{http://www.biomart.org}). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give biomaRt users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
 
 \section{Selecting a BioMart database and dataset}
-In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases is described in the next section "Advanced data retrieval with BioMart API functions".
 
-A first step when using biomaRt, is to check which BioMart web services are available.  The function \Rfunction{listMarts} will display all available BioMart web services   
+Every analysis with \Rpackage{biomaRt} starts with selecting a BioMart database to use.  A first step is to check which BioMart web services are available.  The function \Rfunction{listMarts} will display all available BioMart web services   
 
 <<echo=FALSE>>=
 library(annotate)
@@ -66,20 +43,20 @@ listMarts()
 @
 \end{small}
 
-If the function \Rfunction{useMart} runs into proxy problems you should set your proxy first before calling any biomaRt functions.  
+Note: if the function \Rfunction{useMart} runs into proxy problems you should set your proxy first before calling any biomaRt functions.  
 You can do this using the Sys.putenv command:
 
 \begin{verbatim}
 Sys.putenv("http\_proxy" = "http://my.proxy.org:9999")
 \end{verbatim}
 
-Next we need to select a BioMart database to use, which can be done with the \Rfunction{useMart} function.  Specify the web service by its name given by \Rfunction{listMarts}.  Here we choose to use the Ensembl BioMart web service.
+The \Rfunction{useMart} function can now be used to connect to a specified BioMart database, this must be a valid name given by \Rfunction{listMarts}. In the next example we choose to query the Ensembl BioMart database.
 
 <<>>=
 ensembl=useMart("ensembl")
 @
 
-BioMart databases can contain several datasets.  In a next step we look at which datasets are available in the selected BioMart by using the function \Rfunction{listDatasets}.
+BioMart databases can contain several datasets, for Ensembl every species is a different dataset.  In a next step we look at which datasets are available in the selected BioMart by using the function \Rfunction{listDatasets}.
 
 \begin{small}
 <<>>=
@@ -87,114 +64,124 @@ listDatasets(ensembl)
 @
 \end{small}
 
-To select a dataset we can update the Mart object using the function \Rfunction{useDataset}.
+To select a dataset we can update the \Robject{Mart} object using the function \Rfunction{useDataset}.  In the example below we choose to use the hsapiens dataset.
+
 \begin{verbatim}
 ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
 \end{verbatim}
 
-Alternatively if the dataset one wants to use is known in advance this can be specified in the \Rfunction{useMart} function by:
+Or alternatively if the dataset one wants to use is known in advance, we can select a BioMart database and dataset in one step by:
 
 <<>>=
 ensembl = useMart("ensembl",dataset="hsapiens_gene_ensembl")
 @
 
-\section{Simple biomaRt functions for frequently used queries to Ensembl}
-Now that we selected a BioMart database and dataset, we can make biomaRt queries.
-In this section we describe a set of simple functions which are frequently used in the microarray community.  More powerful functions and data retrieval from all BioMart databases are described in a later section: "Advanced data retrieval with BioMart".
+\section{How to build a biomaRt query}
 
-\subsection{getGene}
+The \Rfunction{getBM} function has three arguments that need to be introduced: filters, attributes and values.
+\textit{Filters} define a restriction on the query.  For example you want to restrict the output to all genes located on the human X chromosome then the filter \textit{chromosome\_name} can be used with value 'X'. The \Rfunction{listFilters} function shows you all available filters in the selected dataset.\\
 
-The function \Rfunction{getGene} uses a vector of query ids to look up the name, description and chromosomal information of the corresponding gene. The type of identifier should be specified with the \textit{type} argument (this can have values like: entrezgene, refseq\_dna, unigene,affy\_hg\_u133\_plus\_2, etc...).  Possible values for the type argument can be retrieved with the listFilters function. The \textit{mart} argument should be used to specify which \Robject{Mart} object (which we generated above) to use.
+<<>>=
+filters = listFilters(ensembl)
+filters[1:5,]
+@ 
+
+\textit{Attributes} define the values we are interested in to retrieve.  For example we want to retrieve the gene symbols or chromosomal coordinates.  The listAttributes function displays all available attributes in the selected dataset.\\
+
+<<>>=
+attributes = listAttributes(ensembl)
+attributes[1:5,]
+@
+
+The \Rfunction{getBM} function is the main query function in biomaRt.  It has four main arguments:\\
+\begin{itemize}
+\item attributes:  is a vector of attributes that one wants to retrieve (= the output of the query).
+\item filters:  is a vector of filters that one wil use as input to the query.
+\item values: a vector of values for the filters.  In case multple filters are in use, the values argument requires a list of values where each position in the list corresponds to the position of the filters in the filters argument (see examples below).
+\item mart: is and object of class \Robject{Mart}, which is created by the \Rfunction{useMart} function.
+\end{itemize}
+
+Note: for some frequently used queries to Ensembl a set of wrapper are functions available as will be described in the sections below.  These wrapper functions are: \Rfunction{getGene}, \Rfunction{getSequence}, \Rfunction{getGO}, \Rfunction{getHomolog}, \Rfunction{getSNP}.  All these functions call the \Rfunction{getBM} function with hard coded filter and attribute names.\\
+
+Now that we selected a BioMart database and dataset, and know about attributes, filters, and the values for filters; we can build a biomaRt query.  Let's make an easy query for the following problem:  We have a list of Affymetrix identifiers from the u133plus2 platform and we want to retrieve the corresponding EntrezGene identifiers using the Ensembl mappings.\\
+The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output for the query we are interested in EntrezGene identifiers to the attributes that we want to retrieve will be EntrezGene and u133plus2 so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the listAttributes and listFilters function respectively.  Let's now run the query:\\
+
+<<>>=
+affyids=c("202763_at","209310_s_at","207500_at")
+getBM(attributes=c('affy_hg_u133_plus_2', 'entrezgene'), filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
+@  
+ 
+\section{Examples of biomaRt queries}
+
+In the sections below a variety of example queries are described.  Every example is written as a task, and we have to come up with a biomaRt solution to the problem.
+
+\subsection{Task 1:  Annotate a set of Affymetrix identifiers with HUGO symbol and chromosomal locations of corresponding genes}
+
 \begin{scriptsize}
 <<>>=
 affyids=c("202763_at","209310_s_at","207500_at")
+getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name','start_position','end_position', 'band'), filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
+@ 
+\end{scriptsize}
+
+As this is a frequently used query to Ensembl, a wrapper function getGene is provided that retrieves a standard set of information based for a given list of identifiers:
+
+\begin{scriptsize}
+<<>>=
 getGene(id=affyids, type="affy_hg_u133_plus_2",mart=ensembl)
 @
 \end{scriptsize}
 
-Next we use \Rfunction{getGene} with a list of entrezgene identifiers.
-\begin{scriptsize}
-\begin{verbatim}
-> entrez=c("673","7157","837")
-> getGene(id=entrez, type="entrezgene",mart=ensembl)
- entrezgene hgnc_symbol
-1       7157        TP53
-2        673        BRAF
-3        837       CASP4
-                                                                                                                                                                          description
- Cellular tumor antigen p53 (Tumor suppressor p53) (Phosphoprotein p53) (Antigen NY-CO-13). [Source:Uniprot/SWISSPROT;Acc:P04637]
- B-Raf proto-oncogene serine/threonine-protein kinase (EC 2.7.11.1) (p94) (v-Raf murine sarcoma viral oncogene homolog B1). [Source:Uniprot/SWISSPROT;Acc:P15056]
- Caspase-4 precursor (EC 3.4.22.-) (CASP-4) (ICH-2 protease) (TX protease) (ICE(rel)-II) [Contains: Caspase-4 subunit 1; Caspase-4 subunit 2]. [Source:Uniprot/SWISSPROT;Acc:P49662]
+\subsection{Task 2:  Annotate a set of EntrezGene identifiers with GO annotation}
 
-  chromosome_name  band strand start_position end_position ensembl_gene_id ensembl_transcript_id
-1              17 p13.1     -1        7512464      7531642 ENSG00000141510       ENST00000269305
-2               7   q34     -1      140080754    140271033 ENSG00000157764       ENST00000288602
-3              11 q22.3     -1      104318810    104345373 ENSG00000196954       ENST00000355546
 
-\end{verbatim}
-\end{scriptsize}
+<<>>=
+entrez=c("673","7157","837")
+getBM(attributes=c('entrezgene','go','go_description','evidence_code'), filters='entrezgene', values=entrez, mart=ensembl)
+@ 
 
-\subsection{getGO}
-
-The function \Rfunction{getGO} enables one to retrieve GO identifiers, descriptions and evidence codes starting from a variety of identifiers.
-Identical to the \Rfunction{getGene} function, \Rfunction{getGO} takes the \textit{type} and \textit{mart} arguments.
+As this is a frequently used query to Ensembl, a wrapper function getGO is provided that retrieves a standard set of information based for a given list of identifiers:
 
 \begin{scriptsize}
 \begin{verbatim}
 
-> go = getGO(id=affyids[1], type="affy_hg_u133_plus_2",mart=ensembl)
+> go = getGO(id="202763_at", type="affy_hg_u133_plus_2",mart=ensembl)
 > go
-   affy_hg_u133_plus_2         go                                                  go_description
-1            202763_at GO:0001782                                              B cell homeostasis
-2            202763_at GO:0001836                       release of cytochrome c from mitochondria
-3            202763_at GO:0004861              cyclin-dependent protein kinase inhibitor activity
-4            202763_at GO:0005515                                                 protein binding
-5            202763_at GO:0005737                                                       cytoplasm
-6            202763_at GO:0006309                              DNA fragmentation during apoptosis
-7            202763_at GO:0006508                                                     proteolysis
-8            202763_at GO:0006915                                                       apoptosis
-9            202763_at GO:0006917                                          induction of apoptosis
-10           202763_at GO:0007507                                               heart development
-11           202763_at GO:0007605                                     sensory perception of sound
-12           202763_at GO:0008234                                cysteine-type peptidase activity
-13           202763_at GO:0008625               induction of apoptosis via death domain receptors
-14           202763_at GO:0008631                      induction of apoptosis by oxidative stress
-15           202763_at GO:0009411                                                  response to UV
-16           202763_at GO:0009611                                            response to wounding
-17           202763_at GO:0030216                                    keratinocyte differentiation
-18           202763_at GO:0030693                                                caspase activity
-19           202763_at GO:0030889                     negative regulation of B cell proliferation
-20           202763_at GO:0043029                                              T cell homeostasis
-21           202763_at GO:0045165                                            cell fate commitment
-22           202763_at GO:0045736 negative regulation of cyclin-dependent protein kinase activity
-23           202763_at GO:0046007           negative regulation of activated T cell proliferation
-   evidence_code ensembl_gene_id ensembl_transcript_id
-1            IEA ENSG00000164305       ENST00000308394
-2            IEA ENSG00000164305       ENST00000308394
-3            IEA ENSG00000164305       ENST00000308394
-4            IPI ENSG00000164305       ENST00000308394
-5            IEA ENSG00000164305       ENST00000308394
-6            IEA ENSG00000164305       ENST00000308394
-7            IDA ENSG00000164305       ENST00000308394
-8            IEA ENSG00000164305       ENST00000308394
-9            TAS ENSG00000164305       ENST00000308394
-10           IEA ENSG00000164305       ENST00000308394
-11           IEA ENSG00000164305       ENST00000308394
-12           IEA ENSG00000164305       ENST00000308394
-13           IEA ENSG00000164305       ENST00000308394
-14           IEA ENSG00000164305       ENST00000308394
-15           IEA ENSG00000164305       ENST00000308394
-16           IEA ENSG00000164305       ENST00000308394
-17           IEA ENSG00000164305       ENST00000308394
-18           TAS ENSG00000164305       ENST00000308394
-19           IEA ENSG00000164305       ENST00000308394
-20           IEA ENSG00000164305       ENST00000308394
-21           IEA ENSG00000164305       ENST00000308394
-22           IEA ENSG00000164305       ENST00000308394
-23           IEA ENSG00000164305       ENST00000308394
-
+  affy_hg_u133_plus_2         go                         go_description evidence_code ensembl_gene_id
+1           202763_at GO:0005515                        protein binding           IPI ENSG00000164305
+2           202763_at GO:0006508                            proteolysis           IDA ENSG00000164305
+3           202763_at GO:0006915                              apoptosis           IEA ENSG00000164305
+4           202763_at GO:0006917                 induction of apoptosis           TAS ENSG00000164305
+5           202763_at GO:0008234       cysteine-type peptidase activity           IEA ENSG00000164305
+6           202763_at GO:0030264 nuclear fragmentation during apoptosis           IMP ENSG00000164305
+7           202763_at GO:0030693                       caspase activity           TAS ENSG00000164305
 \end{verbatim}
 \end{scriptsize}
+
+\subsection{TASK 3: Retrieve all HUGO gene symbols of genes that are located on chromosomes 1,2 or Y , and are associated with one the following GO terms: "GO:0051330","GO:0000080","GO:0000114","GO:0000082" (here we'll use more than one filter)}
+The \Rfunction{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
+\begin{small}
+\begin{verbatim}
+ go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082")
+ chrom=c(1,2,"Y")
+ getBM(attributes= "hgnc_symbol",
+        filters=c("go","chromosome_name"),
+        values=list(go,chrom), mart=ensembl)
+\end{verbatim}
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
+  hgnc_symbol
+1      PPP1CB
+2       SPDYA
+3       ACVR1
+4        CUL3
+5        RCC1
+6        CDC7
+7        RHOU
+\end{verbatim}
+\end{scriptsize}
+
 
 \section{getSequence}
 
@@ -378,14 +365,6 @@ Attributes define the values we are interested in to retrieve.  For example we w
 We will first demonstrate the use of filters and attributes with Ensembl and use it with other BioMarts.
 
 \subsection{listFilters and filterSummary}
-The function \Rfunction{listFilters} can be used to retrieve all available filters in a dataset.
-
-\begin{small}
-<<>>=
-filters =  listFilters(ensembl)
-filters[1:10,]
-@
-\end{small}
 
 In BioMart databases, filters can be grouped.
 Ensembl for example contains the filter groups GENE:, REGION:, ...
@@ -434,14 +413,6 @@ If there are no predetermed values e.g. for the entrezgene filter, then \Rfuncti
 
 
 \subsection{listAttributes and attributeSummary}
-The \Rfunction{listAttributes} function can be used to see which attributes are available in the selected dataset.
-
-\begin{small}
-<<>>=
-attrib = listAttributes(ensembl)
-attrib[1:10,]
-@
-\end{small}
 
 For large BioMart databases such as Ensembl, the number of attributes displayed by the \Rfunction{listAttributes} function can be very large. 
 In BioMart databases, attributes are put together in categories, such as Sequences, Features, Homologs for Ensembl, and within these categories, attributes can be grouped.
@@ -465,79 +436,7 @@ listAttributes(ensembl, category  = "Features", group = "GENE:")
 
 We now get a short list of attributes related to the region where the genes are located.
 
-
-\subsection{getBM}
-Now that we know what filters and attributes are we can make a biomaRt query using the \Rfunction{getBM} function. An easy query could be to retrieve  the HUGO symbols, chromosome name and band for a set of affy identifiers.
-
-\begin{small}
-<<>>=
-getBM(attributes = c("affy_hg_u95av2","hgnc_symbol","chromosome_name","band"),
-            filters="affy_hg_u95av2",
-             values=c("1939_at","1503_at","1454_at"), mart=ensembl)
-@
-\end{small}
-
 \subsection{Example queries getBM}
-
-Below we describe some more complicated examples.
-
-\subsubsection{Using more than one filter}
-The \Rfunction{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
-\begin{small}
-\begin{verbatim}
- go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082",
-       "GO:0000083","GO:0045023","GO:0031568","GO:0031657")
- chrom=c(1,2,"Y")
- getBM(attributes=c("hgnc_symbol","agilent_probe","chromosome_name",
-                     "ensembl_transcript_id"),
-        filters=c("go","chromosome_name"),
-        values=list(go,chrom), mart=ensembl)
-\end{verbatim}
-\end{small}
-\begin{scriptsize}
-\begin{verbatim}
-   hgnc_symbol agilent_probe chromosome_name ensembl_transcript_id
-1         CUL3  A_24_P140030               2       ENST00000264414
-2         CUL3  A_23_P209288               2       ENST00000264414
-3        ACVR1   A_23_P79221               2       ENST00000263640
-4        ACVR1   A_23_P79218               2       ENST00000263640
-5         RCC1                             1       ENST00000373834
-6         RCC1   A_23_P46309               1       ENST00000373833
-7         RCC1   A_23_P46306               1       ENST00000373833
-8         RCC1   A_23_P46309               1       ENST00000373832
-9         RCC1   A_23_P46306               1       ENST00000373832
-10        CDC7  A_23_P148807               1       ENST00000370415
-11        CDC7  A_23_P148807               1       ENST00000234626
-12      PPP1CB  A_23_P425579               2       ENST00000379582
-13      PPP1CB  A_32_P102935               2       ENST00000379582
-14       SPDYA  A_23_P425579               2       ENST00000379582
-15       SPDYA  A_32_P102935               2       ENST00000379582
-16      PPP1CB  A_23_P425579               2       ENST00000379580
-17      PPP1CB  A_32_P102935               2       ENST00000379580
-18       SPDYA  A_23_P425579               2       ENST00000379580
-19       SPDYA  A_32_P102935               2       ENST00000379580
-20      PPP1CB  A_23_P425579               2       ENST00000334056
-21      PPP1CB  A_32_P102935               2       ENST00000334056
-22       SPDYA  A_23_P425579               2       ENST00000334056
-23       SPDYA  A_32_P102935               2       ENST00000334056
-24        RHOU  A_23_P114814               1       ENST00000366691
-25        RHOU   A_24_P62530               1       ENST00000366691
-26        E2F6   A_32_P12610               2       ENST00000307236
-27        E2F6  A_23_P170774               2       ENST00000307236
-28        E2F6   A_32_P27271               2       ENST00000307236
-29        E2F6  A_32_P230720               2       ENST00000307236
-30        E2F6    A_23_P6312               2       ENST00000307236
-31        GFI1  A_23_P257365               1       ENST00000370332
-32        GFI1  A_23_P257365               1       ENST00000294702
-33        MDM4  A_24_P927377               1       ENST00000367183
-34        MDM4  A_24_P778649               1       ENST00000367183
-35        MDM4  A_24_P362432               1       ENST00000367183
-36        MDM4  A_23_P103503               1       ENST00000367183
-37        MDM4  A_23_P103502               1       ENST00000367183
-38        MDM4  A_23_P170969               1       ENST00000367183
-
-\end{verbatim}
-\end{scriptsize}
 
 \subsubsection{Using a BioMart other than Ensembl}
 
