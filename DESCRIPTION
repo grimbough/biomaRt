@@ -1,13 +1,14 @@
 Package: biomaRt
-Version: 1.11.10
+Version: 1.11.11
 Title: Interface to BioMart databases (e.g. Ensembl, Wormbase, Gramene and Uniprot)
 Author: Steffen Durinck <steffen@stat.berkeley.edu>,
 	Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis <sdavis2@mail.nih.gov>
 Maintainer: Steffen Durinck <steffen@stat.berkeley.edu>
-Depends: methods, XML, RCurl
+Depends: methods, RCurl
+Imports: XML
 Suggests: annotate
 biocViews: Annotation 
-Description: The package provides an API in R to query BioMart databases such as Ensembl (http://www.ensembl.org), a software system which produces and maintains automatic annotation on metazoan genomes.  Two sets of functions are currently implemented.  A first set of functions aims to mimic functionality of other BioMart APIs such as Martshell, Martview, etc. (see http://www.biomart.org for more information).  These functions are very general, and can be used with any BioMart system.  They allow retrieval of all information that other BioMart APIs provide and enable data mining of the respective databases.  A Second set of functions are tailored towards Ensembl and are a set of commonly used queries in microarray data analysis.  With these two sets of functions, one can for example annotate the features on your array with the latest annotations starting from identifiers such as Affymetrix, RefSeq, entrezgene,.. Annotation includes gene names, GO, OMIM annotation, etc. The package also provides homology mappings between these identifiers across all species present in Ensembl.  Genes can be pre-selected such that they fulfill a certain requirement e.g. give all human RefSeq ids of genes known to be involved in diabetes. On top of this, biomaRt enables you to retrieve any type of information available from the BioMart databases from R. Other examples of BioMart databases are Wormbase and Gramene.
+Description:In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  biomaRt provides an interface to a growing collection of databases implementing the BioMart software suite (http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot, Gramene, Wormbase and HapMap. These major databases give biomaRt users direct access to a diverse set of data and enable a wide range of powerful online queries from gene annotation to database mining.
 License: Artistic License 2.0
 LazyLoad: yes
 
