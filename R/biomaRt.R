@@ -42,8 +42,7 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
   if(mysql){
     
 #MySQL-----------------------------------------------------------    
-    require(RMySQL)
-    
+    do.call("require", args=list(package="RMySQL"))
     if(missing(mart)){
       mart = c("ensembl","vega","snp","msd","uniprot","sequence","wormbase")
     }
@@ -664,8 +663,7 @@ exportFASTA <- function( sequences, file ){
 useMart <- function(biomart, dataset, host, user, password, port, local = FALSE, mysql = FALSE, archive = FALSE){
 
   if(mysql){
-    
-    require(RMySQL)
+    do.call("require", args=list(package="RMySQL"))
     driver <- dbDriver("MySQL", force.reload = FALSE);
     
     mart <- new("Mart", biomart = biomart, mysqldriver = list(driver=driver), mysql = TRUE)

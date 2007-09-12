@@ -15,7 +15,7 @@
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 
-\author{Steffen Durinck\footnote{steffen@stat.berkeley.edu}}
+\author{Steffen Durinck\footnote{steffen@stat.berkeley.edu}, Wolfgang Huber\footnote{huber@ebi.ac.uk}}
 \begin{document}
 \title{The biomaRt users guide}
 
