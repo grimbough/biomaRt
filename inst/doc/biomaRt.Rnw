@@ -104,24 +104,27 @@ The \Rfunction{getBM} function is the main query function in biomaRt.  It has fo
 Note: for some frequently used queries to Ensembl a set of wrapper are functions available as will be described in the sections below.  These wrapper functions are: \Rfunction{getGene}, \Rfunction{getSequence}, \Rfunction{getGO}, \Rfunction{getHomolog}, \Rfunction{getSNP}.  All these functions call the \Rfunction{getBM} function with hard coded filter and attribute names.\\
 
 Now that we selected a BioMart database and dataset, and know about attributes, filters, and the values for filters; we can build a biomaRt query.  Let's make an easy query for the following problem:  We have a list of Affymetrix identifiers from the u133plus2 platform and we want to retrieve the corresponding EntrezGene identifiers using the Ensembl mappings.\\
-The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output for the query we are interested in EntrezGene identifiers to the attributes that we want to retrieve will be EntrezGene and u133plus2 so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the listAttributes and listFilters function respectively.  Let's now run the query:\\
+The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output (attributes) for the query we want to retrieve the EntrezGene and u133plus2 identifiers so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the \Rfunction{listAttributes} and \Rfunction{listFilters} function respectively.  Let's now run the query:\\
 
+\begin{scriptsize}
 <<>>=
 affyids=c("202763_at","209310_s_at","207500_at")
 getBM(attributes=c('affy_hg_u133_plus_2', 'entrezgene'), filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
 @  
- 
+\end{scriptsize}
+
 \section{Examples of biomaRt queries}
 
 In the sections below a variety of example queries are described.  Every example is written as a task, and we have to come up with a biomaRt solution to the problem.
 
 \subsection{Task 1:  Annotate a set of Affymetrix identifiers with HUGO symbol and chromosomal locations of corresponding genes}
 
-We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The \Rfunction{listAttributes} and the \Rfunction{listFilters} functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc\_symbol, chromsome\_name, start\_position, end\_position, band and affy\_hg\_u133\_plus\_2 (as we want these in the output to provide a mapping with our original Affymetrx input identifiers.  There is one filter in this query which is the affy\_hg\_u133\_plus\_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the \Rfunction{getBM} and performing the query gives: 
+We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The \Rfunction{listAttributes} and the \Rfunction{listFilters} functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc\_symbol, chromsome\_name, start\_position, end\_position, band and affy\_hg\_u133\_plus\_2 (as we want these in the output to provide a mapping with our original Affymetrix input identifiers.  There is one filter in this query which is the affy\_hg\_u133\_plus\_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the \Rfunction{getBM} and performing the query gives: 
 \begin{scriptsize}
 <<>>=
 affyids=c("202763_at","209310_s_at","207500_at")
-getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name','start_position','end_position', 'band'), filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
+getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name','start_position','end_position', 'band'),
+ filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
 @ 
 \end{scriptsize}
 
@@ -137,10 +140,12 @@ getGene(id=affyids, type="affy_hg_u133_plus_2",mart=ensembl)
 
 In this task we start out with a list of EntrezGene identiers and we want to retrieve GO terms that are associated with these identifiers.  Again we look at the output of \Rfunction{listAttributes} and \Rfunction{listFilters}  to find the filter and attributes we need.  Then we construct the following query:
 
+\begin{scriptsize}
 <<>>=
-entrez=c("673","7157","837")
+entrez=c("673","837")
 getBM(attributes=c('entrezgene','go','go_description','evidence_code'), filters='entrezgene', values=entrez, mart=ensembl)
 @ 
+\end{scriptsize}
 
 As this is a frequently used query to Ensembl, a wrapper function getGO is provided that retrieves a standard set of information based for a given list of identifiers:
 
@@ -186,18 +191,21 @@ The \Rfunction{getBM} function enables you to use more than one filter.  In this
 
 \subsection{Task 4: Select all Affymetrix identifiers on the hgu133plus2 chip and Ensembl gene identifiers for genes located on chromosome 16 between basepair 1100000 and 1250000.}
 
-In this example we will again use multiple filters: chromosome\_name, start, and end as we filter on these three conditions.
-
+In this example we will again use multiple filters: chromosome\_name, start, and end as we filter on these three conditions. Note that when a chromosome name, a start position and an end position are jointly used as filters, the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions.
+\begin{scriptsize}
 <<>>=
-getBM(c('affy_hg_u133_plus_2','ensembl_gene_id'), filters = c('chromosome_name','start','end'), values=list(16,'1100000','1250000'), mart=ensembl)
+getBM(c('affy_hg_u133_plus_2','ensembl_gene_id'), filters = c('chromosome_name','start','end'),
+ values=list(16,1100000,1250000), mart=ensembl)
 @
+\end{scriptsize}
  
 \subsection{Task 5: Retrieve all entrezgene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.}
 The GO identifier for MAP kinase activity is GO:0004707.  In our query we will use go as filter and entrezgene and hgnc\_symbol as attributes.  Here's the query:
-
+\begin{scriptsize}
 <<>>=
 getBM(c('entrezgene','hgnc_symbol'), filters='go', values='GO:0004707', mart=ensembl)
 @ 
+\end{scriptsize}
 
 \subsection{Task 6:  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences}
  
@@ -207,21 +215,24 @@ In MySQL mode the \Rfunction{getSequence} function is more limited and the seque
 
 Task 4 requires us to retrieve 100bp upstream promoter sequences from a set of EntrzGene identifiers.  The type argument in getSequence can be thought of as the filter in this query and uses the same input names given by \Rfunction{listFilters}. in our query we use entrezgene for the type argument.  Next we have to specify which type of sequences we want to retrieve, here we are interested in the sequences of the promoter region, starting right next to the coding start of the gene.  Setting the seqType to coding\_gene\_flank will give us what we need.  The upstream argument is used to specify how many bp of upstream sequence we want to retrieve, here we'll retrieve a rather short sequence of 100bp.  Putting this all together in getSequence gives:\\
 
+\begin{scriptsize}
 <<>>=
 entrez=c("673","7157","837")
 getSequence(id = entrez, type="entrezgene",seqType="coding_gene_flank",upstream=100, mart=ensembl) 
 @ 
+\end{scriptsize}
 
 \subsection{Task 7: Retrieve all 5' UTR sequences of all genes that are located on chromosome 3 between the positions 185514033 and 185535839}
 
 As described in the provious task getSequence can also use chromosomal coordinates to retrieve sequences of all genes that lie in the given region. We also have to specify which type of identifier we want to retrieve together with the sequences, here we choose for entrezgene identifiers.
-\begin{small}
-\begin{verbatim}
-> utr5 = getSequence(chromosome=3, start=185514033, end=185535839,
+\begin{scriptsize}
+<<echo=TRUE,eval=FALSE>>=
+utr5 = getSequence(chromosome=3, start=185514033, end=185535839,
                       type="entrezgene",seqType="5utr", mart=ensembl)
-> utr5
-\end{verbatim}
-\end{small}
+utr5
+@ 
+
+\end{scriptsize}
 \begin{scriptsize}
 \begin{verbatim}
           V1               V2
@@ -234,13 +245,13 @@ As described in the provious task getSequence can also use chromosomal coordinat
 In this task the type argument specifies which type of identifiers we are using.
 To get an overview of other valid identifier types we refer to the \Rfunction{listFilters} function.
 
-\begin{small}
-\begin{verbatim}
-> protein = getSequence(id=c(100, 5728),type="entrezgene",
+\begin{scriptsize}
+<<echo=TRUE, eval=FALSE>>=
+protein = getSequence(id=c(100, 5728),type="entrezgene",
                         seqType="peptide", mart=ensembl)
-> protein
-\end{verbatim}
-\end{small}
+protein
+@ 
+\end{scriptsize}
 \begin{scriptsize}
 \begin{verbatim}
  peptide               entrezgene
@@ -251,61 +262,94 @@ To get an overview of other valid identifier types we refer to the \Rfunction{li
 \end{scriptsize}
 
 
-\subsection{getSNP}
-To retrieve SNP data we first have to connect to the snp BioMart database of Ensembl.
+\subsection{Task 9:  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148612}
 
-\begin{small}
-\begin{verbatim}
-> snpmart = useMart("snp", dataset = "hsapiens_snp")
-Checking attributes and filters ... ok
-> snp=getSNP(chromosome = 8, start = 148350, end = 148612,  mart = snpmart)
-> snp
-\end{verbatim}
-\end{small}
+For this example we'll first have to connect to a different BioMart database, namely snp.  
+<<echo=TRUE, eval=FALSE>>=
+snpmart = useMart("snp", dataset="hsapiens_snp")
+@ 
+
+The \Rfunction{listAttributes} and \Rfunction{listFilters} functions give us an overview of the available attributes and filters.  
+From these we need: refsnp\_id, allele, chrom\_start and chrom\_strand as attributes; and as filters we'll use: chrom\_start, chrom\_end and chr\_name.  Note that when a chromosome name, a start position and an end position are jointly used as filters, the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions. Putting our selected attributes and filters into getBM gives:
+
+\begin{scriptsize}
+<<eval=FALSE, echo=TRUE>>=
+getBM(c('refsnp_id','allele','chrom_start','chrom_strand'), filters = c('chr_name','chrom_start','chrom_end'), values = list(8,148350,148612), mart = snpmart)
+@ 
+\end{scriptsize}
 \begin{scriptsize}
 \begin{verbatim}
-
-        tscid  refsnp_id allele chrom_start chrom_strand
-1  TSC1723456  rs3969741    C/A      148394            1
-2  TSC1421398  rs4046274    C/A      148394            1
-3  TSC1421399  rs4046275    A/G      148411            1
-4                rs13291    C/T      148462            1
-5  TSC1421400  rs4046276    C/T      148462            1
-6              rs4483971    C/T      148462            1
-7             rs17355217    C/T      148462            1
-8             rs12019378    T/G      148471            1
-9  TSC1421401  rs4046277    G/A      148499            1
-10            rs11136408    G/A      148525            1
-11 TSC1421402  rs4046278    G/A      148533            1
-12            rs17419210    C/T      148533           -1
-13            rs28735600    G/A      148533            1
-14 TSC1737607  rs3965587    C/T      148535            1
-15             rs4378731    G/A      148601            1
+   refsnp_id allele chrom_start chrom_strand
+1   rs1134195    G/T      148394           -1
+2   rs4046274    C/A      148394            1
+3   rs4046275    A/G      148411            1
+4     rs13291    C/T      148462            1
+5   rs1134192    G/A      148462           -1
+6   rs4046276    C/T      148462            1
+7  rs12019378    T/G      148471            1
+8   rs1134191    C/T      148499           -1
+9   rs4046277    G/A      148499            1
+10 rs11136408    G/A      148525            1
+11  rs1134190    C/T      148533           -1
+12  rs4046278    G/A      148533            1
+13  rs1134189    G/A      148535           -1
+14  rs3965587    C/T      148535            1
+15  rs1134187    G/A      148539           -1
+16  rs1134186    T/C      148569            1
+17  rs4378731    G/A      148601            1
 \end{verbatim}
 \end{scriptsize}
 
-\subsection{getLDS and linking BioMart datasets}
+\subsubsection{getSNP}
+\Rfunction{getSNP} is a wrapper function for retrieving SNP data given a region on the genome.
+\begin{small}
+<<echo=TRUE, eval=FALSE>>=
+snp = getSNP(chromosome = 8, start = 148350, end = 148612,  mart = snpmart)
+snp
+@ 
+\end{small}
+\begin{scriptsize}
+\begin{verbatim}
+   refsnp_id allele chrom_start chrom_strand
+1   rs1134195    G/T      148394           -1
+2   rs4046274    C/A      148394            1
+3   rs4046275    A/G      148411            1
+4     rs13291    C/T      148462            1
+5   rs1134192    G/A      148462           -1
+6   rs4046276    C/T      148462            1
+7  rs12019378    T/G      148471            1
+8   rs1134191    C/T      148499           -1
+9   rs4046277    G/A      148499            1
+10 rs11136408    G/A      148525            1
+11  rs1134190    C/T      148533           -1
+12  rs4046278    G/A      148533            1
+13  rs1134189    G/A      148535           -1
+14  rs3965587    C/T      148535            1
+15  rs1134187    G/A      148539           -1
+16  rs1134186    T/C      148569            1
+17  rs4378731    G/A      148601            1
+\end{verbatim}
+\end{scriptsize}
 
-The \Rfunction{getLDS} (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.
-The usage of getLDS is very similar to \Rfunction{getBM}.  The linked dataset is provided by a separate Mart object and one has to specify filters and attributes for the linked dataset.  Note that this function only works in web service mode.  Filters can either be applied to both datasets or to one of the datasets. When used with Ensembl, \Rfunction{getLDS} is a generalized version of the \Rfunction{getHomolog} function.
-Below is an example on how to use \Rfunction{getLDS}.
+\subsection{Task 10:  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of it's homolog in mouse. }
 
+The \Rfunction{getLDS} (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
+The usage of getLDS is very similar to \Rfunction{getBM}.  The linked dataset is provided by a separate \Robject{Mart} object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both \Robject{Mart} objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into \Rfunction{getLDS} gives:
 \begin{scriptsize}
 \begin{verbatim}
 human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
        filters = "hgnc_symbol", values = "TP53",mart = human,
-      attributesL = c("chromosome_name","start_position"), martL = mouse)
+      attributesL = c("refseq_dna","chromosome_name","start_position"), martL = mouse)
 
-   V1 V2      V3 V4       V5
-1 TP53 17 7512464 11 69396600
-2 TP53 17 7512464 11 69396600
+    V1 V2      V3        V4 V5       V6
+1 TP53 17 7512464 NM_011640 11 69396600
 \end{verbatim}
 \end{scriptsize}
 
-\subsection{getHomolog}
-BioMart takes advantage of the many species present in Ensembl to do homology mappings.  By using two datasets (i.e. two species), we can apply the \Rfunction{getHomolog} function to map identifiers from one species to the other.
+\subsubsection{getHomolog}
+The \Rfunction{getHomolog} is a wrapper function for mapping identifiers from one species to another.  As described above this can also be done with the more general \Rfunction{getLDS} function.
 Similar as the \Rfunction{getGene} function, we have to specify the identifier we start from using either the \textit{from.array} argument if the identifier comes from an affy array or else the \textit{from.type} argument if we use an other identifier.  The identifier we want to retrieve has to be specified by using the \textit{to.array} or \textit{to.type} arguments.\\
 A generalized version of the \Rfunction{getHomolog} function is the \Rfunction{getLDS} function (see Advanced Queries section). \Rfunction{getLDS} enables one to combine two datasets (=species in Ensembl) and query any field from one dataset based on the other.
 
@@ -345,6 +389,7 @@ An other example starts from a human RefSeq id and we want to retrieve the corre
 
 To demonstrate the use of the biomaRt package with non-Ensembl databases the next query is performed using the Wormbase BioMart (WormMart).
 We connect to Wormbase, select the gene dataset to use and have a look at the available attributes and filters.  Then we use a list of gene names as filter and retrieve associated RNAi identifiers together with a description of the RNAi phenotype.
+\begin{scriptsize}
 <<echo=TRUE, eval=FALSE>>=
 wormbase=useMart("wormbase",dataset="gene")
 listFilters(wormbase)
@@ -354,6 +399,7 @@ getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
                      mart=wormbase)
      
 @
+\end{scriptsize}
 \begin{scriptsize}
 \begin{verbatim}
      name  rnai               rnai_phenotype                                     phenotype_desc
@@ -391,7 +437,9 @@ getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
 \end{verbatim}
 \end{scriptsize}
 
-\section{Other biomaRt functions}
+\section{biomaRt helper functions}
+
+This section describes a set of biomaRt helper functions that can be used to export FASTA format sequences, retrieve values for certain filters and exploring the available filters and attributes in a more systematic manner. 
 \subsection{exportFASTA}
 
 The data.frames obtained by the getSequence function can be exported to FASTA files using the \Rfunction{exportFASTA} function.  One has to specify the data.frame to export and the filename using the file argument.

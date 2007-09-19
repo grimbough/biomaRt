@@ -32,9 +32,17 @@ martCheck = function(mart, biomart = NULL){
   }
 }
 
-##############
-#list marts  #
-##############
+checkWrapperArgs = function(id, type, mart){
+ if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details. Valid values for the type argument can be found with the listFilters function.") 
+  if(!type %in% ls(martFilters(mart)))stop(paste("Invalid identifier type:",type," see ?getGene for details. Use the listFilters function to get the valid value for the type argument.", sep=""))   
+  if(missing(id))stop("No identifiers specified.  Use the id argument to specify a vector of identifiers for which you want to retrieve the annotation.")
+}
+#######################################################
+#listMarts:                                           #
+#list all available BioMart databases by default      #
+#listMarts will check the central service to see which#
+#BioMart databases are present                        #
+#######################################################
 
 
 listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, mysql = FALSE, archive = FALSE){
@@ -196,9 +204,7 @@ mapSpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
 getGene <- function( id, type, mart){
   
   martCheck(mart,"ensembl") 
-
-  if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details. Valid values for the type agument can be found with the listFilters function.") 
-  if(!type %in% ls(martFilters(mart)))stop("Invalid type of identifier see ?getGene for details of use listFilters function to get the valid value for type.")   
+  checkWrapperArgs(id, type, mart)
   symbolAttrib = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "markersymbol","external_gene_id")
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
   attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
@@ -213,11 +219,12 @@ getGene <- function( id, type, mart){
 
 getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mart){
 
+  .Deprecated("getBM",package="biomaRt",msg="The functionality of getFeature is completely incorporated in getBM and many more getFeature type of queries are possible with getBM. For example to retrieve a set of affymetrix u133plus2 array probes for genes that are located on chromosome 2 between basepair 14000 and 30000 do:  getBM('affy_hg_u133_plus_2', filters=c('chromosome_name', 'start','end'), values=list(2,300000,1000000), mart=yourmartobject)")
   martCheck(mart,"ensembl") 
 
   if( missing( type ))stop("You must provide the identifier type using the type argument.  Values for the type argument are given by the listAttributes function, see ?listAttributes for more information.")
   
-  if(!type %in% ls(martAttributes(mart)))stop("Invalid type of identifier see ?getGene for details. Use listAttributes function to get the valid values for the type argument")
+  if(!type %in% ls(martAttributes(mart)))stop("Invalid identifier type see ?getGene for details. Use listAttributes function to get the valid values for the type argument")
   
   if(martMySQL(mart) && !missing(chromosome) && !missing(start)){    
     
@@ -312,9 +319,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
 getGO <- function( id, type, mart){
    
   martCheck(mart,"ensembl")
-  if(missing(type))stop("Specify the type of identifier you are using, see ?getGO for details. Valid values for the type agument can be found with the listFilters function.") 
-  if(!type %in% ls(martFilters(mart)))stop("Invalid type of identifier see ?getGO for details of use listFilters function to get the valid value for type.")   
-  
+  checkWrapperArgs(id,type,mart)
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
   attrib = c(typeAttrib,"go","go_description","evidence_code","ensembl_gene_id")   
   table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
@@ -507,10 +512,7 @@ getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
 
   martCheck(to.mart,"ensembl")
   martCheck(from.mart,"ensembl")
-  
-  if ( missing( from.type )) stop("You must provide the identifier type using the from.type argument")
-  if (!from.type %in% ls(martFilters(from.mart))) stop("Invalid from.type, use the listFilters function on the from.mart to get valid from.type values")
-
+  checkWrapperArgs(id, from.type, from.mart)
   if ( missing( to.type )) stop("You must provide the identifier type using the to.type  argument")
   if (!to.type %in% ls(martAttributes(to.mart))) stop("Invalid to.type, use the listAttributes function on the to.mart to get valid to.type values")
   
@@ -773,9 +775,9 @@ listDatasets <- function(mart) {
 useDataset <- function(dataset, mart){
 
   if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
-  if(missing(dataset)) stop("No valid dataset to use given")
+  if(missing(dataset)) stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
   validDatasets=listDatasets(mart)
-  if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function"))
+  if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
 
   filtersEnv = new.env(parent = emptyenv(), hash = TRUE)
   attributesEnv = new.env(parent = emptyenv(), hash = TRUE)
@@ -1014,8 +1016,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
       xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
       attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
       if(length(filters) > 1){
-        if(class(values)!= "list")
-          stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
+        if(class(values)!= "list")stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
         filterXML = NULL
         for(i in seq(along = filters)){
           
@@ -1031,6 +1032,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
               filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
             }
             else{
+              if(is.numeric(values[[i]])){ values[[i]] = as.integer(values[[i]])}
               valuesString = paste(values[[i]],"",collapse=",",sep="")
               filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
             }
@@ -1055,6 +1057,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
            filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
           }
           else{
+           if(is.numeric(values)){ values = as.integer(values)}  
            valuesString = paste(values,"",collapse=",",sep="")
            filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
           }
