@@ -1,11 +1,11 @@
 \name{martDisconnect}
 \alias{martDisconnect}
 \title{Disconnects from BioMarts}
-\description{This function closes connections of the Mart object the BioMarts}
+\description{This function closes connections of the Mart object the BioMarts and only has to be used when one connects via MySQL}
 \usage{martDisconnect(mart)}
 
 \arguments{
-\item{mart}{Mart object created with function martConnect}
+\item{mart}{Mart object created with the useMart function}
 }
 
 \author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 

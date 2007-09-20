@@ -6,16 +6,16 @@
 
 \arguments{
 \item{filter}{A valid filter name.}
-\item{mart}{object of class Mart, containing connections to the BioMart database.  You have to create such an object using the function useMart and update this Mart object by selecting a dataset.}
+\item{mart}{object of class Mar created using the useMart functiont}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
 
 \examples{
 
 if(interactive()){
-#mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-#filterOptions("chromosome_name", mart)
+mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+filterOptions("chromosome_name", mart)
 }
 }
 \keyword{methods}

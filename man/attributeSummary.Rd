@@ -5,21 +5,16 @@
 \usage{attributeSummary(mart)}
 
 \arguments{
-\item{mart}{object of class Mart, containing connections to the BioMart database.  You have to create such an object using the function useMart and update this Mart object by selecting a dataset.}
+\item{mart}{object of class Mart, created with the useMart function.}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
 
 \examples{
 
 if(interactive()){
-
-#marts <- listMarts()
-#index<-grep("ensembl",marts)
-#mart <- useMart(marts[index])
-#datasets <- listDatasets(mart)
-#mart <- useDataset(datasets[1],mart = mart)
-#attributeSummary(mart)
+mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+attributeSummary(mart)
 }
 }
 \keyword{methods}

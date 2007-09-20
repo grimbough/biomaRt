@@ -1,7 +1,7 @@
 \name{useMart}
 \alias{useMart}
-\title{Connects to the selected BioMart}
-\description{This function connects to the selected BioMart}
+\title{Connects to the selected BioMart database and dataset}
+\description{A first step in using the biomaRt package is to select a BioMart database and dataset to use.  The useMart function enables one to connect to a specified BioMart database and dataset within this database.  To know which BioMart databases are available see the listMarts function.  To know which datasets are available within a BioMart database, first select the BioMart database using useMart and then use the listDatasets function on the selected BioMart, see listDatasets function.}
 \usage{useMart(biomart, dataset, host, user, password, port, local = FALSE, mysql=FALSE, archive=FALSE)}
 
 \arguments{
@@ -22,8 +22,6 @@
 if(interactive()){
 
 mart = useMart("ensembl")
-
-#if the dataset you wish to use is known you can do:
 mart=useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
 
 }

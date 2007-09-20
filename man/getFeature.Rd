@@ -12,11 +12,11 @@
   \item{start}{start on chromosome}
   \item{end}{end on chromosome}
   \item{type}{type of identifier that needs to be retrieved, possible values can be obtained by the listFilters function.  Examples are  entrezgene, hgnc\_symbol (for hugo gene symbol), ensembl\_gene\_id, unigene, agilentprobe, refseq\_dna, affy\_hg\_u133\_plus\_2,  etc.}
-  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
+  \item{mart}{object of class Mart, created with the useMart function.}
 
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
 
 \examples{
 if(interactive()){

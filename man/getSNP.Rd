@@ -1,14 +1,14 @@
 \name{getSNP}
 \alias{getSNP}
 \title{Retrieves SNP's between a given chromosome start and end position}
-\description{Retrieves SNP's between a given chromosome start and end position}
+\description{Retrieves SNP's given a chromosome name, a start and end position}
 \usage{getSNP( chromosome, start, end, mart)}
 
 \arguments{
   \item{chromosome}{Chromosome name}
-  \item{start}{start position on given chromosome}
-  \item{end}{end position on given chromosome}
-  \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
+  \item{start}{Start position on given chromosome}
+  \item{end}{End position on given chromosome}
+  \item{mart}{object of class Mart created using the useMart function}
 }
 
 \author{Steffen Durinck} 

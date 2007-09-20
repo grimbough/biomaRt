@@ -1,11 +1,11 @@
 \name{listDatasets}
 \alias{listDatasets}
 \title{lists the datasets available in the selected BioMart database}
-\description{lists the datasets available in the selected BioMart database}
+\description{Lists the datasets available in the selected BioMart database}
 \usage{listDatasets(mart)}
 
 \arguments{
-\item{mart}{object of class Mart, containing connections to the BioMart databases.  You can creat such an object using the function martConnect.}
+\item{mart}{object of class Mart created with the useMart function}
 }
 
 \author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
