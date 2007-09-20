@@ -1,11 +1,11 @@
 \name{listMarts}
 \alias{listMarts}
-\title{list the BioMart database covered by biomaRt package}
-\description{This function returns a list for marts to which it can connect to. To establish a connection use the function martConnect with argument the name in the list (not the actual value e.g. use ensembl and not the full string of the database including release version).  You can also use this function to get the release information of the current databases which you using.}
+\title{lists the avilable BioMart databases}
+\description{This function returns a list of BioMart databases to which biomaRt can connect to.  By default all public BioMart databases are displayed.  To establish a connection use the useMart function.}
 \usage{listMarts(mart, host, user, password, port, includeHosts = FALSE, mysql=FALSE, archive=FALSE)}
 
 \arguments{
-\item{mart}{mart object}
+\item{mart}{mart object created with the useMart function}
 \item{host}{host to connect to}
 \item{user}{username}
 \item{password}{password}

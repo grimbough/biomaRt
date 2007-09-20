@@ -6,21 +6,15 @@
 
 \arguments{
 \item{dataset}{Dataset you want to use.  List of possible datasets can be retrieved using the function listDatasets}
-\item{mart}{Mart object created with the function useMart}
+\item{mart}{Mart object created with the useMart function}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
 
 \examples{
 if(interactive()){
-
-#marts <- listMarts()
-#index<-grep("ensembl",marts)
-
-#mart <- useMart(marts[index])
-#datasets <- listDatasets(mart=mart)
-#mart<-useDataset(datasets[1],mart=mart)
-#martDisconnect(mart = mart)
+mart=useMart("ensembl")
+mart=useDataset("hsapiens_gene_ensembl", mart = mart)
 }
 }
 \keyword{methods}

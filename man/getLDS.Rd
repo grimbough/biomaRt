@@ -1,13 +1,13 @@
 \name{getLDS}
 \alias{getLDS}
 \title{Retrieves information from two linked datasets}
-\description{This function retrieves information from two linked BioMart datasets}
+\description{This function is the main biomaRt query function that links 2 datasets and retrieves information from these linked BioMart datasets.  In Ensembl this translates to homology mapping.}
 \usage{getLDS(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE)}
 \arguments{
   \item{attributes}{Attributes you want to retrieve of primary dataset.  A possible list of attributes can be retrieved using the function listAttributes.}
   \item{filters}{Filters that should be used in the query. These filters will be applied to primary dataset.  A possible list of filters can be retrieved using the function listFilters.}
   \item{values}{Values of the filter, e.g. list of affy IDs}
-  \item{mart}{object of class Mart, representing the primary dataset on which filters apply .You can create such an object using the function useMart and update the mart object by selecting a dataset using the function useDataset.}
+  \item{mart}{object of class Mart created with the useMart function.}
   \item{attributesL}{Attributes of linked dataset that needs to be retrieved}
   \item{filtersL}{Filters to be applied to the linked dataset}
   \item{valuesL}{Values for the linked dataset filters}
@@ -16,7 +16,7 @@
   \item{uniqueRows}{Logical to indicate if the BioMart web service should return unique rows only or not.  Has the value of either TRUE or FALSE}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
 
 \examples{
 if(interactive()){
