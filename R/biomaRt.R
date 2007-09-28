@@ -996,7 +996,8 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
         names(out) = list.names
       
       for(j in seq(along = attributes)){
-        tmp = getBM(c(filters,attributes[j]), filters, values, mart)
+        attr.fil = switch(filters, affy_hg_u133a_2="affy_hg_u133a_v2",filters)
+        tmp = getBM(c(attr.fil, attributes[j]), filters, values, mart)
         tmp2 = vector("list", length(values))
         names(tmp2) = values
         for(i in seq(along=tmp2)){
