@@ -413,11 +413,17 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
   else{
     if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon","transcript_exon_intron","gene_exon_intron","coding","coding_transcript_flank","coding_gene_flank","transcript_flank","gene_flank")){
     stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either gene_exon, transcript_exon,transcript_exon_intron, gene_exon_intron, cdna, coding,coding_transcript_flank,coding_gene_flank,transcript_flank,gene_flank,peptide, 3utr or 5utr")
-    }   
-    if(missing(type)) stop("Type argument is missing.  This will be used to retrieve an identifier along with the sequence so one knows which gene it is from.  Use the listFilters function to select a valid type argument.")
-    if(!type %in% ls(martFilters(mart))) stop("Invalid type argument.  Use the listFilters function to select a valid type argument.")
-
+    }
+    if(missing(type))stop("Please specify the type argument.  If you use chromosomal coordinates to retrieve sequences, then the type argument will specify the type of gene indentifiers that you will retrieve with the sequences.  If you use a vector of identifiers to retrieve the sequences, the type argument specifies the type of identifiers you are using.")
+    if(missing(id) && missing(chromosome) && !missing(type))stop("No vector of identifiers given. Please use the id argument to give a vector of identifiers for which you want to retrieve the sequences.")
+    if(!missing(chromosome) && !missing(id))stop("The getSequence function retrieves sequences given a vector of identifiers specified with the id argument of a type specified by the type argument.  Or alternatively getSequence retrieves sequences given a chromosome, a start and a stop position on the chromosome.  As you specified both a vector of identifiers and chromsomal coordinates. Your query won't be processed.")
+    
     if(!missing(chromosome)){
+      if(!missing(start) && missing(end))stop("You specified a chromosomal start position but no end position.  Please also specify a chromosomal end position.")
+      if(!missing(end) && missing(start))stop("You specified a chromosomal end position but no start position.  Please also specify a chromosomal start position.")
+      if(!missing(start)){ start = as.integer(start)
+                           end = as.integer(end)
+                         }
         if(missing(upstream) && missing(downstream)){
             sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end"), values = list(chromosome, start, end), mart = mart, checkFilters = FALSE, verbose=verbose)
         }
@@ -435,6 +441,9 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
     }
 
     if(!missing(id)){
+      if(missing(type)) stop("Type argument is missing.  This will be used to retrieve an identifier along with the sequence so one knows which gene it is from.  Use the listFilters function to select a valid type argument.")
+      if(!type %in% ls(martFilters(mart))) stop("Invalid type argument.  Use the listFilters function to select a valid type argument.")
+  
       valuesString = paste(id,"",collapse=",",sep="")
         if(missing(upstream) && missing(downstream)){
          sequence = getBM(c(seqType,type), filters = type, values = id, mart = mart, verbose=verbose)
