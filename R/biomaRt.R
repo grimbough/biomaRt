@@ -143,11 +143,11 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
       }
       if(xmlName(registry[[i]])=="MartURLLocation"){  
         if(xmlGetAttr(registry[[i]],"visible") == 1){
-          marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
-          marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
-          marts$host[index] = xmlGetAttr(registry[[i]],"host")
-          marts$path[index] = xmlGetAttr(registry[[i]],"path")
-          marts$port[index] = xmlGetAttr(registry[[i]],"port")
+          if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
+          if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
+          if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = xmlGetAttr(registry[[i]],"host")
+          if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = xmlGetAttr(registry[[i]],"path")
+          if(!is.null(xmlGetAttr(registry[[i]],"port"))) marts$port[index] = xmlGetAttr(registry[[i]],"port")
           if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
            marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
           }
@@ -1031,7 +1031,9 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
         for(i in seq(along = filters)){
           
           if(filters[i] %in% ls(martFilters(mart))){
-            if(get(filters[i],env=martFilters(mart))$type == 'boolean' || get(filters[i],env=martFilters(mart))$type == 'boolean_num'){
+            filtertype = get(filters[i],env=martFilters(mart))$type
+            if(is.null(filtertype)) filtertype = 'string'
+            if(filtertype == 'boolean' || filtertype == 'boolean_num'){
               if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="")  
               if(!values[[i]]){
                 values[[i]] = 1
@@ -1056,7 +1058,9 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
       else{
        if(filters != ""){
         if(filters %in% ls(martFilters(mart))){
-          if(get(filters,env=martFilters(mart))$type == 'boolean' || get(filters,env=martFilters(mart))$type == 'boolean_num'){
+          filtertype = get(filters,env=martFilters(mart))$type
+          if(is.null(filtertype)) filtertype = 'string'
+          if(filtertype == 'boolean' || filtertype == 'boolean_num'){
            if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
            if(!values){
             values = 1
