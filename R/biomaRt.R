@@ -205,7 +205,7 @@ getGene <- function( id, type, mart){
   
   martCheck(mart,"ensembl") 
   checkWrapperArgs(id, type, mart)
-  symbolAttrib = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "markersymbol","external_gene_id")
+  symbolAttrib = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc",mmusculus = "markersymbol","external_gene_id")
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
   attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
   table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
@@ -255,7 +255,7 @@ getFeature <- function( symbol, OMIMID, GOID, chromosome, start, end, type,  mar
     attribute = type
     
     if(!missing(symbol)){
-      filter = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "markersymbol","external_gene_id")
+      filter = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc",mmusculus = "markersymbol","external_gene_id")
       attributes = c(filter,attribute)
       values = symbol
     }
