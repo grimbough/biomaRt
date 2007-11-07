@@ -1,5 +1,5 @@
 importFrom("methods","show")
-export(martDisconnect,listMarts, getGene, getGO, getAffyArrays, getFeature, getSequence, getSNP, getHomolog, exportFASTA, useMart, listDatasets, useDataset, listAttributes, listFilters, getBM, parseAttributes, parseFilters, getLDS, attributeSummary, filterSummary, filterOptions, filterType)
+export(martDisconnect,listMarts, getGene, getGO, getAffyArrays, getSequence, getSNP, getHomolog, exportFASTA, useMart, listDatasets, useDataset, listAttributes, listFilters, getBM, parseAttributes, parseFilters, getLDS, attributeSummary, filterSummary, filterOptions, filterType)
 exportClasses(Mart)
 exportMethods("show")
 import(RCurl,XML)
