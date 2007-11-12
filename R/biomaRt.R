@@ -1,4 +1,10 @@
-packageName <- "biomaRt"
+##########################
+#biomaRt source code     #
+##########################
+#                        #
+#Licence: Artistic       #
+#Author: Steffen Durinck #
+##########################
 
 ###############
 #messageToUser#
@@ -25,7 +31,6 @@ martCheck = function(mart, biomart = NULL){
   if(!is.null(biomart)){
     martcheck = strsplit(martBM(mart),"_")[[1]][1]
     if(martcheck[1] != biomart)stop(paste("This function only works when used with the ",biomart," BioMart.",sep="")) 
-   
   }
   if(martDataset(mart)==""){
     stop("No dataset selected, please select a dataset first.  You can see the available datasets by using the listDatasets function see ?listDatasets for more information.  Then you should create the Mart object by using the useMart function.  See ?useMart for more information");
@@ -76,11 +81,11 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
           if(length(matches) > 1){
             version = 1;
             latest = 1;
-            for(j in seq(along=matches)){
-              v = suppressWarnings(as.numeric(strsplit(res[matches[j],1],"_")[[1]][3]));
+            for(k in seq(along=matches)){
+              v = suppressWarnings(as.numeric(strsplit(res[matches[k],1],"_")[[1]][3]));
               if(!is.na(v)){
                 if(v > version){
-                  latest = j;
+                  latest = k;
                   version = v;
                 }
               }
@@ -202,7 +207,6 @@ mapSpeciesToHomologTable <- function(fromESpecies = NULL, toESpecies = NULL) {
 ######################
 
 getGene <- function( id, type, mart){
-  
   martCheck(mart,"ensembl") 
   checkWrapperArgs(id, type, mart)
   symbolAttrib = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc",mmusculus = "markersymbol","external_gene_id")
@@ -212,14 +216,11 @@ getGene <- function( id, type, mart){
   return(table)
 }
 
-
 ###################
 #get GO annotation#
 ###################
 
-
 getGO <- function( id, type, mart){
-   
   martCheck(mart,"ensembl")
   checkWrapperArgs(id,type,mart)
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
@@ -371,6 +372,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
 ###############################
 
 getAffyArrays <- function(mart){
+  .Deprecated(msg="The getAffyArrays function will be removed in the next release of biomaRt.  Use the listFilters and listAttributes functions instead to find the available Affymetrix arrays")
   martCheck(mart,"ensembl")
   att=listFilters(mart)
   affy=att[grep("affy",att[,1]),]
@@ -383,6 +385,7 @@ getAffyArrays <- function(mart){
 #######################
 
 getSNP <- function(chromosome, start, end, mart){
+  .Deprecated(msg="The getSNP function will be removed in the next release of biomaRt.  Use the getBM function instead.  The biomaRt vignette contains examples of retrieving SNP data")
   martCheck(mart,"snp")
   if(missing(chromosome) || missing(start) || missing(end) ){
     stop("You have to give chromosome, start and end positions as arguments, see ?getSNP for more information")
@@ -420,7 +423,7 @@ getSNP <- function(chromosome, start, end, mart){
 ##################
 
 getHomolog <- function(id, from.type, to.type, from.mart, to.mart) {
-
+  .Deprecated(msg="The getHomolog function will be removed in the next release of biomaRt.  Use the getLDS function instead to do homology queries.  Read the getLDS and biomaRt vignette help file for more information.")
   martCheck(to.mart,"ensembl")
   martCheck(from.mart,"ensembl")
   checkWrapperArgs(id, from.type, from.mart)
@@ -749,12 +752,10 @@ getName = function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]]
 #####################
 
 listAttributes = function( mart , group, category, showGroups = FALSE){
-
   martCheck(mart)
   summaryA = attributeSummary(mart)
   if(!missing(category) && !category %in% summaryA[,1]) stop(paste("The chosen category: ",category," is not valid, please use the right category name using the attributeSummary function",sep=""))
   if(!missing(group) && !group %in% summaryA[,2]) stop(paste("The chosen group: ",group," is not valid, please use the right group name using the attributeSummary function",sep=""))
-
   attribList = mget(ls(martAttributes(mart)), env=martAttributes(mart))
   frame = data.frame(name = names(attribList),description = sapply(attribList, getName, 1), group = sapply(attribList, getName, 5), category = sapply(attribList, getName, 6),  row.names=NULL, stringsAsFactors=FALSE) 
   if(!missing(category)){
@@ -768,7 +769,6 @@ listAttributes = function( mart , group, category, showGroups = FALSE){
   if(!showGroups) frameOut = frameOut[,-c(3,4)]
   rownames(frameOut) = seq(len=length(frameOut[,1]))
   return(frameOut)
-
 }
 
 ######################
@@ -776,7 +776,6 @@ listAttributes = function( mart , group, category, showGroups = FALSE){
 ######################
 
 attributeSummary = function( mart ){
-
   martCheck(mart)
   attribList = mget(ls(martAttributes(mart)), env=martAttributes(mart))
   frame = data.frame(category = sapply(attribList, getName, 6), group = sapply(attribList, getName, 5),  row.names=NULL, stringsAsFactors=FALSE) 
@@ -785,7 +784,6 @@ attributeSummary = function( mart ){
   frameOut = frame[ord,]
   rownames(frameOut) = seq(len=length(frameOut[,1]))
   return(frameOut)
-
 }
 
 ###################
@@ -793,12 +791,10 @@ attributeSummary = function( mart ){
 ###################
 
 listFilters = function( mart , group, category, showGroups = FALSE, showType = FALSE){
-
   martCheck(mart)
   summaryF = filterSummary(mart)
   if(!missing(category) && !category %in% summaryF[,1]) stop(paste("The chosen category: ",category," is not valid, please use the right category name using the filterSummary function",sep=""))
   if(!missing(group) && !group %in% summaryF[,2]) stop(paste("The chosen group: ",group," is not valid, please use the right group name using the filterSummary function",sep=""))
-
   filterList = mget(ls(martFilters(mart)), env=martFilters(mart))
   frame = data.frame(name = names(filterList),description = sapply(filterList, getName, 1), group = sapply(filterList, getName, 5), category = sapply(filterList, getName, 6),type =  sapply(filterList, getName, 7),  row.names=NULL, stringsAsFactors=FALSE) 
 
@@ -836,7 +832,6 @@ filterSummary = function( mart ){
 ###################
 
 filterOptions = function(filter, mart){
-  
   if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the possible values.")
   if(class(filter)!="character")stop("Filter argument should be of class character")
   martCheck(mart)
@@ -1018,7 +1013,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
            colnames(result) = attributes
          }
          else{
-           print(results)
+           print(result)
            stop("Number of columns in the query result doesn't equal number of attributes in query.  This is probably an internal error, please report.")
          }
         }
