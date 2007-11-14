@@ -119,11 +119,11 @@ In the sections below a variety of example queries are described.  Every example
 
 \subsection{Task 1:  Annotate a set of Affymetrix identifiers with HUGO symbol and chromosomal locations of corresponding genes}
 
-We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The \Rfunction{listAttributes} and the \Rfunction{listFilters} functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc, chromsome\_name, start\_position, end\_position, band and affy\_hg\_u133\_plus\_2 (as we want these in the output to provide a mapping with our original Affymetrix input identifiers.  There is one filter in this query which is the affy\_hg\_u133\_plus\_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the \Rfunction{getBM} and performing the query gives: 
+We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The \Rfunction{listAttributes} and the \Rfunction{listFilters} functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc\_symbol, chromsome\_name, start\_position, end\_position, band and affy\_hg\_u133\_plus\_2 (as we want these in the output to provide a mapping with our original Affymetrix input identifiers.  There is one filter in this query which is the affy\_hg\_u133\_plus\_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the \Rfunction{getBM} and performing the query gives: 
 \begin{scriptsize}
 <<>>=
 affyids=c("202763_at","209310_s_at","207500_at")
-getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc', 'chromosome_name','start_position','end_position', 'band'),
+getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name','start_position','end_position', 'band'),
  filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
 @ 
 \end{scriptsize}
@@ -171,14 +171,14 @@ The \Rfunction{getBM} function enables you to use more than one filter.  In this
 \begin{verbatim}
  go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082")
  chrom=c(1,2,"Y")
- getBM(attributes= "hgnc",
+ getBM(attributes= "hgnc_symbol",
         filters=c("go","chromosome_name"),
         values=list(go,chrom), mart=ensembl)
 \end{verbatim}
 \end{small}
 \begin{scriptsize}
 \begin{verbatim}
-  hgnc
+  hgnc_symbol
 1      PPP1CB
 2       SPDYA
 3       ACVR1
@@ -200,10 +200,10 @@ getBM(c('affy_hg_u133_plus_2','ensembl_gene_id'), filters = c('chromosome_name',
 \end{scriptsize}
  
 \subsection{Task 5: Retrieve all entrezgene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.}
-The GO identifier for MAP kinase activity is GO:0004707.  In our query we will use go as filter and entrezgene and hgnc as attributes.  Here's the query:
+The GO identifier for MAP kinase activity is GO:0004707.  In our query we will use go as filter and entrezgene and hgnc\_symbol as attributes.  Here's the query:
 \begin{scriptsize}
 <<>>=
-getBM(c('entrezgene','hgnc'), filters='go', values='GO:0004707', mart=ensembl)
+getBM(c('entrezgene','hgnc_symbol'), filters='go', values='GO:0004707', mart=ensembl)
 @ 
 \end{scriptsize}
 
@@ -339,8 +339,8 @@ The usage of getLDS is very similar to \Rfunction{getBM}.  The linked dataset is
 \begin{verbatim}
 human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
-getLDS(attributes = c("hgnc","chromosome_name", "start_position"),
-       filters = "hgnc", values = "TP53",mart = human,
+getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
+       filters = "hgnc_symbol", values = "TP53",mart = human,
       attributesL = c("refseq_dna","chromosome_name","start_position"), martL = mouse)
 
     V1 V2      V3        V4 V5       V6
