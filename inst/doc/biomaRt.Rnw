@@ -188,8 +188,31 @@ The \Rfunction{getBM} function enables you to use more than one filter.  In this
 7        RHOU
 \end{verbatim}
 \end{scriptsize}
+\subsection{Task 4:  Annotate set of idenfiers with INTERPRO protein domain identifiers}
 
-\subsection{Task 4: Select all Affymetrix identifiers on the hgu133plus2 chip and Ensembl gene identifiers for genes located on chromosome 16 between basepair 1100000 and 1250000.}
+In this example we want to annotate the following two RefSeq identifiers: NM\_005359 and NM\_000546 with INTERPRO protein domain identifiers and a description of the protein domains.
+
+<<eval=FALSE>>=
+refseqids = c("NM_005359","NM_000546")
+ipro = getBM(attributes=c("refseq_dna","interpro","interpro_description"), filters="refseq_dna",values=refseqids, mart=ensembl)
+@
+
+\begin{scriptsize}
+\begin{verbatim}
+ipro
+  refseq_dna  interpro             interpro_description
+1  NM_000546 IPR002117                p53 tumor antigen
+2  NM_000546 IPR010991             p53, tetramerisation
+3  NM_000546 IPR011615                 p53, DNA-binding
+4  NM_000546 IPR013872 p53 transactivation domain (TAD)
+5  NM_000546 IPR000694              Proline-rich region
+6  NM_005359 IPR001132     MAD homology 2, Dwarfin-type
+7  NM_005359 IPR003619     MAD homology 1, Dwarfin-type
+8  NM_005359 IPR013019                MAD homology, MH1
+\end{verbatim}
+\end{scriptsize}
+
+\subsection{Task 5: Select all Affymetrix identifiers on the hgu133plus2 chip and Ensembl gene identifiers for genes located on chromosome 16 between basepair 1100000 and 1250000.}
 
 In this example we will again use multiple filters: chromosome\_name, start, and end as we filter on these three conditions. Note that when a chromosome name, a start position and an end position are jointly used as filters, the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions.
 \begin{scriptsize}
@@ -199,7 +222,7 @@ getBM(c('affy_hg_u133_plus_2','ensembl_gene_id'), filters = c('chromosome_name',
 @
 \end{scriptsize}
  
-\subsection{Task 5: Retrieve all entrezgene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.}
+\subsection{Task 6: Retrieve all entrezgene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.}
 The GO identifier for MAP kinase activity is GO:0004707.  In our query we will use go as filter and entrezgene and hgnc\_symbol as attributes.  Here's the query:
 \begin{scriptsize}
 <<>>=
@@ -207,7 +230,7 @@ getBM(c('entrezgene','hgnc_symbol'), filters='go', values='GO:0004707', mart=ens
 @ 
 \end{scriptsize}
 
-\subsection{Task 6:  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences}
+\subsection{Task 7:  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences}
  
 All sequence related queries to Ensembl are available through the \Rfunction{getSequence} wrapper function. \Rfunction{getBM} can also be used directly to retrieve sequences but this can get complicated so using getSequence is recommended.
 Sequences can be retrieved using the \Rfunction{getSequence} function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the \textit{chromosome} argument.  The \textit{start} and \textit{end} arguments are used to specify \textit{start} and \textit{end} positions on the chromosome. The type of sequence returned can be specified by the seqType argument which takes the following values: 'cdna';'peptide' for protein sequences;'3utr' for 3' UTR sequences,'5utr' for 5' UTR sequences; 'gene\_exon' for exon sequences only; 'transcript\_exon' for transcript specific exonic sequences only;'transcript\_exon\_intron' gives the full unspliced transcript, that is exons + introns;'gene\_exon\_intron' gives the exons + introns of a gene;'coding' gives the coding sequence only;'coding\_transcript\_flank' gives the flanking region of the transcript including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute;'coding\_gene\_flank' gives the flanking region of the gene including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'transcript\_flank' gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'gene\_flank' gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute.\\
@@ -222,7 +245,7 @@ getSequence(id = entrez, type="entrezgene",seqType="coding_gene_flank",upstream=
 @ 
 \end{scriptsize}
 
-\subsection{Task 7: Retrieve all 5' UTR sequences of all genes that are located on chromosome 3 between the positions 185514033 and 185535839}
+\subsection{Task 8: Retrieve all 5' UTR sequences of all genes that are located on chromosome 3 between the positions 185514033 and 185535839}
 
 As described in the provious task getSequence can also use chromosomal coordinates to retrieve sequences of all genes that lie in the given region. We also have to specify which type of identifier we want to retrieve together with the sequences, here we choose for entrezgene identifiers.
 \begin{scriptsize}
@@ -240,7 +263,7 @@ utr5
 \end{verbatim}
 \end{scriptsize}
 
-\subsection{Task 8:  Retrieve protein sequences for a given list of EntrezGene identifiers}
+\subsection{Task 9:  Retrieve protein sequences for a given list of EntrezGene identifiers}
 
 In this task the type argument specifies which type of identifiers we are using.
 To get an overview of other valid identifier types we refer to the \Rfunction{listFilters} function.
@@ -262,7 +285,7 @@ protein
 \end{scriptsize}
 
 
-\subsection{Task 9:  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148612}
+\subsection{Task 10:  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148612}
 
 For this example we'll first have to connect to a different BioMart database, namely snp.  
 <<echo=TRUE, eval=FALSE>>=
@@ -331,7 +354,7 @@ snp
 \end{verbatim}
 \end{scriptsize}
 
-\subsection{Task 10:  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of it's homolog in mouse. }
+\subsection{Task 11:  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of it's homolog in mouse. }
 
 The \Rfunction{getLDS} (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
 The usage of getLDS is very similar to \Rfunction{getBM}.  The linked dataset is provided by a separate \Robject{Mart} object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both \Robject{Mart} objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into \Rfunction{getLDS} gives:
