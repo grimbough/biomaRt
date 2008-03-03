@@ -25,7 +25,7 @@ if(interactive()){
 mart <- useMart("ensembl")
 datasets <- listDatasets(mart)
 mart<-useDataset("hsapiens_gene_ensembl",mart)
-getBM(attributes=c("affy_hg_u95av2","hgnc","chromosome_name","band"),filters="affy_hg_u95av2",values=c("1939_at","1503_at","1454_at"), mart=mart)
+getBM(attributes=c("affy_hg_u95av2","hgnc_symbol","chromosome_name","band"),filters="affy_hg_u95av2",values=c("1939_at","1503_at","1454_at"), mart=mart)
 
 }
 }

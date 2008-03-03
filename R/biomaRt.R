@@ -60,10 +60,10 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
       mart = c("ensembl","vega","snp","msd","uniprot","sequence","wormbase")
     }
     if(missing(host)){
-      host = c("martdb.ensembl.org", "martdb.ebi.ac.uk")
-      user = c("anonymous","anonymous")
-      password = c("","")
-      port = c(3316, 3306) 
+      host = c("martdb.ensembl.org", "martdb.ebi.ac.uk", "martdb.ensembl.org")
+      user = c("anonymous","anonymous", "anonymous")
+      password = c("","","")
+      port = c(3316, 3306, 5316) 
     }
     
     database = NULL
@@ -124,11 +124,16 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
     if(missing(host)){
       host = "http://www.biomart.org/biomart/martservice"
     }
-    registry = getURL(paste(host,"?type=registry&requestid=biomaRt", sep=""))
+    if(archive){
+      registry = getURL(paste(host,"?type=registry_archive&requestid=biomaRt", sep=""))
+    }
+    else{
+      registry = getURL(paste(host,"?type=registry&requestid=biomaRt", sep=""))
+    }
     registry = xmlTreeParse(registry)
     registry = registry$doc$children[[1]]
     
-    marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL)
+    marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL, database = NULL)
     index = 1
     
     for(i in seq(len=xmlSize(registry))){
@@ -148,7 +153,8 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
       }
       if(xmlName(registry[[i]])=="MartURLLocation"){  
         if(xmlGetAttr(registry[[i]],"visible") == 1){
-          if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
+           if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
+          if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
           if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
           if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = xmlGetAttr(registry[[i]],"host")
           if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = xmlGetAttr(registry[[i]],"path")
@@ -167,8 +173,8 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
      return(marts)
     }
     else{
-     ret = data.frame(marts$biomart, marts$version)
-     colnames(ret)=c("name","version")
+     ret = data.frame(marts$biomart,marts$version)
+     colnames(ret)=c("biomart","version")
      return(ret)
     } 
   }
@@ -266,7 +272,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
       martBM(mart)="sequence"
       
     }
-    martConnection(mart)[["biomart"]] <- dbConnect(drv = martMySQLDriver(mart)$driver,user = "anonymous", host = "martdb.ensembl.org" , port = 3316, dbname = martdb, password = "")
+    martConnection(mart)[["biomart"]] <- dbConnect(drv = martMySQLDriver(mart)$driver,user = "anonymous", host = "martdb.ensembl.org" , port = martPort(mart), dbname = martdb, password = "")
     
     species = strsplit(martDataset(mart),"_")[[1]][1]
     sequence <- NULL;  
@@ -585,8 +591,15 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
   if(mysql){
     do.call("require", args=list(package="RMySQL"))
     driver <- dbDriver("MySQL", force.reload = FALSE);
-    
-    mart <- new("Mart", biomart = biomart, mysqldriver = list(driver=driver), mysql = TRUE)
+    if(missing(port)){
+        if(archive){ port = 3316
+                     }  
+        else{
+          port = 5316
+          }
+      }
+      
+    mart <- new("Mart", biomart = biomart, mysqldriver = list(driver=driver), mysql = TRUE, port = port)
 
     if(local){
       if(!missing(host) && !missing(user) && !missing(password) && !missing(port)){
@@ -623,9 +636,8 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
         marts=marts[,1]  
         martdb = biomart    
       }    
-
       if(!martdb %in% marts) stop("Requested BioMart database is not available please use the function listMarts(mysql=TRUE) to see the valid biomart names you can query using mysql access")
-      martConnection(mart)[["biomart"]] <- dbConnect(drv = martMySQLDriver(mart)$driver,user = "anonymous", host = "martdb.ensembl.org" , dbname = martdb, password = "", port = 3316)
+      martConnection(mart)[["biomart"]] <- dbConnect(drv = martMySQLDriver(mart)$driver,user = "anonymous", host = "martdb.ensembl.org" , dbname = martdb, password = "", port = port)
       messageToUser(paste("connected to: ",biomart,"\n"))
     }
     if(!missing(dataset)){
@@ -639,9 +651,11 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
     }
     marts=listMarts(host = host, includeHosts = TRUE)
     mindex=match(biomart,marts$biomart)
-    if(is.na(mindex)){
-      stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
+    mindex2=match(biomart,marts$database)
+    if(is.na(mindex) && is.na(mindex2)){
+      stop("Incorrect BioMart database, use the listMarts function to see which BioMart databases are available")
     }
+    if(is.na(mindex)) mindex = mindex2
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     if(marts$path[mindex]=="")marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
     biomart = sub(" ","%20",biomart)
