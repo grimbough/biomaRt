@@ -130,7 +130,7 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
     else{
       registry = getURL(paste(host,"?type=registry&requestid=biomaRt", sep=""))
     }
-    registry = xmlTreeParse(registry)
+    registry = xmlTreeParse(registry, asText=TRUE)
     registry = registry$doc$children[[1]]
     
     marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL, database = NULL)
@@ -173,8 +173,13 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
      return(marts)
     }
     else{
-     ret = data.frame(marts$biomart,marts$version)
-     colnames(ret)=c("biomart","version")
+      if(archive){
+        ret = data.frame(marts$database,marts$version)
+      }
+      else{
+        ret = data.frame(marts$biomart,marts$version)
+      }
+      colnames(ret)=c("biomart","version")
      return(ret)
     } 
   }
@@ -649,7 +654,7 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
     if(missing(host)){
       host = "http://www.biomart.org/biomart/martservice"
     }
-    marts=listMarts(host = host, includeHosts = TRUE)
+    marts=listMarts(host = host, includeHosts = TRUE, archive = archive)
     mindex=match(biomart,marts$biomart)
     mindex2=match(biomart,marts$database)
     if(is.na(mindex) && is.na(mindex2)){
@@ -657,9 +662,12 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
     }
     if(is.na(mindex)) mindex = mindex2
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
-    if(marts$path[mindex]=="")marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
+    if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
+    if(archive) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart)
-    mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), mysql= FALSE)
+   
+    mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), mysql= FALSE, archive = archive)
+    
     if(!missing(dataset)){
       mart = useDataset(mart = mart, dataset=dataset)
     }
@@ -681,7 +689,7 @@ listDatasets <- function(mart) {
       "select dataset, version from meta_conf__dataset__main where visible = 1")
     
   } else{
-    
+   
     txt = scan(paste(martHost(mart),"?type=datasets&requestid=biomaRt&mart=",martBM(mart),sep=""),
       sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
 
@@ -717,7 +725,7 @@ useDataset <- function(dataset, mart){
     messageToUser(paste("Reading database configuration of:",dataset,"\n"))
     if(dim(res)[1] == 0) stop("This dataset is not accessible from biomaRt as not xml description of dataset is available")
 
-    xml = xmlTreeParse(res[1,])
+    xml = xmlTreeParse(res[1,], asText=TRUE)
     xml = xml$doc$children[[1]]
 
     messageToUser("Checking attributes and filters ...")   
@@ -738,7 +746,7 @@ useDataset <- function(dataset, mart){
   else{
 
     config = getURL(paste(martHost(mart),"?type=configuration&requestid=biomaRt&dataset=",dataset,"&virtualschema=",martVSchema(mart), sep=""))
-    config = xmlTreeParse(config)
+    config = xmlTreeParse(config, asText=TRUE)
     config = config$doc$children[[1]]
  
     messageToUser("Checking attributes and filters ...")

@@ -408,7 +408,25 @@ An other example starts from a human RefSeq id and we want to retrieve the corre
 \end{verbatim}
 \end{small}
 
-\subsection{Using a BioMart other than Ensembl}
+\section{Using archived versions of Ensembl}
+
+It is possible to query archived versions of Ensembl through \Rpackage{biomaRt}.  The steps below show how to do this.
+First we list the available Ensembl archives by using the \Rfunction{listMarts} function and setting the archive attribute to TRUE.
+\begin{scriptsize}
+<<>>=
+listMarts(archive=TRUE)
+@ 
+\end{scriptsize}
+Next we select the archive we want to use using the \Rfunction{useMart} function, again setting the archive attribute to TRUE and giving the full name of the BioMart e.g. ensembl\_mart\_46.
+
+<<echo = TRUE, eval = FALSE>>=
+ensembl = useMart("ensembl_mart_46", dataset="hsapiens_gene_ensembl", archive = TRUE)
+@ 
+
+If you don't know the dataset you want to use could first connect to the BioMart using \Rfunction{useMart} and then use the \Rfunction{listDatasets} function on this object.
+After you selected the BioMart database and dataset, queries can be performed in the same way as when using the current BioMart versions.
+
+\section{Using a BioMart other than Ensembl}
 
 To demonstrate the use of the biomaRt package with non-Ensembl databases the next query is performed using the Wormbase BioMart (WormMart).
 We connect to Wormbase, select the gene dataset to use and have a look at the available attributes and filters.  Then we use a list of gene names as filter and retrieve associated RNAi identifiers together with a description of the RNAi phenotype.

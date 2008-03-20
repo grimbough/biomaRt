@@ -10,12 +10,14 @@ setClass("Mart",
                         dataset = "character",
                         filters = "environment",
                         attributes = "environment",
-                        attributePointer = "environment"   
+                        attributePointer = "environment",
+                        archive = "logical"
                         ),
          prototype(mysql = FALSE,
                    connections = new("list"),
                    dataset = "",
-                   vschema="default"
+                   vschema="default",
+                   archive = FALSE
                    )
          );
 
