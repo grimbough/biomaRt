@@ -46,8 +46,14 @@ setReplaceMethod("martDataset","Mart",function(obj,value){
   obj
 })
 
+
+
 setGeneric("martHost",def=function(obj,...)standardGeneric("martHost"))
 setMethod("martHost",signature("Mart"), function(obj) obj@host)
+
+setGeneric("martArchive",def=function(obj,...)standardGeneric("martArchive"))
+setMethod("martArchive",signature("Mart"), function(obj) obj@archive)
+
 
 setGeneric("martPort",def=function(obj,...)standardGeneric("martPort"))
 setMethod("martPort",signature("Mart"), function(obj) obj@port)
