@@ -24,7 +24,7 @@ In MySQL mode the getSequence function is more limited and the sequence that is 
 if(interactive()){
 mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl")
 
-seq = getSequence(id="BRCA1", type="hugo", seqType="peptide", mart = mart)
+seq = getSequence(id="BRCA1", type="hgnc_symbol", seqType="peptide", mart = mart)
 show(seq)
 
 
