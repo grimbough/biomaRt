@@ -57,13 +57,13 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
 #MySQL-----------------------------------------------------------    
     do.call("require", args=list(package="RMySQL"))
     if(missing(mart)){
-      mart = c("ensembl","vega","snp","msd","uniprot","sequence","wormbase")
+      mart = c("ensembl","vega","snp","sequence")
     }
     if(missing(host)){
-      host = c("martdb.ensembl.org", "martdb.ebi.ac.uk", "martdb.ensembl.org")
-      user = c("anonymous","anonymous", "anonymous")
-      password = c("","","")
-      port = c(3316, 3306, 5316) 
+      host = "martdb.ensembl.org"
+      user = "anonymous"
+      password = ""
+      port = 5316 
     }
     
     database = NULL
