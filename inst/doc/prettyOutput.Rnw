@@ -189,10 +189,10 @@ attrbuts[grep("^chrom", attrbuts[,1]),]
 @ 
 
 
-We want "description", "hgnc\_symbol", "go\_description" and "band"
+We want "description", "hgnc\_symbol", "go\_biological\_process\_id" and "band"
 
 <<>>=
-annotlist <- getBM(attributes = c("description", "hgnc_symbol", "go_description", "band"),
+annotlist <- getBM(attributes = c("description", "hgnc_symbol", "go_biological_process_id", "band"),
                    filter = "affy_hg_u95av2", values = igenes, mart = mart,
                   output = "list",na.value = "&nbsp;")
 @ 
