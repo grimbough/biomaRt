@@ -138,39 +138,20 @@ getGene(id=affyids, type="affy_hg_u133_plus_2",mart=ensembl)
 
 \subsection{Task 2:  Annotate a set of EntrezGene identifiers with GO annotation}
 
-In this task we start out with a list of EntrezGene identiers and we want to retrieve GO terms that are associated with these identifiers.  Again we look at the output of \Rfunction{listAttributes} and \Rfunction{listFilters}  to find the filter and attributes we need.  Then we construct the following query:
+In this task we start out with a list of EntrezGene identiers and we want to retrieve GO identifiers related to biological processes that are associated with these entrezgene identifiers.  Again we look at the output of \Rfunction{listAttributes} and \Rfunction{listFilters}  to find the filter and attributes we need.  Then we construct the following query:
 
 \begin{scriptsize}
 <<>>=
 entrez=c("673","837")
-getBM(attributes=c('entrezgene','go','go_description','evidence_code'), filters='entrezgene', values=entrez, mart=ensembl)
+getBM(attributes=c('entrezgene','go_biological_process_id'), filters='entrezgene', values=entrez, mart=ensembl)
 @ 
-\end{scriptsize}
-
-As this is a frequently used query to Ensembl, a wrapper function getGO is provided that retrieves a standard set of information based for a given list of identifiers:
-
-\begin{scriptsize}
-\begin{verbatim}
-
-> go = getGO(id="202763_at", type="affy_hg_u133_plus_2",mart=ensembl)
-> go
-  affy_hg_u133_plus_2         go                         go_description evidence_code ensembl_gene_id
-1           202763_at GO:0005515                        protein binding           IPI ENSG00000164305
-2           202763_at GO:0006508                            proteolysis           IDA ENSG00000164305
-3           202763_at GO:0006915                              apoptosis           IEA ENSG00000164305
-4           202763_at GO:0006917                 induction of apoptosis           TAS ENSG00000164305
-5           202763_at GO:0008234       cysteine-type peptidase activity           IEA ENSG00000164305
-6           202763_at GO:0030264 nuclear fragmentation during apoptosis           IMP ENSG00000164305
-7           202763_at GO:0030693                       caspase activity           TAS ENSG00000164305
-\end{verbatim}
 \end{scriptsize}
 
 \subsection{Task 3: Retrieve all HUGO gene symbols of genes that are located on chromosomes 1,2 or Y ,\\ and are associated with one the following GO terms: \\"GO:0051330","GO:0000080","GO:0000114","GO:0000082"\\ (here we'll use more than one filter)}
 The \Rfunction{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
 \begin{small}
 \begin{verbatim}
- go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082")
- chrom=c(1,2,"Y")
+ go=c("GO:0051330","GO:0000080","GO:0000114"chrom=c(1,2,"Y")
  getBM(attributes= "hgnc_symbol",
         filters=c("go","chromosome_name"),
         values=list(go,chrom), mart=ensembl)
