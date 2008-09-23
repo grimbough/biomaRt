@@ -1,6 +1,8 @@
-importFrom("methods","show")
-export(martDisconnect,listMarts, getGene, getGO, getAffyArrays, getSequence, getSNP, getHomolog, exportFASTA, useMart, listDatasets, useDataset, listAttributes, listFilters, getBM, parseAttributes, parseFilters, getLDS, attributeSummary, filterSummary, filterOptions, filterType)
+importFrom(methods, show)
+import(RCurl,XML)
+#for some reason RCurl needs to have findHTTPHeaderEncoding exported -
+#remove it from the exports if this ever gets fixed
+export(martDisconnect,listMarts, getGene, getGO, getAffyArrays, getSequence, getSNP, getHomolog, exportFASTA, useMart, listDatasets, useDataset, listAttributes, listFilters, getBM, parseAttributes, parseFilters, getLDS, attributeSummary, filterSummary, filterOptions, filterType, findHTTPHeaderEncoding)
 exportClasses(Mart)
 exportMethods("show")
-import(RCurl,XML)
 
