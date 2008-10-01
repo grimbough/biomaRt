@@ -1250,7 +1250,8 @@ parseAttributes = function(xml, env, attributePointer, group = "", page = ""){
       if(!is.null(xmlGetAttr(xml,"hideDisplay")) && xmlGetAttr(xml,"hideDisplay") == "true") select = FALSE
       if(select){
         page = xmlGetAttr(xml,"displayName")
-        xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, page = page)
+        xmlSApply(xml,parseAttributes, env, 
+                     attributePointer = attributePointer, page = page)
       }
     }
 
@@ -1267,7 +1268,8 @@ parseAttributes = function(xml, env, attributePointer, group = "", page = ""){
     if(xmlName(xml)=="AttributeCollection"){
       if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE
       if(select){
-         xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
+         xmlSApply(xml, parseAttributes, env, 
+           attributePointer = attributePointer, group = group, page = page)
       }
     }    
     
@@ -1275,12 +1277,12 @@ parseAttributes = function(xml, env, attributePointer, group = "", page = ""){
       if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE
       if(select){
         group = xmlGetAttr(xml,"displayName") 
-        xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer, group = group, page = page)
+        xmlSApply(xml,parseAttributes,env, attributePointer = attributePointer, group = group, page = page)
       }
     } 
 
    if(xmlName(xml)=="DatasetConfig"){
-        xmlSApply(xml,"parseAttributes",env, attributePointer = attributePointer)
+        xmlSApply(xml,parseAttributes,env, attributePointer = attributePointer)
    }
 
    return()
@@ -1295,7 +1297,7 @@ parseFilters = function(xml, env, group = "", page = ""){
     if(!is.null(xmlGetAttr(xml,"hideDisplay")) && xmlGetAttr(xml,"hideDisplay") == "true") select = FALSE 
     if(select){
       page = xmlGetAttr(xml,"displayName")
-      xmlSApply(xml,"parseFilters",env, page = page)
+      xmlSApply(xml, parseFilters, env, page = page)
     }
   }
 
@@ -1303,14 +1305,14 @@ parseFilters = function(xml, env, group = "", page = ""){
     if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE 
     if(select){
       group = xmlGetAttr(xml,"displayName") 
-      xmlSApply(xml,"parseFilters",env, group = group, page = page)
+      xmlSApply(xml, parseFilters, env, group = group, page = page)
     }
   }
 
   if(xmlName(xml)=="FilterCollection"){
     if(!is.null(xmlGetAttr(xml,"hidden")) && xmlGetAttr(xml,"hidden") == "true") select = FALSE 
     if(select){
-      xmlSApply(xml,"parseFilters",env, group = group, page = page)
+      xmlSApply(xml, parseFilters, env, group = group, page = page)
     }
   }
 
@@ -1320,7 +1322,7 @@ parseFilters = function(xml, env, group = "", page = ""){
    displayType = xmlGetAttr(xml,"displayType")
    
    if(select && !is.null(displayType) && displayType == "container"){
-     xmlSApply(xml,"parseFilters",env, group = group, page = page)
+     xmlSApply(xml, parseFilters, env, group = group, page = page)
    }
 
    if((select && !is.null(displayType) && displayType != "container") || (select && is.null(displayType))){
@@ -1346,7 +1348,7 @@ parseFilters = function(xml, env, group = "", page = ""){
  }
   
   if(xmlName(xml)=="DatasetConfig"){
-    xmlSApply(xml,"parseFilters",env)
+    xmlSApply(xml, parseFilters, env)
   }
   return()  
 }
