@@ -413,7 +413,7 @@ To demonstrate the use of the biomaRt package with non-Ensembl databases the nex
 We connect to Wormbase, select the gene dataset to use and have a look at the available attributes and filters.  Then we use a list of gene names as filter and retrieve associated RNAi identifiers together with a description of the RNAi phenotype.
 \begin{scriptsize}
 <<echo=TRUE, eval=FALSE>>=
-wormbase=useMart("wormbase",dataset="gene")
+wormbase=useMart("wormbase_current",dataset="wormbase_gene")
 listFilters(wormbase)
 listAttributes(wormbase)
 getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
