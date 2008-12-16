@@ -55,7 +55,7 @@ listMarts <- function( mart, host, user, password, port, includeHosts = FALSE, m
   if(mysql){
     
 #MySQL-----------------------------------------------------------    
-    do.call("require", args=list(package="RMySQL"))
+    do.call(require, args=list(package="RMySQL"))
     if(missing(mart)){
       mart = c("ensembl","vega","snp","sequence")
     }
@@ -594,7 +594,7 @@ useMart <- function(biomart, dataset, host, user, password, port, local = FALSE,
       stop("biomart argument is no string.  The biomart argument should be a single character string")
 
   if(mysql){
-    do.call("require", args=list(package="RMySQL"))
+    do.call(require, args=list(package="RMySQL"))
     driver <- dbDriver("MySQL", force.reload = FALSE);
     if(missing(port)){
         if(archive){ port = 3316
