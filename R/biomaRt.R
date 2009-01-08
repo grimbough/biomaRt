@@ -1020,36 +1020,41 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, outpu
       else{
         postRes = postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery, curl = curl)
       }
+
+      if(!(is.character(postRes) && (length(postRes)==1L)))
+        stop("The query to the BioMart webservice returned an invalid result: I expected a character string of length 1.")
       
       if(postRes != ""){
         if(postRes != "\n" && postRes != "\n\n"){
-        ## convert the serialized table into a dataframe
-        con = textConnection(postRes)
-        result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-        close(con)
-        if( substr(as.character(result[1]),1,5) == "ERROR"){  #Will forward the webservice error
-          stop(paste("\n",result,"The following query was attempted, use this to report this error\n",xmlQuery ,sep="\n"))
+          if(length(grep("^Query ERROR", postRes))>0L)
+            stop(postRes)
+
+          ## convert the serialized table into a dataframe
+          con = textConnection(postRes)
+          result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+          close(con)
+
+          if(checkFilters){
+            if(class(result) == "data.frame" && ncol(result)==length(attributes)){
+              colnames(result) = attributes
+            } else{
+              print(result)
+              stop("Number of columns in the query result doesn't equal number of attributes in query.  This is probably an internal error, please report.")
+            }
+          }
         }
-        if(checkFilters){
-         if(class(result) == "data.frame" && ncol(result)==length(attributes)){
-           colnames(result) = attributes
-         }
-         else{
-           print(result)
-           stop("Number of columns in the query result doesn't equal number of attributes in query.  This is probably an internal error, please report.")
-         }
-        }
-       }
-       else{
-        result = NA
-       } 
+        else{
+          ## FIXME: can this ever happen? if so, we should return an informative error message, rather than just NA.
+          result = NA
+        } 
       } else {
-       
+        ## postRes == ""
         geturl = getURL(martHost(mart))
         if(geturl == "" || is.null(geturl)){
           stop(paste("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please check if the following URL is active: ",martHost(mart),".  If this URL is not active then try your query again at a later time when this URL is active.", sep=""))
         }
-        else{ 
+        else{
+         ## FIXME: can this ever happen? Why should geturl be "" or NULL? And if so, shouldn't we return an informative error message, rather than just NULL?
          result = NULL
         }
       }
