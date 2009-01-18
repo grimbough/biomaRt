@@ -2,7 +2,7 @@ importFrom(methods, show)
 import(RCurl,XML)
 #for some reason RCurl needs to have findHTTPHeaderEncoding exported -
 #remove it from the exports if this ever gets fixed
-export(listMarts, getGene, getGO, getSequence, exportFASTA, useMart, listDatasets, useDataset, listAttributes, listFilters, getBM, getLDS, attributePages, filterOptions,filterType)
+export(listMarts, getGene, getGO, getSequence, exportFASTA, useMart, listDatasets, useDataset, listAttributes, listFilters, getBM, getLDS, attributePages, filterOptions,filterType, getBMlist)
 exportClasses(Mart)
 exportMethods("show")
 
