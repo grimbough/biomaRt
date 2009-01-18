@@ -289,7 +289,6 @@ listDatasets <- function(mart) {
   res = data.frame(dataset     = I(txt[i+1L]),
     description = I(txt[i+2L]),
     version     = I(txt[i+4L]))
-  writeLines("DONE")
   return(res)
 }
 
