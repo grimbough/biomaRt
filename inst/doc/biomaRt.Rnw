@@ -128,14 +128,6 @@ getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name','star
 @ 
 \end{scriptsize}
 
-As this is a frequently used query to Ensembl, a wrapper function getGene is provided that retrieves a standard set of information based for a given list of identifiers:
-
-\begin{scriptsize}
-<<>>=
-getGene(id=affyids, type="affy_hg_u133_plus_2",mart=ensembl)
-@
-\end{scriptsize}
-
 \subsection{Task 2:  Annotate a set of EntrezGene identifiers with GO annotation}
 
 In this task we start out with a list of EntrezGene identiers and we want to retrieve GO identifiers related to biological processes that are associated with these entrezgene identifiers.  Again we look at the output of \Rfunction{listAttributes} and \Rfunction{listFilters}  to find the filter and attributes we need.  Then we construct the following query:
@@ -220,7 +212,7 @@ In MySQL mode the \Rfunction{getSequence} function is more limited and the seque
 Task 4 requires us to retrieve 100bp upstream promoter sequences from a set of EntrzGene identifiers.  The type argument in getSequence can be thought of as the filter in this query and uses the same input names given by \Rfunction{listFilters}. in our query we use entrezgene for the type argument.  Next we have to specify which type of sequences we want to retrieve, here we are interested in the sequences of the promoter region, starting right next to the coding start of the gene.  Setting the seqType to coding\_gene\_flank will give us what we need.  The upstream argument is used to specify how many bp of upstream sequence we want to retrieve, here we'll retrieve a rather short sequence of 100bp.  Putting this all together in getSequence gives:\\
 
 \begin{scriptsize}
-<<>>=
+<<eval=FALSE>>=
 entrez=c("673","7157","837")
 getSequence(id = entrez, type="entrezgene",seqType="coding_gene_flank",upstream=100, mart=ensembl) 
 @ 
@@ -304,36 +296,6 @@ getBM(c('refsnp_id','allele','chrom_start','chrom_strand'), filters = c('chr_nam
 \end{verbatim}
 \end{scriptsize}
 
-\subsubsection{getSNP}
-\Rfunction{getSNP} is a wrapper function for retrieving SNP data given a region on the genome.
-\begin{small}
-<<echo=TRUE, eval=FALSE>>=
-snp = getSNP(chromosome = 8, start = 148350, end = 148612,  mart = snpmart)
-snp
-@ 
-\end{small}
-\begin{scriptsize}
-\begin{verbatim}
-   refsnp_id allele chrom_start chrom_strand
-1   rs1134195    G/T      148394           -1
-2   rs4046274    C/A      148394            1
-3   rs4046275    A/G      148411            1
-4     rs13291    C/T      148462            1
-5   rs1134192    G/A      148462           -1
-6   rs4046276    C/T      148462            1
-7  rs12019378    T/G      148471            1
-8   rs1134191    C/T      148499           -1
-9   rs4046277    G/A      148499            1
-10 rs11136408    G/A      148525            1
-11  rs1134190    C/T      148533           -1
-12  rs4046278    G/A      148533            1
-13  rs1134189    G/A      148535           -1
-14  rs3965587    C/T      148535            1
-15  rs1134187    G/A      148539           -1
-16  rs1134186    T/C      148569            1
-17  rs4378731    G/A      148601            1
-\end{verbatim}
-\end{scriptsize}
 
 \subsection{Task 11:  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of it's homolog in mouse. }
 
@@ -351,43 +313,6 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 1 TP53 17 7512464 NM_011640 11 69396600
 \end{verbatim}
 \end{scriptsize}
-
-\subsubsection{getHomolog}
-The \Rfunction{getHomolog} is a wrapper function for mapping identifiers from one species to another.  As described above this can also be done with the more general \Rfunction{getLDS} function.
-Similar as the \Rfunction{getGene} function, we have to specify the identifier we start from using either the \textit{from.array} argument if the identifier comes from an affy array or else the \textit{from.type} argument if we use an other identifier.  The identifier we want to retrieve has to be specified by using the \textit{to.array} or \textit{to.type} arguments.\\
-A generalized version of the \Rfunction{getHomolog} function is the \Rfunction{getLDS} function (see Advanced Queries section). \Rfunction{getLDS} enables one to combine two datasets (=species in Ensembl) and query any field from one dataset based on the other.
-
-In a first example we start from a affy identifier of a human chip and we want to retrieve the identifiers of the corresponding homolog on a mouse chip. 
-\begin{small}
-\begin{verbatim}
-> human = useMart("ensembl","hsapiens_gene_ensembl")
-> mouse = useMart("ensembl","mmusculus_gene_ensembl")
-> homolog = getHomolog( id = "1939_at", to.type = "affy_mouse430_2", from.type = 
-                        "affy_hg_u95av2", from.mart = human, to.mart = mouse )
-
-> homolog
-       V1           V2
-1 1939_at 1427739_a_at
-2 1939_at 1426538_a_at
-
-\end{verbatim}
-\end{small}
-An other example starts from a human RefSeq id and we want to retrieve the corresponding affy ids on the affy mouse430\_2 chip.
-
-\begin{small}
-\begin{verbatim}
-> homolog = getHomolog( id = "NM_007294", to.type = "affy_mouse430_2",
-                        from.type = "refseq_dna", from.mart = human,
-                        to.mart = mouse )
-
-> homolog
-        V1           V2
-1 NM_007294   1424629_at
-2 NM_007294   1451417_at
-3 NM_007294 1424630_a_at
-
-\end{verbatim}
-\end{small}
 
 \section{Using archived versions of Ensembl}
 
@@ -468,27 +393,6 @@ The data.frames obtained by the getSequence function can be exported to FASTA fi
 
 \subsection{Finding out more information on filters}
 
-In BioMart databases, filters can be grouped.
-Ensembl for example contains the filter groups GENE:, REGION:, ...
-An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the \Rfunction{filterSummary} function.
-
-\begin{small}
-<<>>=
-summaryF = filterSummary(ensembl)
-summaryF[1:5,]
-@
-\end{small}
-
-To show us a smaller list of filters which belog to a specified group or category we can now specify this in the \Rfunction{listFilters} function as follows:
-
-\begin{small}
-<<>>=
-listFilters(ensembl, group = "REGION:")
-@
-\end{small}
-
-We now get a short list of filters related to the region where the genes are located.
-
 \subsubsection{filterType}
 
 Boolean filters need a value TRUE or FALSE in biomaRt.  Setting the value TRUE will include all information that fulfill the filter requirement.  Setting FALSE will exclude the information that fulfills the filter requirement and will return all values that don't fulfill the filter.
@@ -514,25 +418,24 @@ filterOptions("biotype",ensembl)
 If there are no predetermed values e.g. for the entrezgene filter, then \Rfunction{filterOptions} will return the type of filter it is. And most of the times the filter name or it's description will suggest what values one case use for the respective filter (e.g. entrezgene filter will work with enterzgene identifiers as values)
 
 
-\subsection{Attribute groups}
+\subsection{Attribute Pages}
 
 For large BioMart databases such as Ensembl, the number of attributes displayed by the \Rfunction{listAttributes} function can be very large. 
-In BioMart databases, attributes are put together in categories, such as Sequences, Features, Homologs for Ensembl, and within these categories, attributes can be grouped.
-The Features category of Ensembl for example contains the attribute groups GENE:, PROTEIN:, ...
-An overview of the categories and groups for attributes present in the respective BioMart dataset can be obtained with the \Rfunction{attributeSummary} function.
+In BioMart databases, attributes are put together in pages, such as sequences, features, homologs for Ensembl.
+An overview of the attributes pages present in the respective BioMart dataset can be obtained with the \Rfunction{attributePages} function.
 
 \begin{small}
 <<>>=
-summaryA = attributeSummary(ensembl)
-summaryA[1:10,]
+pages = attributePages(ensembl)
+pages
 @
 \end{small}
 
-To show us a smaller list of attributes which belog to a specified group or category we can now specify this in the \Rfunction{listAttributes} function as follows:
+To show us a smaller list of attributes which belog to a specific page, we can now specify this in the \Rfunction{listAttributes} function as follows:
 
 \begin{small}
 <<>>=
-listAttributes(ensembl, category  = "Features", group = "GENE:")
+listAttributes(ensembl, page="feature_page")
 @
 \end{small}
 
@@ -541,37 +444,15 @@ We now get a short list of attributes related to the region where the genes are 
 
 \section{Local BioMart databases}
 
-The biomaRt package can be used with a local install of a public BioMart database or a locally developed BioMart database.
+The biomaRt package can be used with a local install of a public BioMart database or a locally developed BioMart database and web service.
 In order for biomaRt to recognize the database as a BioMart, make sure that the local database you create has a name conform with \begin{verbatim} database_mart_version \end{verbatim} where database is the name of the database and version is a version number.  No more underscores than the ones showed should be present in this name. A possible name is for example \begin{verbatim} ensemblLocal_mart_46 \end{verbatim}.
 \subsection{Minimum requirements for local database installation}
-One needs to first download the SQL code to generate the database.  For ensembl\_mart\_42 this was in the file ensembl\_mart\_42.sql.gz. 
-Then run this SQL code to generate the tables of your local database:
-
-\begin{verbatim}
-mysql -D ensembl_mart_42 -u username -p < ensembl_mart_42.sql
-\end{verbatim}
-
-Once the tables are created you need to fill the following tables with the downloaded data:
-\begin{scriptsize}
-\begin{verbatim}
-Essential tables:
-
-meta_conf__dataset__main.txt.table
-meta_conf__xml__dm.txt.table
-
-You can install them from your MySQL command line with:
-
-LOAD DATA INFILE 'meta_conf__dataset__main.txt.table' INTO TABLE meta_conf__dataset__main;
-LOAD DATA INFILE 'meta_conf__xml__dm.txt.table' INTO TABLE meta_conf__xml__dm;
-\end{verbatim}
-\end{scriptsize}
-
-Next you load all the tables that have the name of your species of interest with with the corresponding table data.
+More information on installing a local copy of a BioMart database or develop your own BioMart database and webservice can be found on \url{http://www.biomart.org}
 Once the local database is installed you can use biomaRt on this database by:
 \begin{scriptsize}
 \begin{verbatim}
-mart=useMart("ensembl_mart_42", mysql=TRUE, host="localhost", user="****", password="****", 
-              local=TRUE, dataset="hsapiens_gene_ensembl")
+listMarts(host="www.myLocalHost.org", path="/myPathToWebservice/martservice")
+mart=useMart("nameOfMyMart",dataset="nameOfMyDataset",host="www.myLocalHost.org", path="/myPathToWebservice/martservice")
 \end{verbatim}
 \end{scriptsize}
 

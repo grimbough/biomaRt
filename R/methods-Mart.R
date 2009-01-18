@@ -46,44 +46,14 @@ setReplaceMethod("martDataset","Mart",function(obj,value){
   obj
 })
 
-
-
 setGeneric("martHost",def=function(obj,...)standardGeneric("martHost"))
 setMethod("martHost",signature("Mart"), function(obj) obj@host)
 
 setGeneric("martArchive",def=function(obj,...)standardGeneric("martArchive"))
 setMethod("martArchive",signature("Mart"), function(obj) obj@archive)
 
-
-setGeneric("martPort",def=function(obj,...)standardGeneric("martPort"))
-setMethod("martPort",signature("Mart"), function(obj) obj@port)
-
-
-setGeneric("martMainT",def=function(obj,...)standardGeneric("martMainT"))
-setMethod("martMainT",signature("Mart"), function(obj) obj@mainTables)
-setGeneric("martMainT<-", function(obj, value) standardGeneric("martMainT<-"))
-setReplaceMethod("martMainT","Mart",function(obj,value){
-  obj@mainTables <- value
-  obj
-})
-
-setGeneric("martMySQL",def=function(obj,...)standardGeneric("martMySQL"))
-setMethod("martMySQL",signature("Mart"),function(obj) obj@mysql)
-
-setGeneric("martConnection",def=function(obj,...)standardGeneric("martConnection"))
-setMethod("martConnection",signature("Mart"), function(obj) obj@connections)
-setGeneric("martConnection<-", function(obj, value) standardGeneric("martConnection<-"))
-setReplaceMethod("martConnection","Mart",function(obj,value){
-  obj@connections <- value
-  obj
-})
-
 setGeneric("martVSchema",def=function(obj,...)standardGeneric("martVSchema"))
 setMethod("martVSchema",signature("Mart"), function(obj) obj@vschema)
-
-setGeneric("martMySQLDriver",def=function(obj,...)standardGeneric("martMySQLDriver"))
-setMethod("martMySQLDriver",signature("Mart"), function(obj) obj@mysqldriver)
-
 
 
 
