@@ -359,7 +359,7 @@ getName = function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]]
 #listAttributes     #
 #####################
 
-listAttributes = function(mart, page, what = c("name","description")){
+listAttributes = function(mart, page, what = c("name","description")) {
   martCheck(mart)
   if(!missing(page) && !page %in% attributePages(mart)) stop(paste("The chosen page: ",page," is not valid, please use the correct page name using the attributePages function",sep=""))
   attrib=NULL
@@ -387,10 +387,20 @@ attributePages = function(mart){
 #listFilters      #
 ###################
 
-listFilters = function(mart, what = c("name","description")){
+listFilters = function(mart, what = c("name", "description"), group = "DEFUNCT") {
+
+  if(!missing(group))
+    .Defunct(msg = "The argument 'group' is defunct. If you need advice how to replace that functionality, please contact the package maintainer for advice.")
+  
   martCheck(mart)
-  filters = martFilters(mart)[,what]
-  return(filters)
+  filters = martFilters(mart)
+  badwhat = !(what %in% colnames(filters))
+  if(any(badwhat))
+    stop(sprintf("The function argument 'what' contains %s: %s\nValid are: %s\n",
+                 if(sum(badwhat)>1) "invalid values" else "an invalid value",
+                 paste(what[badwhat], collapse=", "),
+                 paste(colnames(filters), collapse=", ")))
+  return(filters[, what])
 }
 
 ###################
