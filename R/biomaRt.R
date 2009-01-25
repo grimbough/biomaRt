@@ -54,8 +54,12 @@ bmRequest <- function(request){
   return(result)
 }
 
-listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE){
+listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE,user, password,mysql=FALSE){
 
+  if(mysql || !missing(user) || !missing(password)){
+    .Defunct(msg="mysql access to Ensembl is no longer available through this package the web service mode supports all queries.  If mysql is needed a separate package will become available with limited mysql query support.")
+  }
+  
   if(archive){
     registry = bmRequest(paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep=""))
   }
@@ -134,19 +138,6 @@ getGene <- function( id, type, mart){
   symbolAttrib = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "mgi_symbol","external_gene_id")
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
   attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
-  table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
-  return(table)
-}
-
-###################
-#get GO annotation#
-###################
-
-getGO <- function( id, type, mart){
-  martCheck(mart,"ensembl")
-  checkWrapperArgs(id,type,mart)
-  typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
-  attrib = c(typeAttrib,"go","go_description","evidence_code","ensembl_gene_id")   
   table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
   return(table)
 }
@@ -249,8 +240,11 @@ exportFASTA <- function( sequences, file ){
 #useMart              # 
 #######################
 
-useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80,archive = FALSE){
+useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80,archive = FALSE,  local = FALSE, mysql = FALSE, user, password){
 
+  if(local || mysql || !missing(user) || !missing(password)) {
+    .Defunct(msg="mysql access to Ensembl is no longer available through this package the web service mode supports all queries.  If mysql is needed a separate package will become available with limited mysql query support.")
+  }
   if(missing(biomart)) stop("No biomart databases specified. Specify a biomart database to use using the biomart argument")
   if(!(is.character(biomart)))
       stop("biomart argument is no string.  The biomart argument should be a single character string")
@@ -359,8 +353,19 @@ getName = function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]]
 #listAttributes     #
 #####################
 
-listAttributes = function(mart, page, what = c("name","description")) {
+listAttributes = function(mart, page, what = c("name","description"), group, category, showGroups = FALSE) {
   martCheck(mart)
+  if(!missing(group)){
+    .Defunct(msg="Currently the group argument is defunct.  Pending on availability from the BioMart web service group will become activated again or not.")
+  }
+  if(showGroups){
+    .Defunct(msg="Currently the showGroups argument is defunct.  Pending on availability from the BioMart web service showGroups will become activated again or not.")
+  }
+  
+  if(!missing(category)){
+    page = category
+    warning("To better comply with the BioMart suite (http://www.biomart.org) attribute categories are now known as attribute pages and can be specified with the page parameter")
+  }
   if(!missing(page) && !page %in% attributePages(mart)) stop(paste("The chosen page: ",page," is not valid, please use the correct page name using the attributePages function",sep=""))
   attrib=NULL
   if(!missing(page)){
@@ -433,8 +438,10 @@ filterType = function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM = function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE){
-
+getBM = function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, output = "data.frame", list.names = NULL, na.value = NA){
+  if(output !=  "data.frame" | !is.null(list.names) | !is.na(na.value)){
+    .Defunct("To get a list as outputformat use the getBMlist function.  Note that this is not the best way to perform BioMart queries as for each value of the filters a separate query is performed. This is prone to failure and it is recommended to use getBM to query for all values at once and iterate over the results in R instead of iterating the query which is done by getBMlist.")
+  }
   martCheck(mart)
   if(missing( attributes ))
     stop("Argument 'attributes' must be specified.")
@@ -447,6 +454,23 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
   if(any(invalid))
     stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
                "\nPlease use the function 'listAttributes' to get valid attribute names"))
+  #check if attributes come from multiple attribute pages
+  att = listAttributes(mart, what=c("name","page"))
+  att = att[which(att[,1] %in% attributes),]
+  attOK = FALSE
+  pages = unique(att[,2])
+  if(length(pages) <= 1){
+    attOK = TRUE
+  }
+  else{
+    for(page in pages){
+      if(length(attributes) == length(which(attributes %in% att[which(att[,2] == page),1]))) attOK = TRUE
+    }
+  }
+  if(!attOK){
+    stop(paste("Querying attributes from multiple attribute pages is not allowed.  To see the attribute pages attributes belong to, use the function attributePages."))
+  }
+  
   if(filters[1] != "" && checkFilters){
     invalid = !(filters %in% listFilters(mart, what="name"))
     if(any(invalid))
@@ -745,4 +769,22 @@ getBMlist <- function(attributes, filters = "", values = "", mart, list.names = 
     }
   }
   return(out)
+}
+
+##########################
+#Old function stubs
+##########################
+
+attributeSummary = function( mart ){
+ warning("This function is currently replaced by the attributePages function.  The web service currenly returns only data about the attribute pages not the further grouping of these attributes.")
+ martCheck(mart)
+ return(attributePages(mart)) 
+}
+
+martDisconnect <- function( mart ){
+.Defunct(msg="It is not necessary to disconnect from a BioMart as web service mode only is supported in this package")
+}
+
+getGO <- function( id, type, mart){
+ .Defunct(msg="getGO is now defunct use the getBM function instead.  See example in vignette to obtain GO information using getBM.")
 }
