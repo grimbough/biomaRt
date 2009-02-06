@@ -72,7 +72,7 @@ listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice"
   marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL, database = NULL)
   index = 1
   
-  if(host != "www.biomart.org"){
+  if(host != "www.biomart.org" || archive){
     for(i in seq(len=xmlSize(registry))){
       if(xmlName(registry[[i]])=="MartURLLocation"){  
         if(xmlGetAttr(registry[[i]],"visible") == 1){
@@ -249,14 +249,18 @@ useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart
   if(!(is.character(biomart)))
       stop("biomart argument is no string.  The biomart argument should be a single character string")
   marts=NULL
-  marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive) 
+  marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive)
+ 
   mindex=match(biomart,marts$biomart)
+  if(is.na(mindex) || archive){
+    mindex=match(biomart,marts$database)
+  }
   if(is.na(mindex))
     stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
     
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
-    if(archive) biomart = marts$biomart[mindex]
+   if(archive) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart)
    
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
@@ -300,18 +304,23 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
   attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
   close(con)
   if(type=="attributes"){
-    if(dim(attrfiltParsed)[2] < 4)
+    if(dim(attrfiltParsed)[2] < 3)
       stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
     cnames = seq(1:dim(attrfiltParsed)[2])
     cnames=paste(type,cnames,sep="")
     cnames[1] = "name"
     cnames[2] = "description"
     cnames[3] = "fullDescription"
-    cnames[4] = "page"
+    if(dim(attrfiltParsed)[2] < 4){
+      warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
+    }
+    else{
+      cnames[4] = "page"
+    }
     colnames(attrfiltParsed) = cnames
   }
    if(type=="filters"){
-     if(dim(attrfiltParsed)[2] < 7)
+     if(dim(attrfiltParsed)[2] < 4)
        stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
      cnames = seq(1:dim(attrfiltParsed)[2])
      cnames=paste(type,cnames,sep="")
@@ -319,9 +328,14 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
      cnames[2] = "description"
      cnames[3] = "options"
      cnames[4] = "fullDescription"
-     cnames[5] = "filters"
-     cnames[6] = "type"
-     cnames[7] = "operation"
+     if(dim(attrfiltParsed)[2] < 7){
+       warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
+     }
+     else{
+       cnames[5] = "filters"
+       cnames[6] = "type"
+       cnames[7] = "operation"
+     }
      colnames(attrfiltParsed) = cnames
    }
   return(attrfiltParsed)
@@ -429,9 +443,13 @@ filterType = function(filter, mart){
   if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the filter type")
   if(class(filter)!="character")stop("Filter argument should be of class character")
   martCheck(mart)
-  sel = which(listFilters(mart, what="name") == filter)
-  if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
-  return(listFilters(mart,what="type")[sel])
+  type="unknown"
+  if(dim(listFilters(mart))[2] > 4){ #to be removed once older BioMarts are compatible
+    sel = which(listFilters(mart, what="name") == filter)
+    if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
+    type = listFilters(mart,what="type")[sel]
+  }
+  return(type)
 }
 
 ##########################################
@@ -450,38 +468,48 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
   if(class(uniqueRows) != "logical")
     stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
   
+  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
+  
+  #checking the Attributes
   invalid = !(attributes %in% listAttributes(mart, what="name"))
   if(any(invalid))
     stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
                "\nPlease use the function 'listAttributes' to get valid attribute names"))
-  #check if attributes come from multiple attribute pages
-  att = listAttributes(mart, what=c("name","page"))
-  att = att[which(att[,1] %in% attributes),]
-  attOK = FALSE
-  pages = unique(att[,2])
-  if(length(pages) <= 1){
-    attOK = TRUE
-  }
-  else{
-    for(page in pages){
-      if(length(attributes) == length(which(attributes %in% att[which(att[,2] == page),1]))) attOK = TRUE
+
+  #check if attributes come from multiple attribute pages currently disabled until ID issue resovled at Ensembl
+  if(FALSE){
+    att = listAttributes(mart, what=c("name","page"))
+    att = att[which(att[,1] %in% attributes),]
+    attOK = FALSE
+    pages = unique(att[,2])
+    if(length(pages) <= 1){
+      attOK = TRUE
+    }
+    else{
+      for(page in pages){
+        if(length(attributes) == length(which(attributes %in% att[which(att[,2] == page),1]))) attOK = TRUE
+      }
+    }
+    if(!attOK){
+      stop(paste("Querying attributes from multiple attribute pages is not allowed.  To see the attribute pages attributes belong to, use the function attributePages."))
     }
   }
-  if(!attOK){
-    stop(paste("Querying attributes from multiple attribute pages is not allowed.  To see the attribute pages attributes belong to, use the function attributePages."))
-  }
+  #attribute are ok lets add them to the query
+  attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
   
+  #checking the filters
   if(filters[1] != "" && checkFilters){
     invalid = !(filters %in% listFilters(mart, what="name"))
     if(any(invalid))
       stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
                  "\nPlease use the function 'listFilters' to get valid filter names"))
   }
-  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
-  attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
+  
+  filterXML = NULL
+  
   if(length(filters) > 1){
     if(class(values)!= "list")stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
-    filterXML = NULL
+   
     for(i in seq(along = filters)){
       if(filters[i] %in% listFilters(mart, what = "name")){
         filtertype=filterType(filters[i], mart)
@@ -536,18 +564,14 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
       filterXML=""
     }
   }
+  
   xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
     
   if(verbose){
     cat(paste(xmlQuery,"\n", sep=""))
   }      
 
-  if(is.null(curl)){
-    postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
-  }
-  else{
-    postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery, curl = curl), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
-  }
+  postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
   
   if(!(is.character(postRes) && (length(postRes)==1L)))
     stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1.")
@@ -577,18 +601,6 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
       result = NA
     } 
   }
-    #THE STUFF below should be caught now by the tryCatch when performing the query
-    #else {
-    ## postRes == ""
-    #geturl = getURL(martHost(mart))
-    #if(geturl == "" || is.null(geturl)){
-    #  stop(paste("The getBM query to BioMart webservice returned no result.  The webservice could be temporarily down, please check if the following URL is active: ",martHost(mart),".  If this URL is not active then try your query again at a later time when this URL is active.", sep=""))
-    #}
-    #else{
-      ## FIXME: can this ever happen? Why should geturl be "" or NULL? And if so, shouldn't we return an informative error message, rather than just NULL?
-     # result = NULL
-    #}
-  #}
   return(result)
 }
 
