@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 1.99.7
+Version: 1.99.8
 Title: Interface to BioMart databases (e.g. Ensembl, Wormbase and Gramene)
 Author: Steffen Durinck <steffen@stat.berkeley.edu>,
 	Wolfgang Huber <huber@ebi.ac.uk>, Sean Davis <sdavis2@mail.nih.gov>
