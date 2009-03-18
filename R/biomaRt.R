@@ -444,11 +444,11 @@ filterType = function(filter, mart){
   if(class(filter)!="character")stop("Filter argument should be of class character")
   martCheck(mart)
   type="unknown"
-  if(dim(listFilters(mart))[2] > 4){ #to be removed once older BioMarts are compatible
+  #if(dim(listFilters(mart))[2] > 4){ #to be removed once older BioMarts are compatible
     sel = which(listFilters(mart, what="name") == filter)
     if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
     type = listFilters(mart,what="type")[sel]
-  }
+ # }
   return(type)
 }
 
