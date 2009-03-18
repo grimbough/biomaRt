@@ -800,3 +800,11 @@ martDisconnect <- function( mart ){
 getGO <- function( id, type, mart){
  .Defunct(msg="getGO is now defunct use the getBM function instead.  See example in vignette to obtain GO information using getBM.")
 }
+
+###################
+#Nature Protocol
+###################
+
+NP2009code <- function(){
+  edit(file=system.file('scripts', 'Integration-NP.R', package = 'biomaRt'))
+}
