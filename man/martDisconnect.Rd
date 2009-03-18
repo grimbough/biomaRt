@@ -1,8 +1,7 @@
 \name{martDisconnect}
 \alias{martDisconnect}
-\title{Disconnects from BioMarts}
-\description{This function closes connections of the Mart object the BioMarts and only has to be used when one connects via MySQL.  As this package only supports web service based queries this function is defunct.}
-\usage{martDisconnect(mart)}
+\title{Disconnects from BioMarts (defunct)}
+\description{The function 'martDisconnect' is defunct. In BioMart webservice mode, disconnecting is not necessary. Background explanation: In previous versions of this package, a MySQL mode was also supported, which required disconnecting.}
 
 \arguments{
 \item{mart}{Mart object created with the useMart function}

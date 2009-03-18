@@ -794,7 +794,7 @@ attributeSummary = function( mart ){
 }
 
 martDisconnect <- function( mart ){
-.Defunct(msg="It is not necessary to disconnect from a BioMart as web service mode only is supported in this package")
+.Defunct(msg="The function 'martDisconnect' is defunct. In BioMart webservice mode, disconnecting is not necessary. Background explanation: In previous versions of this package, a MySQL mode was also supported, which required disconnecting.")
 }
 
 getGO <- function( id, type, mart){
