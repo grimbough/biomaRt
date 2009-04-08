@@ -574,33 +574,30 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
   postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
   
   if(!(is.character(postRes) && (length(postRes)==1L)))
-    stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1.")
-  
-  if(postRes != ""){
-    if(postRes != "\n" && postRes != "\n\n"){
-      if(length(grep("^Query ERROR", postRes))>0L)
-        stop(postRes)
+    stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
 
-      ## convert the serialized table into a dataframe
-      con = textConnection(postRes)
-      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-      close(con)
-      
-      if(checkFilters){
-        if(class(result) == "data.frame" && ncol(result)==length(attributes)){
-          colnames(result) = attributes
-        } else{
-          print(result)
-          stop("Number of columns in the query result doesn't equal number of attributes in query.  This is probably an internal error, please report.")
-        }
-      }
+  if(gsub("\n", "", postRes) == "") {
+    
+    result = as.data.frame(matrix("", ncol=length(attributes), nrow=0), stringsAsFactors=FALSE)
+    
+  } else {
+    
+    if(length(grep("^Query ERROR", postRes))>0L)
+      stop(postRes)
+
+    ## convert the serialized table into a dataframe
+    con = textConnection(postRes)
+    result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", stringsAsFactors=FALSE)
+    close(con)
+
+    if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
+      print(result)
+      stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
     }
-    else{
-      ## FIXME: can this ever happen? if so, we should return an informative error message, rather than just NA.
-      ##Answer: This would not be an error but a query that gives no result e.g. quering for info of an id that does not exist.  So I think in that case NA is an appropriate return.
-      result = NA
-    } 
+    
   }
+  
+  colnames(result) = attributes
   return(result)
 }
 
