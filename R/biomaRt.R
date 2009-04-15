@@ -39,7 +39,7 @@ martCheck = function(mart, biomart = NULL){
 
 checkWrapperArgs = function(id, type, mart){
  if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details. Valid values for the type argument can be found with the listFilters function.") 
-  if(!type %in% martFilters(mart, what="name"))stop(paste("Invalid identifier type:",type," see ?getGene for details. Use the listFilters function to get the valid value for the type argument.", sep=""))   
+  if(!type %in% listFilters(mart)[,1])stop(paste("Invalid identifier type:",type," see ?getGene for details. Use the listFilters function to get the valid value for the type argument.", sep=""))   
   if(missing(id))stop("No identifiers specified.  Use the id argument to specify a vector of identifiers for which you want to retrieve the annotation.")
 }
 #######################################################
