@@ -4,8 +4,6 @@
 \description{This function opens an editor displaying the analysis code of the Nature Protocols 2009 paper}
 \usage{NP2009code()}
 
-\arguments{
-}
 \details{The \code{\link{edit}} function uses \code{getOption("editor")} to select the editor.
 Use, for instance, \code{options(editor="emacs")} to set another editor.}
 
