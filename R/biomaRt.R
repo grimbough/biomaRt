@@ -49,22 +49,18 @@ checkWrapperArgs = function(id, type, mart){
 #BioMart databases are present                        #
 #######################################################
 
-bmRequest <- function(request){
-  result = tryCatch(getURL(request), error = function(e){ stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
+bmRequest <- function(request, ssl.verifypeer = TRUE){
+  result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer), error = function(e){ stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
   return(result)
 }
 
-listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE,user, password,mysql=FALSE){
+listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE){
 
-  if(mysql || !missing(user) || !missing(password)){
-    .Defunct(msg="mysql access to Ensembl is no longer available through this package the web service mode supports all queries.  If mysql is needed a separate package will become available with limited mysql query support.")
-  }
-  
   if(archive){
-    registry = bmRequest(paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep=""))
+    registry = bmRequest(paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep=""), ssl.verifypeer = ssl.verifypeer)
   }
   else{
-    registry = bmRequest(paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep=""))
+    registry = bmRequest(paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep=""), ssl.verifypeer = ssl.verifypeer)
   }
   registry = xmlTreeParse(registry, asText=TRUE)
   registry = registry$doc$children[[1]]
@@ -240,18 +236,23 @@ exportFASTA <- function( sequences, file ){
 #useMart              # 
 #######################
 
-useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80,archive = FALSE,  local = FALSE, mysql = FALSE, user, password){
+useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version){
 
-  if(local || mysql || !missing(user) || !missing(password)) {
-    .Defunct(msg="mysql access to Ensembl is no longer available through this package the web service mode supports all queries.  If mysql is needed a separate package will become available with limited mysql query support.")
-  }
-  if(missing(biomart)) stop("No biomart databases specified. Specify a biomart database to use using the biomart argument")
+  if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
+  if(!missing(biomart)){ 
   if(!(is.character(biomart)))
       stop("biomart argument is no string.  The biomart argument should be a single character string")
+  }
+
   marts=NULL
-  marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive)
- 
-  mindex=match(biomart,marts$biomart)
+  marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive, ssl.verifypeer = ssl.verifypeer)
+  mindex = NA
+  if(!missing(biomart)){ 
+   mindex=match(biomart,marts$biomart)
+  }
+  if(!missing(version)){
+   mindex=match(version,marts$version)
+  }
   if(is.na(mindex) || archive){
     mindex=match(biomart,marts$database)
   }
@@ -261,6 +262,7 @@ useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
    if(archive) biomart = marts$biomart[mindex]
+   if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart)
    
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
@@ -748,6 +750,16 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     return(result)
 } 
 
+######################
+#getXML
+######################
+getXML <- function(host="http://www.biomart.org/biomart/martservice?", xmlquery){
+      pf = postForm(host,"query"=xmlquery)
+      con = textConnection(pf)
+      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+      close(con)
+      return(result)
+}
 
 ######################
 #getBMlist
