@@ -593,7 +593,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
     close(con)
 
     if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
-      print(result)
+      print(head(result))
       stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
     }
     
