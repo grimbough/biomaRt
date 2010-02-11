@@ -29,7 +29,7 @@ martCheck = function(mart, biomart = NULL){
     stop("You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information.")
   }
   if(!is.null(biomart)){
-    martcheck = strsplit(martBM(mart),"_")[[1]][1]
+    martcheck = strsplit(martBM(mart),"_", fixed = TRUE, useBytes = TRUE)[[1]][1]
     if(martcheck[1] != biomart)stop(paste("This function only works when used with the ",biomart," BioMart.",sep="")) 
   }
   if(martDataset(mart)==""){
@@ -131,7 +131,7 @@ listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice"
 getGene <- function( id, type, mart){
   martCheck(mart,"ensembl") 
   checkWrapperArgs(id, type, mart)
-  symbolAttrib = switch(strsplit(martDataset(mart), "_")[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "mgi_symbol","external_gene_id")
+  symbolAttrib = switch(strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "mgi_symbol","external_gene_id")
   typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
   attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
   table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
@@ -263,7 +263,7 @@ useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
    if(archive) biomart = marts$biomart[mindex]
    if(!missing(version)) biomart = marts$biomart[mindex]
-    biomart = sub(" ","%20",biomart)
+    biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
    
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
     
@@ -308,7 +308,7 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
   if(type=="attributes"){
     if(dim(attrfiltParsed)[2] < 3)
       stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-    cnames = seq(1:dim(attrfiltParsed)[2])
+    cnames = seq_len(dim(attrfiltParsed)[2])
     cnames=paste(type,cnames,sep="")
     cnames[1] = "name"
     cnames[2] = "description"
@@ -578,7 +578,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
   if(!(is.character(postRes) && (length(postRes)==1L)))
     stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
 
-  if(gsub("\n", "", postRes) == "") {
+  if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") {
     
     result = as.data.frame(matrix("", ncol=length(attributes), nrow=0), stringsAsFactors=FALSE)
     
