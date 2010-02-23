@@ -458,15 +458,25 @@ filterType = function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM = function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, output = "data.frame", list.names = NULL, na.value = NA){
-  if(output !=  "data.frame" | !is.null(list.names) | !is.na(na.value)){
-    .Defunct("To get a list as outputformat use the getBMlist function.  Note that this is not the best way to perform BioMart queries as for each value of the filters a separate query is performed. This is prone to failure and it is recommended to use getBM to query for all values at once and iterate over the results in R instead of iterating the query which is done by getBMlist.")
-  }
+getBM = function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE){
+  
   martCheck(mart)
+ 
   if(missing( attributes ))
     stop("Argument 'attributes' must be specified.")
-  if(filters != "" && missing( values ))
-    stop("Argument 'values' must be specified.")
+  
+   if(is.list(filters) && !missing( values ))
+             warning("Argument 'values' should not be used when argument 'filters' is a list and will be ignored.")
+   if(is.list(filters) && is.null(names(filters)))
+             stop("Argument 'filters' must be a named list when sent as a list.")
+   if(!is.list(filters) && filters != "" && missing( values ))
+        stop("Argument 'values' must be specified.")
+  
+  if(is.list(filters)){
+    values = filters
+    filters = names(filters)
+  }
+  
   if(class(uniqueRows) != "logical")
     stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
   
