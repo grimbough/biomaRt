@@ -2,7 +2,7 @@
 \alias{getBM}
 \title{Retrieves information from the BioMart database}
 \description{This function is the main biomaRt query function.  Given a set of filters and corresponding values, it retrieves the user specified attributes from the BioMart database one is connected to}
-\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose = FALSE, uniqueRows = TRUE, output = "data.frame", list.names = NULL, na.value = NA)}
+\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose = FALSE, uniqueRows = TRUE)}
 
 \arguments{
   \item{attributes}{Attributes you want to retrieve.  A possible list of attributes can be retrieved using the function listAttributes.}
@@ -13,9 +13,6 @@
   \item{checkFilters}{Sometimes attributes where a value needs to be specified, for example upstream\_flank with value 20 for obtaining upstream sequence flank regions of length 20bp, are treated as filters in BioMarts.  To enable such a query to work, one must specify the attribute as a filter and set checkFilters = FALSE for the query to work.}
  \item{verbose}{When using biomaRt in webservice mode and setting verbose to TRUE, the XML query to the webservice will be printed.}
  \item{uniqueRows}{If the result of a query contains multiple identical rows, setting this argument to TRUE (default) will result in deleting the duplicated rows in the query result at the server side.}
-\item{output}{getBM always outputs a data.frame.  Use the getBMlist function if a list is required, note that this is not the recommended way to query and getBM should be prefered.}
-\item{list.names}{getBM always outputs a data.frame.  Use the getBMlist function if a list is required, note that this is not the recommended way to query and getBM should be prefered.}
-\item{na.value}{getBM always outputs a data.frame.  Use the getBMlist function if a list is required, note that this is not the recommended way to query and getBM should be prefered.}
 }
 
 \author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
