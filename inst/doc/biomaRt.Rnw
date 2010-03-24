@@ -101,10 +101,14 @@ The \Rfunction{getBM} function is the main query function in biomaRt.  It has fo
 \item mart: is and object of class \Robject{Mart}, which is created by the \Rfunction{useMart} function.
 \end{itemize}
 
-Note: for some frequently used queries to Ensembl a set of wrapper are functions available as will be described in the sections below.  These wrapper functions are: \Rfunction{getGene}, \Rfunction{getSequence}, \Rfunction{getGO}, \Rfunction{getHomolog}, \Rfunction{getSNP}.  All these functions call the \Rfunction{getBM} function with hard coded filter and attribute names.\\
+Note: for some frequently used queries to Ensembl, wrapper 
+functions are available: \Rfunction{getGene} and \Rfunction{getSequence}.  
+These functions call the \Rfunction{getBM} function with hard coded 
+filter and attribute names.
 
-Now that we selected a BioMart database and dataset, and know about attributes, filters, and the values for filters; we can build a biomaRt query.  Let's make an easy query for the following problem:  We have a list of Affymetrix identifiers from the u133plus2 platform and we want to retrieve the corresponding EntrezGene identifiers using the Ensembl mappings.\\
-The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output (attributes) for the query we want to retrieve the EntrezGene and u133plus2 identifiers so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the \Rfunction{listAttributes} and \Rfunction{listFilters} function respectively.  Let's now run the query:\\
+Now that we selected a BioMart database and dataset, and know about attributes, filters, and the values for filters; we can build a biomaRt query.  Let's make an easy query for the following problem:  We have a list of Affymetrix identifiers from the u133plus2 platform and we want to retrieve the corresponding EntrezGene identifiers using the Ensembl mappings.
+
+The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output (attributes) for the query we want to retrieve the EntrezGene and u133plus2 identifiers so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the \Rfunction{listAttributes} and \Rfunction{listFilters} function respectively.  Let's now run the query:
 
 \begin{scriptsize}
 <<affyids>>=
