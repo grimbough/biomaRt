@@ -1,10 +1,10 @@
 Package: biomaRt
 Version: 2.3.5
-Title: Interface to BioMart databases (e.g. Ensembl, Wormbase and Gramene)
-Author: Steffen Durinck <steffen@stat.berkeley.edu>,
+Title: Interface to BioMart databases (e.g. Ensembl, COSMIC ,Wormbase and Gramene)
+Author: Steffen Durinck <sdurinck@lbl.gov>,
 	Wolfgang Huber <huber@ebi.ac.uk>
 Contributors: Sean Davis <sdavis2@mail.nih.gov>, Francois Pepin
-Maintainer: Steffen Durinck <steffen@stat.berkeley.edu>
+Maintainer: Steffen Durinck <sdurinck@lbl.gov>
 Depends: methods
 Imports: XML, RCurl
 Suggests: annotate
