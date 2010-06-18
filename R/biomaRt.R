@@ -236,7 +236,7 @@ exportFASTA <- function( sequences, file ){
 #useMart              # 
 #######################
 
-useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version){
+useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
 
   if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
   if(!missing(biomart)){ 
@@ -266,9 +266,16 @@ useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
    
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
-    
+    if(martHost(mart) =="http://www.biomart.org:80/biomart/martservice"){
+      if(verbose) writeLines("Using Central Repository at www.biomart.org");
+      martVSchema(mart) <- 'default'  #Assume central service query uses default vSchema 
+    }
+    if(verbose){
+      writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
+      writeLines(paste("Mart host:",martHost(mart),sep=" "))
+    }
     if(!missing(dataset)){
-      mart = useDataset(mart = mart, dataset=dataset)
+      mart = useDataset(mart = mart, dataset=dataset, verbose = verbose)
     }
     return(mart)
 }
@@ -298,7 +305,9 @@ listDatasets <- function(mart) {
 #from web service                 #
 ###################################
 bmAttrFilt <- function(type, mart, verbose=FALSE){
+  request = ""
   request = paste(martHost(mart),"?type=",type,"&dataset=",martDataset(mart),"&requestid=biomaRt&mart=",martBM(mart),"&virtualSchema=",martVSchema(mart),sep="")
+  
   if(verbose) print(paste("\nAttempting web service request:\n",request, sep=""))
   attrfilt = bmRequest(request)
   #attrfilt = scan(request,sep="\n", blank.lines.skip=TRUE, what="character", quiet=TRUE)
@@ -345,18 +354,20 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
 ############################################
 #useDataset: select a BioMart dataset      #             
 ############################################
-useDataset <- function(dataset, mart){
+useDataset <- function(dataset, mart, verbose = FALSE){
   if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
   if(missing(dataset)) stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
 validDatasets=listDatasets(mart)
   if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
   martDataset(mart) = dataset  
-  messageToUser("Checking attributes ...")
+  if(verbose) messageToUser("Checking attributes ...")
   martAttributes(mart) <- bmAttrFilt("attributes",mart)
-  messageToUser(" ok\n")
-  messageToUser("Checking filters ...")
+  if(verbose){
+    messageToUser(" ok\n")
+    messageToUser("Checking filters ...")
+  }
   martFilters(mart) <- bmAttrFilt("filters",mart)
-  messageToUser(" ok\n")
+  if(verbose) messageToUser(" ok\n")
   return( mart )
 }
 ###################

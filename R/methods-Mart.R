@@ -54,6 +54,11 @@ setMethod("martArchive",signature("Mart"), function(obj) obj@archive)
 
 setGeneric("martVSchema",def=function(obj,...)standardGeneric("martVSchema"))
 setMethod("martVSchema",signature("Mart"), function(obj) obj@vschema)
+setGeneric("martVSchema<-", function(obj, value) standardGeneric("martVSchema<-"))
+setReplaceMethod("martVSchema","Mart",function(obj,value){
+    obj@vschema <- value
+      obj
+  })
 
 
 
