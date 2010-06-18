@@ -320,8 +320,12 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 
 \section{Using archived versions of Ensembl}
 
-It is possible to query archived versions of Ensembl through \Rpackage{biomaRt}.  The steps below show how to do this.
+It is possible to query archived versions of Ensembl through \Rpackage{biomaRt}.
+There are currently two ways to access archived versions.
+
+\subsection{Using the archive=TRUE }
 First we list the available Ensembl archives by using the \Rfunction{listMarts} function and setting the archive attribute to TRUE.
+Note that not all archives are available this way and it seems that recently this only gives access to few archives if you don't see the version of the archive you need please look at the 2nd way to access archives.
 \begin{scriptsize}
 <<>>=
 listMarts(archive=TRUE)
@@ -335,6 +339,18 @@ ensembl = useMart("ensembl_mart_46", dataset="hsapiens_gene_ensembl", archive = 
 
 If you don't know the dataset you want to use could first connect to the BioMart using \Rfunction{useMart} and then use the \Rfunction{listDatasets} function on this object.
 After you selected the BioMart database and dataset, queries can be performed in the same way as when using the current BioMart versions.
+
+\subsection{Accessing archives through specifying the archive host}
+
+Use the \url{http://www.ensembl.org} website and go down the bottom of the page.  Click on 'view in Archive' and select the archive you need.  Copy the url and use that url as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
+
+\begin{scriptsize}
+<<<echo = TRUE, eval = FALSE>>=
+listMarts(host='may2009.archive.ensembl.org')
+ensembl54=useMart(host='may2009.archive.ensembl.org', biomart='ENSEMBL_MART_ENSEMBL')
+ensembl54=useMart(host='may2009.archive.ensembl.org', biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl')
+@
+\end{scriptsize}
 
 \section{Using a BioMart other than Ensembl}
 
