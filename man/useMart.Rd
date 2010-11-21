@@ -12,14 +12,14 @@ TRUE, version, verbose = FALSE)}
 \item{host}{Host to connect to if different then www.biomart.org}
 \item{path}{Path that should be pasted after to host to get access to the web service URL}
 \item{port}{port to connect to, will be pasted between host and path}
-\item{archive}{Boolean to indicate if you want to access archived versions od BioMart databases.  This currently only works with mysql=TRUE and the ensembl BioMart database}
+\item{archive}{Boolean to indicate if you want to access archived versions of BioMart databases.  Note that this gives access to only a limited number of archived BioMarts and the most recent archives are often not available. A better alternative is to leave archive = FALSE and to specify the url of the archived BioMart you want to access see vignette for an example.}
 \item{ssl.verifypeer}{Set SSL peer verification on or off.  By default ssl.verifypeer is set to TRUE}
 \item{version}{Use version name instead of biomart name to specify which BioMart you want to use}
 \item{verbose}{Give detailed output of what the method is doing while in
   use, for debugging}
 }
 
-\author{Steffen Durinck,\url{http://www.stat.berkeley.edu/~steffen}} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){
