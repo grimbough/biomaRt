@@ -610,7 +610,7 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
 
     ## convert the serialized table into a dataframe
     con = textConnection(postRes)
-    result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", stringsAsFactors=FALSE)
+    result = read.table(con, sep="\t", header=FALSE, quote = "\"", comment.char = "", stringsAsFactors=FALSE)
     close(con)
 
     if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
@@ -760,7 +760,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     
     if(postRes != ""){
       con = textConnection(postRes)
-      result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+      result = read.table(con, sep="\t", header=FALSE, quote = "\"", comment.char = "", as.is=TRUE)
       close(con)
       if(all(is.na(result[,ncol(result)])))
         result = result[,-ncol(result),drop=FALSE]
