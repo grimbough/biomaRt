@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.7.1
+Version: 2.7.2
 Title: Interface to BioMart databases (e.g. Ensembl, COSMIC ,Wormbase and Gramene)
 Author: Steffen Durinck <sdurinck@lbl.gov>,
 	Wolfgang Huber <huber@ebi.ac.uk>
