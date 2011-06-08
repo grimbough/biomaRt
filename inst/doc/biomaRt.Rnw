@@ -111,10 +111,16 @@ Now that we selected a BioMart database and dataset, and know about attributes, 
 The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output (attributes) for the query we want to retrieve the EntrezGene and u133plus2 identifiers so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the \Rfunction{listAttributes} and \Rfunction{listFilters} function respectively.  Let's now run the query:
 
 \begin{scriptsize}
-<<affyids>>=
+<<echo=TRUE,eval=FALSE>>=
 affyids=c("202763_at","209310_s_at","207500_at")
 getBM(attributes=c('affy_hg_u133_plus_2', 'entrezgene'), filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
 @  
+\begin{verbatim}
+  affy_hg_u133_plus_2 entrezgene
+1         209310_s_at        837
+2           207500_at        838
+3           202763_at        836
+\end{verbatim}
 \end{scriptsize}
 
 \section{Examples of biomaRt queries}
@@ -125,11 +131,17 @@ In the sections below a variety of example queries are described.  Every example
 
 We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The \Rfunction{listAttributes} and the \Rfunction{listFilters} functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc\_symbol, chromsome\_name, start\_position, end\_position, band and affy\_hg\_u133\_plus\_2 (as we want these in the output to provide a mapping with our original Affymetrix input identifiers.  There is one filter in this query which is the affy\_hg\_u133\_plus\_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the \Rfunction{getBM} and performing the query gives: 
 \begin{scriptsize}
-<<>>=
+<<echo=TRUE,eval=FALSE>>=
 affyids=c("202763_at","209310_s_at","207500_at")
 getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name','start_position','end_position', 'band'),
  filters = 'affy_hg_u133_plus_2', values = affyids, mart = ensembl)
 @ 
+\begin{verbatim}
+  affy_hg_u133_plus_2 hgnc_symbol chromosome_name start_position end_position  band
+1         209310_s_at       CASP4              11      104813593    104840163 q22.3
+2           207500_at       CASP5              11      104864962    104893895 q22.3
+3           202763_at       CASP3               4      185548850    185570663 q35.1
+\end{verbatim}
 \end{scriptsize}
 
 \subsection{Task 2:  Annotate a set of EntrezGene identifiers with GO annotation}
@@ -137,11 +149,22 @@ getBM(attributes=c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name','star
 In this task we start out with a list of EntrezGene identiers and we want to retrieve GO identifiers related to biological processes that are associated with these entrezgene identifiers.  Again we look at the output of \Rfunction{listAttributes} and \Rfunction{listFilters}  to find the filter and attributes we need.  Then we construct the following query:
 
 \begin{scriptsize}
-<<>>=
+<<echo=TRUE,eval=FALSE>>=
 entrez=c("673","837")
-getBM(attributes=c('entrezgene','go_biological_process_id'), filters='entrezgene', values=entrez, mart=ensembl)
+goids = getBM(attributes=c('entrezgene','go_id'), filters='entrezgene', values=entrez, mart=ensembl)
+head(goids)
 @ 
+\begin{verbatim}  
+   entrezgene      go_id
+1         673 GO:0000186
+2         673 GO:0006468
+3         673 GO:0006916
+4         673 GO:0007264
+5         673 GO:0007268
+
+\end{verbatim}
 \end{scriptsize}
+
 
 \subsection{Task 3: Retrieve all HUGO gene symbols of genes that are located on chromosomes 1,2 or Y ,\\ and are associated with one the following GO terms: \\"GO:0051330","GO:0000080","GO:0000114","GO:0000082"\\ (here we'll use more than one filter)}
 The \Rfunction{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
@@ -169,7 +192,7 @@ The \Rfunction{getBM} function enables you to use more than one filter.  In this
 
 In this example we want to annotate the following two RefSeq identifiers: NM\_005359 and NM\_000546 with INTERPRO protein domain identifiers and a description of the protein domains.
 
-<<eval=FALSE>>=
+<<echo=TRUE,eval=FALSE>>=
 refseqids = c("NM_005359","NM_000546")
 ipro = getBM(attributes=c("refseq_dna","interpro","interpro_description"), filters="refseq_dna",values=refseqids, mart=ensembl)
 @
@@ -202,9 +225,17 @@ getBM(c('affy_hg_u133_plus_2','ensembl_gene_id'), filters = c('chromosome_name',
 \subsection{Task 6: Retrieve all entrezgene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.}
 The GO identifier for MAP kinase activity is GO:0004707.  In our query we will use go as filter and entrezgene and hgnc\_symbol as attributes.  Here's the query:
 \begin{scriptsize}
-<<>>=
+<<echo=TRUE, eval = FALSE>>=
 getBM(c('entrezgene','hgnc_symbol'), filters='go', values='GO:0004707', mart=ensembl)
-@ 
+@
+\begin{verbatim} 
+   entrezgene hgnc_symbol
+1        5601       MAPK9
+2      225689      MAPK15
+3        5599       MAPK8
+4        5594       MAPK1
+5        6300      MAPK12
+\end{verbatim} 
 \end{scriptsize}
 
 \subsection{Task 7:  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences}
