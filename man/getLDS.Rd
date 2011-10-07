@@ -16,7 +16,7 @@
   \item{uniqueRows}{Logical to indicate if the BioMart web service should return unique rows only or not.  Has the value of either TRUE or FALSE}
 }
 
-\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){

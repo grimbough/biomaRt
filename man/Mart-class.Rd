@@ -6,6 +6,6 @@
 \section{Methods}{
    \describe{\code{show} Print summary of the object}
 }
-\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
+\author{Steffen Durinck} 
 \keyword{methods}
 

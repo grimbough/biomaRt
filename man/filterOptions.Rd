@@ -9,7 +9,7 @@
 \item{mart}{object of class Mar created using the useMart functiont}
 }
 
-\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
+\author{Steffen Durinck} 
 
 \examples{
 

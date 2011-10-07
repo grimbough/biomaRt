@@ -15,7 +15,7 @@
 \item{giveWarning}{Gives a warning about best practices of biomaRt and recommends using getBM instead of getBMlist}
 }
 
-\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){
