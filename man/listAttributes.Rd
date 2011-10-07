@@ -13,7 +13,7 @@
 \item{showGroups}{Availability of showGroups argument is pending on availability from BioMart web service.  Currently this argument can not be used}
 }
 
-\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
+\author{Steffen Durinck} 
 
 \examples{
 

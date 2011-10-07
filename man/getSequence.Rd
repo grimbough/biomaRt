@@ -18,7 +18,7 @@ In MySQL mode the getSequence function is more limited and the sequence that is 
   \item{verbose}{If verbose = TRUE then the XML query that was send to the webservice will be displayed.}
 }
 
-\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){

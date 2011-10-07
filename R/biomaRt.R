@@ -49,18 +49,21 @@ checkWrapperArgs = function(id, type, mart){
 #BioMart databases are present                        #
 #######################################################
 
-bmRequest <- function(request, ssl.verifypeer = TRUE){
-  result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer), error = function(e){ stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.")})
+bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
+  if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
+  result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer), error = function(e){ cat("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.\n")})
   return(result)
 }
 
-listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE){
+listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
 
   if(archive){
-    registry = bmRequest(paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep=""), ssl.verifypeer = ssl.verifypeer)
+    request = paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep="")
+    registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
   }
   else{
-    registry = bmRequest(paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep=""), ssl.verifypeer = ssl.verifypeer)
+    request = paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep="")	
+    registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
   }
   registry = xmlTreeParse(registry, asText=TRUE)
   registry = registry$doc$children[[1]]
@@ -119,122 +122,11 @@ listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice"
   } 
 }
 
-###############################
-#                             #
-#Ensembl specific functions   #
-###############################
-
-######################
-#get gene information#
-######################
-
-getGene <- function( id, type, mart){
-  martCheck(mart,"ensembl") 
-  checkWrapperArgs(id, type, mart)
-  symbolAttrib = switch(strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "mgi_symbol","external_gene_id")
-  typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
-  attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
-  table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
-  return(table)
-}
-
-##############
-#getSequence #
-##############
-
-
-getSequence <- function(chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE){
-
-  martCheck(mart,"ensembl")
-
-  if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon","transcript_exon_intron","gene_exon_intron","coding","coding_transcript_flank","coding_gene_flank","transcript_flank","gene_flank")){
-    stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either gene_exon, transcript_exon,transcript_exon_intron, gene_exon_intron, cdna, coding,coding_transcript_flank,coding_gene_flank,transcript_flank,gene_flank,peptide, 3utr or 5utr")
-  }
-  if(missing(type))stop("Please specify the type argument.  If you use chromosomal coordinates to retrieve sequences, then the type argument will specify the type of gene indentifiers that you will retrieve with the sequences.  If you use a vector of identifiers to retrieve the sequences, the type argument specifies the type of identifiers you are using.")
-  if(missing(id) && missing(chromosome) && !missing(type))stop("No vector of identifiers given. Please use the id argument to give a vector of identifiers for which you want to retrieve the sequences.")
-  if(!missing(chromosome) && !missing(id))stop("The getSequence function retrieves sequences given a vector of identifiers specified with the id argument of a type specified by the type argument.  Or alternatively getSequence retrieves sequences given a chromosome, a start and a stop position on the chromosome.  As you specified both a vector of identifiers and chromsomal coordinates. Your query won't be processed.")
-    
-  if(!missing(chromosome)){
-    if(!missing(start) && missing(end))stop("You specified a chromosomal start position but no end position.  Please also specify a chromosomal end position.")
-    if(!missing(end) && missing(start))stop("You specified a chromosomal end position but no start position.  Please also specify a chromosomal start position.")
-    if(!missing(start)){ start = as.integer(start)
-                           end = as.integer(end)
-                       }
-    if(missing(upstream) && missing(downstream)){
-      sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end"), values = list(chromosome, start, end), mart = mart, checkFilters = FALSE, verbose=verbose)
-        }
-    else{
-      if(!missing(upstream) && missing(downstream)){
-        sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end","upstream_flank"), values = list(chromosome, start, end, upstream), mart = mart, checkFilters = FALSE, verbose=verbose)
-      }
-      if(!missing(downstream) && missing(upstream)){
-        sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end","downstream_flank"), values = list(chromosome, start, end, downstream), mart = mart, checkFilters = FALSE, verbose = verbose)
-      }
-      if(!missing(downstream) && !missing(upstream)){
-        stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
-      }
-    }
-  }
-
-  if(!missing(id)){
-    if(missing(type)) stop("Type argument is missing.  This will be used to retrieve an identifier along with the sequence so one knows which gene it is from.  Use the listFilters function to select a valid type argument.")
-    if(!type %in% listFilters(mart, what="name")) stop("Invalid type argument.  Use the listFilters function to select a valid type argument.")
-  
-    valuesString = paste(id,"",collapse=",",sep="")
-    if(missing(upstream) && missing(downstream)){
-      sequence = getBM(c(seqType,type), filters = type, values = id, mart = mart, verbose=verbose)
-    }
-    else{
-      if(!missing(upstream) && missing(downstream)){
-        sequence = getBM(c(seqType,type), filters = c(type, "upstream_flank"), values = list(id, upstream), mart = mart, checkFilters = FALSE, verbose=verbose)
-      }
-      if(!missing(downstream) && missing(upstream)){
-        sequence = getBM(c(seqType,type), filters = c(type, "downstream_flank"), values = list(id, downstream), mart = mart, checkFilters = FALSE, verbose=verbose)
-      }
-      if(!missing(downstream) && !missing(upstream)){
-        stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
-      }
-    }
-  }
-  return(sequence)
-}
-
-####################
-#export FASTA      #
-####################
-
-exportFASTA <- function( sequences, file ){
-  if( missing( sequences ) || class( sequences ) != "data.frame"){
-    stop("No data.frame given to write FASTA.  The data.frame should be the output of the getSequence function.");
-  }
-  if( missing(file)){
-    stop("Please provide filename to write to");
-  }
-  if(length(sequences[1,]) == 2){
-   for(i in seq(along = sequences[,2])){
-     cat(paste(">",sequences[i,2],"\n",sep=""),file = file, append=TRUE);
-     cat(as.character(sequences[i,1]),file = file, append = TRUE);
-     cat("\n\n", file = file, append = TRUE);
-   }
-  }
-  else{
-   for(i in seq(along = sequences[,2])){
-     cat(paste(">chromosome_",sequences[i,1],"_start_",sequences[i,2],"_end_",sequences[i,3],"\n",sep=""),file = file, append=TRUE);
-     cat(as.character(sequences[i,4]),file = file, append = TRUE);
-     cat("\n\n", file = file, append = TRUE);
-   }
- }  
-}
-
 #################################
 # #                           # #
 # # Generic BioMart functions # #
 # #                           # #
 #################################
-
-#######################
-#useMart              # 
-#######################
 
 useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
 
@@ -264,13 +156,14 @@ useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart
    if(archive) biomart = marts$biomart[mindex]
    if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
-   
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
+    BioMartVersion=bmVersion(mart, verbose=verbose)
     if(martHost(mart) =="http://www.biomart.org:80/biomart/martservice"){
       if(verbose) writeLines("Using Central Repository at www.biomart.org");
       martVSchema(mart) <- 'default'  #Assume central service query uses default vSchema 
     }
     if(verbose){
+      writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
       writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
       writeLines(paste("Mart host:",martHost(mart),sep=" "))
     }
@@ -280,18 +173,18 @@ useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart
     return(mart)
 }
 
-####################
-#listDatasets      #
-####################
-
-listDatasets <- function(mart) {
+listDatasets <- function(mart, verbose = FALSE) {
   if(missing(mart) || !is(mart, 'Mart'))
     stop("No Mart object given or object not of class 'Mart'")
   request = paste(martHost(mart),"?type=datasets&requestid=biomaRt&mart=",martBM(mart),sep="")
-  txt = tryCatch(scan(request, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
-  
+  bmResult = bmRequest(request = request, verbose = verbose)
+  con = textConnection(bmResult)
+  txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
+  #txt = tryCatch(scan(request, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
+  close(con)
+   
   ## select visible ("1") table sets
-  i = intersect(which(txt=="TableSet"), which(txt=="1")-3L)
+    i = intersect(which(txt=="TableSet"), which(txt=="1")-3L)
   
   res = data.frame(dataset     = I(txt[i+1L]),
     description = I(txt[i+2L]),
@@ -299,18 +192,29 @@ listDatasets <- function(mart) {
   return(res)
 }
 
-###################################
-#bmAttrFilt                       #
-#retrieves attributes and filters #
-#from web service                 #
-###################################
+## Check version of BioMart service
+
+bmVersion <- function(mart, verbose=FALSE){
+  request = ""
+  request = paste(martHost(mart),"?type=version","&requestid=biomaRt&mart=",martBM(mart),sep="")
+  BioMartVersion = bmRequest(request = request, verbose = verbose)
+  con = textConnection(BioMartVersion)
+  bmVersionParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+  close(con)
+  if(verbose) print(bmVersionParsed)
+  bmv=""
+  if(dim(bmVersionParsed)[2] >=1){
+    bmv=bmVersionParsed[1,1]
+  }
+  return(bmv)
+}
+
+## Retrieve attributes and filters from web service
+
 bmAttrFilt <- function(type, mart, verbose=FALSE){
   request = ""
   request = paste(martHost(mart),"?type=",type,"&dataset=",martDataset(mart),"&requestid=biomaRt&mart=",martBM(mart),"&virtualSchema=",martVSchema(mart),sep="")
-  
-  if(verbose) print(paste("\nAttempting web service request:\n",request, sep=""))
-  attrfilt = bmRequest(request)
-  #attrfilt = scan(request,sep="\n", blank.lines.skip=TRUE, what="character", quiet=TRUE)
+  attrfilt = bmRequest(request = request, verbose = verbose)
   con = textConnection(attrfilt)
   attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
   close(con)
@@ -351,9 +255,9 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
    }
   return(attrfiltParsed)
 }
-############################################
-#useDataset: select a BioMart dataset      #             
-############################################
+
+## Select a BioMart dataset             
+
 useDataset <- function(dataset, mart, verbose = FALSE){
   if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
   if(missing(dataset)) stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
@@ -361,26 +265,23 @@ validDatasets=listDatasets(mart)
   if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
   martDataset(mart) = dataset  
   if(verbose) messageToUser("Checking attributes ...")
-  martAttributes(mart) <- bmAttrFilt("attributes",mart)
+  martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
   if(verbose){
     messageToUser(" ok\n")
     messageToUser("Checking filters ...")
   }
-  martFilters(mart) <- bmAttrFilt("filters",mart)
+  martFilters(mart) <- bmAttrFilt("filters",mart, verbose = verbose)
   if(verbose) messageToUser(" ok\n")
   return( mart )
 }
-###################
-#getName          #
-###################
 
-getName = function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]] 
+## getName
 
-#####################
-#listAttributes     #
-#####################
+getName <- function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]] 
 
-listAttributes = function(mart, page, what = c("name","description"), group, category, showGroups = FALSE) {
+## listAttributes
+
+listAttributes <- function(mart, page, what = c("name","description"), group, category, showGroups = FALSE) {
   martCheck(mart)
   if(!missing(group)){
     .Defunct(msg="Currently the group argument is defunct.  Pending on availability from the BioMart web service group will become activated again or not.")
@@ -405,21 +306,17 @@ listAttributes = function(mart, page, what = c("name","description"), group, cat
   return(attrib)
 }
 
-######################
-#attributeSummary    #
-######################
+## attributePages
 
-attributePages = function(mart){
+attributePages <- function(mart){
   martCheck(mart)
   pages = unique(martAttributes(mart)[,"page"])
   return(pages)
 }
 
-###################
-#listFilters      #
-###################
+## listFilters
 
-listFilters = function(mart, what = c("name", "description"), group = "DEFUNCT") {
+listFilters <- function(mart, what = c("name", "description"), group = "DEFUNCT") {
 
   if(!missing(group))
     .Defunct(msg = "The argument 'group' is defunct. If you need advice how to replace that functionality, please contact the package maintainer for advice.")
@@ -435,11 +332,9 @@ listFilters = function(mart, what = c("name", "description"), group = "DEFUNCT")
   return(filters[, what])
 }
 
-###################
-#filterOptions    #
-###################
+## filterOptions
 
-filterOptions = function(filter, mart){
+filterOptions <- function(filter, mart){
   if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the possible values.")
   if(class(filter)!="character")stop("Filter argument should be of class character")
   martCheck(mart)
@@ -448,20 +343,16 @@ filterOptions = function(filter, mart){
   return(listFilters(mart,what="options")[sel])
 }
 
-###################
-#filterType       #
-###################
+## filterType
 
-filterType = function(filter, mart){
+filterType <- function(filter, mart){
   if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the filter type")
   if(class(filter)!="character")stop("Filter argument should be of class character")
   martCheck(mart)
   type="unknown"
-  #if(dim(listFilters(mart))[2] > 4){ #to be removed once older BioMarts are compatible
-    sel = which(listFilters(mart, what="name") == filter)
-    if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
-    type = listFilters(mart,what="type")[sel]
- # }
+  sel = which(listFilters(mart, what="name") == filter)
+  if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
+  type = listFilters(mart,what="type")[sel]
   return(type)
 }
 
@@ -469,10 +360,9 @@ filterType = function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM = function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE){
+getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE){
   
   martCheck(mart)
- 
   if(missing( attributes ))
     stop("Argument 'attributes' must be specified.")
   
@@ -622,18 +512,14 @@ getBM = function(attributes, filters = "", values = "", mart, curl = NULL, check
       print(head(result))
       stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
     }
-    
   }
-  
   colnames(result) = attributes
   return(result)
 }
 
-
 ###################################
 #getLDS: Multiple dataset linking #
 ###################################
-
 
 getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE) {
   
@@ -779,6 +665,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
 ######################
 #getXML
 ######################
+
 getXML <- function(host="http://www.biomart.org/biomart/martservice?", xmlquery){
       pf = postForm(host,"query"=xmlquery)
       con = textConnection(pf)
@@ -790,6 +677,7 @@ getXML <- function(host="http://www.biomart.org/biomart/martservice?", xmlquery)
 ######################
 #getBMlist
 ######################
+
 getBMlist <- function(attributes, filters = "", values = "", mart, list.names = NULL, na.value = NA, verbose=FALSE, giveWarning=TRUE){
   if(giveWarning) writeLines("Performing your query using getBM is preferred as getBMlist perfoms a separate getBM query for each of the values one gives.  This is ok for a short list but will definitely fail when used with longer lists.  Ideally one does a batch query with getBM and then iterates over that result.")
   out <- vector("list", length(attributes))
@@ -818,23 +706,106 @@ getBMlist <- function(attributes, filters = "", values = "", mart, list.names = 
   return(out)
 }
 
+
+###############################
+#                             #
+#Ensembl specific functions   #
+###############################
+
+getGene <- function( id, type, mart){
+  martCheck(mart,"ensembl") 
+  checkWrapperArgs(id, type, mart)
+  symbolAttrib = switch(strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "mgi_symbol","external_gene_id")
+  typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
+  attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
+  table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
+  return(table)
+}
+
+getSequence <- function(chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE){
+  martCheck(mart,"ensembl")
+  if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon","transcript_exon_intron","gene_exon_intron","coding","coding_transcript_flank","coding_gene_flank","transcript_flank","gene_flank")){
+    stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either gene_exon, transcript_exon,transcript_exon_intron, gene_exon_intron, cdna, coding,coding_transcript_flank,coding_gene_flank,transcript_flank,gene_flank,peptide, 3utr or 5utr")
+  }
+  if(missing(type))stop("Please specify the type argument.  If you use chromosomal coordinates to retrieve sequences, then the type argument will specify the type of gene indentifiers that you will retrieve with the sequences.  If you use a vector of identifiers to retrieve the sequences, the type argument specifies the type of identifiers you are using.")
+  if(missing(id) && missing(chromosome) && !missing(type))stop("No vector of identifiers given. Please use the id argument to give a vector of identifiers for which you want to retrieve the sequences.")
+  if(!missing(chromosome) && !missing(id))stop("The getSequence function retrieves sequences given a vector of identifiers specified with the id argument of a type specified by the type argument.  Or alternatively getSequence retrieves sequences given a chromosome, a start and a stop position on the chromosome.  As you specified both a vector of identifiers and chromsomal coordinates. Your query won't be processed.")
+    
+  if(!missing(chromosome)){
+    if(!missing(start) && missing(end))stop("You specified a chromosomal start position but no end position.  Please also specify a chromosomal end position.")
+    if(!missing(end) && missing(start))stop("You specified a chromosomal end position but no start position.  Please also specify a chromosomal start position.")
+    if(!missing(start)){ start = as.integer(start)
+                           end = as.integer(end)
+                       }
+    if(missing(upstream) && missing(downstream)){
+      sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end"), values = list(chromosome, start, end), mart = mart, checkFilters = FALSE, verbose=verbose)
+        }
+    else{
+      if(!missing(upstream) && missing(downstream)){
+        sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end","upstream_flank"), values = list(chromosome, start, end, upstream), mart = mart, checkFilters = FALSE, verbose=verbose)
+      }
+      if(!missing(downstream) && missing(upstream)){
+        sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end","downstream_flank"), values = list(chromosome, start, end, downstream), mart = mart, checkFilters = FALSE, verbose = verbose)
+      }
+      if(!missing(downstream) && !missing(upstream)){
+        stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
+      }
+    }
+  }
+
+  if(!missing(id)){
+    if(missing(type)) stop("Type argument is missing.  This will be used to retrieve an identifier along with the sequence so one knows which gene it is from.  Use the listFilters function to select a valid type argument.")
+    if(!type %in% listFilters(mart, what="name")) stop("Invalid type argument.  Use the listFilters function to select a valid type argument.")
+  
+    valuesString = paste(id,"",collapse=",",sep="")
+    if(missing(upstream) && missing(downstream)){
+      sequence = getBM(c(seqType,type), filters = type, values = id, mart = mart, verbose=verbose)
+    }
+    else{
+      if(!missing(upstream) && missing(downstream)){
+        sequence = getBM(c(seqType,type), filters = c(type, "upstream_flank"), values = list(id, upstream), mart = mart, checkFilters = FALSE, verbose=verbose)
+      }
+      if(!missing(downstream) && missing(upstream)){
+        sequence = getBM(c(seqType,type), filters = c(type, "downstream_flank"), values = list(id, downstream), mart = mart, checkFilters = FALSE, verbose=verbose)
+      }
+      if(!missing(downstream) && !missing(upstream)){
+        stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
+      }
+    }
+  }
+  return(sequence)
+}
+
+####################
+#export FASTA      #
+####################
+
+exportFASTA <- function( sequences, file ){
+  if( missing( sequences ) || class( sequences ) != "data.frame"){
+    stop("No data.frame given to write FASTA.  The data.frame should be the output of the getSequence function.");
+  }
+  if( missing(file)){
+    stop("Please provide filename to write to");
+  }
+  if(length(sequences[1,]) == 2){
+   for(i in seq(along = sequences[,2])){
+     cat(paste(">",sequences[i,2],"\n",sep=""),file = file, append=TRUE);
+     cat(as.character(sequences[i,1]),file = file, append = TRUE);
+     cat("\n\n", file = file, append = TRUE);
+   }
+  }
+  else{
+   for(i in seq(along = sequences[,2])){
+     cat(paste(">chromosome_",sequences[i,1],"_start_",sequences[i,2],"_end_",sequences[i,3],"\n",sep=""),file = file, append=TRUE);
+     cat(as.character(sequences[i,4]),file = file, append = TRUE);
+     cat("\n\n", file = file, append = TRUE);
+   }
+ }  
+}
+
 ##########################
 #Old function stubs
 ##########################
-
-attributeSummary = function( mart ){
- warning("This function is currently replaced by the attributePages function.  The web service currenly returns only data about the attribute pages not the further grouping of these attributes.")
- martCheck(mart)
- return(attributePages(mart)) 
-}
-
-martDisconnect <- function( mart ){
-.Defunct(msg="The function 'martDisconnect' is defunct. In BioMart webservice mode, disconnecting is not necessary. Background explanation: In previous versions of this package, a MySQL mode was also supported, which required disconnecting.")
-}
-
-getGO <- function( id, type, mart){
- .Defunct(msg="getGO is now defunct use the getBM function instead.  See example in vignette to obtain GO information using getBM.")
-}
 
 ###################
 #Nature Protocol

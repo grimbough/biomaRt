@@ -10,7 +10,7 @@
 \item{verbose}{Give detailed output of what the method is doing, for debugging}
 }
 
-\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){

@@ -7,7 +7,7 @@
 \details{The \code{\link{edit}} function uses \code{getOption("editor")} to select the editor.
 Use, for instance, \code{options(editor="emacs")} to set another editor.}
 
-\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}, Wolfgang Huber} 
+\author{Steffen Durinck, Wolfgang Huber} 
 
 \seealso{\code{\link{edit}}}
 

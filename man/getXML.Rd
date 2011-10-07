@@ -9,7 +9,7 @@
   \item{xmlquery}{XML query that needs to be send to the webservice}
 }
 
-\author{Steffen Durinck, \url{http://www.stat.berkeley.edu/~steffen}} 
+\author{Steffen Durinck} 
 
 \examples{
 if(interactive()){
