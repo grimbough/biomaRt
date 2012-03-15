@@ -1,5 +1,6 @@
-importFrom(methods, show)
+import(methods)
 import(RCurl,XML)
+importFrom(utils, edit, head, read.table)
 #for some reason RCurl needs to have findHTTPHeaderEncoding exported -
 #remove it from the exports if this ever gets fixed
 export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets, useDataset, listAttributes, listFilters, getBM, getXML,getLDS, attributePages, filterOptions,filterType, getBMlist, NP2009code)
