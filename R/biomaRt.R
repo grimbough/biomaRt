@@ -51,7 +51,7 @@ checkWrapperArgs = function(id, type, mart){
 
 bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
   if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
-  result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer), error = function(e){ cat("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.\n")})
+  result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer,followlocation = TRUE), error = function(e){ cat("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.\n")})
   return(result)
 }
 
