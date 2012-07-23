@@ -360,7 +360,7 @@ filterType <- function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE){
+getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=TRUE){
   
   martCheck(mart)
   if(missing( attributes ))
@@ -380,8 +380,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
   
   if(class(uniqueRows) != "logical")
     stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
-  
-  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
+
+  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
   
   #checking the Attributes
   invalid = !(attributes %in% listAttributes(mart, what="name"))
@@ -505,7 +505,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
 
     ## convert the serialized table into a dataframe
     con = textConnection(postRes)
-    result = read.table(con, sep="\t", header=FALSE, quote = "\"", comment.char = "", stringsAsFactors=FALSE)
+    result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
     close(con)
 
     if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
@@ -513,7 +513,20 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
       stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
     }
   }
-  colnames(result) = attributes
+  if(!bmHeader){
+    colnames(result) = attributes
+  }
+  else{
+    att = listAttributes(mart)
+    colm = match(colnames(result),att[,2])
+    if(length(which(is.na(colm))) > 0){
+      warning("Unable to match column names of BioMart output")
+    }
+    else{
+      colnames(result) = att[colm,1]
+      result = result[,attributes]
+    }
+  }
   return(result)
 }
 
@@ -521,7 +534,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
 #getLDS: Multiple dataset linking #
 ###################################
 
-getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE) {
+getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE, bmHeader = TRUE) {
   
   martCheck(mart)
   martCheck(martL)
@@ -548,7 +561,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
                  "\nPlease use the function 'listFilters' to get valid filter names"))
   }
   
-  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
+  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
   attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
   if(length(filters) > 1){
     if(class(values)!= "list")
@@ -651,7 +664,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
   
   if(postRes != ""){
     con = textConnection(postRes)
-    result = read.table(con, sep="\t", header=FALSE, quote = "\"", comment.char = "", as.is=TRUE)
+    result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", as.is=TRUE, check.names = TRUE)
     close(con)
     if(all(is.na(result[,ncol(result)])))
       result = result[,-ncol(result),drop=FALSE]
