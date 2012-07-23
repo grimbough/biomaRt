@@ -1,9 +1,9 @@
 Package: biomaRt
-Version: 2.13.1
+Version: 2.13.2
 Title: Interface to BioMart databases (e.g. Ensembl, COSMIC ,Wormbase and Gramene)
 Author: Steffen Durinck <sdurinck@gmail.com>,
 	Wolfgang Huber <huber@ebi.ac.uk>
-Contributors: Sean Davis <sdavis2@mail.nih.gov>, Francois Pepin,
+Contributors: Sean Davis <sdavis2@mail.nih.gov>, Francois Pepin,Vince S. Buffalo
 Maintainer: Steffen Durinck <sdurinck@gmail.com>
 Depends: methods
 Imports: utils, XML, RCurl
