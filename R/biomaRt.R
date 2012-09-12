@@ -372,6 +372,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
              stop("Argument 'filters' must be a named list when sent as a list.")
    if(!is.list(filters) && filters != "" && missing( values ))
         stop("Argument 'values' must be specified.")
+
+  if(length(filters) > 0 && length(values) == 0)
+    stop("Values argument contains no data.")
   
   if(is.list(filters)){
     values = filters
