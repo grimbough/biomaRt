@@ -198,13 +198,20 @@ bmVersion <- function(mart, verbose=FALSE){
   request = ""
   request = paste(martHost(mart),"?type=version","&requestid=biomaRt&mart=",martBM(mart),sep="")
   BioMartVersion = bmRequest(request = request, verbose = verbose)
-  con = textConnection(BioMartVersion)
-  bmVersionParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-  close(con)
-  if(verbose) print(bmVersionParsed)
-  bmv=""
-  if(dim(bmVersionParsed)[2] >=1){
-    bmv=bmVersionParsed[1,1]
+  bmv = ""
+  if(BioMartVersion == "\n" | BioMartVersion == ""){
+    bmv = NA
+    if(verbose) warning(paste("BioMart version is not available from BioMart server:",request,sep="\n"))
+  }
+  else{
+    con = textConnection(BioMartVersion)
+    bmVersionParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+    close(con)
+    if(verbose) print(bmVersionParsed)
+    
+    if(dim(bmVersionParsed)[2] >=1){
+      bmv=bmVersionParsed[1,1]
+    }
   }
   return(bmv)
 }
