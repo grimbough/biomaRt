@@ -391,7 +391,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
   if(class(uniqueRows) != "logical")
     stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
 
-  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
+  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
   
   #checking the Attributes
   invalid = !(attributes %in% listAttributes(mart, what="name"))
@@ -500,11 +500,14 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
   }      
 
   postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
-  
+  if(verbose){
+    writeLines("#################\nResults from server:")
+    print(postRes)
+  }
   if(!(is.character(postRes) && (length(postRes)==1L)))
     stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
 
-  if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") {
+  if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
     
     result = as.data.frame(matrix("", ncol=length(attributes), nrow=0), stringsAsFactors=FALSE)
     
@@ -516,6 +519,10 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     ## convert the serialized table into a dataframe
     con = textConnection(postRes)
     result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
+    if(verbose){
+      writeLines("#################\nParsed results:")
+      print(result)
+    }
     close(con)
 
     if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
@@ -523,18 +530,21 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
       stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
     }
   }
-  if(!bmHeader){
+  if(!bmHeader){  #assumes order of results same as order of attibutes in input 
     colnames(result) = attributes
   }
   else{
-    att = listAttributes(mart)
-    colm = match(colnames(result),att[,2])
-    if(length(which(is.na(colm))) > 0){
-      warning("Unable to match column names of BioMart output")
-    }
-    else{
-      colnames(result) = att[colm,1]
-      result = result[,attributes]
+    toAttributeName=FALSE
+    if(toAttributeName){  #set to TRUE if attempting to replace attribute descriptions with attribute names
+      att = listAttributes(mart)
+      resultNames = colnames(result)
+      for(r in 1:length(resultNames)){
+        asel = which(att[,2] == resultNames[r])
+        if(length(asel) == 1){
+          resultNames[r] = att[asel,1]
+        }
+      }
+      colnames(result) = resultNames
     }
   }
   return(result)
