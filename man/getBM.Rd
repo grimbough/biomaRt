@@ -2,7 +2,7 @@
 \alias{getBM}
 \title{Retrieves information from the BioMart database}
 \description{This function is the main biomaRt query function.  Given a set of filters and corresponding values, it retrieves the user specified attributes from the BioMart database one is connected to}
-\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose = FALSE, uniqueRows = TRUE, bmHeader = TRUE)}
+\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose = FALSE, uniqueRows = TRUE, bmHeader = FALSE)}
 
 \arguments{
   \item{attributes}{Attributes you want to retrieve.  A possible list of attributes can be retrieved using the function listAttributes.}
@@ -14,9 +14,9 @@
  \item{verbose}{When using biomaRt in webservice mode and setting verbose to TRUE, the XML query to the webservice will be printed.}
  \item{uniqueRows}{If the result of a query contains multiple identical rows, setting this argument to TRUE (default) will result in deleting the duplicated rows in the query result at the server side.}
  \item{bmHeader}{Boolean to indicate if the result retrieved from the
-  BioMart server should include the data headers or not, defaults to TRUE.  This should
-  only be switched off if the default behavior results in errors,
-  setting to off might still be able to retrieve your data in that case}
+  BioMart server should include the data headers or not, defaults to FALSE.  This should
+  only be switched on if the default behavior results in errors,
+  setting to on might still be able to retrieve your data in that case}
 }
 
 \author{Steffen Durinck} 

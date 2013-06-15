@@ -367,7 +367,7 @@ filterType <- function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=TRUE){
+getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE){
   
   martCheck(mart)
   if(missing( attributes ))
