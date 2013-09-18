@@ -288,19 +288,8 @@ getName <- function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]]
 
 ## listAttributes
 
-listAttributes <- function(mart, page, what = c("name","description"), group, category, showGroups = FALSE) {
+listAttributes <- function(mart, page, what = c("name","description")) {
   martCheck(mart)
-  if(!missing(group)){
-    .Defunct(msg="Currently the group argument is defunct.  Pending on availability from the BioMart web service group will become activated again or not.")
-  }
-  if(showGroups){
-    .Defunct(msg="Currently the showGroups argument is defunct.  Pending on availability from the BioMart web service showGroups will become activated again or not.")
-  }
-  
-  if(!missing(category)){
-    page = category
-    warning("To better comply with the BioMart suite (http://www.biomart.org) attribute categories are now known as attribute pages and can be specified with the page parameter")
-  }
   if(!missing(page) && !page %in% attributePages(mart)) stop(paste("The chosen page: ",page," is not valid, please use the correct page name using the attributePages function",sep=""))
   attrib=NULL
   if(!missing(page)){
@@ -316,6 +305,7 @@ listAttributes <- function(mart, page, what = c("name","description"), group, ca
 ## attributePages
 
 attributePages <- function(mart){
+
   martCheck(mart)
   pages = unique(martAttributes(mart)[,"page"])
   return(pages)
@@ -323,11 +313,8 @@ attributePages <- function(mart){
 
 ## listFilters
 
-listFilters <- function(mart, what = c("name", "description"), group = "DEFUNCT") {
+listFilters <- function(mart, what = c("name", "description")) {
 
-  if(!missing(group))
-    .Defunct(msg = "The argument 'group' is defunct. If you need advice how to replace that functionality, please contact the package maintainer for advice.")
-  
   martCheck(mart)
   filters = martFilters(mart)
   badwhat = !(what %in% colnames(filters))
@@ -835,10 +822,6 @@ exportFASTA <- function( sequences, file ){
    }
  }  
 }
-
-##########################
-#Old function stubs
-##########################
 
 ###################
 #Nature Protocol
