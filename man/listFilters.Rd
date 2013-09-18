@@ -6,8 +6,7 @@
   chromosome X, \code{chromosome} will be the filter,
   with corresponding value X.}
 
-\usage{listFilters(mart, what = c("name", "description"),
-                   group = "DEFUNCT")}
+\usage{listFilters(mart, what = c("name", "description"))}
 
 \arguments{
 \item{mart}{object of class \code{Mart} created using the \code{\link{useMart}} function}
@@ -22,11 +21,9 @@
   \code{operation},
   \code{filters8},
   \code{filters9}.}
-\item{group}{defunct. If you need advice how to replace that
-  functionality, please contact the package maintainer for advice.}
 }
 
-\author{Steffen Durinck, http://www.stat.berkeley.edu/~steffen} 
+\author{Steffen Durinck} 
 
 \examples{
 
