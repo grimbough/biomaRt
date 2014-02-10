@@ -62,3 +62,44 @@ setReplaceMethod("martVSchema","Mart",function(obj,value){
 
 
 
+#####################################################################
+## new wrappers to enable keys, columns, select and keytypes
+.keys <- function(x, keytype){
+    res <- filterOptions(filter=keytype, mart=x)
+    res <- sub("\\]$","",res)
+    res <- sub("^\\[","",res)
+    unlist(strsplit(res, split=","))
+}
+setMethod("keys", "Mart",
+    function(x, keytype, ...){
+        AnnotationDbi:::smartKeys(x=x, keytype=keytype, ...,
+                                  FUN=biomaRt:::.keys)
+    }
+)
+
+setMethod("keytypes", "Mart",
+    function(x) listFilters(mart=x)[["name"]]
+)
+
+setMethod("columns", "Mart",
+    function(x) listAttributes(mart=x)[["name"]]
+)
+
+## Arg checking is similar (but more limited) to what is done for getBM
+setMethod("select", "Mart",
+          function(x, keys, columns, keytype, ...){
+              
+              if(missing( columns ))
+                  stop("Argument 'columns' must be specified.")              
+              if(!is.list(keytype) && keytype != "" && missing( keys ))
+                  stop("Argument 'keys' must be specified.")              
+              if(length(keytype) > 0 && length(keys) == 0)
+                  stop("Keys argument contains no data.")              
+              if(!(is.character(keytype)) || length(keytype)!=1){
+                  stop("keytype should be single element character vector.")
+              }
+              getBM(attributes=columns, filters=keytype, values=keys,  mart=x)
+          }
+)
+
+

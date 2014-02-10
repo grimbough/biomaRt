@@ -508,6 +508,69 @@ mart=useMart("nameOfMyMart",dataset="nameOfMyDataset",host="www.myLocalHost.org"
 \end{scriptsize}
 
 For more information on how to install a public BioMart database see:  http://www.biomart.org/install.html and follow link databases.
+
+\section{Using \Rfunction{select}}
+In order to provide a more consistent interface to all annotations in
+Bioconductor the \Rfunction{select}, \Rfunction{columns},
+\Rfunction{keytypes} and \Rfunction{keys} have been implemented to wrap
+some of the existing functionality above.  These methods can be called
+in the same manner that they are used in other parts of the project
+except that instead of taking a \Robject{AnnotationDb} derived class
+they take instead a \Robject{Mart} derived class as their 1st argument.
+Otherwise usage should be essentially the same.  You still use
+\Rfunction{columns} to discover things that can be extracted from a
+\Robject{Mart}, and \Rfunction{keytypes} to discover which things can be
+used as keys with \Rfunction{select}.  
+
+<<columnsAndKeyTypes>>=
+mart<-useMart(dataset="hsapiens_gene_ensembl",biomart='ensembl')
+head(keytypes(mart), n=3)
+head(columns(mart), n=3)
+@ 
+
+And you still can use \Rfunction{keys} to extract potential keys, for a
+particular key type.  
+
+<<keys1>>=
+k = keys(mart, keytype="chromosome_name")
+head(k, n=3)
+@ 
+
+When using \Rfunction{keys}, you can even take advantage of the extra
+arguments that are available for others keys methods.
+
+<<keys2>>=
+k = keys(mart, keytype="chromosome_name", pattern="LRG")
+head(k, n=3)
+@ 
+
+Unfortunately the \Rfunction{keys} method will not work with all key
+types because they are not all supported.
+
+But you can still use \Rfunction{select} here to extract columns of data
+that match a particular set of keys (this is basically a wrapper for
+\Rfunction{getBM}).
+
+<<select>>=
+affy=c("202763_at","209310_s_at","207500_at")
+select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene'),
+  keytype='affy_hg_u133_plus_2')
+@ 
+
+So why would we want to do this when we already have functions like
+\Rfunction{getBM}?  For two reasons: 1) for people who are familiar
+with select and it's helper methods, they can now proceed to use
+biomaRt making the same kinds of calls that are already familiar to
+them and 2) because the select method is implemented in many places
+elsewhere, the fact that these methods are shared allows for more
+convenient programmatic access of all these resources.  An example of
+a package that takes advantage of this is the \Rpackage{OrganismDbi}
+package. Where several packages can be accessed as if they were one
+resource.
+
+
+
+
 \section{Session Info}
 <<>>=
 sessionInfo()
