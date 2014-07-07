@@ -50,6 +50,12 @@ You can do this using the Sys.putenv command:
 Sys.putenv("http\_proxy" = "http://my.proxy.org:9999")
 \end{verbatim}
 
+Some users have reported that the workaround above does not work, in this case an alternative proxy solution below can be tried: 
+
+\begin{verbatim}
+options(RCurlOptions = list(proxy="uscache.kcc.com:80",proxyuserpwd="------:-------"))
+\end{verbatim}
+
 The \Rfunction{useMart} function can now be used to connect to a specified BioMart database, this must be a valid name given by \Rfunction{listMarts}. In the next example we choose to query the Ensembl BioMart database.
 
 <<ensembl1>>=
@@ -170,7 +176,8 @@ head(goids)
 The \Rfunction{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
 \begin{small}
 \begin{verbatim}
- go=c("GO:0051330","GO:0000080","GO:0000114"chrom=c(1,2,"Y")
+ go=c("GO:0051330","GO:0000080","GO:0000114")
+ chrom=c(1,2,"Y")
  getBM(attributes= "hgnc_symbol",
         filters=c("go","chromosome_name"),
         values=list(go,chrom), mart=ensembl)
