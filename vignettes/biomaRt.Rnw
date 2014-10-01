@@ -172,29 +172,24 @@ head(goids)
 \end{scriptsize}
 
 
-\subsection{Task 3: Retrieve all HUGO gene symbols of genes that are located on chromosomes 1,2 or Y ,\\ and are associated with one the following GO terms: \\"GO:0051330","GO:0000080","GO:0000114","GO:0000082"\\ (here we'll use more than one filter)}
+\subsection{Task 3: Retrieve all HUGO gene symbols of genes that are located on chromosomes 17,20 or Y ,\\ and are associated with one the following GO terms: \\"GO:0051330","GO:0000080","GO:0000114","GO:0000082"\\ (here we'll use more than one filter)}
 The \Rfunction{getBM} function enables you to use more than one filter.  In this case  the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
 \begin{small}
 \begin{verbatim}
  go=c("GO:0051330","GO:0000080","GO:0000114")
- chrom=c(1,2,"Y")
+ chrom=c(17,20,"Y")
  getBM(attributes= "hgnc_symbol",
-        filters=c("go","chromosome_name"),
+        filters=c("go_id","chromosome_name"),
         values=list(go,chrom), mart=ensembl)
 \end{verbatim}
 \end{small}
 \begin{scriptsize}
 \begin{verbatim}
   hgnc_symbol
-1      PPP1CB
-2       SPDYA
-3       ACVR1
-4        CUL3
-5        RCC1
-6        CDC7
-7        RHOU
+1      E2F1
 \end{verbatim}
 \end{scriptsize}
+
 \subsection{Task 4:  Annotate set of idenfiers with INTERPRO protein domain identifiers}
 
 In this example we want to annotate the following two RefSeq identifiers: NM\_005359 and NM\_000546 with INTERPRO protein domain identifiers and a description of the protein domains.
