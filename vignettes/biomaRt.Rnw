@@ -15,7 +15,7 @@
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
 
-\author{Steffen Durinck\footnote{steffen@stat.berkeley.edu}, Wolfgang Huber\footnote{huber@ebi.ac.uk}}
+\author{Steffen Durinck\footnote{durincks@gene.com}, Wolfgang Huber\footnote{huber@ebi.ac.uk}}
 \begin{document}
 \title{The biomaRt user's guide}
 
@@ -391,10 +391,10 @@ To demonstrate the use of the biomaRt package with non-Ensembl databases the nex
 We connect to Wormbase, select the gene dataset to use and have a look at the available attributes and filters.  Then we use a list of gene names as filter and retrieve associated RNAi identifiers together with a description of the RNAi phenotype.
 \begin{scriptsize}
 <<echo=TRUE, eval=FALSE>>=
-wormbase=useMart("wormbase_current",dataset="wormbase_gene")
+wormbase=useMart("WS220",dataset="wormbase_gene")
 listFilters(wormbase)
 listAttributes(wormbase)
-getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
+getBM(attributes = c("public_name","rnai","rnai_phenotype_phenotype_label"),
                      filters="gene_name", values=c("unc-26","his-33"),
                      mart=wormbase)
      
@@ -402,38 +402,15 @@ getBM(attributes=c("name","rnai","rnai_phenotype","phenotype_desc"),
 \end{scriptsize}
 \begin{scriptsize}
 \begin{verbatim}
-     name  rnai               rnai_phenotype                                     phenotype_desc
 
-1  his-33 WBRNAi00000104   Emb | Nmo         embryonic lethal | Nuclear morphology alteration in early embryo
-2  his-33 WBRNAi00012233   WT                                             wild type morphology
-3  his-33 WBRNAi00024356   Ste                                                          sterile
-4  his-33 WBRNAi00025036   Emb                                                 embryonic lethal
-5  his-33 WBRNAi00025128   Emb                                                 embryonic lethal
-6  his-33 WBRNAi00025393   Emb                                                 embryonic lethal
-7  his-33 WBRNAi00025515   Emb | Lva | Unc                 embryonic lethal | larval arrest | uncoordinated
-8  his-33 WBRNAi00025632   Gro | Ste                                            slow growth | sterile
-9  his-33 WBRNAi00025686   Gro | Ste                                            slow growth | sterile
-10 his-33 WBRNAi00025785   Gro | Ste                                            slow growth | sterile
-11 his-33 WBRNAi00026259   Emb | Gro | Unc                   embryonic lethal | slow growth | uncoordinated
-12 his-33 WBRNAi00026375   Emb                                                 embryonic lethal
-13 his-33 WBRNAi00026376   Emb                                                 embryonic lethal
-14 his-33 WBRNAi00027053   Emb | Unc                                 embryonic lethal | uncoordinated
-15 his-33 WBRNAi00030041   WT                                             wild type morphology
-16 his-33 WBRNAi00031078   Emb                                                 embryonic lethal
-17 his-33 WBRNAi00032317   Emb                                                 embryonic lethal
-18 his-33 WBRNAi00032894   Emb                                                 embryonic lethal
-19 his-33 WBRNAi00033648   Emb                                                 embryonic lethal
-20 his-33 WBRNAi00035430   Emb                                                 embryonic lethal
-21 his-33 WBRNAi00035860   Egl | Emb                             egg laying defect | embryonic lethal
-22 his-33 WBRNAi00048335   Emb | Sister Chromatid Separation abnormal (Cross-eyed)   embryonic lethal |
-23 his-33 WBRNAi00049266   Emb | Sister Chromatid Separation abnormal (Cross-eyed)     embryonic lethal |
-24 his-33 WBRNAi00053026   Emb | Sister Chromatid Separation abnormal (Cross-eyed)     embryonic lethal |
-25 unc-26 WBRNAi00021278   WT                                             wild type morphology
-26 unc-26 WBRNAi00026915   WT                                             wild type morphology
-27 unc-26 WBRNAi00026916   WT                                             wild type morphology
-28 unc-26 WBRNAi00027544   Unc                                                    uncoordinated
-29 unc-26 WBRNAi00049565   WT                                             wild type morphology
-30 unc-26 WBRNAi00049566   WT                                             wild type morphology
+  public_name           rnai    rnai_phenotype_phenotype_label
+1      his-33 WBRNAi00082060                   GRO slow growth
+2      his-33 WBRNAi00082060 postembryonic development variant
+3      his-33 WBRNAi00082060              EMB embryonic lethal
+4      his-33 WBRNAi00082060                 LVL larval lethal
+5      his-33 WBRNAi00082060                 LVA larval arrest
+6      his-33 WBRNAi00082060          accumulated cell corpses
+
 \end{verbatim}
 \end{scriptsize}
 
