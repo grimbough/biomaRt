@@ -55,19 +55,22 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
   return(result)
 }
 
-listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
-
-	  
-  if(archive){
-    request = paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep="")
-    registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
+listMarts <- function( mart = NULL, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
+  
+  request = NULL
+  if(is.null(mart)){	  
+   if(archive){
+      request = paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep="")
+   } 
+   else{
+      request = paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep="")	
+    }
   }
   else{
-    request = paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep="")	
-    registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
-  }
-
-
+     request = paste(martHost(mart),"?type=registry_archive&requestid=biomaRt", sep="") 
+  } 	
+  
+  registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
   registry = xmlTreeParse(registry, asText=TRUE)
   registry = registry$doc$children[[1]]
   
