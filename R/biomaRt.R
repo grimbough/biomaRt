@@ -57,6 +57,7 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
 
 listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
 
+	  
   if(archive){
     request = paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep="")
     registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
@@ -65,6 +66,8 @@ listMarts <- function( mart, host="www.biomart.org", path="/biomart/martservice"
     request = paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep="")	
     registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
   }
+
+
   registry = xmlTreeParse(registry, asText=TRUE)
   registry = registry$doc$children[[1]]
   
@@ -668,13 +671,26 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     cat(paste(xmlQuery,"\n", sep=""))
   }
   postRes = postForm(paste(martHost(mart),"?",sep=""),"query"=xmlQuery)
-  
+  ## 10-01-2014
+  if(length(grep("^Query ERROR", postRes))>0L)
+     stop(postRes)  
+  ##
   if(postRes != ""){
     con = textConnection(postRes)
     result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", as.is=TRUE, check.names = TRUE)
     close(con)
     if(all(is.na(result[,ncol(result)])))
       result = result[,-ncol(result),drop=FALSE]
+## 10 - 01 - 2014
+   res_attributes <- c(attributes,attributesL)
+      if(!(is(result, "data.frame") && (ncol(result)==length(res_attributes)))) {
+         print(head(result))
+         stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
+     } 
+    if(!bmHeader){  #assumes order of results same as order of attibutes in input
+     colnames(result) = res_attributes
+##
+   }
   } else {
     warning("getLDS returns NULL.")
     result=NULL
