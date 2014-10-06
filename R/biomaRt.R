@@ -67,7 +67,12 @@ listMarts <- function( mart = NULL, host="www.biomart.org", path="/biomart/marts
     }
   }
   else{
-     request = paste(martHost(mart),"?type=registry&requestid=biomaRt", sep="") 
+     if(class(mart) == 'Mart'){
+         request = paste(martHost(mart),"?type=registry&requestid=biomaRt", sep="") 
+     }
+     else{
+	warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
+     }
   } 	
   
   registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
