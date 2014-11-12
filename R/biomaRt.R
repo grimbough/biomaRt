@@ -29,8 +29,17 @@ martCheck = function(mart, biomart = NULL){
     stop("You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information.")
   }
   if(!is.null(biomart)){
-    martcheck = strsplit(martBM(mart),"_", fixed = TRUE, useBytes = TRUE)[[1]][1]
-    if(martcheck[1] != biomart)stop(paste("This function only works when used with the ",biomart," BioMart.",sep="")) 
+ #   martcheck = strsplit(martBM(mart),"_", fixed = TRUE, useBytes = TRUE)[[1]][1]
+    martcheck = martBM(mart)
+    bmok = FALSE
+    for(k in 1:length(biomart)){
+    if(martcheck[1] == biomart[k]){	
+     bmok = TRUE
+    }
+    }		    
+    if(!bmok){
+	stop(paste("This function only works when used with the ",biomart," BioMart.",sep="")) 
+    }      
   }
   if(martDataset(mart)==""){
     stop("No dataset selected, please select a dataset first.  You can see the available datasets by using the listDatasets function see ?listDatasets for more information.  Then you should create the Mart object by using the useMart function.  See ?useMart for more information");
@@ -767,7 +776,7 @@ getGene <- function( id, type, mart){
 }
 
 getSequence <- function(chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE){
-  martCheck(mart,"ensembl")
+  martCheck(mart,c("ensembl","ENSEMBL_MART_ENSEMBL"))
   if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon","transcript_exon_intron","gene_exon_intron","coding","coding_transcript_flank","coding_gene_flank","transcript_flank","gene_flank")){
     stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either gene_exon, transcript_exon,transcript_exon_intron, gene_exon_intron, cdna, coding,coding_transcript_flank,coding_gene_flank,transcript_flank,gene_flank,peptide, 3utr or 5utr")
   }
