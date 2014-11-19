@@ -765,11 +765,34 @@ getBMlist <- function(attributes, filters = "", values = "", mart, list.names = 
 #Ensembl specific functions   #
 ###############################
 
-listEnsembl <- function(mart = NULL, host="www.ensembl.org",verbose = FALSE){
+listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh = NULL,verbose = FALSE){
+ if(!is.null(version)){
+  host = paste("e",version,".ensembl.org",sep="")
+ }
+ if(!is.null(GRCh)){
+  if(GRCh == 37){ 
+  host = paste("grch",GRCh,".ensembl.org",sep="")
+ }
+else{
+ print("Only 37 can be specified for GRCh version")
+}
+ }
+	   
  listMarts(mart = mart, host = host, verbose = verbose)
 }
 
-useEnsembl <- function(biomart, dataset,host = "www.ensembl.org" ,verbose = FALSE){
+useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL, GRCh = NULL, verbose = FALSE){
+ if(!is.null(version)){
+  host = paste("e",version,".ensembl.org",sep="")
+ }	   
+ if(!is.null(GRCh)){
+ if(GRCh == 37){
+  host = paste("grch",GRCh,".ensembl.org",sep="")
+ }
+ else{
+   print("Only 37 can be specified for GRCh version")
+ }
+ }
  ens = useMart(biomart = biomart, dataset = dataset, host = host, verbose = verbose)	   
  return(ens)
 }
