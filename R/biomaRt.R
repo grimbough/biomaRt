@@ -95,14 +95,14 @@ listMarts <- function( mart = NULL, host="www.biomart.org", path="/biomart/marts
     for(i in seq(len=xmlSize(registry))){
       if(xmlName(registry[[i]])=="MartURLLocation"){  
         if(xmlGetAttr(registry[[i]],"visible") == 1){
-          if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
-          if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
-          if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
-          if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = xmlGetAttr(registry[[i]],"host")
-          if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = xmlGetAttr(registry[[i]],"path")
-          if(!is.null(xmlGetAttr(registry[[i]],"port"))) marts$port[index] = xmlGetAttr(registry[[i]],"port")
+          if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = as.character(xmlGetAttr(registry[[i]],"name"))
+          if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = as.character(xmlGetAttr(registry[[i]],"database"))
+          if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = as.character(xmlGetAttr(registry[[i]],"displayName"))
+          if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = as.character(xmlGetAttr(registry[[i]],"host"))
+          if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = as.character(xmlGetAttr(registry[[i]],"path"))
+          if(!is.null(xmlGetAttr(registry[[i]],"port"))) marts$port[index] = as.character(xmlGetAttr(registry[[i]],"port"))
           if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-            marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
+            marts$vschema[index] =  as.character(xmlGetAttr(registry[[i]],"serverVirtualSchema"))
           }
           index=index+1
         }
@@ -132,12 +132,11 @@ listMarts <- function( mart = NULL, host="www.biomart.org", path="/biomart/marts
   }
   else{
     if(archive){
-      ret = data.frame(marts$database,marts$version)
+      ret = data.frame(biomart = as.character(marts$database),version = as.character(marts$version), stringsAsFactors=FALSE)
     }
     else{
-      ret = data.frame(marts$biomart,marts$version)
+      ret = data.frame(biomart = as.character(marts$biomart),version = as.character(marts$version), stringsAsFactors=FALSE)
     }
-    colnames(ret)=c("biomart","version")
     return(ret)
   } 
 }
@@ -778,10 +777,28 @@ else{
 }
  }
 	   
- listMarts(mart = mart, host = host, verbose = verbose)
+ marts = listMarts(mart = mart, host = host, verbose = verbose)
+ sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
+ if(length(sel) > 0){ 
+  marts$biomart[sel] = "ensembl"
+ }
+ sel = which(marts$biomart == "ENSEMBL_MART_SNP")
+ if(length(sel) > 0){ 
+  marts$biomart[sel] = "snp"
+ }
+ sel = which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
+ if(length(sel) > 0){ 
+  marts$biomart[sel] = "funcgen"
+ }
+ sel = which(marts$biomart == "ENSEMBL_MART_VEGA")
+ if(length(sel) > 0){ 
+  marts$biomart[sel] = "vega"
+ }
+ return(marts)
 }
 
 useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL, GRCh = NULL, verbose = FALSE){
+ 
  if(!is.null(version)){
   host = paste("e",version,".ensembl.org",sep="")
  }	   
@@ -793,6 +810,20 @@ useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL
    print("Only 37 can be specified for GRCh version")
  }
  }
+
+ if(biomart == "ensembl"){
+   biomart = "ENSEMBL_MART_ENSEMBL"
+ }
+ if(biomart == "snp"){
+   biomart = "ENSEMBL_MART_SNP"
+ }
+ if(biomart == "funcgen"){
+   biomart = "ENSEMBL_MART_FUNCGEN"
+ }
+ if(biomart == "vega"){
+   biomart = "ENSEMBL_MART_VEGA"
+ }
+
  ens = useMart(biomart = biomart, dataset = dataset, host = host, verbose = verbose)	   
  return(ens)
 }
