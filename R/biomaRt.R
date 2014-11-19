@@ -765,6 +765,15 @@ getBMlist <- function(attributes, filters = "", values = "", mart, list.names = 
 #Ensembl specific functions   #
 ###############################
 
+listEnsembl <- function(mart = NULL, host="www.ensembl.org",verbose = FALSE){
+ listMarts(mart = mart, host = host, verbose = verbose)
+}
+
+useEnsembl <- function(biomart, dataset,host = "www.ensembl.org" ,verbose = FALSE){
+ ens = useMart(biomart = biomart, dataset = dataset, host = host, verbose = verbose)	   
+ return(ens)
+}
+
 getGene <- function( id, type, mart){
   martCheck(mart,"ensembl") 
   checkWrapperArgs(id, type, mart)
