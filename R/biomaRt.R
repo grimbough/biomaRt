@@ -788,7 +788,7 @@ else{
  }
  sel = which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
  if(length(sel) > 0){ 
-  marts$biomart[sel] = "funcgen"
+  marts$biomart[sel] = "regulation"
  }
  sel = which(marts$biomart == "ENSEMBL_MART_VEGA")
  if(length(sel) > 0){ 
@@ -817,7 +817,7 @@ useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL
  if(biomart == "snp"){
    biomart = "ENSEMBL_MART_SNP"
  }
- if(biomart == "funcgen"){
+ if(biomart == "regulation"){
    biomart = "ENSEMBL_MART_FUNCGEN"
  }
  if(biomart == "vega"){
