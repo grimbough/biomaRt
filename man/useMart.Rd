@@ -2,7 +2,7 @@
 \alias{useMart}
 \title{Connects to the selected BioMart database and dataset}
 \description{A first step in using the biomaRt package is to select a BioMart database and dataset to use.  The useMart function enables one to connect to a specified BioMart database and dataset within this database.  To know which BioMart databases are available see the listMarts function.  To know which datasets are available within a BioMart database, first select the BioMart database using useMart and then use the listDatasets function on the selected BioMart, see listDatasets function.}
-\usage{useMart(biomart, dataset, host="www.biomart.org",
+\usage{useMart(biomart, dataset, host="www.ensembl.org",
 path="/biomart/martservice", port=80, archive=FALSE, ssl.verifypeer =
 TRUE, version, verbose = FALSE)}
 
