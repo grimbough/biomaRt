@@ -64,7 +64,7 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
   return(result)
 }
 
-listMarts <- function( mart = NULL, host="www.biomart.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
+listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
   
   request = NULL
   if(is.null(mart)){	  
@@ -147,14 +147,16 @@ listMarts <- function( mart = NULL, host="www.biomart.org", path="/biomart/marts
 # #                           # #
 #################################
 
-useMart <- function(biomart, dataset, host = "www.biomart.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
+useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
 
   if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
   if(!missing(biomart)){ 
   if(!(is.character(biomart)))
       stop("biomart argument is no string.  The biomart argument should be a single character string")
   }
-
+  if(biomart == "ensembl" & host == "www.ensembl.org"){
+   biomart = "ENSEMBL_MART_ENSEMBL"
+  }
   marts=NULL
   marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive, ssl.verifypeer = ssl.verifypeer)
   mindex = NA
@@ -307,7 +309,7 @@ getName <- function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]]
 
 ## listAttributes
 
-listAttributes <- function(mart, page, what = c("name","description")) {
+listAttributes <- function(mart, page, what = c("name","description","page")) {
   martCheck(mart)
   if(!missing(page) && !page %in% attributePages(mart)) stop(paste("The chosen page: ",page," is not valid, please use the correct page name using the attributePages function",sep=""))
   attrib=NULL

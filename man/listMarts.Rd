@@ -2,7 +2,7 @@
 \alias{listMarts}
 \title{lists the avilable BioMart databases}
 \description{This function returns a list of BioMart databases to which biomaRt can connect to.  By default all public BioMart databases are displayed.  To establish a connection use the useMart function.}
-\usage{listMarts(mart = NULL, host="www.biomart.org", path="/biomart/martservice", port=80, includeHosts = FALSE, archive=FALSE, ssl.verifypeer=TRUE, verbose = FALSE)}
+\usage{listMarts(mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80, includeHosts = FALSE, archive=FALSE, ssl.verifypeer=TRUE, verbose = FALSE)}
 
 \arguments{
 \item{mart}{mart object created with the useMart function.  This is optional, as you usually use listMarts to see which marts there are to connect to.}
