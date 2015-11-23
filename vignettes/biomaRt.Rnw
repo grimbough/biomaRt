@@ -196,13 +196,13 @@ In this example we want to annotate the following two RefSeq identifiers: NM\_00
 
 <<echo=TRUE,eval=FALSE>>=
 refseqids = c("NM_005359","NM_000546")
-ipro = getBM(attributes=c("refseq_dna","interpro","interpro_description"), filters="refseq_dna",values=refseqids, mart=ensembl)
+ipro = getBM(attributes=c("refseq_mrna","interpro","interpro_description"), filters="refseq_mrna",values=refseqids, mart=ensembl)
 @
 
 \begin{scriptsize}
 \begin{verbatim}
 ipro
-  refseq_dna  interpro             interpro_description
+  refseq_mrna  interpro             interpro_description
 1  NM_000546 IPR002117                p53 tumor antigen
 2  NM_000546 IPR010991             p53, tetramerisation
 3  NM_000546 IPR011615                 p53, DNA-binding
@@ -344,7 +344,7 @@ human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
        filters = "hgnc_symbol", values = "TP53",mart = human,
-      attributesL = c("refseq_dna","chromosome_name","start_position"), martL = mouse)
+      attributesL = c("refseq_mrna","chromosome_name","start_position"), martL = mouse)
 
     V1 V2      V3        V4 V5       V6
 1 TP53 17 7512464 NM_011640 11 69396600
