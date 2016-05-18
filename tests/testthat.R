@@ -1,4 +1,4 @@
 library(testthat)
-library(biomarRt)
+library(biomaRt)
 
 test_check("biomaRt")

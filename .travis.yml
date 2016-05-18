@@ -1,5 +1,11 @@
 language: r
+sudo: false
 cache: packages
+
+r:
+  - devel
+bioc_required: true
+bioc_use_devel: true
 
 r: bioc-devel
 
