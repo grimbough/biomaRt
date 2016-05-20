@@ -124,47 +124,43 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     return(result)
 }
 
-.generateFilterXML2 <- function(filters, values, mart) {
+.generateFilterXML <- function(filters, values, mart) {
     
     ## if we have multiple filters, the values must be specified as a list.
-    if(length(filters) > 1){
-        if(class(values)!= "list")stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
+    if(length(filters) > 1 && class(values) != "list") {
+        stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
+    } else if (filters == "") {
+        return("")
     }
     
     values <- as.list(values)
     names(values) <- filters
 
-    sepFilters <- sapply(filters, 
+    individualFilters <- sapply(filters, 
            function(filter, values, mart) {
-                ## filter in the list of possibilities
-                if(filter %in% listFilters(mart, what = "name")) {
-                    filtertype <- filterType(filter = filter, mart = mart)
-                    if(filtertype == 'boolean' || filtertype == 'boolean_list'){
-                        if(!is.logical(values[[i]])) 
+                ## if the filter exists and is boolean we do this
+                if(filter %in% listFilters(mart, what = "name") && grepl('boolean', filterType(filter = filter, mart = mart)) ) {
+                    if(!is.logical(values[[i]])) 
                             stop("biomaRt error: ", filter, " is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved.")
                         val <- ifelse(values[[filter]], yes = 0, no = 1)
                         val <- paste0("' excluded = \"", val, "\" ")
-                    } else {
-                        ## convert floats to integers
-                        if(is.numeric(values[[filter]])) 
-                            values[[filter]] <- as.integer(values[[filter]])
-                        ## paste everything together
-                        val <- paste0(values[[filter]], collapse = ",")
-                        val <- paste0("' value = '", val, "' ")
-                    }
-                } else {
+                } else { ## otherwise the filter isn't boolean, or doesn't exist, and we treat them the same
+                    ## convert floats to integers
+                    if(is.numeric(values[[filter]])) 
+                        values[[filter]] <- as.integer(values[[filter]])
+                    ## paste everything together
                     val <- paste0(values[[filter]], collapse = ",")
                     val <- paste0("' value = '", val, "' ")
                 }
-               filterXML <- paste0("<Filter name = '", filter, val, "/>")
-               return(filterXML)
+                filterXML <- paste0("<Filter name = '", filter, val, "/>")
+                return(filterXML)
             }, values, mart)
     
-    filterXML <- paste0(sepFilters, collapse = "")
+    filterXML <- paste0(individualFilters, collapse = "")
     return(filterXML)
 }
 
-.generateFilterXML <- function(filters, values, mart) {
+.generateFilterXML_old <- function(filters, values, mart) {
     
     filterXML <- NULL
 

@@ -18,12 +18,12 @@ expect_equal(getBM(attributes='entrezgene', filters = 'affy_hg_u133_plus_2', val
 
 
 context('Testing filter XML generation')
-expect_equal(.generateFilterXML(filters = c('affy_hg_u133a_2', 'chromosome'), 
+expect_equal(.generateFilterXML(filters = c('affy_hg_u133a_2', 'chromosome_name'), 
                    values = list(affyid=c('1939_at','1000_at'), chromosome= '16'), 
                    mart = ensembl),
              "<Filter name = 'affy_hg_u133a_2' value = '1939_at,1000_at' /><Filter name = 'chromosome' value = '16' />")
 
-expect_equal(.generateFilterXML(filters = 'chromosome', 
-                                values = chromosome= '16', 
+expect_equal(.generateFilterXML(filters = 'chromosome_name', 
+                                values = '16', 
                                 mart = ensembl),
              "<Filter name = 'chromosome' value = '16' />")
