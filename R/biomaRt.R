@@ -148,15 +148,16 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 #################################
 
 useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
-
+  
   if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
   if(!missing(biomart)){ 
   if(!(is.character(biomart)))
       stop("biomart argument is no string.  The biomart argument should be a single character string")
   }
-  if(biomart == "ensembl" & host == "www.ensembl.org"){
+  if(biomart == "ensembl" & (host == "www.ensembl.org" | host == "uswest.ensembl.org")){
    biomart = "ENSEMBL_MART_ENSEMBL"
   }
+  reqHost = host
   marts=NULL
   marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive, ssl.verifypeer = ssl.verifypeer)
   mindex = NA
@@ -375,7 +376,7 @@ filterType <- function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE){
+getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE, quote="\""){
   
   martCheck(mart)
   if(missing( attributes ))
@@ -526,7 +527,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
 
     ## convert the serialized table into a dataframe
     con = textConnection(postRes)
-    result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
+    result = read.table(con, sep="\t", header=bmHeader, quote = quote, comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
     if(verbose){
       writeLines("#################\nParsed results:")
       print(result)

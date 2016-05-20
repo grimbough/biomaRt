@@ -2,7 +2,7 @@
 \alias{getBM}
 \title{Retrieves information from the BioMart database}
 \description{This function is the main biomaRt query function.  Given a set of filters and corresponding values, it retrieves the user specified attributes from the BioMart database one is connected to.}
-\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose = FALSE, uniqueRows = TRUE, bmHeader = FALSE)}
+\usage{getBM(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose = FALSE, uniqueRows = TRUE, bmHeader = FALSE, quote = "\"")}
 \value{A \code{data.frame}. There is no implicit mapping between its rows and the function arguments (e.g. \code{filters}, \code{values}), therefore make sure to have the relevant identifier(s) returned by specifying them in \code{attributes}. See Examples.}
 
 \arguments{
@@ -18,6 +18,7 @@
   BioMart server should include the data headers or not, defaults to FALSE.  This should
   only be switched on if the default behavior results in errors,
   setting to on might still be able to retrieve your data in that case}
+ \item{quote}{Sometimes parsing of the results fails due to errors in the Ensembl data fields such as containing a quote, in such cases you can try to change the value of quote to try to still parse the results.}
 }
 
 \author{Steffen Durinck} 
