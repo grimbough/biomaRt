@@ -1,3 +1,4 @@
+
 ##########################
 #biomaRt source code     #
 ##########################
@@ -179,6 +180,14 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
    if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
+    if(length(grep("archive",martHost(mart)) > 0)){
+       if(length(grep(reqHost,martHost(mart))) == 0){
+        writeLines(paste("Note: requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+     	writeLines("When using archived Ensembl versions this sometimes can result in connecting to a newer version than the intended Ensembl version")
+     	writeLines("Check your ensembl version using listMarts(mart)")
+    	}
+    }
+
     BioMartVersion=bmVersion(mart, verbose=verbose)
     if(martHost(mart) =="http://www.biomart.org:80/biomart/martservice"){
       if(verbose) writeLines("Using Central Repository at www.biomart.org");
@@ -187,6 +196,9 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     if(verbose){
       writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
       writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
+      if(length(grep(reqHost,martHost(mart))) == 0){
+        writeLines(paste("Requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+      } 
       writeLines(paste("Mart host:",martHost(mart),sep=" "))
     }
     if(!missing(dataset)){
