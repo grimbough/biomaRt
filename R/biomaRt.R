@@ -25,31 +25,37 @@ messageToUser <- function(message){
 ##############################################################
 
 martCheck = function(mart, biomart = NULL){
-  if( missing( mart ) || class( mart ) != 'Mart'){
-    stop("You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information.")
-  }
-  if(!is.null(biomart)){
- #   martcheck = strsplit(martBM(mart),"_", fixed = TRUE, useBytes = TRUE)[[1]][1]
-    martcheck = martBM(mart)
-    bmok = FALSE
-    for(k in 1:length(biomart)){
-    if(martcheck[1] == biomart[k]){	
-     bmok = TRUE
+    if( missing( mart ) || class( mart ) != 'Mart'){
+        stop("You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information.")
     }
-    }		    
-    if(!bmok){
-	stop(paste("This function only works when used with the ",biomart," BioMart.",sep="")) 
-    }      
-  }
-  if(martDataset(mart)==""){
-    stop("No dataset selected, please select a dataset first.  You can see the available datasets by using the listDatasets function see ?listDatasets for more information.  Then you should create the Mart object by using the useMart function.  See ?useMart for more information");
-  }
+    if(!is.null(biomart)){
+        #   martcheck = strsplit(martBM(mart),"_", fixed = TRUE, useBytes = TRUE)[[1]][1]
+        martcheck = martBM(mart)
+        bmok = FALSE
+        for(k in 1:length(biomart)){
+            if(martcheck[1] == biomart[k]){	
+                bmok = TRUE
+            }
+        }		    
+        if(!bmok){
+            stop(paste("This function only works when used with the ",biomart," BioMart.",sep="")) 
+        }      
+    }
+    if(martDataset(mart)==""){
+        stop("No dataset selected, please select a dataset first.  You can see the available datasets by using the listDatasets function see ?listDatasets for more information.  Then you should create the Mart object by using the useMart function.  See ?useMart for more information");
+    }
 }
 
-checkWrapperArgs = function(id, type, mart){
- if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details. Valid values for the type argument can be found with the listFilters function.") 
-  if(!type %in% listFilters(mart)[,1])stop(paste("Invalid identifier type:",type," see ?getGene for details. Use the listFilters function to get the valid value for the type argument.", sep=""))   
-  if(missing(id))stop("No identifiers specified.  Use the id argument to specify a vector of identifiers for which you want to retrieve the annotation.")
+checkWrapperArgs = function(id, type, mart) {
+    if (missing(type)) {
+        stop("Specify the type of identifier you are using, see ?getGene for details. Valid values for the type argument can be found with the listFilters function.")
+    }
+    if (!type %in% listFilters(mart)[,1]) {
+        stop(paste0("Invalid identifier type:",type," see ?getGene for details. Use the listFilters function to get the valid value for the type argument."))
+    }
+    if (missing(id)) {
+        stop("No identifiers specified.  Use the id argument to specify a vector of identifiers for which you want to retrieve the annotation.") 
+    }
 }
 #######################################################
 #listMarts:                                           #
@@ -369,193 +375,6 @@ filterType <- function(filter, mart){
   if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
   type = listFilters(mart,what="type")[sel]
   return(type)
-}
-
-##########################################
-#getBM: generic BioMart query function   # 
-##########################################
-
-getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE){
-  
-  martCheck(mart)
-  if(missing( attributes ))
-    stop("Argument 'attributes' must be specified.")
-  
-   if(is.list(filters) && !missing( values ))
-             warning("Argument 'values' should not be used when argument 'filters' is a list and will be ignored.")
-   if(is.list(filters) && is.null(names(filters)))
-             stop("Argument 'filters' must be a named list when sent as a list.")
-   if(!is.list(filters) && filters != "" && missing( values ))
-        stop("Argument 'values' must be specified.")
-
-  if(length(filters) > 0 && length(values) == 0)
-    stop("Values argument contains no data.")
-  
-  if(is.list(filters)){
-    values = filters
-    filters = names(filters)
-  }
-  
-  if(class(uniqueRows) != "logical")
-    stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
-
-  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
-  
-  #checking the Attributes
-  invalid = !(attributes %in% listAttributes(mart, what="name"))
-  if(any(invalid))
-    stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
-               "\nPlease use the function 'listAttributes' to get valid attribute names"))
-
-  #check if attributes come from multiple attribute pages currently disabled until ID issue resovled at Ensembl
-  if(FALSE){
-    att = listAttributes(mart, what=c("name","page"))
-    att = att[which(att[,1] %in% attributes),]
-    attOK = FALSE
-    pages = unique(att[,2])
-    if(length(pages) <= 1){
-      attOK = TRUE
-    }
-    else{
-      for(page in pages){
-        if(length(attributes) == length(which(attributes %in% att[which(att[,2] == page),1]))) attOK = TRUE
-      }
-    }
-    if(!attOK){
-      stop(paste("Querying attributes from multiple attribute pages is not allowed.  To see the attribute pages attributes belong to, use the function attributePages."))
-    }
-  }
-  #attribute are ok lets add them to the query
-  attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
-  
-  #checking the filters
-  if(filters[1] != "" && checkFilters){
-    invalid = !(filters %in% listFilters(mart, what="name"))
-    if(any(invalid))
-      stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
-                 "\nPlease use the function 'listFilters' to get valid filter names"))
-  }
-  
-  filterXML = NULL
-  
-  if(length(filters) > 1){
-    if(class(values)!= "list")stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
-   
-    for(i in seq(along = filters)){
-      if(filters[i] %in% listFilters(mart, what = "name")){
-        filtertype=filterType(filters[i], mart)
-        if(filtertype == 'boolean' || filtertype == 'boolean_list'){
-          if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="")  
-          if(!values[[i]]){
-            values[[i]] = 1
-          }
-          else{
-            values[[i]] = 0 
-          }
-          filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
-        }
-        else{
-          if(is.numeric(values[[i]])){ values[[i]] = as.integer(values[[i]])}
-          valuesString = paste(values[[i]],"",collapse=",",sep="")
-          filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-        }
-      }
-      else{ #used for attributes with values as these are treated as filters in BioMart
-        valuesString = paste(values[[i]],"",collapse=",",sep="")
-        filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-      } 
-    }
-  }
-  else{
-    if(filters != ""){
-      if(is.list(values)){
-        values = unlist(values)
-      }
-      if(filters %in% listFilters(mart, what="name")){
-        filtertype =filterType(filters, mart)
-        if(filtertype == 'boolean' || filtertype == 'boolean_list'){
-          if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-          if(!values){
-            values = 1
-          }
-          else{
-            values = 0 
-          }
-          filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
-        }
-        else{
-          if(is.numeric(values)){
-            values = as.integer(values)
-          }  
-          valuesString = paste(values,"",collapse=",",sep="")
-          filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
-        }
-      }
-      else{ #used for attributes with values as these are treated as filters in BioMart
-        valuesString = paste(values,"",collapse=",",sep="")
-        filterXML = paste(filterXML,paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-      }
-    }
-    else{
-      filterXML=""
-    }
-  }
-  
-  xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
-    
-  if(verbose){
-    cat(paste(xmlQuery,"\n", sep=""))
-  }      
-
-  postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
-  if(verbose){
-    writeLines("#################\nResults from server:")
-    print(postRes)
-  }
-  if(!(is.character(postRes) && (length(postRes)==1L)))
-    stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
-
-  if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
-    
-    result = as.data.frame(matrix("", ncol=length(attributes), nrow=0), stringsAsFactors=FALSE)
-    
-  } else {
-    
-    if(length(grep("^Query ERROR", postRes))>0L)
-      stop(postRes)
-
-    ## convert the serialized table into a dataframe
-    con = textConnection(postRes)
-    result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
-    if(verbose){
-      writeLines("#################\nParsed results:")
-      print(result)
-    }
-    close(con)
-
-    if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
-      print(head(result))
-      stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
-    }
-  }
-  if(!bmHeader){  #assumes order of results same as order of attibutes in input 
-    colnames(result) = attributes
-  }
-  else{
-    toAttributeName=FALSE
-    if(toAttributeName){  #set to TRUE if attempting to replace attribute descriptions with attribute names
-      att = listAttributes(mart)
-      resultNames = colnames(result)
-      for(r in 1:length(resultNames)){
-        asel = which(att[,2] == resultNames[r])
-        if(length(asel) == 1){
-          resultNames[r] = att[asel,1]
-        }
-      }
-      colnames(result) = resultNames
-    }
-  }
-  return(result)
 }
 
 ###################################
