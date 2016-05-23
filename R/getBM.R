@@ -35,23 +35,23 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
                    "\nPlease use the function 'listAttributes' to get valid attribute names"))
     
     #check if attributes come from multiple attribute pages currently disabled until ID issue resovled at Ensembl
-    if(FALSE){
-        att = listAttributes(mart, what=c("name","page"))
-        att = att[which(att[,1] %in% attributes),]
-        attOK = FALSE
-        pages = unique(att[,2])
-        if(length(pages) <= 1){
-            attOK = TRUE
-        }
-        else{
-            for(page in pages){
-                if(length(attributes) == length(which(attributes %in% att[which(att[,2] == page),1]))) attOK = TRUE
-            }
-        }
-        if(!attOK){
-            stop(paste("Querying attributes from multiple attribute pages is not allowed.  To see the attribute pages attributes belong to, use the function attributePages."))
-        }
-    }
+    # if(FALSE){
+    #     att = listAttributes(mart, what=c("name","page"))
+    #     att = att[which(att[,1] %in% attributes),]
+    #     attOK = FALSE
+    #     pages = unique(att[,2])
+    #     if(length(pages) <= 1){
+    #         attOK = TRUE
+    #     }
+    #     else{
+    #         for(page in pages){
+    #             if(length(attributes) == length(which(attributes %in% att[which(att[,2] == page),1]))) attOK = TRUE
+    #         }
+    #     }
+    #     if(!attOK){
+    #         stop(paste("Querying attributes from multiple attribute pages is not allowed.  To see the attribute pages attributes belong to, use the function attributePages."))
+    #     }
+    # }
     #attribute are ok lets add them to the query
     attributeXML =  paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
     
@@ -62,8 +62,6 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
             stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
                        "\nPlease use the function 'listFilters' to get valid filter names"))
     }
-    
-
     filterXML <- .generateFilterXML(filters, values, mart)
     
     
@@ -73,7 +71,10 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         cat(paste(xmlQuery,"\n", sep=""))
     }      
     
-    postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
+    postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e) {
+        stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")
+        })
+    
     if(verbose){
         writeLines("#################\nResults from server:")
         print(postRes)
@@ -140,7 +141,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
            function(filter, values, mart) {
                 ## if the filter exists and is boolean we do this
                 if(filter %in% listFilters(mart, what = "name") && grepl('boolean', filterType(filter = filter, mart = mart)) ) {
-                    if(!is.logical(values[[i]])) 
+                    if(!is.logical(values[[filter]])) 
                             stop("biomaRt error: ", filter, " is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved.")
                         val <- ifelse(values[[filter]], yes = 0, no = 1)
                         val <- paste0("' excluded = \"", val, "\" ")
@@ -160,71 +161,71 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     return(filterXML)
 }
 
-.generateFilterXML_old <- function(filters, values, mart) {
-    
-    filterXML <- NULL
-
-    if(length(filters) > 1){
-        if(class(values)!= "list")stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
-        
-        for(i in seq(along = filters)){
-            if(filters[i] %in% listFilters(mart, what = "name")){
-                filtertype=filterType(filters[i], mart)
-                if(filtertype == 'boolean' || filtertype == 'boolean_list'){
-                    if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="")  
-                    if(!values[[i]]){
-                        values[[i]] = 1
-                    }
-                    else{
-                        values[[i]] = 0 
-                    }
-                    filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
-                }
-                else{
-                    if(is.numeric(values[[i]])){ values[[i]] = as.integer(values[[i]])}
-                    valuesString = paste(values[[i]],"",collapse=",",sep="")
-                    filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-                }
-            }
-            else{ #used for attributes with values as these are treated as filters in BioMart
-                valuesString = paste(values[[i]],"",collapse=",",sep="")
-                filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-            } 
-        }
-    }
-    else{
-        if(filters != ""){
-            if(is.list(values)){
-                values = unlist(values)
-            }
-            if(filters %in% listFilters(mart, what="name")){
-                filtertype =filterType(filters, mart)
-                if(filtertype == 'boolean' || filtertype == 'boolean_list'){
-                    if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                    if(!values){
-                        values = 1
-                    }
-                    else{
-                        values = 0 
-                    }
-                    filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
-                }
-                else{
-                    if(is.numeric(values)){
-                        values = as.integer(values)
-                    }  
-                    valuesString = paste(values,"",collapse=",",sep="")
-                    filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
-                }
-            }
-            else{ #used for attributes with values as these are treated as filters in BioMart
-                valuesString = paste(values,"",collapse=",",sep="")
-                filterXML = paste(filterXML,paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-            }
-        }
-        else{
-            filterXML=""
-        }
-    }
-    return(filterXML)
-}
+# .generateFilterXML_old <- function(filters, values, mart) {
+#     
+#     filterXML <- NULL
+# 
+#     if(length(filters) > 1){
+#         if(class(values)!= "list")stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
+#         
+#         for(i in seq(along = filters)){
+#             if(filters[i] %in% listFilters(mart, what = "name")){
+#                 filtertype=filterType(filters[i], mart)
+#                 if(filtertype == 'boolean' || filtertype == 'boolean_list'){
+#                     if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="")  
+#                     if(!values[[i]]){
+#                         values[[i]] = 1
+#                     }
+#                     else{
+#                         values[[i]] = 0 
+#                     }
+#                     filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
+#                 }
+#                 else{
+#                     if(is.numeric(values[[i]])){ values[[i]] = as.integer(values[[i]])}
+#                     valuesString = paste(values[[i]],"",collapse=",",sep="")
+#                     filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+#                 }
+#             }
+#             else{ #used for attributes with values as these are treated as filters in BioMart
+#                 valuesString = paste(values[[i]],"",collapse=",",sep="")
+#                 filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+#             } 
+#         }
+#     }
+#     else{
+#         if(filters != ""){
+#             if(is.list(values)){
+#                 values = unlist(values)
+#             }
+#             if(filters %in% listFilters(mart, what="name")){
+#                 filtertype =filterType(filters, mart)
+#                 if(filtertype == 'boolean' || filtertype == 'boolean_list'){
+#                     if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
+#                     if(!values){
+#                         values = 1
+#                     }
+#                     else{
+#                         values = 0 
+#                     }
+#                     filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
+#                 }
+#                 else{
+#                     if(is.numeric(values)){
+#                         values = as.integer(values)
+#                     }  
+#                     valuesString = paste(values,"",collapse=",",sep="")
+#                     filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
+#                 }
+#             }
+#             else{ #used for attributes with values as these are treated as filters in BioMart
+#                 valuesString = paste(values,"",collapse=",",sep="")
+#                 filterXML = paste(filterXML,paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
+#             }
+#         }
+#         else{
+#             filterXML=""
+#         }
+#     }
+#     return(filterXML)
+# }
