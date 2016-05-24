@@ -27,3 +27,15 @@ expect_equal(.generateFilterXML(filters = 'chromosome_name',
                                 values = '16', 
                                 mart = ensembl),
              "<Filter name = 'chromosome_name' value = '16' />")
+
+expect_equal(.generateFilterXML(filters = ''), "")
+
+## testing with a boolean filter
+expect_error(.generateFilterXML(filters = 'transcript_tsl',
+                                values = '16',
+                                mart = ensembl),
+             "biomaRt error: transcript_tsl is a boolean filter")
+expect_equal(.generateFilterXML(filters = 'transcript_tsl',
+                                values = TRUE,
+                                mart = ensembl),
+             "<Filter name = 'transcript_tsl' excluded = \"0\" />")

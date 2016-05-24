@@ -125,14 +125,16 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     return(result)
 }
 
-.generateFilterXML <- function(filters, values, mart) {
+.generateFilterXML <- function(filters = "", values, mart) {
     
+    ## return emptry string if no filter specified
+    if(filters[1]== "") {
+        return("")
+    }
     ## if we have multiple filters, the values must be specified as a list.
     if(length(filters) > 1 && class(values) != "list") {
         stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
-    } else if (filters == "") {
-        return("")
-    }
+    } 
     
     values <- as.list(values)
     names(values) <- filters
