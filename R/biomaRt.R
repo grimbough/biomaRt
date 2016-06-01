@@ -66,79 +66,84 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
 
 listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
   
-  request = NULL
-  if(is.null(mart)){	  
-   if(archive){
-      request = paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep="")
-   } 
-   else{
-      request = paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep="")	
-    }
-  }
-  else{
-     if(class(mart) == 'Mart'){
-         request = paste(martHost(mart),"?type=registry&requestid=biomaRt", sep="") 
-     }
-     else{
-	warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
-     }
-  } 	
-  
-  registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
-  registry = xmlTreeParse(registry, asText=TRUE)
-  registry = registry$doc$children[[1]]
-  
-  marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL, database = NULL)
-  index = 1
-  
-  if(host != "www.biomart.org" || archive){
-    for(i in seq(len=xmlSize(registry))){
-      if(xmlName(registry[[i]])=="MartURLLocation"){  
-        if(xmlGetAttr(registry[[i]],"visible") == 1){
-          if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = as.character(xmlGetAttr(registry[[i]],"name"))
-          if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = as.character(xmlGetAttr(registry[[i]],"database"))
-          if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = as.character(xmlGetAttr(registry[[i]],"displayName"))
-          if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = as.character(xmlGetAttr(registry[[i]],"host"))
-          if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = as.character(xmlGetAttr(registry[[i]],"path"))
-          if(!is.null(xmlGetAttr(registry[[i]],"port"))) marts$port[index] = as.character(xmlGetAttr(registry[[i]],"port"))
-          if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-            marts$vschema[index] =  as.character(xmlGetAttr(registry[[i]],"serverVirtualSchema"))
-          }
-          index=index+1
-        }
-      }
-    }
-  }
-  else{
-    for(i in seq(len=xmlSize(registry))){
-      if(xmlName(registry[[i]])=="MartURLLocation"){  
-        if(xmlGetAttr(registry[[i]],"visible") == 1){
-          if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
-          if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
-          if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
-          marts$host[index] = host
-          marts$path[index] = path
-          marts$port[index] = 80
-          if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-            marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
-          }
-          index=index+1
-        }
-      }
-    }
-  }
-  if(includeHosts){
-    return(marts)
-  }
-  else{
-    if(archive){
-      ret = data.frame(biomart = as.character(marts$database),version = as.character(marts$version), stringsAsFactors=FALSE)
+    request = NULL
+    if(is.null(mart)){	  
+        request <- ifelse(archive, 
+                          yes = paste0("http://", host, ":", port, path, "?type=registry_archive&requestid=biomaRt"),
+                          no = paste0("http://", host, ":", port, path, "?type=registry&requestid=biomaRt") )	
     }
     else{
-      ret = data.frame(biomart = as.character(marts$biomart),version = as.character(marts$version), stringsAsFactors=FALSE)
+        if(class(mart) == 'Mart'){
+            request = paste(martHost(mart),"?type=registry&requestid=biomaRt", sep="") 
+        }
+        else{
+            warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
+        }
+    } 	
+    
+    registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
+    ## try to process the mart registry.  If this isn't valid XML stop and inform the user
+    registry <- tryCatch( xmlTreeParse(registry, asText=TRUE, error = NULL), 
+                          error = function(e) {
+                              stop(paste("Unable to determine the list of available marts.  The page biomaRt requested can be found at:\n",
+                                         request,
+                                         "\nTry accessing this in a web browser, we expect XML starting with the tag <MartRegistry>\n"),
+                                   call. = FALSE)
+                          } )
+    
+    registry = registry$doc$children[[1]]
+    
+    marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL, database = NULL)
+    index = 1
+    
+    if(host != "www.biomart.org" || archive){
+        for(i in seq(len=xmlSize(registry))){
+            if(xmlName(registry[[i]])=="MartURLLocation"){  
+                if(xmlGetAttr(registry[[i]],"visible") == 1){
+                    if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = as.character(xmlGetAttr(registry[[i]],"name"))
+                    if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = as.character(xmlGetAttr(registry[[i]],"database"))
+                    if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = as.character(xmlGetAttr(registry[[i]],"displayName"))
+                    if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = as.character(xmlGetAttr(registry[[i]],"host"))
+                    if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = as.character(xmlGetAttr(registry[[i]],"path"))
+                    if(!is.null(xmlGetAttr(registry[[i]],"port"))) marts$port[index] = as.character(xmlGetAttr(registry[[i]],"port"))
+                    if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
+                        marts$vschema[index] =  as.character(xmlGetAttr(registry[[i]],"serverVirtualSchema"))
+                    }
+                    index=index+1
+                }
+            }
+        }
     }
-    return(ret)
-  } 
+    else{
+        for(i in seq(len=xmlSize(registry))){
+            if(xmlName(registry[[i]])=="MartURLLocation"){  
+                if(xmlGetAttr(registry[[i]],"visible") == 1){
+                    if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
+                    if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
+                    if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
+                    marts$host[index] = host
+                    marts$path[index] = path
+                    marts$port[index] = 80
+                    if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
+                        marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
+                    }
+                    index=index+1
+                }
+            }
+        }
+    }
+    if(includeHosts){
+        return(marts)
+    }
+    else{
+        if(archive){
+            ret = data.frame(biomart = as.character(marts$database),version = as.character(marts$version), stringsAsFactors=FALSE)
+        }
+        else{
+            ret = data.frame(biomart = as.character(marts$biomart),version = as.character(marts$version), stringsAsFactors=FALSE)
+        }
+        return(ret)
+    } 
 }
 
 #################################
