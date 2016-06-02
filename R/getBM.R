@@ -109,18 +109,14 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         colnames(result) = attributes
     }
     else{
-        toAttributeName=FALSE ## currently never executing this code
-        toAttributeName=TRUE
-        if(toAttributeName){  #set to TRUE if attempting to replace attribute descriptions with attribute names
-            att = listAttributes(mart)
-            resultNames = colnames(result)
-            for(r in 1:length(resultNames)){
-                asel = which(att[,2] == resultNames[r])
-                if(length(asel) == 1){
-                    resultNames[r] = att[asel,1]
-                }
-            }
-            colnames(result) = resultNames
+        att = listAttributes(mart)
+        resultNames = colnames(result)
+        
+        matches <- match(resultNames, att[,2], NA)
+        if(any(is.na(matches))) {
+            warning("Problems assigning column names")
+        } else {
+            colnames(result) = att[matches, 1]
         }
     }
     return(result)
