@@ -39,3 +39,13 @@ expect_equal(.generateFilterXML(filters = 'transcript_tsl',
                                 values = TRUE,
                                 mart = ensembl),
              "<Filter name = 'transcript_tsl' excluded = \"0\" />")
+
+
+context('Testing column name assignments generation')
+bad_result <- data.frame("Not a real column" = 1:2, "Ensembl Gene ID" = 3:4, check.names = FALSE)
+good_result <- data.frame("Chromosome Name" = 1:2, "Ensembl Gene ID" = 3:4, check.names = FALSE)
+expect_warning(.setResultColNames(result = bad_result, mart = ensembl), "Problems assigning column names")
+expect_equal(colnames(.setResultColNames(result = good_result, mart = ensembl)), 
+             c("chromosome_name", "ensembl_gene_id"))
+
+

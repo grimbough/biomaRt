@@ -109,15 +109,21 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         colnames(result) = attributes
     }
     else{
-        att = listAttributes(mart)
-        resultNames = colnames(result)
-        
-        matches <- match(resultNames, att[,2], NA)
-        if(any(is.na(matches))) {
-            warning("Problems assigning column names")
-        } else {
-            colnames(result) = att[matches, 1]
-        }
+        result <- .setResultColNames(result = result, mart = mart)
+    }
+    return(result)
+}
+
+.setResultColNames <- function(result, mart) {
+    
+    att = listAttributes(mart)
+    resultNames = colnames(result)
+    
+    matches <- match(resultNames, att[,2], NA)
+    if(any(is.na(matches))) {
+        warning("Problems assigning column names. Currently using the biomart description field.  You may wish to set these manually.")
+    } else {
+        colnames(result) = att[matches, 1]
     }
     return(result)
 }
