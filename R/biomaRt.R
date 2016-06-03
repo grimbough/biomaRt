@@ -1,3 +1,4 @@
+
 ##########################
 #biomaRt source code     #
 ##########################
@@ -153,13 +154,13 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 #################################
 
 useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
-    
+
     if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
     if(!missing(biomart)){ 
         if(!(is.character(biomart)))
             stop("biomart argument is no string.  The biomart argument should be a single character string")
     }
-    if(biomart == "ensembl" & host == "www.ensembl.org"){
+    if(biomart == "ensembl" & (host == "www.ensembl.org" | host == "uswest.ensembl.org")){
         biomart = "ENSEMBL_MART_ENSEMBL"
     }
     marts=NULL
@@ -176,6 +177,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     }
     if(is.na(mindex))
         stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
+
     
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
@@ -183,15 +185,26 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
+    if(length(grep("archive",martHost(mart)) > 0)){
+       if(length(grep(reqHost,martHost(mart))) == 0){
+        writeLines(paste("Note: requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+     	writeLines("When using archived Ensembl versions this sometimes can result in connecting to a newer version than the intended Ensembl version")
+     	writeLines("Check your ensembl version using listMarts(mart)")
+    	}
+    }
+
     BioMartVersion=bmVersion(mart, verbose=verbose)
     if(martHost(mart) =="http://www.biomart.org:80/biomart/martservice"){
         if(verbose) writeLines("Using Central Repository at www.biomart.org");
         martVSchema(mart) <- 'default'  #Assume central service query uses default vSchema 
     }
     if(verbose){
-        writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
-        writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
-        writeLines(paste("Mart host:",martHost(mart),sep=" "))
+      writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
+      writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
+      if(length(grep(reqHost,martHost(mart))) == 0){
+        writeLines(paste("Requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+      } 
+      writeLines(paste("Mart host:",martHost(mart),sep=" "))
     }
     if(!missing(dataset)){
         mart = useDataset(mart = mart, dataset=dataset, verbose = verbose)
