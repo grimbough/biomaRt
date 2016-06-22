@@ -101,38 +101,36 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         for(i in seq(len=xmlSize(registry))){
             if(xmlName(registry[[i]])=="MartURLLocation"){  
                 if(xmlGetAttr(registry[[i]],"visible") == 1){
-                    if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = as.character(xmlGetAttr(registry[[i]],"name"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = as.character(xmlGetAttr(registry[[i]],"database"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = as.character(xmlGetAttr(registry[[i]],"displayName"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = as.character(xmlGetAttr(registry[[i]],"host"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = as.character(xmlGetAttr(registry[[i]],"path"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"port"))) marts$port[index] = as.character(xmlGetAttr(registry[[i]],"port"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-                        marts$vschema[index] =  as.character(xmlGetAttr(registry[[i]],"serverVirtualSchema"))
-                    }
+                    marts$biomart[index] = as.character(xmlGetAttr(registry[[i]],"name"))
+                    marts$database[index] = as.character(xmlGetAttr(registry[[i]],"database"))
+                    marts$version[index] = as.character(xmlGetAttr(registry[[i]],"displayName"))
+                    marts$host[index] = as.character(xmlGetAttr(registry[[i]],"host"))
+                    marts$path[index] = as.character(xmlGetAttr(registry[[i]],"path"))
+                    marts$port[index] = as.character(xmlGetAttr(registry[[i]],"port"))
+                    marts$vschema[index] =  as.character(xmlGetAttr(registry[[i]],"serverVirtualSchema"))
                     index=index+1
                 }
             }
         }
     }
-    else{
-        for(i in seq(len=xmlSize(registry))){
-            if(xmlName(registry[[i]])=="MartURLLocation"){  
-                if(xmlGetAttr(registry[[i]],"visible") == 1){
-                    if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
-                    if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
-                    if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
-                    marts$host[index] = host
-                    marts$path[index] = path
-                    marts$port[index] = 80
-                    if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-                        marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
-                    }
-                    index=index+1
-                }
-            }
-        }
-    }
+    # else{  ## can we ever end up here now the www.biomart.org host is no more?
+    #     for(i in seq(len=xmlSize(registry))){
+    #         if(xmlName(registry[[i]])=="MartURLLocation"){  
+    #             if(xmlGetAttr(registry[[i]],"visible") == 1){
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
+    #                 marts$host[index] = host
+    #                 marts$path[index] = path
+    #                 marts$port[index] = 80
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
+    #                     marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
+    #                 }
+    #                 index=index+1
+    #             }
+    #         }
+    #     }
+    # }
     if(includeHosts){
         return(marts)
     }
@@ -154,11 +152,11 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 #################################
 
 useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
-
+    
     if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
     if(!missing(biomart)){ 
         if(!(is.character(biomart)))
-            stop("biomart argument is no string.  The biomart argument should be a single character string")
+            stop("biomart argument is not a string.  The biomart argument should be a single character string")
     }
     if(biomart == "ensembl" & (host == "www.ensembl.org" | host == "uswest.ensembl.org")){
         biomart = "ENSEMBL_MART_ENSEMBL"
@@ -177,7 +175,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     }
     if(is.na(mindex))
         stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
-
+    
     
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
@@ -186,25 +184,25 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
     if(length(grep("archive",martHost(mart)) > 0)){
-       if(length(grep(reqHost,martHost(mart))) == 0){
-        writeLines(paste("Note: requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
-     	writeLines("When using archived Ensembl versions this sometimes can result in connecting to a newer version than the intended Ensembl version")
-     	writeLines("Check your ensembl version using listMarts(mart)")
-    	}
+        if(length(grep(reqHost,martHost(mart))) == 0){
+            writeLines(paste("Note: requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+            writeLines("When using archived Ensembl versions this sometimes can result in connecting to a newer version than the intended Ensembl version")
+            writeLines("Check your ensembl version using listMarts(mart)")
+        }
     }
-
+    
     BioMartVersion=bmVersion(mart, verbose=verbose)
     if(martHost(mart) =="http://www.biomart.org:80/biomart/martservice"){
         if(verbose) writeLines("Using Central Repository at www.biomart.org");
         martVSchema(mart) <- 'default'  #Assume central service query uses default vSchema 
     }
     if(verbose){
-      writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
-      writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
-      if(length(grep(reqHost,martHost(mart))) == 0){
-        writeLines(paste("Requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
-      } 
-      writeLines(paste("Mart host:",martHost(mart),sep=" "))
+        writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
+        writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
+        if(length(grep(reqHost,martHost(mart))) == 0){
+            writeLines(paste("Requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+        } 
+        writeLines(paste("Mart host:",martHost(mart),sep=" "))
     }
     if(!missing(dataset)){
         mart = useDataset(mart = mart, dataset=dataset, verbose = verbose)
@@ -213,22 +211,22 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
 }
 
 listDatasets <- function(mart, verbose = FALSE) {
-  if(missing(mart) || !is(mart, 'Mart'))
-    stop("No Mart object given or object not of class 'Mart'")
-  request = paste(martHost(mart),"?type=datasets&requestid=biomaRt&mart=",martBM(mart),sep="")
-  bmResult = bmRequest(request = request, verbose = verbose)
-  con = textConnection(bmResult)
-  txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
-  #txt = tryCatch(scan(request, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
-  close(con)
-   
-  ## select visible ("1") table sets
+    if(missing(mart) || !is(mart, 'Mart'))
+        stop("No Mart object given or object not of class 'Mart'")
+    request = paste(martHost(mart),"?type=datasets&requestid=biomaRt&mart=",martBM(mart),sep="")
+    bmResult = bmRequest(request = request, verbose = verbose)
+    con = textConnection(bmResult)
+    txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
+    #txt = tryCatch(scan(request, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
+    close(con)
+    
+    ## select visible ("1") table sets
     i = intersect(which(txt=="TableSet"), which(txt=="1")-3L)
-  
-  res = data.frame(dataset     = I(txt[i+1L]),
-    description = I(txt[i+2L]),
-    version     = I(txt[i+4L]))
-  return(res)
+    
+    res = data.frame(dataset     = I(txt[i+1L]),
+                     description = I(txt[i+2L]),
+                     version     = I(txt[i+4L]))
+    return(res)
 }
 
 ## Check version of BioMart service
@@ -258,67 +256,67 @@ bmVersion <- function(mart, verbose=FALSE){
 ## Retrieve attributes and filters from web service
 
 bmAttrFilt <- function(type, mart, verbose=FALSE){
-  request = ""
-  request = paste(martHost(mart),"?type=",type,"&dataset=",martDataset(mart),"&requestid=biomaRt&mart=",martBM(mart),"&virtualSchema=",martVSchema(mart),sep="")
-  attrfilt = bmRequest(request = request, verbose = verbose)
-  con = textConnection(attrfilt)
-  attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-  close(con)
-  if(type=="attributes"){
-    if(dim(attrfiltParsed)[2] < 3)
-      stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-    cnames = seq_len(dim(attrfiltParsed)[2])
-    cnames=paste(type,cnames,sep="")
-    cnames[1] = "name"
-    cnames[2] = "description"
-    cnames[3] = "fullDescription"
-    if(dim(attrfiltParsed)[2] < 4){
-      warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
+    request = ""
+    request = paste(martHost(mart),"?type=",type,"&dataset=",martDataset(mart),"&requestid=biomaRt&mart=",martBM(mart),"&virtualSchema=",martVSchema(mart),sep="")
+    attrfilt = bmRequest(request = request, verbose = verbose)
+    con = textConnection(attrfilt)
+    attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+    close(con)
+    if(type=="attributes"){
+        if(dim(attrfiltParsed)[2] < 3)
+            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
+        cnames = seq_len(dim(attrfiltParsed)[2])
+        cnames=paste(type,cnames,sep="")
+        cnames[1] = "name"
+        cnames[2] = "description"
+        cnames[3] = "fullDescription"
+        if(dim(attrfiltParsed)[2] < 4){
+            warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
+        }
+        else{
+            cnames[4] = "page"
+        }
+        colnames(attrfiltParsed) = cnames
     }
-    else{
-      cnames[4] = "page"
+    if(type=="filters"){
+        if(dim(attrfiltParsed)[2] < 4)
+            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
+        cnames = seq(1:dim(attrfiltParsed)[2])
+        cnames=paste(type,cnames,sep="")
+        cnames[1] = "name"
+        cnames[2] = "description"
+        cnames[3] = "options"
+        cnames[4] = "fullDescription"
+        if(dim(attrfiltParsed)[2] < 7){
+            warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
+        }
+        else{
+            cnames[5] = "filters"
+            cnames[6] = "type"
+            cnames[7] = "operation"
+        }
+        colnames(attrfiltParsed) = cnames
     }
-    colnames(attrfiltParsed) = cnames
-  }
-   if(type=="filters"){
-     if(dim(attrfiltParsed)[2] < 4)
-       stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-     cnames = seq(1:dim(attrfiltParsed)[2])
-     cnames=paste(type,cnames,sep="")
-     cnames[1] = "name"
-     cnames[2] = "description"
-     cnames[3] = "options"
-     cnames[4] = "fullDescription"
-     if(dim(attrfiltParsed)[2] < 7){
-       warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
-     }
-     else{
-       cnames[5] = "filters"
-       cnames[6] = "type"
-       cnames[7] = "operation"
-     }
-     colnames(attrfiltParsed) = cnames
-   }
-  return(attrfiltParsed)
+    return(attrfiltParsed)
 }
 
 ## Select a BioMart dataset             
 
 useDataset <- function(dataset, mart, verbose = FALSE){
-  if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
-  if(missing(dataset)) stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
-validDatasets=listDatasets(mart)
-  if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
-  martDataset(mart) = dataset  
-  if(verbose) messageToUser("Checking attributes ...")
-  martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
-  if(verbose){
-    messageToUser(" ok\n")
-    messageToUser("Checking filters ...")
-  }
-  martFilters(mart) <- bmAttrFilt("filters",mart, verbose = verbose)
-  if(verbose) messageToUser(" ok\n")
-  return( mart )
+    if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
+    if(missing(dataset)) stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
+    validDatasets=listDatasets(mart)
+    if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
+    martDataset(mart) = dataset  
+    if(verbose) messageToUser("Checking attributes ...")
+    martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
+    if(verbose){
+        messageToUser(" ok\n")
+        messageToUser("Checking filters ...")
+    }
+    martFilters(mart) <- bmAttrFilt("filters",mart, verbose = verbose)
+    if(verbose) messageToUser(" ok\n")
+    return( mart )
 }
 
 ## getName
