@@ -139,7 +139,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
     } 
     
-    values <- as.list(values)
+    if(!is.list(values)){
+        values <- list(values)
+    }
     names(values) <- filters
 
     individualFilters <- sapply(filters, 

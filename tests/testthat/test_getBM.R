@@ -28,6 +28,11 @@ expect_equal(.generateFilterXML(filters = 'chromosome_name',
                                 mart = ensembl),
              "<Filter name = 'chromosome_name' value = '16' />")
 
+expect_equal(.generateFilterXML(filters = 'chromosome_name', 
+                               values = c('16', '18'), 
+                                mart = ensembl), 
+             "<Filter name = 'chromosome_name' value = '16,18' />")
+
 expect_equal(.generateFilterXML(filters = ''), "")
 
 ## testing with a boolean filter

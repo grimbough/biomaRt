@@ -88,7 +88,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
                           error = function(e) {
                               stop(paste("Unable to determine the list of available marts.  The page biomaRt requested can be found at:\n",
                                          request,
-                                         "\nTry accessing this in a web browser, we expect XML starting with the tag <MartRegistry>\n"),
+                                         "\nTry accessing this in a web browser, we expect XML starting with the tag <MartRegistry>\nIf you do not see this, they may be an issue with the Biomart server you are accessing"),
                                    call. = FALSE)
                           } )
     
@@ -304,9 +304,11 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
 
 useDataset <- function(dataset, mart, verbose = FALSE){
     if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
-    if(missing(dataset)) stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
+    if(missing(dataset)) 
+        stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
     validDatasets=listDatasets(mart)
-    if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
+    if(is.na(match(dataset, validDatasets$dataset)))
+        stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
     martDataset(mart) = dataset  
     if(verbose) messageToUser("Checking attributes ...")
     martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
