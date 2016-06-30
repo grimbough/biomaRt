@@ -3,6 +3,7 @@ import(RCurl,XML)
 importFrom(utils, edit, head, read.table)
 importFrom(AnnotationDbi, keys, columns, keytypes, select)
 importFrom(utils, type.convert)
+importFrom(httr, POST)
 #for some reason RCurl needs to have findHTTPHeaderEncoding exported -
 #remove it from the exports if this ever gets fixed
 export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets, useDataset, listEnsembl, useEnsembl, listAttributes, listFilters, getBM, getXML,getLDS, attributePages, filterOptions,filterType, getBMlist, NP2009code, keys, columns, keytypes, select)

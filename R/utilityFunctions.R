@@ -20,9 +20,7 @@
 ## if a column can be cast to integer or numeric we do so,
 ## otherwise it remains a character vector
 .convertNumbers <- function(x) {
-    if(class(type.convert(x)) %in% c('integer', 'numeric')) 
-        return(type.convert(x))
-    else
-        return(x)
+    colList <- lapply(x, readr::parse_guess)
+    return( data.frame(colList, stringsAsFactors = FALSE) )
 }
 
