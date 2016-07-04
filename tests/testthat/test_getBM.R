@@ -12,7 +12,7 @@ expect_error(getBM(mart = ensembl), "No dataset selected, please select a datase
 ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
 expect_error(getBM(mart = ensembl), "Argument 'attributes' must be specified")
 
-expect_equal(getBM(attributes='entrezgene', filters = 'affy_hg_u133_plus_2', values = '207500_at', mart = ensembl)[1,1], 838)
+expect_equal(getBM(attributes='entrezgene', filters = 'affy_hg_u133_plus_2', values = '207500_at', mart = ensembl)[1,1], '838')
 
 
 

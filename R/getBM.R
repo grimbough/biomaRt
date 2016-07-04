@@ -81,35 +81,36 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         cat(paste(xmlQuery,"\n", sep=""))
     }      
     
-    postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e) {
-        stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")
-        })
-    
+    # postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e) {
+    #     stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")
+    #     })
+    postRes <- POST(url = martHost(mart), body = list(query = xmlQuery))
+
     if(verbose){
         writeLines("#################\nResults from server:")
         print(postRes)
     }
-    if(!(is.character(postRes) && (length(postRes)==1L)))
-        stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
+    #if(!(is.character(postRes) && (length(postRes)==1L)))
+    #    stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
     
-    if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
+    if(gsub("\n", "", content(postRes), fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
         
         result = as.data.frame(matrix("", ncol=length(attributes), nrow=0), stringsAsFactors=FALSE)
         
     } else {
         
-        if(length(grep("^Query ERROR", postRes))>0L)
+        if(grepl("^Query ERROR", content(postRes)))
             stop(postRes)
         
         ## convert the serialized table into a dataframe
-        con = textConnection(postRes)
-        result = read.table(con, sep="\t", header=bmHeader, quote = quote, comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
+        result <- content(postRes, type = "text/tab-separated-values", col_names = FALSE, col_type = NULL, encoding = 'UTF-8')
+        ## try converting numeric columns if this has failed - not sure if we want this to stay
+        ## result <- .convertNumbers(result)
         if(verbose){
             writeLines("#################\nParsed results:")
             print(result)
         }
-        close(con)
-        
+
         if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
             print(head(result))
             stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")

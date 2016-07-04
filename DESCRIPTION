@@ -5,7 +5,7 @@ Author: Steffen Durinck <biomartdev@gmail.com>, Wolfgang Huber
 Contributors: Sean Davis <sdavis2@mail.nih.gov>, Francois Pepin, Vince S. Buffalo
 Maintainer: Steffen Durinck <biomartdev@gmail.com>
 Depends: methods
-Imports: utils, XML, RCurl, AnnotationDbi
+Imports: utils, XML, RCurl, AnnotationDbi, httr, readr
 Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat
 VignetteBuilder: knitr
 biocViews: Annotation 
