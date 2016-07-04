@@ -26,7 +26,17 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     if(class(uniqueRows) != "logical")
         stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
     
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
+    ## replaces the argument bmHeader in generating XML.
+    callHeader <- TRUE
+    
+    xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
+                      martVSchema(mart),
+                      "' uniqueRows = '",
+                      as.numeric(uniqueRows),
+                      "' count = '0' datasetConfigVersion = '0.6' header='",
+                      as.numeric(callHeader),
+                      "' requestid= 'biomaRt'> <Dataset name = '",
+                      martDataset(mart),"'>")
     
     #checking the Attributes
     invalid = !(attributes %in% listAttributes(mart, what="name"))
@@ -105,11 +115,11 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
             stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
         }
     }
-    if(!bmHeader){  #assumes order of results same as order of attibutes in input 
-        colnames(result) = attributes
-    }
-    else{
-        result <- .setResultColNames(result = result, mart = mart)
+    result <- .setResultColNames(result = result, mart = mart)
+    ## reorder so the same as the original attributes argument
+    result <- result[, order(match(colnames(result), attributes)), drop=FALSE]
+    if(bmHeader) {
+        
     }
     return(result)
 }
