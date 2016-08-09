@@ -381,26 +381,22 @@ ensembl54=useMart(host='may2009.archive.ensembl.org', biomart='ENSEMBL_MART_ENSE
 
 # Using a BioMart other than Ensembl
 
-To demonstrate the use of the biomaRt package with non-Ensembl databases the next query is performed using the Wormbase BioMart (WormMart).
-We connect to Wormbase, select the gene dataset to use and have a look at the available attributes and filters.  Then we use a list of gene names as filter and retrieve associated RNAi identifiers together with a description of the RNAi phenotype.
+To demonstrate the use of the biomaRt package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.
+In this example, we use the `listMarts()` function to find the name of the available marts, given the URL of Wormbase.  We use this to connect to Wormbase BioMart, find and select the gene dataset, and print the first 6 available attributes and filters.  Then we use a list of gene names as filter and retrieve associated transcript IDs and the transcript biotype.
 
-```{r wormbase, echo=TRUE, eval=FALSE}
-wormbase=useMart("WS220",dataset="wormbase_gene")
-listFilters(wormbase)
-listAttributes(wormbase)
-getBM(attributes = c("public_name","rnai","rnai_phenotype_phenotype_label"), filters="gene_name", values=c("unc-26","his-33"), mart=wormbase)
+```{r wormbase, echo=TRUE, eval=TRUE}
+listMarts(host = "parasite.wormbase.org")
+wormbase = useMart(biomart = "parasite_mart", host = "parasite.wormbase.org")
+listDatasets(wormbase)
+wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
+head(listFilters(wormbase))
+head(listAttributes(wormbase))
+getBM(attributes = c("external_gene_id","ensembl_transcript_id","transcript_biotype"), 
+      filters="gene_name", 
+      values=c("unc-26","his-33"), 
+      mart=wormbase)
      
 ```
-`
-  public_name           rnai    rnai_phenotype_phenotype_label
-1      his-33 WBRNAi00082060                   GRO slow growth
-2      his-33 WBRNAi00082060 postembryonic development variant
-3      his-33 WBRNAi00082060              EMB embryonic lethal
-4      his-33 WBRNAi00082060                 LVL larval lethal
-5      his-33 WBRNAi00082060                 LVA larval arrest
-6      his-33 WBRNAi00082060          accumulated cell corpses
-`
-
 
 # biomaRt helper functions
 
@@ -535,4 +531,4 @@ convenient programmatic access of all these resources.  An example of a package 
 sessionInfo()
 warnings()
 ```
-\end{document}
+
