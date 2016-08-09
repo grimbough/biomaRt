@@ -161,6 +161,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     if(biomart == "ensembl" & (host == "www.ensembl.org" | host == "uswest.ensembl.org")){
         biomart = "ENSEMBL_MART_ENSEMBL"
     }
+    reqHost = host
     marts=NULL
     marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive, ssl.verifypeer = ssl.verifypeer)
     mindex = NA

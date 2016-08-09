@@ -26,7 +26,17 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     if(class(uniqueRows) != "logical")
         stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
     
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
+    ## replaces the argument bmHeader in generating XML.
+    callHeader <- TRUE
+    
+    xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
+                      martVSchema(mart),
+                      "' uniqueRows = '",
+                      as.numeric(uniqueRows),
+                      "' count = '0' datasetConfigVersion = '0.6' header='",
+                      as.numeric(callHeader),
+                      "' requestid= 'biomaRt'> <Dataset name = '",
+                      martDataset(mart),"'>")
     
     #checking the Attributes
     invalid = !(attributes %in% listAttributes(mart, what="name"))
@@ -71,60 +81,67 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         cat(paste(xmlQuery,"\n", sep=""))
     }      
     
-    postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e) {
-        stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")
-        })
-    
+    # postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e) {
+    #     stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")
+    #     })
+    postRes <- POST(url = martHost(mart), body = list(query = xmlQuery))
+
     if(verbose){
         writeLines("#################\nResults from server:")
         print(postRes)
     }
-    if(!(is.character(postRes) && (length(postRes)==1L)))
-        stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
+    #if(!(is.character(postRes) && (length(postRes)==1L)))
+    #    stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
     
-    if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
+    if(gsub("\n", "", content(postRes), fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
         
         result = as.data.frame(matrix("", ncol=length(attributes), nrow=0), stringsAsFactors=FALSE)
         
     } else {
         
-        if(length(grep("^Query ERROR", postRes))>0L)
+        if(grepl("^Query ERROR", content(postRes)))
             stop(postRes)
         
         ## convert the serialized table into a dataframe
-        con = textConnection(postRes)
-        result = read.table(con, sep="\t", header=bmHeader, quote = quote, comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
+        result <- content(postRes, type = "text/tab-separated-values", col_names = callHeader, col_type = NULL, encoding = 'UTF-8')
+        ## try converting numeric columns if this has failed - not sure if we want this to stay
+        ## result <- .convertNumbers(result)
         if(verbose){
             writeLines("#################\nParsed results:")
             print(result)
         }
-        close(con)
-        
+
         if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
             print(head(result))
             stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
         }
     }
-    if(!bmHeader){  #assumes order of results same as order of attibutes in input 
-        colnames(result) = attributes
-    }
-    else{
-        result <- .setResultColNames(result = result, mart = mart)
-    }
+    result <- .setResultColNames(result = result, mart = mart, attributes = attributes, bmHeader = bmHeader)
+    ## reorder so the same as the original attributes argument
+    #result <- result[, order(match(colnames(result), attributes)), drop=FALSE]
+    #if(bmHeader) {
+    #    attr <- listAttributes(ensembl, what = c("name", "description"))
+    #    colnames(result) 
+    #}
     return(result)
 }
 
-.setResultColNames <- function(result, mart) {
+.setResultColNames <- function(result, mart, attributes, bmHeader = FALSE) {
     
-    att = listAttributes(mart)
+    att = listAttributes(mart, what = c("name", "description"))
     resultNames = colnames(result)
-    
+    ## match the returned column names with the attribute names
     matches <- match(resultNames, att[,2], NA)
     if(any(is.na(matches))) {
         warning("Problems assigning column names. Currently using the biomart description field.  You may wish to set these manually.")
-    } else {
+        return(result)
+    }
+    ## if we want to use the attribute names we specified, do this, otherwise we use the header returned with the query
+    if(!bmHeader) {
         colnames(result) = att[matches, 1]
     }
+    ## now put things in the order we actually asked for the attributes in
+    result <- result[, match(att[matches,1], attributes), drop=FALSE]
     return(result)
 }
 
