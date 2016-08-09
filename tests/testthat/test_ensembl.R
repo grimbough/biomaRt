@@ -15,4 +15,3 @@ expect_equal(.useEnsemblVersion(GRCh = 37), "grch37.ensembl.org")
 ## can only specifc GRCh37, anthing else warns and uses default
 expect_warning(.useEnsemblVersion(GRCh = 38), "Only 37 can be specified for GRCh version")
 expect_equivalent(.useEnsemblVersion(GRCh = 38), "www.ensembl.org")
-order(match(matches, attributes))

@@ -129,12 +129,6 @@ getBM(attributes = c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name',
       values = affyids, 
       mart = ensembl)
 ``` 
-`
-  affy_hg_u133_plus_2 hgnc_symbol chromosome_name start_position end_position  band
-1         209310_s_at       CASP4              11      104813593    104840163 q22.3
-2           207500_at       CASP5              11      104864962    104893895 q22.3
-3           202763_at       CASP3               4      185548850    185570663 q35.1
-`
 
 
 ##  Annotate a set of EntrezGene identifiers with GO annotation
@@ -162,10 +156,6 @@ The GO terms we are interested in are: "GO:0051330","GO:0000080","GO:0000114","G
         filters=c("go_id","chromosome_name"),
         values=list(go, chrom), mart=ensembl)
 ```
-`
-  hgnc_symbol
-1      E2F1
-`
 
 
 ##  Annotate set of idenfiers with INTERPRO protein domain identifiers
@@ -178,22 +168,8 @@ ipro = getBM(attributes=c("refseq_mrna","interpro","interpro_description"),
              filters="refseq_mrna",
              values=refseqids, 
              mart=ensembl)
-```
-
-
-`
 ipro
-  refseq_mrna  interpro             interpro_description
-1  NM_000546 IPR002117                p53 tumor antigen
-2  NM_000546 IPR010991             p53, tetramerisation
-3  NM_000546 IPR011615                 p53, DNA-binding
-4  NM_000546 IPR013872 p53 transactivation domain (TAD)
-5  NM_000546 IPR000694              Proline-rich region
-6  NM_005359 IPR001132     MAD homology 2, Dwarfin-type
-7  NM_005359 IPR003619     MAD homology 1, Dwarfin-type
-8  NM_005359 IPR013019                MAD homology, MH1
-`
-
+```
 
 ## Select all Affymetrix identifiers on the hgu133plus2 chip and Ensembl gene identifiers for genes located on chromosome 16 between basepair 1100000 and 1250000.
 
@@ -216,14 +192,6 @@ getBM(attributes = c('entrezgene','hgnc_symbol'),
       values = 'GO:0004707', 
       mart = ensembl)
 ```
-` 
-   entrezgene hgnc_symbol
-1        5601       MAPK9
-2      225689      MAPK15
-3        5599       MAPK8
-4        5594       MAPK1
-5        6300      MAPK12
-` 
 
 
 ##  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences
@@ -281,53 +249,25 @@ protein = getSequence(id=c(100, 5728),
 protein
 ``` 
 
-<!--
-`
- peptide               entrezgene
- MAQTPAFDKPKVEL ...    100
- MTAIIKEIVSRNKRR ...   5728
-
-`
--->
 
 
 ##  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148612
 
 For this example we'll first have to connect to a different BioMart database, namely snp.  
-```{r task10, echo=TRUE, eval=FALSE}
-snpmart = useMart("snp", dataset="hsapiens_snp")
+```{r task10, echo=TRUE, eval=TRUE}
+snpmart = useMart(biomart = "ENSEMBL_MART_SNP", dataset="hsapiens_snp")
 ``` 
 
 The `listAttributes()` and `listFilters()` functions give us an overview of the available attributes and filters.  
 From these we need: refsnp_id, allele, chrom_start and chrom_strand as attributes; and as filters we'll use: chrom_start, chrom_end and chr_name.  Note that when a chromosome name, a start position and an end position are jointly used as filters, the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions. Putting our selected attributes and filters into getBM gives:
 
 
-```{r task10b, eval=FALSE, echo=TRUE}
-getBM(c('refsnp_id','allele','chrom_start','chrom_strand'), filters = c('chr_name','chrom_start','chrom_end'), values = list(8,148350,148612), mart = snpmart)
+```{r task10b, eval=TRUE, echo=TRUE}
+getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'), 
+      filters = c('chr_name','start','end'), 
+      values = list(8,148350,148612), 
+      mart = snpmart)
 ``` 
-
-
-`
-   refsnp_id allele chrom_start chrom_strand
-1   rs1134195    G/T      148394           -1
-2   rs4046274    C/A      148394            1
-3   rs4046275    A/G      148411            1
-4     rs13291    C/T      148462            1
-5   rs1134192    G/A      148462           -1
-6   rs4046276    C/T      148462            1
-7  rs12019378    T/G      148471            1
-8   rs1134191    C/T      148499           -1
-9   rs4046277    G/A      148499            1
-10 rs11136408    G/A      148525            1
-11  rs1134190    C/T      148533           -1
-12  rs4046278    G/A      148533            1
-13  rs1134189    G/A      148535           -1
-14  rs3965587    C/T      148535            1
-15  rs1134187    G/A      148539           -1
-16  rs1134186    T/C      148569            1
-17  rs4378731    G/A      148601            1
-`
-
 
 
 ##  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of it's homolog in mouse. 
@@ -335,16 +275,13 @@ getBM(c('refsnp_id','allele','chrom_start','chrom_strand'), filters = c('chr_nam
 The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
-`
+```{r getLDS, eval=TRUE, echo=TRUE}
 human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
        filters = "hgnc_symbol", values = "TP53",mart = human,
       attributesL = c("refseq_mrna","chromosome_name","start_position"), martL = mouse)
-
-    V1 V2      V3        V4 V5       V6
-1 TP53 17 7512464 NM_011640 11 69396600
-`
+```
 
 
 # Using archived versions of Ensembl
@@ -449,11 +386,11 @@ pages
 ```
 
 
-To show us a smaller list of attributes which belog to a specific page, we can now specify this in the `listAttributes()` function as follows:
+To show us a smaller list of attributes which belog to a specific page, we can now specify this in the `listAttributes()` function.  *The set of attributes is still quite long, so we use `head()` to show only the first few items here.*
 
 
 ```{r listAttributes}
-listAttributes(ensembl, page="feature_page")
+head(listAttributes(ensembl, page="feature_page"))
 ```
 
 
@@ -535,4 +472,4 @@ convenient programmatic access of all these resources.  An example of a package 
 sessionInfo()
 warnings()
 ```
-\end{document}
+
