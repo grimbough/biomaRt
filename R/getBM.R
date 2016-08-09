@@ -103,7 +103,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
             stop(postRes)
         
         ## convert the serialized table into a dataframe
-        result <- content(postRes, type = "text/tab-separated-values", col_names = FALSE, col_type = NULL, encoding = 'UTF-8')
+        result <- content(postRes, type = "text/tab-separated-values", col_names = callHeader, col_type = NULL, encoding = 'UTF-8')
         ## try converting numeric columns if this has failed - not sure if we want this to stay
         ## result <- .convertNumbers(result)
         if(verbose){
@@ -116,26 +116,32 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
             stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
         }
     }
-    result <- .setResultColNames(result = result, mart = mart)
+    result <- .setResultColNames(result = result, mart = mart, attributes = attributes, bmHeader = bmHeader)
     ## reorder so the same as the original attributes argument
-    result <- result[, order(match(colnames(result), attributes)), drop=FALSE]
-    if(bmHeader) {
-        
-    }
+    #result <- result[, order(match(colnames(result), attributes)), drop=FALSE]
+    #if(bmHeader) {
+    #    attr <- listAttributes(ensembl, what = c("name", "description"))
+    #    colnames(result) 
+    #}
     return(result)
 }
 
-.setResultColNames <- function(result, mart) {
+.setResultColNames <- function(result, mart, attributes, bmHeader = FALSE) {
     
-    att = listAttributes(mart)
+    att = listAttributes(mart, what = c("name", "description"))
     resultNames = colnames(result)
-    
+    ## match the returned column names with the attribute names
     matches <- match(resultNames, att[,2], NA)
     if(any(is.na(matches))) {
         warning("Problems assigning column names. Currently using the biomart description field.  You may wish to set these manually.")
-    } else {
+        return(result)
+    }
+    ## if we want to use the attribute names we specified, do this, otherwise we use the header returned with the query
+    if(!bmHeader) {
         colnames(result) = att[matches, 1]
     }
+    ## now put things in the order we actually asked for the attributes in
+    result <- result[, match(att[matches,1], attributes), drop=FALSE]
     return(result)
 }
 
