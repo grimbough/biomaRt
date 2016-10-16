@@ -1,6 +1,6 @@
 ---
 title: "The biomaRt users guide"
-author: "Steffen Durinck (durincks@gene.com), Wolfgang Huber (huber@ebi.ac.uk)"
+author: "Steffen Durinck, Wolfgang Huber, Mike Smith"
 package: "`r pkg_ver('biomaRt')`"
 output: 
   BiocStyle::html_document:
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(error = TRUE)
 
 # Introduction
 
-In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the BioMart software suite (\url{http://www.biomart.org}). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
+In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
 
 # Selecting a BioMart database and dataset
 
@@ -273,7 +273,7 @@ the BioMart webservice interprets this as return everything from the given chrom
 Putting our selected attributes and filters into getBM gives:
 
 
-```{r task10b, eval=TRUE, echo=TRUE}
+```{r task10b}
 getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'), 
       filters = c('chr_name','start','end'), 
       values = list(8,148350,148612), 
@@ -286,7 +286,7 @@ getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'),
 The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
-```{r getLDS, eval=TRUE, echo=TRUE}
+```{r getLDS}
 human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
@@ -300,11 +300,11 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 It is possible to query archived versions of Ensembl through `r Biocpkg("biomaRt")`.
 There are currently two ways to access archived versions.
 
-## Using the archive=TRUE 
+## Using `archive = TRUE` 
 First we list the available Ensembl archives by using the `listMarts()` function and setting the archive attribute to TRUE.
 Note that not all archives are available this way and it seems that recently this only gives access to few archives if you don't see the version of the archive you need please look at the 2nd way to access archives.
 ```{r archiveMarts1}
-listMarts(archive=TRUE)
+listMarts(archive = TRUE)
 ``` 
 Next we select the archive we want to use using the `useMart()` function, again setting the archive attribute to TRUE and giving the full name of the BioMart e.g. ensembl_mart_46.
 
