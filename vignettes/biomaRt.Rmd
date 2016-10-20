@@ -298,6 +298,14 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 # Using archived versions of Ensembl
 
 It is possible to query archived versions of Ensembl through `r Biocpkg("biomaRt")`.
+
+<!-- 
+######################################
+I dont think the archive=TRUE version works anymore.  The registry of archives is out-of-date
+and none of them are live now.  Identifying the host is far more reliable
+Mike Smith - 20/10/2016
+######################################
+
 There are currently two ways to access archived versions.
 
 ## Using `archive = TRUE` 
@@ -316,14 +324,16 @@ If you don't know the dataset you want to use could first connect to the BioMart
 After you selected the BioMart database and dataset, queries can be performed in the same way as when using the current BioMart versions.
 
 ## Accessing archives through specifying the archive host
+-->
 
 Use the <http://www.ensembl.org> website and go down the bottom of the page.  Click on 'view in Archive' and select the archive you need.  Copy the url and use that url as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
 
 
 ```{r archiveMarts3, echo = TRUE, eval = TRUE}
 listMarts(host='may2009.archive.ensembl.org')
-ensembl54=useMart(host='may2009.archive.ensembl.org', biomart='ENSEMBL_MART_ENSEMBL')
-ensembl54=useMart(host='may2009.archive.ensembl.org', biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl')
+ensembl54=useMart(host='may2009.archive.ensembl.org', 
+                  biomart='ENSEMBL_MART_ENSEMBL', 
+                  dataset='hsapiens_gene_ensembl')
 ```
 
 
