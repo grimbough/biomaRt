@@ -52,18 +52,20 @@ checkWrapperArgs = function(id, type, mart){
   if(!type %in% listFilters(mart)[,1])stop(paste("Invalid identifier type:",type," see ?getGene for details. Use the listFilters function to get the valid value for the type argument.", sep=""))   
   if(missing(id))stop("No identifiers specified.  Use the id argument to specify a vector of identifiers for which you want to retrieve the annotation.")
 }
-#######################################################
-#listMarts:                                           #
-#list all available BioMart databases by default      #
-#listMarts will check the central service to see which#
-#BioMart databases are present                        #
-#######################################################
+
 
 bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
   if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
   result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer,followlocation = TRUE), error = function(e){ cat("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.\n")})
   return(result)
 }
+
+#######################################################
+#listMarts:                                           #
+#list all available BioMart databases by default      #
+#listMarts will check the central service to see which#
+#BioMart databases are present                        #
+#######################################################
 
 listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
   
@@ -297,15 +299,37 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
   return(attrfiltParsed)
 }
 
-## Select a BioMart dataset             
+## Utilty function to check dataset specification
+## Returns dataset name as a character assuming all checks
+## have been passed.
+checkDataset <- function(dataset, mart) {
+    
+    validDatasets=listDatasets(mart)
+    ## subseting data.frames can produce some weird classes
+    ## which aren't character(), so we coerce it here
+    dataset <- as.character(dataset)
+    
+    if(length(dataset) > 1) 
+        stop("Please only specify a single dataset name")
+    
+    if(is.na(match(dataset, validDatasets$dataset)))
+        stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets() function."))
+    
+    return(dataset)
+}
 
+## Select a BioMart dataset             
 useDataset <- function(dataset, mart, verbose = FALSE){
   if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
-  if(missing(dataset)) stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
-validDatasets=listDatasets(mart)
-  if(is.na(match(dataset, validDatasets$dataset)))stop(paste("The given dataset: ",dataset,", is not valid.  Correct dataset names can be obtained with the listDatasets function."))
-  martDataset(mart) = dataset  
-  if(verbose) messageToUser("Checking attributes ...")
+    
+  if(missing(dataset)) {
+      stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
+  } else {
+      dataset <- checkDataset(dataset = dataset, mart = mart)
+  }
+  martDataset(mart) <- dataset  
+
+    if(verbose) messageToUser("Checking attributes ...")
   martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
   if(verbose){
     messageToUser(" ok\n")
