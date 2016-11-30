@@ -734,7 +734,8 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     con = textConnection(postRes)
     result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", as.is=TRUE, check.names = TRUE)
     close(con)
-    if(all(is.na(result[,ncol(result)])))
+    
+    if(nrow(result) > 0 && all(is.na(result[,ncol(result)])))
       result = result[,-ncol(result),drop=FALSE]
 ## 10 - 01 - 2014
    res_attributes <- c(attributes,attributesL)
