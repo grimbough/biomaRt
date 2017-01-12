@@ -436,7 +436,17 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
   if(class(uniqueRows) != "logical")
     stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
 
-  xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",martVSchema(mart),"' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
+  ## force the query to return the 'english text' header names with the result
+  ## we use these later to match and order attribute/column names    
+  callHeader <- TRUE
+  xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
+                   martVSchema(mart),
+                   "' uniqueRows = '",
+                   as.numeric(uniqueRows),
+                   "' count = '0' datasetConfigVersion = '0.6' header='",
+                   as.numeric(callHeader),
+                   "' requestid= 'biomaRt'> <Dataset name = '",
+                   martDataset(mart),"'>")
   
   #checking the Attributes
   invalid = !(attributes %in% listAttributes(mart, what="name"))
@@ -563,7 +573,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
 
     ## convert the serialized table into a dataframe
     con = textConnection(postRes)
-    result = read.table(con, sep="\t", header=bmHeader, quote = quote, comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
+    result = read.table(con, sep="\t", header=callHeader, quote = quote, comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
     if(verbose){
       writeLines("#################\nParsed results:")
       print(result)
@@ -575,23 +585,24 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
       stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
     }
   }
-  if(!bmHeader){  #assumes order of results same as order of attibutes in input 
-    colnames(result) = attributes
-  }
-  else{
-    toAttributeName=FALSE
-    if(toAttributeName){  #set to TRUE if attempting to replace attribute descriptions with attribute names
-      att = listAttributes(mart)
-      resultNames = colnames(result)
-      for(r in 1:length(resultNames)){
-        asel = which(att[,2] == resultNames[r])
-        if(length(asel) == 1){
-          resultNames[r] = att[asel,1]
-        }
-      }
-      colnames(result) = resultNames
-    }
-  }
+  # if(!bmHeader){  #assumes order of results same as order of attibutes in input 
+  #   colnames(result) = attributes
+  # }
+  # else{
+  #   toAttributeName=FALSE
+  #   if(toAttributeName){  #set to TRUE if attempting to replace attribute descriptions with attribute names
+  #     att = listAttributes(mart)
+  #     resultNames = colnames(result)
+  #     for(r in 1:length(resultNames)){
+  #       asel = which(att[,2] == resultNames[r])
+  #       if(length(asel) == 1){
+  #         resultNames[r] = att[asel,1]
+  #       }
+  #     }
+  #     colnames(result) = resultNames
+  #   }
+  # }
+  result <- .setResultColNames(result, mart = mart, attributes = attributes, bmHeader = bmHeader)
   return(result)
 }
 
