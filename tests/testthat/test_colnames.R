@@ -6,7 +6,7 @@ ensembl = useDataset("hsapiens_gene_ensembl", mart=ensembl)
 context('Testing column name assignments generation')
 ## create two test data.frames
 bad_result <- data.frame("Not a real column" = 1:2, "Ensembl Gene ID" = 3:4, check.names = FALSE)
-good_result <- data.frame("Chromosome/scaffold name" = 1:2, "Gene ID" = 3:4, check.names = FALSE)
+good_result <- data.frame("Chromosome/scaffold name" = 1:2, "Gene stable ID" = 3:4, check.names = FALSE)
 ## this should warn that we can't match one of the column names (hopefully this never happens for real)
 expect_warning(.setResultColNames(result = bad_result, mart = ensembl, attributes = c('chromosome_name', 'ensembl_gene_id')), "Problems assigning column names")
 ## check the reassignment of colnames from 'description' to 'name'
