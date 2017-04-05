@@ -67,25 +67,31 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
 #BioMart databases are present                        #
 #######################################################
 
-listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, verbose = FALSE){
+listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, ensemblRedirect = TRUE, verbose = FALSE){
   
-  request = NULL
-  if(is.null(mart)){	  
-   if(archive){
-      request = paste("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt", sep="")
-   } 
-   else{
-      request = paste("http://",host,":",port,path,"?type=registry&requestid=biomaRt", sep="")	
+    request = NULL
+    if(is.null(mart)){
+        
+        ## adding option to force use of specificed host with ensembl
+        redirect <- ifelse(!ensemblRedirect && grepl(x = host, pattern = "ensembl.org"), 
+                           "&redirect=no",
+                           "")
+        
+        if(archive) {
+            request = paste0("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt")
+        } 
+        else {
+            request = paste0("http://", host, ":", port, path, "?type=registry&requestid=biomaRt", redirect)	
+        }
     }
-  }
-  else{
-     if(class(mart) == 'Mart'){
-         request = paste(martHost(mart),"?type=registry&requestid=biomaRt", sep="") 
-     }
-     else{
-	warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
-     }
-  } 	
+    else{
+        if(class(mart) == 'Mart'){
+            request = paste(martHost(mart),"?type=registry&requestid=biomaRt", sep="") 
+        }
+        else{
+            warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
+        }
+    } 	
   
   registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
   registry = xmlTreeParse(registry, asText=TRUE)
@@ -150,69 +156,93 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 # #                           # #
 #################################
 
-useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, version, verbose = FALSE){
-  
-  if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
-  if(!missing(biomart)){ 
-  if(!(is.character(biomart)))
-      stop("biomart argument is no string.  The biomart argument should be a single character string")
-  }
-  if(biomart == "ensembl" & (host == "www.ensembl.org" | host == "uswest.ensembl.org")){
-   biomart = "ENSEMBL_MART_ENSEMBL"
-  }
-  reqHost = host
-  marts=NULL
-  marts=listMarts(host=host, path=path, port=port, includeHosts = TRUE, archive = archive, ssl.verifypeer = ssl.verifypeer)
-  mindex = NA
-  if(!missing(biomart)){ 
-   mindex=match(biomart,marts$biomart)
-  }
-  if(!missing(version)){
-   mindex=match(version,marts$version)
-  }
-  if(is.na(mindex) || archive){
-    mindex=match(biomart,marts$database)
-  }
-  if(is.na(mindex))
-    stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
+useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, ensemblRedirect = TRUE, version, verbose = FALSE){
+    
+    if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
+    if(!missing(biomart)){ 
+        if(!(is.character(biomart)))
+            stop("biomart argument is not a string. ",
+                 "The biomart argument should be a single character string")
+    }
+    #if(biomart == "ensembl" & (host == "www.ensembl.org" | host == "uswest.ensembl.org")){
+    if(biomart == "ensembl" & grepl(x = host, pattern = "ensembl.org")) {
+        biomart = "ENSEMBL_MART_ENSEMBL"
+    }
+    reqHost = host
+    marts=NULL
+    marts <- listMarts(host=host, path=path, port=port, includeHosts = TRUE,
+                       archive = archive, ssl.verifypeer = ssl.verifypeer, 
+                       ensemblRedirect = ensemblRedirect)
+    mindex = NA
+    if(!missing(biomart)){ 
+        mindex=match(biomart,marts$biomart)
+    }
+    if(!missing(version)){
+        mindex=match(version,marts$version)
+    }
+    if(is.na(mindex) || archive){
+        mindex=match(biomart,marts$database)
+    }
+    if(is.na(mindex))
+        stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
     
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
-   if(archive) biomart = marts$biomart[mindex]
-   if(!missing(version)) biomart = marts$biomart[mindex]
+    if(archive) biomart = marts$biomart[mindex]
+    if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
-    mart <- new("Mart", biomart = biomart,vschema = marts$vschema[mindex], host = paste("http://",marts$host[mindex],":",marts$port[mindex],marts$path[mindex],sep=""), archive = archive)
+    
+    ## adding option to force use of specificed host with ensembl
+    redirect <- ifelse(!ensemblRedirect && grepl(x = host, pattern = "ensembl.org"), 
+                       "?redirect=no",
+                       "")
+    
+    mart <- new("Mart", 
+                biomart = biomart,
+                vschema = marts$vschema[mindex], 
+                host = paste0("http://", marts$host[mindex], ":", 
+                              marts$port[mindex], marts$path[mindex], 
+                              redirect), 
+                archive = archive)
+    
     if(length(grep("archive",martHost(mart)) > 0)){
-       if(length(grep(reqHost,martHost(mart))) == 0){
-        writeLines(paste("Note: requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
-     	writeLines("When using archived Ensembl versions this sometimes can result in connecting to a newer version than the intended Ensembl version")
-     	writeLines("Check your ensembl version using listMarts(mart)")
-    	}
+        if(length(grep(reqHost,martHost(mart))) == 0){
+            writeLines(paste("Note: requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+            writeLines("When using archived Ensembl versions this sometimes can result in connecting to a newer version than the intended Ensembl version")
+            writeLines("Check your ensembl version using listMarts(mart)")
+        }
     }
-
+    
     BioMartVersion=bmVersion(mart, verbose=verbose)
-    if(martHost(mart) =="http://www.biomart.org:80/biomart/martservice"){
-      if(verbose) writeLines("Using Central Repository at www.biomart.org");
-      martVSchema(mart) <- 'default'  #Assume central service query uses default vSchema 
-    }
+    #### below can probably be deleted, MS - 05/04/2017
+    #if(martHost(mart) =="http://www.biomart.org:80/biomart/martservice"){
+    #    if(verbose) writeLines("Using Central Repository at www.biomart.org");
+    #    martVSchema(mart) <- 'default'  #Assume central service query uses default vSchema 
+    #}
+    ####
     if(verbose){
-      writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
-      writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
-      if(length(grep(reqHost,martHost(mart))) == 0){
-        writeLines(paste("Requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
-      } 
-      writeLines(paste("Mart host:",martHost(mart),sep=" "))
+        writeLines(paste("BioMartServer running BioMart version:",BioMartVersion,sep=" "))
+        writeLines(paste("Mart virtual schema:",martVSchema(mart),sep=" "))
+        if(length(grep(reqHost,martHost(mart))) == 0){
+            writeLines(paste("Requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
+        } 
+        writeLines(paste("Mart host:",martHost(mart),sep=" "))
     }
     if(!missing(dataset)){
-      mart = useDataset(mart = mart, dataset=dataset, verbose = verbose)
+        mart = useDataset(mart = mart, dataset=dataset, verbose = verbose)
     }
     return(mart)
 }
 
 listDatasets <- function(mart, verbose = FALSE) {
+    
   if(missing(mart) || !is(mart, 'Mart'))
     stop("No Mart object given or object not of class 'Mart'")
-  request = paste(martHost(mart),"?type=datasets&requestid=biomaRt&mart=",martBM(mart),sep="")
+    
+    ## we choose a separator based on whether 'redirect=no' is present
+    sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+    
+  request = paste0(martHost(mart), sep, "type=datasets&requestid=biomaRt&mart=", martBM(mart))
   bmResult = bmRequest(request = request, verbose = verbose)
   con = textConnection(bmResult)
   txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
@@ -231,72 +261,83 @@ listDatasets <- function(mart, verbose = FALSE) {
 ## Check version of BioMart service
 
 bmVersion <- function(mart, verbose=FALSE){
-  request = ""
-  request = paste(martHost(mart),"?type=version","&requestid=biomaRt&mart=",martBM(mart),sep="")
-  BioMartVersion = bmRequest(request = request, verbose = verbose)
-  bmv = ""
-  if(BioMartVersion == "\n" | BioMartVersion == ""){
-    bmv = NA
-    if(verbose) warning(paste("BioMart version is not available from BioMart server:",request,sep="\n"))
-  }
-  else{
-    con = textConnection(BioMartVersion)
-    bmVersionParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-    close(con)
-    if(verbose) print(bmVersionParsed)
+
+    ## we choose a separator based on whether 'redirect=no' is present
+    sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     
-    if(dim(bmVersionParsed)[2] >=1){
-      bmv=bmVersionParsed[1,1]
+    request = paste0(martHost(mart), sep, "type=version", "&requestid=biomaRt&mart=", martBM(mart))
+    BioMartVersion = bmRequest(request = request, verbose = verbose)
+    bmv = ""
+    if(BioMartVersion == "\n" | BioMartVersion == ""){
+        bmv = NA
+        if(verbose) warning(paste("BioMart version is not available from BioMart server:",request,sep="\n"))
     }
-  }
-  return(bmv)
+    else{
+        con = textConnection(BioMartVersion)
+        bmVersionParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+        close(con)
+        if(verbose) print(bmVersionParsed)
+        
+        if(dim(bmVersionParsed)[2] >= 1){
+            bmv=bmVersionParsed[1,1]
+        }
+    }
+    return(bmv)
 }
 
 ## Retrieve attributes and filters from web service
 
 bmAttrFilt <- function(type, mart, verbose=FALSE){
-  request = ""
-  request = paste(martHost(mart),"?type=",type,"&dataset=",martDataset(mart),"&requestid=biomaRt&mart=",martBM(mart),"&virtualSchema=",martVSchema(mart),sep="")
-  attrfilt = bmRequest(request = request, verbose = verbose)
-  con = textConnection(attrfilt)
-  attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-  close(con)
-  if(type=="attributes"){
-    if(dim(attrfiltParsed)[2] < 3)
-      stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-    cnames = seq_len(dim(attrfiltParsed)[2])
-    cnames=paste(type,cnames,sep="")
-    cnames[1] = "name"
-    cnames[2] = "description"
-    cnames[3] = "fullDescription"
-    if(dim(attrfiltParsed)[2] < 4){
-      warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
+    
+    ## we choose a separator based on whether 'redirect=no' is present
+    sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+    
+    request = paste0(martHost(mart), sep, "type=", type,
+                     "&dataset=", martDataset(mart),
+                     "&requestid=biomaRt&mart=", martBM(mart),
+                     "&virtualSchema=", martVSchema(mart))
+    attrfilt = bmRequest(request = request, verbose = verbose)
+    con = textConnection(attrfilt)
+    attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+    close(con)
+    if(type=="attributes"){
+        if(dim(attrfiltParsed)[2] < 3)
+            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
+        cnames = seq_len(dim(attrfiltParsed)[2])
+        cnames=paste(type,cnames,sep="")
+        cnames[1] = "name"
+        cnames[2] = "description"
+        cnames[3] = "fullDescription"
+        if(dim(attrfiltParsed)[2] < 4){
+            warning("biomaRt warning: looks like we're connecting to an older ",
+                    "version of BioMart suite.\nSome biomaRt functions might ",
+                    "not work.")
+        }
+        else{
+            cnames[4] = "page"
+        }
+        colnames(attrfiltParsed) = cnames
     }
-    else{
-      cnames[4] = "page"
+    if(type=="filters"){
+        if(dim(attrfiltParsed)[2] < 4)
+            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
+        cnames = seq(1:dim(attrfiltParsed)[2])
+        cnames=paste(type,cnames,sep="")
+        cnames[1] = "name"
+        cnames[2] = "description"
+        cnames[3] = "options"
+        cnames[4] = "fullDescription"
+        if(dim(attrfiltParsed)[2] < 7){
+            warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
+        }
+        else{
+            cnames[5] = "filters"
+            cnames[6] = "type"
+            cnames[7] = "operation"
+        }
+        colnames(attrfiltParsed) = cnames
     }
-    colnames(attrfiltParsed) = cnames
-  }
-   if(type=="filters"){
-     if(dim(attrfiltParsed)[2] < 4)
-       stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-     cnames = seq(1:dim(attrfiltParsed)[2])
-     cnames=paste(type,cnames,sep="")
-     cnames[1] = "name"
-     cnames[2] = "description"
-     cnames[3] = "options"
-     cnames[4] = "fullDescription"
-     if(dim(attrfiltParsed)[2] < 7){
-       warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
-     }
-     else{
-       cnames[5] = "filters"
-       cnames[6] = "type"
-       cnames[7] = "operation"
-     }
-     colnames(attrfiltParsed) = cnames
-   }
-  return(attrfiltParsed)
+    return(attrfiltParsed)
 }
 
 ## Utilty function to check dataset specification
@@ -553,8 +594,11 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
   if(verbose){
     cat(paste(xmlQuery,"\n", sep=""))
   }      
+  
+  ## we choose a separator based on whether 'redirect=no' is present
+  sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
 
-  postRes = tryCatch(postForm(paste(martHost(mart),"?",sep=""),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
+  postRes = tryCatch(postForm(paste0(martHost(mart), sep),"query" = xmlQuery), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
   if(verbose){
     writeLines("#################\nResults from server:")
     print(postRes)

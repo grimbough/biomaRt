@@ -3,7 +3,8 @@
 \title{Retrieves information from two linked datasets}
 \description{This function is the main biomaRt query function that links 2 datasets and retrieves information from these linked BioMart datasets.  In Ensembl this translates to homology mapping.}
 \usage{getLDS(attributes, filters = "", values = "", mart, attributesL,
-filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE, bmHeader=TRUE)}
+filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE, 
+bmHeader=TRUE)}
 \arguments{
   \item{attributes}{Attributes you want to retrieve of primary dataset.  A possible list of attributes can be retrieved using the function listAttributes.}
   \item{filters}{Filters that should be used in the query. These filters will be applied to primary dataset.  A possible list of filters can be retrieved using the function listFilters.}

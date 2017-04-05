@@ -2,7 +2,8 @@
 \alias{getBMlist}
 \title{Retrieves information from the BioMart database}
 \description{This function is the main biomaRt query function.  Given a set of filters and corresponding values, it retrieves the user specified attributes from the BioMart database one is connected to}
-\usage{getBMlist(attributes, filters = "", values = "", mart, list.names = NULL, na.value = NA, verbose = FALSE, giveWarning = TRUE)}
+\usage{getBMlist(attributes, filters = "", values = "", mart, 
+list.names = NULL, na.value = NA, verbose = FALSE, giveWarning = TRUE)}
 
 \arguments{
   \item{attributes}{Attributes you want to retrieve.  A possible list of attributes can be retrieved using the function listAttributes.}
