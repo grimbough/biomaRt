@@ -189,7 +189,7 @@ The GO identifier for MAP kinase activity is **GO:0004707**.  In our query we wi
 
 ```{r task6, echo=TRUE, eval = TRUE}
 getBM(attributes = c('entrezgene','hgnc_symbol'), 
-      filters = 'go_id', 
+      filters = 'go', 
       values = 'GO:0004707', 
       mart = ensembl)
 ```
@@ -349,7 +349,7 @@ listDatasets(wormbase)
 wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
 head(listFilters(wormbase))
 head(listAttributes(wormbase))
-getBM(attributes = c("external_gene_id","ensembl_transcript_id","transcript_biotype"), 
+getBM(attributes = c("external_gene_id", "wbps_transcript_id", "transcript_biotype"), 
       filters="gene_name", 
       values=c("unc-26","his-33"), 
       mart=wormbase)
