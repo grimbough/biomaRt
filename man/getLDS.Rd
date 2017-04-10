@@ -29,7 +29,9 @@ bmHeader=TRUE)}
 if(interactive()){
 human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl") 
-getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"), filters = "hgnc_symbol", values = "TP53", mart = human, attributesL = c("chromosome_name","start_position"), martL = mouse)
+getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"), 
+    filters = "hgnc_symbol", values = "TP53", mart = human, 
+    attributesL = c("chromosome_name","start_position"), martL = mouse)
 }
 }
 \keyword{methods}

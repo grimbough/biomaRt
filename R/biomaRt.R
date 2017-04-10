@@ -56,7 +56,10 @@ checkWrapperArgs = function(id, type, mart){
 
 bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
   if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
-  result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer,followlocation = TRUE), error = function(e){ cat("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.\n")})
+  result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer, followlocation = TRUE), 
+                    error = function(e){ 
+                        cat("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.\n")
+                        })
   return(result)
 }
 
@@ -86,7 +89,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
     }
     else{
         if(class(mart) == 'Mart'){
-            request = paste(martHost(mart),"?type=registry&requestid=biomaRt", sep="") 
+            request = paste0(martHost(mart), "?type=registry&requestid=biomaRt") 
         }
         else{
             warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
@@ -94,6 +97,14 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
     } 	
   
   registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
+  
+  ## check this looks like the MartRegistry XML, otherwise throw an error
+  if(!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
+      stop('Unexpected format to the list of available marts.\n',
+           'Please check the following URL manually, ',
+           'and try ?listMarts for advice.\n',
+           request)
+  }
   registry = xmlTreeParse(registry, asText=TRUE)
   registry = registry$doc$children[[1]]
   
@@ -169,7 +180,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
         biomart = "ENSEMBL_MART_ENSEMBL"
     }
     reqHost = host
-    marts=NULL
+
     marts <- listMarts(host=host, path=path, port=port, includeHosts = TRUE,
                        archive = archive, ssl.verifypeer = ssl.verifypeer, 
                        ensemblRedirect = ensemblRedirect)
@@ -533,7 +544,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
       if(filters[i] %in% listFilters(mart, what = "name")){
         filtertype=filterType(filters[i], mart)
         if(filtertype == 'boolean' || filtertype == 'boolean_list'){
-          if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="")  
+          if(!is.logical(values[[i]])) 
+              stop("biomaRt error: ", filters[i], " is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved.")  
           if(!values[[i]]){
             values[[i]] = 1
           }

@@ -13,7 +13,16 @@
 
 \examples{
 if(interactive()){
-getXML(xmlquery="<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '1' count = '0' datasetConfigVersion = '0.6'> <Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'ensembl_gene_id'/><Filter name = 'chromosome_name' value = 'Y' /></Dataset></Query>")
+xmlquery="<?xml version='1.0' encoding='UTF-8'?>
+            <!DOCTYPE Query>
+            <Query virtualSchemaName = 'default' uniqueRows = '1' 
+                   count = '0' datasetConfigVersion = '0.6'>
+                <Dataset name = 'hsapiens_gene_ensembl'>
+                    <Attribute name = 'ensembl_gene_id'/>
+                    <Filter name = 'chromosome_name' value = 'Y' />
+                </Dataset>
+            </Query>"
+getXML(host = "www.ensembl.org/biomart/martservice?", xmlquery = xmlquery)
 }
 }
 \keyword{methods}

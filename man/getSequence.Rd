@@ -1,7 +1,9 @@
 \name{getSequence}
 \alias{getSequence}
 \title{Retrieves sequences}
+
 \description{This function retrieves sequences given the chomosome, start and end position or a list of identifiers. Using getSequence in web service mode (default) generates 5' to 3' sequences of the requested type on the correct strand.}
+
 \details{The type of sequence returned can be specified by the seqType argument which takes the following values: 
 \itemize{
 \item{'cdna': for nucleotide sequences}
@@ -25,7 +27,9 @@ sequence, which can be done using functions provided in the matchprobes
 package.  The biomaRt vignette contains more examples on how to use this 
 function.
 }
-\usage{getSequence( chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE)}
+
+\usage{getSequence(chromosome, start, end, id, type, seqType, 
+                   upstream, downstream, mart, verbose = FALSE)}
 
 \arguments{
   \item{chromosome}{Chromosome name}
@@ -44,13 +48,19 @@ function.
 
 \examples{
 if(interactive()){
-mart <- useMart("ensembl",dataset="hsapiens_gene_ensembl")
+mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
 
-seq = getSequence(id="BRCA1", type="hgnc_symbol", seqType="peptide", mart = mart)
+seq = getSequence(id = "BRCA1", 
+                  type = "hgnc_symbol", 
+                  seqType = "peptide", 
+                  mart = mart)
 show(seq)
 
-
-seq = getSequence(id="1939_at", type="affy_hg_u95av2", seqType="gene_flank",upstream = 20, mart = mart)
+seq = getSequence(id="1939_at", 
+                  type="affy_hg_u95av2", 
+                  seqType="gene_flank",
+                  upstream = 20, 
+                  mart = mart)
 show(seq)
 
 }

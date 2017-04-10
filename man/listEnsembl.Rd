@@ -2,7 +2,8 @@
 \alias{listEnsembl}
 \title{lists the available BioMart databases hosted by Ensembl}
 \description{This function returns a list of BioMart databases hosted by Ensembl.  To establish a connection use the useMart function.}
-\usage{listEnsembl(mart = NULL,host = "www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE)}
+\usage{listEnsembl(mart = NULL,host = "www.ensembl.org", version = NULL, 
+                   GRCh = NULL, mirror = NULL, verbose = FALSE)}
 
 \arguments{
 \item{mart}{mart object created with the useEnsembl function.  This is optional, as you usually use listMarts to see which marts there are to connect to.}
