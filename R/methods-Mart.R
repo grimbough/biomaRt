@@ -73,7 +73,7 @@ setReplaceMethod("martVSchema","Mart",function(obj,value){
 setMethod("keys", "Mart",
     function(x, keytype, ...){
         AnnotationDbi:::smartKeys(x=x, keytype=keytype, ...,
-                                  FUN=biomaRt:::.keys)
+                                  FUN=.keys)
     }
 )
 

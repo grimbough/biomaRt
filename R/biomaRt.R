@@ -892,6 +892,8 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh
             print("Only 37 can be specified for GRCh version")
         }
     }
+    
+    ensemblRedirect <- TRUE
     if(!is.null(mirror)){
         if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
             warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
@@ -899,7 +901,7 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh
                     "closest mirror to your location")
             
         } else {
-            host <- paste0(host, ".ensembl.org")
+            host <- paste0(mirror, ".ensembl.org")
             ensemblRedirect <- FALSE
         }
     }
@@ -943,6 +945,7 @@ useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL
         }
     }
     
+    ensemblRedirect <- TRUE
     if(!is.null(mirror)){
         if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
             warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
@@ -950,7 +953,7 @@ useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL
                     "closest mirror to your location")
             
         } else {
-            host <- paste0(host, ".ensembl.org")
+            host <- paste0(mirror, ".ensembl.org")
             ensemblRedirect <- FALSE
         }
     }
@@ -968,7 +971,11 @@ useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL
         biomart = "ENSEMBL_MART_VEGA"
     }
     
-    ens = useMart(biomart = biomart, dataset = dataset, host = host, verbose = verbose)	   
+    ens = useMart(biomart = biomart, 
+                  dataset = dataset, 
+                  host = host, 
+                  verbose = verbose, 
+                  ensemblRedirect = ensemblRedirect)	   
     return(ens)
 }
 
