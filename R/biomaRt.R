@@ -58,7 +58,10 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
   if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
   result = tryCatch(getURL(request, ssl.verifypeer = ssl.verifypeer, followlocation = TRUE), 
                     error = function(e){ 
-                        cat("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.  Check http://www.biomart.org and verify if this website is available.\n")
+                        message("Request to BioMart web service failed.\n", 
+                                "The BioMart web service you're accessing may be down.\n",
+                                "Check the following URL and see if this website is available:\n",
+                                request)
                         })
   return(result)
 }
@@ -872,112 +875,101 @@ getBMlist <- function(attributes, filters = "", values = "", mart, list.names = 
 ###############################
 
 listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh = NULL, mirror = NULL,verbose = FALSE){
- 
- if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
-  warning("version or GRCh arguments can not be used together with the mirror argument.  Will ignore the mirror argument and connect to default ensembl host") 
-  mirror = NULL
- }
- 
- if(!is.null(version)){
-  host = paste("e",version,".ensembl.org",sep="")
- }
- if(!is.null(GRCh)){
-  if(GRCh == 37){ 
-  host = paste("grch",GRCh,".ensembl.org",sep="")	
- }
-else{
- print("Only 37 can be specified for GRCh version")
-}
- }
- if(!is.null(mirror)){
- if(!(mirror %in% c("uswest","useast","asia"))){
-  warning("Invalid mirror select a mirror from [uswest,useast,asia], default when no mirror is specified points to main ensembl hosted in the UK")
- }
- else{
-  if(mirror == "uswest"){
-   host = "uswest.ensembl.org"
-   }
-   if(mirror == "useast"){
-    host == "useast.ensembl.org"  
-   }
-   if(mirror == "asia"){
-    host = "asia.ensembl.org"
-   }
- }
-}
-	   
- marts = listMarts(mart = mart, host = host, verbose = verbose)
- sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
- if(length(sel) > 0){ 
-  marts$biomart[sel] = "ensembl"
- }
- sel = which(marts$biomart == "ENSEMBL_MART_SNP")
- if(length(sel) > 0){ 
-  marts$biomart[sel] = "snp"
- }
- sel = which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
- if(length(sel) > 0){ 
-  marts$biomart[sel] = "regulation"
- }
- sel = which(marts$biomart == "ENSEMBL_MART_VEGA")
- if(length(sel) > 0){ 
-  marts$biomart[sel] = "vega"
- }
- return(marts)
+    
+    if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
+        warning("version or GRCh arguments can not be used together with the mirror argument.  Will ignore the mirror argument and connect to default ensembl host") 
+        mirror = NULL
+    }
+    
+    if(!is.null(version)){
+        host = paste("e",version,".ensembl.org",sep="")
+    }
+    if(!is.null(GRCh)){
+        if(GRCh == 37){ 
+            host = paste("grch",GRCh,".ensembl.org",sep="")	
+        }
+        else{
+            print("Only 37 can be specified for GRCh version")
+        }
+    }
+    if(!is.null(mirror)){
+        if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
+            warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
+                    "default when no mirror is specified is to be redirected to the ",
+                    "closest mirror to your location")
+            
+        } else {
+            host <- paste0(host, ".ensembl.org")
+            ensemblRedirect <- FALSE
+        }
+    }
+    
+    marts = listMarts(mart = mart, host = host, verbose = verbose, ensemblRedirect = ensemblRedirect)
+    sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "ensembl"
+    }
+    sel = which(marts$biomart == "ENSEMBL_MART_SNP")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "snp"
+    }
+    sel = which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "regulation"
+    }
+    sel = which(marts$biomart == "ENSEMBL_MART_VEGA")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "vega"
+    }
+    return(marts)
 }
 
-useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL, GRCh = NULL,mirror = NULL ,verbose = FALSE){
- 
- if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
-  warning("version or GRCh arguments can not be used together with the mirror argument.  Will ignore the mirror argument and connect to default ensembl host") 
-  mirror = NULL
- }
- 
- if(!is.null(version)){
-  host = paste("e",version,".ensembl.org",sep="")
- }	   
- if(!is.null(GRCh)){
- if(GRCh == 37){
-  host = paste("grch",GRCh,".ensembl.org",sep="")
- }
- else{
-   print("Only 37 can be specified for GRCh version")
- }
- }
-
- if(!is.null(mirror)){
- if(!(mirror %in% c("uswest","useast","asia"))){
-  warning("Invalid mirror select a mirror from [uswest,useast,asia], default when no mirror is specified points to main ensembl hosted in the UK")
- }
- else{
-  if(mirror == "uswest"){
-   host = "uswest.ensembl.org"
-   }
-   if(mirror == "useast"){
-    host == "useast.ensembl.org"  
-   }
-   if(mirror == "asia"){
-    host = "asia.ensembl.org"
-   }
- }
-}
-
-
- if(biomart == "ensembl"){
-   biomart = "ENSEMBL_MART_ENSEMBL"
- }
- if(biomart == "snp"){
-   biomart = "ENSEMBL_MART_SNP"
- }
- if(biomart == "regulation"){
-   biomart = "ENSEMBL_MART_FUNCGEN"
- }
- if(biomart == "vega"){
-   biomart = "ENSEMBL_MART_VEGA"
- }
-
- ens = useMart(biomart = biomart, dataset = dataset, host = host, verbose = verbose)	   
- return(ens)
+useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
+    
+    if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
+        warning("version or GRCh arguments can not be used together with the mirror argument.  Will ignore the mirror argument and connect to default ensembl host") 
+        mirror = NULL
+    }
+    
+    if(!is.null(version)){
+        host = paste("e",version,".ensembl.org",sep="")
+    }	   
+    if(!is.null(GRCh)){
+        if(GRCh == 37){
+            host = paste("grch",GRCh,".ensembl.org",sep="")
+        }
+        else{
+            print("Only 37 can be specified for GRCh version")
+        }
+    }
+    
+    if(!is.null(mirror)){
+        if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
+            warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
+                    "default when no mirror is specified is to be redirected to the ",
+                    "closest mirror to your location")
+            
+        } else {
+            host <- paste0(host, ".ensembl.org")
+            ensemblRedirect <- FALSE
+        }
+    }
+    
+    if(biomart == "ensembl"){
+        biomart = "ENSEMBL_MART_ENSEMBL"
+    }
+    if(biomart == "snp"){
+        biomart = "ENSEMBL_MART_SNP"
+    }
+    if(biomart == "regulation"){
+        biomart = "ENSEMBL_MART_FUNCGEN"
+    }
+    if(biomart == "vega"){
+        biomart = "ENSEMBL_MART_VEGA"
+    }
+    
+    ens = useMart(biomart = biomart, dataset = dataset, host = host, verbose = verbose)	   
+    return(ens)
 }
 
 getGene <- function( id, type, mart){

@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.31.8
+Version: 2.31.9
 Title: Interface to BioMart databases (e.g. Ensembl, COSMIC, Wormbase
         and Gramene)
 Author: Steffen Durinck <biomartdev@gmail.com>, Wolfgang Huber
