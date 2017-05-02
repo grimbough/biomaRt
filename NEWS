@@ -1,3 +1,13 @@
+CHANGES IN VERSION 2.34.0
+-------------------------
+
+BUG FIXES
+
+    o The Ensembl BioMart server doesn't always respond well if queries with
+    more than 500 filter values are submitted.  If a query that exceed this is
+    detect biomaRt will now submit the query in batches and concatonate the 
+    result when completed.
+
 CHANGES IN VERSION 2.32.0
 -------------------------
 

@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.33.0
+Version: 2.33.1
 Title: Interface to BioMart databases (e.g. Ensembl, COSMIC, Wormbase
         and Gramene)
 Author: Steffen Durinck <biomartdev@gmail.com>, Wolfgang Huber
@@ -7,7 +7,7 @@ Contributors: Sean Davis <sdavis2@mail.nih.gov>, Francois Pepin, Vince
         S. Buffalo, Mike Smith
 Maintainer: Steffen Durinck <biomartdev@gmail.com>
 Depends: methods
-Imports: utils, XML, RCurl, AnnotationDbi
+Imports: utils, XML, RCurl, AnnotationDbi, progress
 Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat
 VignetteBuilder: knitr
 biocViews: Annotation

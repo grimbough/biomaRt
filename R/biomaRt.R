@@ -540,15 +540,24 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     
     ## filterXML is a list containing filters with reduced numbers of values
     ## to meet the 500 value limit in BioMart queries
-    filterXML_list <- .generateFilterXML(filters, values, mart)
+    filterXmlList <- .generateFilterXML(filters, values, mart)
     
     resultList <- list()
+    if(length(filterXmlList) > 1) {
+        pb <- progress_bar$new(total = length(filterXmlList),
+                           width = options()$width - 10,
+                           format = "Batch submitting query [:bar] :percent eta: :eta")
+        pb$tick(0)
+    }
     
-    for(i in seq_along(filterXML_list)) {
+    ## we submit a query for each chunk of the filter list
+    for(i in seq_along(filterXmlList)) {
         
-        message(i)
+        if(exists('pb')) {
+            pb$tick()
+        }
         
-        filterXML <- filterXML_list[[ i ]]
+        filterXML <- filterXmlList[[ i ]]
         fullXmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
         
         if(verbose) {
@@ -596,6 +605,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     
         resultList[[i]] <- .setResultColNames(result, mart = mart, attributes = attributes, bmHeader = bmHeader)
     }
+    ## collate results
     result <- do.call('rbind', resultList)
     return(result)
 }
