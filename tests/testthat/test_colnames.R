@@ -20,7 +20,7 @@ expect_equal(colnames(.setResultColNames(result = good_result, mart = ensembl, a
 attributes=c("ensembl_transcript_id",
              "cdna", 
              ## Description is 'Query protein or transcript ID' lots of matches
-             "meugenii_homolog_canonical_transcript_protein")
+             "neugenii_homolog_canonical_transcript_protein")
 mart <- useMart(biomart = "ensembl",
               host = "www.ensembl.org",
               dataset ="mmusculus_gene_ensembl")
