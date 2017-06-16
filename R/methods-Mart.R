@@ -1,8 +1,20 @@
 setMethod("show",signature(object="Mart"),
-  function(object){	
-    res = paste("Object of class 'Mart':\n Using the ",object@biomart," BioMart database\n Using the ",object@dataset," dataset\n", sep="")
-    cat(res)
-})
+          function(object){	
+              
+              dbase <- ifelse(nchar(object@biomart) != 0, 
+                              yes = paste("  Using the", object@biomart, "BioMart database"),
+                              no = "  No database selected.")
+              
+              dset <- ifelse(nchar(object@dataset) != 0, 
+                             yes = paste("  Using the", object@dataset, "dataset"),
+                             no = "  No dataset selected.")
+              
+              res <- paste("Object of class 'Mart':",
+                           dbase,
+                           dset,
+                           sep="\n")
+              cat(res)
+          })
 
 setGeneric("martBM",def=function(obj,...) standardGeneric("martBM"))
 setMethod("martBM",signature("Mart"), function(obj) obj@biomart)

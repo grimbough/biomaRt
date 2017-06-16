@@ -83,11 +83,12 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
                            "&redirect=no",
                            "")
         
+        host <- .cleanHostURL(host)
         if(archive) {
-            request = paste0("http://",host,":",port,path,"?type=registry_archive&requestid=biomaRt")
+            request = paste0(host, ":", port, path, "?type=registry_archive&requestid=biomaRt")
         } 
         else {
-            request = paste0("http://", host, ":", port, path, "?type=registry&requestid=biomaRt", redirect)	
+            request = paste0(host, ":", port, path, "?type=registry&requestid=biomaRt", redirect)	
         }
     }
     else{
@@ -178,11 +179,13 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
             stop("biomart argument is not a string. ",
                  "The biomart argument should be a single character string")
     }
-    #if(biomart == "ensembl" & (host == "www.ensembl.org" | host == "uswest.ensembl.org")){
+
     if(biomart == "ensembl" & grepl(x = host, pattern = "ensembl.org")) {
         biomart = "ENSEMBL_MART_ENSEMBL"
     }
+    
     reqHost = host
+    host <- .cleanHostURL(host)
 
     marts <- listMarts(host=host, path=path, port=port, includeHosts = TRUE,
                        archive = archive, ssl.verifypeer = ssl.verifypeer, 

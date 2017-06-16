@@ -7,6 +7,11 @@ BUG FIXES
     more than 500 filter values are submitted.  If a query that exceed this is
     detect biomaRt will now submit the query in batches and concatonate the 
     result when completed.
+    
+MINOR CHANGES
+
+    o You can now provide a host with 'http://' at the start, or a trailing
+    '/' (typically copy/pasted from a browser) and useMarts() will cope.
 
 CHANGES IN VERSION 2.32.0
 -------------------------

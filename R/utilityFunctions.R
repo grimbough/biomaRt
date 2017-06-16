@@ -130,3 +130,21 @@
     
     filterXML_list <- lapply(values, .createFilterXMLchunk, mart)
 }
+
+#' it seems like pretty common practice for users to copy and paste the host
+#' name from a browser if they're not accessing Ensembl.  Typically this will
+#' include the "http://" and maybe a trailing "/" and this messes up or
+#' paste the complete URL strategy and produces something invalid.  
+#' This function tidies that up to catch common variants.
+.cleanHostURL <- function(host) {
+    
+    ## strip trailing slash
+    host <- gsub(pattern = "/$", replacement = "", x = host)
+    
+    ## only prepend http if needed 
+    if(!grepl(pattern = "^http://|^https://", x = host)) {
+        host <- paste0("http://", host)
+    }
+    
+    return(host)
+}
