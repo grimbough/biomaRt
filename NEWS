@@ -1,6 +1,12 @@
 CHANGES IN VERSION 2.34.0
 -------------------------
 
+NEW FEATURES
+
+    o  Added the listEnsemblArchives() function.  This returns a table of the
+    available Ensembl archives, and replaces the archive = TRUE argument to
+    several functions, which was no longer working.
+
 BUG FIXES
 
     o The Ensembl BioMart server doesn't always respond well if queries with

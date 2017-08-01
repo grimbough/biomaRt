@@ -14,7 +14,11 @@ marts there are to connect to.}
 \item{path}{path to martservice that should be pasted behind the host to get to web service URL}
 \item{port}{port to use in HTTP communication} 
 \item{includeHosts}{boolean to indicate if function should return host of the BioMart databases}
-\item{archive}{Boolean to indicate if you want to access archived versions of BioMart database}
+\item{archive}{Boolean to indicate if you want to access archived versions of 
+BioMart database. Note that this argument is now deprecated and will be removed
+in the future.  A better alternative is to specify the url of the archived 
+BioMart you want to access.  For Ensembl you can view the list of archives 
+using \code{\link{listEnsemblArchives}}}
 \item{ssl.verifypeer}{Set SSL peer verification on or off.  By default ssl.verifypeer is set to TRUE}
 \item{ensemblRedirect}{By default when you access Ensembl BioMart it will 
 redirect you to your local mirror, even if you have set a region specific 

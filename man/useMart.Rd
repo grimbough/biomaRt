@@ -12,7 +12,7 @@ TRUE, ensemblRedirect = TRUE, version, verbose = FALSE)}
 \item{host}{Host to connect to. Defaults to \code{www.ensembl.org}}
 \item{path}{Path that should be pasted after to host to get access to the web service URL}
 \item{port}{port to connect to, will be pasted between host and path}
-\item{archive}{Boolean to indicate if you want to access archived versions of BioMart databases.  Note that this gives access to only a limited number of archived BioMarts and the most recent archives are often not available. A better alternative is to leave archive = FALSE and to specify the url of the archived BioMart you want to access see vignette for an example.}
+\item{archive}{Boolean to indicate if you want to access archived versions of BioMart databases.  Note that this argument is now deprecated and will be removed in the future.  A better alternative is to leave archive = FALSE and to specify the url of the archived BioMart you want to access.  For Ensembl you can view the list of archives using \code{\link{listEnsemblArchives}}}
 \item{ssl.verifypeer}{Set SSL peer verification on or off.  By default ssl.verifypeer is set to TRUE}
 \item{ensemblRedirect}{By default when you access Ensembl BioMart it will 
 redirect you to your local mirror, even if you have set a region specific 

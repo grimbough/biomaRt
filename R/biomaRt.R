@@ -85,6 +85,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         
         host <- .cleanHostURL(host)
         if(archive) {
+            warning("The archive = TRUE argument is now deprecated.\nUse listEnsemblMarts() to find the URL to directly query an Ensembl archive.")
             request = paste0(host, ":", port, path, "?type=registry_archive&requestid=biomaRt")
         } 
         else {

@@ -326,14 +326,24 @@ After you selected the BioMart database and dataset, queries can be performed in
 ## Accessing archives through specifying the archive host
 -->
 
-Use the <http://www.ensembl.org> website and go down the bottom of the page.  Click on 'view in Archive' and select the archive you need.  Copy the url and use that url as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
+`r Biocpkg("biomaRt")` provides the function `listEnsemblArchives()` to view the available archives.  This function takes no arguments, and produces a table containing the names of the available archived versions, the date they were first available, and the URL where they can be accessed.
+
+```{r archiveMarts, echo = TRUE, eval = TRUE}
+listEnsemblArchives()
+```
+
+Alternatively, one can use the <http://www.ensembl.org> website to find archived version.  From the main page scroll down the bottom of the page, click on 'view in Archive' and select the archive you need.  
+
+*You will notice that there is an archive URL even for the current release of Ensembl.  It can be useful to use this if you wish to ensure that script you write now will return exactly the same results in the future.  Using `www.ensembl.org` will always access the current release, and so the data retrieved may change over time as new releases come out.*
+
+Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
 
 
 ```{r archiveMarts3, echo = TRUE, eval = TRUE}
-listMarts(host='may2009.archive.ensembl.org')
-ensembl54=useMart(host='may2009.archive.ensembl.org', 
-                  biomart='ENSEMBL_MART_ENSEMBL', 
-                  dataset='hsapiens_gene_ensembl')
+listMarts(host = 'may2009.archive.ensembl.org')
+ensembl54 <- useMart(host='may2009.archive.ensembl.org', 
+                     biomart='ENSEMBL_MART_ENSEMBL', 
+                     dataset='hsapiens_gene_ensembl')
 ```
 
 
