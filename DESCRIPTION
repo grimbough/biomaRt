@@ -1,11 +1,13 @@
 Package: biomaRt
-Version: 2.33.4
+Version: 2.33.5
 Title: Interface to BioMart databases (e.g. Ensembl, COSMIC, Wormbase
         and Gramene)
-Author: Steffen Durinck <biomartdev@gmail.com>, Wolfgang Huber
-Contributors: Sean Davis <sdavis2@mail.nih.gov>, Francois Pepin, Vince
-        S. Buffalo, Mike Smith
-Maintainer: Steffen Durinck <biomartdev@gmail.com>
+Authors@R: c(person("Steffen", "Durinck", role = c("aut"), email = "biomartdev@gmail.com"), 
+        person("Wolfgang", "Huber", role="aut"),
+        person("Sean", "Davis", role="ctb", email = "sdavis2@mail.nih.gov"),
+        person("Francois", "Pepin", role="ctb"),
+        person("Vince", "S", "Buffalo", role="ctb"),
+        person("Mike", "Smith", role=c("ctb", "cre"), email = "mike.smith@embl.de"))
 Depends: methods
 Imports: utils, XML, RCurl, AnnotationDbi, progress, stringr
 Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat
