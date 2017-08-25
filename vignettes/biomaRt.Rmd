@@ -1,9 +1,10 @@
 ---
 title: "The biomaRt users guide"
-author: "Steffen Durinck (durincks@gene.com), Wolfgang Huber (huber@ebi.ac.uk)"
+author: "Steffen Durinck, Wolfgang Huber, Mike Smith"
 package: "`r pkg_ver('biomaRt')`"
 output: 
-  BiocStyle::html_document
+  BiocStyle::html_document:
+    md_extensions: "-autolink_bare_uris"
 vignette: >
   %\VignetteIndexEntry{The biomaRt users guide}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,7 +17,7 @@ knitr::opts_chunk$set(error = TRUE)
 
 # Introduction
 
-In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the BioMart software suite (\url{http://www.biomart.org}). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
+In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
 
 # Selecting a BioMart database and dataset
 
@@ -188,7 +189,7 @@ The GO identifier for MAP kinase activity is **GO:0004707**.  In our query we wi
 
 ```{r task6, echo=TRUE, eval = TRUE}
 getBM(attributes = c('entrezgene','hgnc_symbol'), 
-      filters = 'go_id', 
+      filters = 'go', 
       values = 'GO:0004707', 
       mart = ensembl)
 ```
@@ -198,7 +199,23 @@ getBM(attributes = c('entrezgene','hgnc_symbol'),
  
 All sequence related queries to Ensembl are available through the `getSequence()` wrapper function. `getBM()` can also be used directly to retrieve sequences but this can get complicated so using getSequence is recommended.
 
-Sequences can be retrieved using the `getSequence()` function either starting from chromosomal coordinates or identifiers.  The chromosome name can be specified using the *chromosome* argument.  The *start* and *end* arguments are used to specify *start* and *end* positions on the chromosome. The type of sequence returned can be specified by the seqType argument which takes the following values: 'cdna'; 'peptide' for protein sequences; '3utr' for 3' UTR sequences, '5utr' for 5' UTR sequences; 'gene\_exon' for exon sequences only; 'transcript\_exon' for transcript specific exonic sequences only; 'transcript\_exon\_intron' gives the full unspliced transcript, that is exons + introns; 'gene_exon_intron' gives the exons + introns of a gene; 'coding' gives the coding sequence only; 'coding_transcript_flank' gives the flanking region of the transcript including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'coding_gene_flank' gives the flanking region of the gene including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'transcript_flank' gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute; 'gene\_flank' gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute.
+Sequences can be retrieved using the `getSequence()` function either starting from chromosomal coordinates or identifiers.  
+The chromosome name can be specified using the *chromosome* argument.  The *start* and *end* arguments are used to specify *start* and *end* positions on the chromosome. 
+The type of sequence returned can be specified by the *seqType* argument which takes the following values:
+
+* *cdna*
+* *peptide* for protein sequences
+* *3utr* for 3' UTR sequences 
+* *5utr* for 5' UTR sequences 
+* *gene_exon* for exon sequences only
+* *transcript_exon* for transcript specific exonic sequences only
+* *transcript_exon_intron* gives the full unspliced transcript, that is exons + introns
+* *gene_exon_intron* gives the exons + introns of a gene
+* *coding* gives the coding sequence only
+* *coding_transcript_flank* gives the flanking region of the transcript including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute
+* *coding_gene_flank* gives the flanking region of the gene including the UTRs, this must be accompanied with a given value for the upstream or downstream attribute
+* *transcript_flank* gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute
+* *gene_flank* gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute
 
 In MySQL mode the `getSequence()` function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
 
@@ -256,7 +273,7 @@ the BioMart webservice interprets this as return everything from the given chrom
 Putting our selected attributes and filters into getBM gives:
 
 
-```{r task10b, eval=TRUE, echo=TRUE}
+```{r task10b}
 getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'), 
       filters = c('chr_name','start','end'), 
       values = list(8,148350,148612), 
@@ -269,7 +286,7 @@ getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'),
 The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
-```{r getLDS, eval=TRUE, echo=TRUE}
+```{r getLDS}
 human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
@@ -281,13 +298,21 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 # Using archived versions of Ensembl
 
 It is possible to query archived versions of Ensembl through `r Biocpkg("biomaRt")`.
+
+<!-- 
+######################################
+I dont think the archive=TRUE version works anymore.  The registry of archives is out-of-date
+and none of them are live now.  Identifying the host is far more reliable
+Mike Smith - 20/10/2016
+######################################
+
 There are currently two ways to access archived versions.
 
-## Using the archive=TRUE 
+## Using `archive = TRUE` 
 First we list the available Ensembl archives by using the `listMarts()` function and setting the archive attribute to TRUE.
 Note that not all archives are available this way and it seems that recently this only gives access to few archives if you don't see the version of the archive you need please look at the 2nd way to access archives.
 ```{r archiveMarts1}
-listMarts(archive=TRUE)
+listMarts(archive = TRUE)
 ``` 
 Next we select the archive we want to use using the `useMart()` function, again setting the archive attribute to TRUE and giving the full name of the BioMart e.g. ensembl_mart_46.
 
@@ -299,14 +324,26 @@ If you don't know the dataset you want to use could first connect to the BioMart
 After you selected the BioMart database and dataset, queries can be performed in the same way as when using the current BioMart versions.
 
 ## Accessing archives through specifying the archive host
+-->
 
-Use the <http://www.ensembl.org> website and go down the bottom of the page.  Click on 'view in Archive' and select the archive you need.  Copy the url and use that url as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
+`r Biocpkg("biomaRt")` provides the function `listEnsemblArchives()` to view the available archives.  This function takes no arguments, and produces a table containing the names of the available archived versions, the date they were first available, and the URL where they can be accessed.
+
+```{r archiveMarts, echo = TRUE, eval = TRUE}
+listEnsemblArchives()
+```
+
+Alternatively, one can use the <http://www.ensembl.org> website to find archived version.  From the main page scroll down the bottom of the page, click on 'view in Archive' and select the archive you need.  
+
+*You will notice that there is an archive URL even for the current release of Ensembl.  It can be useful to use this if you wish to ensure that script you write now will return exactly the same results in the future.  Using `www.ensembl.org` will always access the current release, and so the data retrieved may change over time as new releases come out.*
+
+Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
 
 
 ```{r archiveMarts3, echo = TRUE, eval = TRUE}
-listMarts(host='may2009.archive.ensembl.org')
-ensembl54=useMart(host='may2009.archive.ensembl.org', biomart='ENSEMBL_MART_ENSEMBL')
-ensembl54=useMart(host='may2009.archive.ensembl.org', biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl')
+listMarts(host = 'may2009.archive.ensembl.org')
+ensembl54 <- useMart(host='may2009.archive.ensembl.org', 
+                     biomart='ENSEMBL_MART_ENSEMBL', 
+                     dataset='hsapiens_gene_ensembl')
 ```
 
 
@@ -322,7 +359,7 @@ listDatasets(wormbase)
 wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
 head(listFilters(wormbase))
 head(listAttributes(wormbase))
-getBM(attributes = c("external_gene_id","ensembl_transcript_id","transcript_biotype"), 
+getBM(attributes = c("external_gene_id", "wbps_transcript_id", "transcript_biotype"), 
       filters="gene_name", 
       values=c("unc-26","his-33"), 
       mart=wormbase)
