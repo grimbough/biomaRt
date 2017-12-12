@@ -263,7 +263,7 @@ listDatasets <- function(mart, verbose = FALSE) {
   request = paste0(martHost(mart), sep, "type=datasets&requestid=biomaRt&mart=", martBM(mart))
   bmResult = bmRequest(request = request, verbose = verbose)
   con = textConnection(bmResult)
-  txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE)
+  txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE, quote = "\"")
   #txt = tryCatch(scan(request, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
   close(con)
    
