@@ -73,7 +73,7 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
 #BioMart databases are present                        #
 #######################################################
 
-listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80,includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, ensemblRedirect = TRUE, verbose = FALSE){
+listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80, includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, ensemblRedirect = TRUE, verbose = FALSE){
   
     request = NULL
     if(is.null(mart)){

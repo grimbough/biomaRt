@@ -2,6 +2,9 @@ language: r
 sudo: false
 cache: packages
 
+before_install:
+  - tlmgr install bera
+
 r:
   - devel
 bioc_required: true
