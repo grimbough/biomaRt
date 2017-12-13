@@ -4,7 +4,8 @@ import(RCurl,XML)
 importFrom(utils, edit, head, read.table)
 importFrom(AnnotationDbi, keys, columns, keytypes, select)
 importFrom(progress, progress_bar)
-importFrom(stringr, str_extract_all)
+importFrom(stringr, str_extract_all, str_match)
+importFrom(httr, POST, content)
 
 #for some reason RCurl needs to have findHTTPHeaderEncoding exported -
 #remove it from the exports if this ever gets fixed

@@ -571,11 +571,14 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         ## we choose a separator based on whether '?redirect=no' is present
         sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
         
-        postRes = tryCatch(postForm(paste0(martHost(mart), sep),"query" = fullXmlQuery), 
-                           error = function(e) {
-                               stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.") 
-                               }
-                           )
+        ## postRes = tryCatch(postForm(paste0(martHost(mart), sep),"query" = fullXmlQuery), 
+        ##                   error = function(e) {
+        ##                       stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.") 
+        ##                       }
+        ##                   )
+        postRes <- .submitQuery(host = paste0(martHost(mart), sep),
+                                query = fullXmlQuery)
+        
         if(verbose){
             writeLines("#################\nResults from server:")
             print(postRes)

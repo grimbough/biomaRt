@@ -7,6 +7,8 @@ BUG FIXES
     description of one or more datasets included an apostrophe (introduced
     with new primate species in Ensembl).
     o Caught scenario where ensemblRedirect=FALSE was still being ignored.
+    o Changed query submission when redirection is detected to cope with 
+    apparently new behaviour of the Ensembl mirrors.
     
     
 CHANGES IN VERSION 2.34.0

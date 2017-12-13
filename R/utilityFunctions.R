@@ -133,7 +133,7 @@
 
 #' it seems like pretty common practice for users to copy and paste the host
 #' name from a browser if they're not accessing Ensembl.  Typically this will
-#' include the "http://" and maybe a trailing "/" and this messes up or
+#' include the "http://" and maybe a trailing "/" and this messes up our
 #' paste the complete URL strategy and produces something invalid.  
 #' This function tidies that up to catch common variants.
 .cleanHostURL <- function(host) {
@@ -148,3 +148,22 @@
     
     return(host)
 }
+
+#' ensembl redirection doesn't seem to be working properly as of 12-12-2017
+#' This is a wrapper function to catch POSTS that are redirected and fail
+#' The new host is captured from the header and used in a re-submission
+.submitQuery <- function(host, query) {
+    res <- httr::POST(url = host,
+                      body = list('query' = query))
+
+    if(res$all_headers[[1]]$status == 302) {
+        host <- stringr::str_match(string = res$all_headers[[1]]$headers$location,
+                               pattern = "//([a-zA-Z./]+)\\??;?redirectsrc")[,2]
+        res <- httr::POST(url = host,
+                          body = list('query' = query)
+                          )
+    }
+    return( content(res) )
+}
+
+
