@@ -218,7 +218,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     mart <- new("Mart", 
                 biomart = biomart,
                 vschema = marts$vschema[mindex], 
-                host = paste0("http://", marts$host[mindex], ":", 
+                host = paste0(host, ":", 
                               marts$port[mindex], marts$path[mindex], 
                               redirect), 
                 archive = archive)
