@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.35.3
+Version: 2.35.4
 Title: Interface to BioMart databases (e.g. Ensembl, COSMIC, Wormbase
         and Gramene)
 Authors@R: c(person("Steffen", "Durinck", role = c("aut"), 
@@ -7,7 +7,7 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
         person("Wolfgang", "Huber", role="aut"),
         person("Sean", "Davis", role="ctb", email = "sdavis2@mail.nih.gov"),
         person("Francois", "Pepin", role="ctb"),
-        person(given = "Vince", middle = "S", family = "Buffalo", role="ctb"),
+        person(given = "Vince S", family = "Buffalo", role="ctb"),
         person("Mike", "Smith", role=c("ctb", "cre"), 
             email = "grimbough@gmail.com"))
 Depends: methods

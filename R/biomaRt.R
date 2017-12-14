@@ -747,7 +747,14 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
   if(verbose){
     cat(paste(xmlQuery,"\n", sep=""))
   }
-  postRes = postForm(paste(martHost(mart),"?",sep=""),"query"=xmlQuery)
+  #postRes = postForm(paste(martHost(mart),"?",sep=""),"query"=xmlQuery)
+  
+  ## we choose a separator based on whether '?redirect=no' is present
+  sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+  ## POST query
+  postRes <- .submitQuery(host = paste0(martHost(mart), sep),
+                          query = xmlQuery)
+  
   ## 10-01-2014
   if(length(grep("^Query ERROR", postRes))>0L)
      stop(postRes)  
