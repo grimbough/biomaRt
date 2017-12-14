@@ -4,7 +4,7 @@
 ## a data frame containing the versions and their URL
 listEnsemblArchives <- function() {
     
-    html <- htmlParse("http://www.ensembl.org/info/website/archives/index.html")
+    html <- htmlParse("http://www.ensembl.org/info/website/archives/index.html?redirect=no")
     
     archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
     
