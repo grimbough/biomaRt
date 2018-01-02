@@ -7,8 +7,6 @@ them.}
 
 \usage{listEnsemblArchives()}
 
-\arguments{}
-
 \author{Mike Smith} 
 
 \examples{

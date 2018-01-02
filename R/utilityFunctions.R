@@ -107,8 +107,10 @@
 
 .generateFilterXML <- function(filters = "", values, mart) {
     
-    ## return emptry string if no filter specified
-    if(filters[1]== "") {
+    ## return empty string if no filter specified & this isn't ensembl
+    ## specifying no filter is generally bad, as it will get 'everything'
+    ## and we might encounter the time out problem
+    if(filters[1] == "") {
         return("")
     }
     ## if we have multiple filters, the values must be specified as a list.
@@ -154,14 +156,15 @@
 #' The new host is captured from the header and used in a re-submission
 .submitQuery <- function(host, query) {
     res <- httr::POST(url = host,
-                      body = list('query' = query))
+                      body = list('query' = query),
+                      config = list(timeout(30)))
 
     if(res$all_headers[[1]]$status == 302) {
         host <- stringr::str_match(string = res$all_headers[[1]]$headers$location,
                                pattern = "//([a-zA-Z./]+)\\??;?redirectsrc")[,2]
         res <- httr::POST(url = host,
-                          body = list('query' = query)
-                          )
+                          body = list('query' = query),
+                          config = list(timeout(30)))
     }
     return( content(res) )
 }
