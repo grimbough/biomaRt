@@ -143,6 +143,12 @@
     ## strip trailing slash
     host <- gsub(pattern = "/$", replacement = "", x = host)
     
+    ## just supplying 'ensembl.org' is no longer handled correctly
+    ## stick 'www' infront if we see this
+    if( !grepl(pattern = "^[[:graph:]]+ensembl\\.org$", x = host) ) {
+        host = "www.ensembl.org"
+    }
+    
     ## only prepend http if needed 
     if(!grepl(pattern = "^http://|^https://", x = host)) {
         host <- paste0("http://", host)
