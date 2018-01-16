@@ -172,7 +172,9 @@
                           body = list('query' = query),
                           config = list(timeout(30)))
     }
-    return( content(res) )
+    ## content() prints a message about encoding not being supplied 
+    ## for ensembl.org - no default, so we suppress it
+    return( suppressMessages(content(res)) )
 }
 
 
