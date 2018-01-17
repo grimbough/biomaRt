@@ -268,6 +268,11 @@ listDatasets <- function(mart, verbose = FALSE) {
     res = data.frame(dataset     = I(txt[i+1L]),
                      description = I(txt[i+2L]),
                      version     = I(txt[i+4L]))
+    
+    ## sort alphabetically
+    res <- res[ order(res$dataset), ]
+    rownames(res) <- NULL
+    
     return(res)
 }
 
@@ -881,58 +886,6 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh
     return(marts)
 }
 
-useEnsembl <- function(biomart, dataset,host = "www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
-    
-    if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
-        warning("version or GRCh arguments can not be used together with the mirror argument.  Will ignore the mirror argument and connect to default ensembl host") 
-        mirror = NULL
-    }
-    
-    if(!is.null(version)){
-        host = paste("e",version,".ensembl.org",sep="")
-    }	   
-    if(!is.null(GRCh)){
-        if(GRCh == 37){
-            host = paste("grch",GRCh,".ensembl.org",sep="")
-        }
-        else{
-            print("Only 37 can be specified for GRCh version")
-        }
-    }
-    
-    ensemblRedirect <- TRUE
-    if(!is.null(mirror)){
-        if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
-            warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
-                    "default when no mirror is specified is to be redirected to the ",
-                    "closest mirror to your location")
-            
-        } else {
-            host <- paste0(mirror, ".ensembl.org")
-            ensemblRedirect <- FALSE
-        }
-    }
-    
-    if(biomart == "ensembl"){
-        biomart = "ENSEMBL_MART_ENSEMBL"
-    }
-    if(biomart == "snp"){
-        biomart = "ENSEMBL_MART_SNP"
-    }
-    if(biomart == "regulation"){
-        biomart = "ENSEMBL_MART_FUNCGEN"
-    }
-    if(biomart == "vega"){
-        biomart = "ENSEMBL_MART_VEGA"
-    }
-    
-    ens = useMart(biomart = biomart, 
-                  dataset = dataset, 
-                  host = host, 
-                  verbose = verbose, 
-                  ensemblRedirect = ensemblRedirect)	   
-    return(ens)
-}
 
 getGene <- function( id, type, mart){
     martCheck(mart,"ensembl") 
