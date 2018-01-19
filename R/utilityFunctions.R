@@ -163,8 +163,10 @@
 .submitQuery <- function(host, query) {
     res <- httr::POST(url = host,
                       body = list('query' = query),
-                      config = list(timeout(30)))
+                      set_cookies(.cookies = c(redirect_mirror = 'no')),
+                      timeout(60))
 
+    ## now we set the redirection cookie, this code should never be true
     if(res$all_headers[[1]]$status == 302) {
         host <- stringr::str_match(string = res$all_headers[[1]]$headers$location,
                                pattern = "//([a-zA-Z./]+)\\??;?redirectsrc")[,2]
