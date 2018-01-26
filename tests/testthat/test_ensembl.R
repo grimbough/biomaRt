@@ -1,13 +1,18 @@
-# library(biomaRt)
-# context('Testing ensembl specific functions')
+#library(biomaRt)
+
+#context('Testing ensembl specific functions')
+
+#  
+# test_that("Invalid mirror is handled", {
+#     expect_warning(mirror <- .useEnsemblMirror("NOT_A_MIRROR"), "Invalid mirror")
+#     expect_identical(mirror, "www.ensembl.org")
+# })
 # 
-# ## invalid mirror
-# expect_warning(mirror <- .useEnsemblMirror("NOT_A_MIRROR"), "Invalid mirror")
-# expect_identical(mirror, "www.ensembl.org")
-# ## valid mirrors
-# expect_equal(.useEnsemblMirror("uswest"), "uswest.ensembl.org")
-# expect_equal(.useEnsemblMirror("useast"), "useast.ensembl.org")
-# expect_equal(.useEnsemblMirror("asia"), "asia.ensembl.org")
+# that_that("Valid mirrors correctly processed", {
+#     expect_equal(.useEnsemblMirror("uswest"), "uswest.ensembl.org")
+#     expect_equal(.useEnsemblMirror("useast"), "useast.ensembl.org")
+#     expect_equal(.useEnsemblMirror("asia"), "asia.ensembl.org")
+# })
 # 
 # ## requesting specific versions
 # expect_equal(.useEnsemblVersion(version = 84), "e84.ensembl.org")

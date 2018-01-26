@@ -166,7 +166,7 @@
                       set_cookies(.cookies = c(redirect_mirror = 'no')),
                       timeout(60))
 
-    ## now we set the redirection cookie, this code should never be true
+    ## now we set the redirection cookie, this code should never be executed
     if(res$all_headers[[1]]$status == 302) {
         host <- stringr::str_match(string = res$all_headers[[1]]$headers$location,
                                pattern = "//([a-zA-Z./]+)\\??;?redirectsrc")[,2]

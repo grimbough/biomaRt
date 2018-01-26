@@ -30,6 +30,56 @@ listEnsemblArchives <- function() {
 }
 
 
+listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh = NULL, mirror = NULL,verbose = FALSE){
+    
+    if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
+        warning("version or GRCh arguments can not be used together with the mirror argument.  Will ignore the mirror argument and connect to default ensembl host") 
+        mirror = NULL
+    }
+    
+    if(!is.null(version)){
+        host = paste("e",version,".ensembl.org",sep="")
+    }
+    if(!is.null(GRCh)){
+        if(GRCh == 37){ 
+            host = paste("grch",GRCh,".ensembl.org",sep="")	
+        }
+        else{
+            print("Only 37 can be specified for GRCh version")
+        }
+    }
+    
+    if(!is.null(mirror)){
+        if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
+            warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
+                    "default when no mirror is specified is to be redirected to ",
+                    "www.ensembl.org")
+        } else {
+            host <- paste0(mirror, ".ensembl.org")
+        }
+    }
+    
+    marts = listMarts(mart = mart, host = host, verbose = verbose)
+    sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "ensembl"
+    }
+    sel = which(marts$biomart == "ENSEMBL_MART_SNP")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "snp"
+    }
+    sel = which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "regulation"
+    }
+    sel = which(marts$biomart == "ENSEMBL_MART_VEGA")
+    if(length(sel) > 0){ 
+        marts$biomart[sel] = "vega"
+    }
+    return(marts)
+}
+
+
 useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
     
     if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
@@ -57,16 +107,13 @@ useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NUL
         }
     }
     
-    ensemblRedirect <- TRUE
     if(!is.null(mirror)){
         if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
             warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
-                    "default when no mirror is specified is to be redirected to the ",
-                    "closest mirror to your location")
-            
+                    "default when no mirror is specified is to be redirected to ",
+                    "www.ensembl.org")
         } else {
             host <- paste0(mirror, ".ensembl.org")
-            ensemblRedirect <- FALSE
         }
     }
     
@@ -86,7 +133,6 @@ useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NUL
     ens = useMart(biomart = biomart, 
                   dataset = dataset, 
                   host = host, 
-                  verbose = verbose, 
-                  ensemblRedirect = ensemblRedirect)	   
+                  verbose = verbose)	   
     return(ens)
 }

@@ -20,13 +20,7 @@ in the future.  A better alternative is to specify the url of the archived
 BioMart you want to access.  For Ensembl you can view the list of archives 
 using \code{\link{listEnsemblArchives}}}
 \item{ssl.verifypeer}{Set SSL peer verification on or off.  By default ssl.verifypeer is set to TRUE}
-\item{ensemblRedirect}{By default when you access Ensembl BioMart it will 
-redirect you to your local mirror, even if you have set a region specific 
-mirror in the \code{host} argument.  By setting this argument to \code{FALSE} 
-you can override this behaviour and force access to your specified \code{host}.
-Defaults to \code{TRUE} to prevent overwhelming the main Ensembl site.
-If you are accessing a BioMart instance other than Ensembl this should have
-no effect.}
+\item{ensemblRedirect}{This argument has now been deprecated.}
 \item{verbose}{Give detailed output of what the method is doing, for debugging purposes}
 }
 
@@ -40,7 +34,7 @@ page.  If you browse to the provided URL and find a page that starts with
 the issue on the Bioconductor support site: https://support.bioconductor.org
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, Mike Smith} 
 
 \examples{
 if(interactive()){

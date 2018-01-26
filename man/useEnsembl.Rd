@@ -13,7 +13,7 @@ useEnsembl(biomart, dataset, host="www.ensembl.org", version = NULL,
 \item{host}{Host to connect to if different then www.ensembl.org}
 \item{version}{Ensembl version to connect to when wanting to connect to an archived Ensembl version}
 \item{GRCh}{GRCh version to connect to if not the current GRCh38, currently this can only be 37}
-\item{mirror}{Specify an Ensembl mirror to connect to.  The valid options here are 'www', 'uswest', 'useast', 'asia'.  If no mirror is specified the default will be used which redirects you to the closest mirror to your location.}
+\item{mirror}{Specify an Ensembl mirror to connect to.  The valid options here are 'www', 'uswest', 'useast', 'asia'.  If no mirror is specified the primary site at www.ensembl.org will be used.}
 \item{verbose}{Give detailed output of what the method is doing while in
   use, for debugging}
 }
