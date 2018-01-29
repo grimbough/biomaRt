@@ -160,7 +160,7 @@
 #' ensembl redirection doesn't seem to be working properly as of 12-12-2017
 #' This is a wrapper function to catch POSTS that are redirected and fail
 #' The new host is captured from the header and used in a re-submission
-.submitQuery <- function(host, query) {
+.submitQueryXML <- function(host, query) {
     res <- httr::POST(url = host,
                       body = list('query' = query),
                       set_cookies(.cookies = c(redirect_mirror = 'no')),

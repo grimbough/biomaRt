@@ -1,16 +1,21 @@
 \name{getXML}
 \alias{getXML}
 \title{Retrieves information from the BioMart database using an XML query}
-\description{This function is a low level query function bypassing lots of biomaRts internal controls.  It allows for a direct XML query to a known BioMart webservice host.}
+\description{DEPRECATED! - This function is a low level query function bypassing lots of biomaRts internal controls.  It allows for a direct XML query to a known BioMart webservice host.}
 
-\usage{getXML(host="http://www.biomart.org/biomart/martservice?", xmlquery)}
+\usage{getXML(host="http://www.ensembl.org/biomart/martservice?", xmlquery)}
 
 \arguments{
-  \item{host}{URL to BioMart webservice, is set to http://www.biomart.org/biomart/martservice? by default}
+  \item{host}{URL to BioMart webservice, is set to http://www.ensembl.org/biomart/martservice? by default}
   \item{xmlquery}{XML query that needs to be send to the webservice}
 }
 
-\author{Steffen Durinck} 
+\details{This function has now been deprecated.  Similar functionality can be 
+achieved using the unexported function `\code{biomaRt:::.submitQueryXML}.  If 
+you are still using this function and this affects your work, please contact 
+the package maintainer at https://github.com/grimbough/biomaRt/issues}
+
+\author{Steffen Durinck, Mike Smith} 
 
 \examples{
 if(interactive()){

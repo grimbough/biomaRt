@@ -563,7 +563,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         ## we choose a separator based on whether '?redirect=no' is present
         sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
         
-        postRes <- .submitQuery(host = paste0(martHost(mart), sep),
+        postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                                 query = fullXmlQuery)
         
         if(verbose){
@@ -739,7 +739,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     ## we choose a separator based on whether '?redirect=no' is present
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     ## POST query
-    postRes <- .submitQuery(host = paste0(martHost(mart), sep),
+    postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                             query = xmlQuery)
     
     ## 10-01-2014
@@ -774,7 +774,14 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
 #getXML
 ######################
 
-getXML <- function(host="http://www.biomart.org/biomart/martservice?", xmlquery){
+getXML <- function(host="http://www.ensembl.org/biomart/martservice?", xmlquery){
+    
+    ## Deprecated 29-01-2018
+    .Deprecated("biomaRt:::.submitQueryXML", 
+                msg = paste0("Function 'getXML()' is deprecated.\n",
+                "Use 'biomaRt:::.submitQueryXML' instead\n",
+                "See help('getXML') for further details"))
+    
     pf = postForm(host,"query"=xmlquery)
     con = textConnection(pf)
     result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
