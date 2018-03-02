@@ -21,12 +21,15 @@ listEnsemblArchives <- function() {
         return( c(x, version) )
     })
     
+    current <- ifelse(stringr::str_detect(archives, "- this site"), "*", "")
+    
     tab <- do.call("rbind", extracted)
-    colnames(tab) <- c("url", "name", "date", "version")
-    tab <- tab[,c(2,3,1,4)]
+    tab <- cbind(tab, current)
+    colnames(tab) <- c("url", "name", "date", "version", "current_release")
+    tab <- tab[,c(2,3,1,4,5)]
     tab[,'url'] <- tolower(tab[,'url'])
     
-    return(tab)
+    return(as.data.frame(tab))
 }
 
 
