@@ -90,7 +90,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         
         host <- .cleanHostURL(host)
         if(archive) {
-            warning("The archive = TRUE argument is now deprecated.\nUse listEnsemblMarts() to find the URL to directly query an Ensembl archive.")
+            warning("The archive = TRUE argument is now deprecated.\nUse listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
             request = paste0(host, ":", port, path, "?type=registry_archive&requestid=biomaRt")
         } 
         else {
@@ -233,10 +233,16 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
                 archive = archive)
     
     if(length(grep("archive",martHost(mart)) > 0)){
+        
+        ## hack to work around redirection of most recent mirror URL
+        archives <- listEnsemblArchives()
+        current_release <- archives[archives$current_release == "*", 'url']
+        mart@host <- stringr::str_replace(mart@host, pattern = current_release, "http://www.ensembl.org")
+        
         if(length(grep(reqHost,martHost(mart))) == 0){
-            writeLines(paste("Note: requested host was redirected from ", reqHost, " to " ,martHost(mart),sep=""))
-            writeLines("When using archived Ensembl versions this sometimes can result in connecting to a newer version than the intended Ensembl version")
-            writeLines("Check your ensembl version using listMarts(mart)")
+            message("Note: requested host was redirected from ", reqHost, " to " , martHost(mart))
+            message("This often occurs when connecting to the archive URL for the current Ensembl release")
+            message("Check your ensembl version using listEnsemblArchives()")
         }
     }
     
