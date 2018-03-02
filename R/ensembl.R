@@ -25,11 +25,15 @@ listEnsemblArchives <- function() {
     
     tab <- do.call("rbind", extracted)
     tab <- cbind(tab, current)
-    colnames(tab) <- c("url", "name", "date", "version", "current_release")
-    tab <- tab[,c(2,3,1,4,5)]
-    tab[,'url'] <- tolower(tab[,'url'])
+   # tab <- tab[,c(2,3,1,4,5)]
     
-    return(as.data.frame(tab))
+    dframe <- data.frame("name" = as.character(tab[,2]), 
+                         "date" = as.character(tab[,3]), 
+                         "url" = tolower(as.character(tab[,1])),
+                         "version" = as.character(tab[,4]), 
+                         "current_release" = as.character(tab[,5]),
+                         stringsAsFactors = FALSE)
+    return(dframe)
 }
 
 
