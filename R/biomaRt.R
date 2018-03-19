@@ -240,9 +240,9 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
         mart@host <- stringr::str_replace(mart@host, pattern = current_release, "http://www.ensembl.org")
         
         if(length(grep(reqHost,martHost(mart))) == 0){
-            message("Note: requested host was redirected from ", reqHost, " to " , martHost(mart))
+            message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
             message("This often occurs when connecting to the archive URL for the current Ensembl release")
-            message("Check your ensembl version using listEnsemblArchives()")
+            message("You can check the current version number using listEnsemblArchives()")
         }
     }
     
