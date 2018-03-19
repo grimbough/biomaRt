@@ -10,6 +10,10 @@ BUG FIXES
     o Changed query submission when redirection is detected to cope with 
     apparently new behaviour of the Ensembl mirrors.
     
+MINOR CHANGES
+
+    o Increase query timeout limit to 5 minutes.
+    
     
 CHANGES IN VERSION 2.34.0
 -------------------------
