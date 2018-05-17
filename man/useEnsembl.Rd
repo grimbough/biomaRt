@@ -1,7 +1,15 @@
 \name{useEnsembl}
 \alias{useEnsembl}
 \title{Connects to the selected BioMart database and dataset hosted by Ensembl}
-\description{A first step in using the biomaRt package is to select a BioMart database and dataset to use.  The useEnsembl function enables one to connect to a specified BioMart database and dataset hosted by Ensembl without having to specify the Ensembl URL.  To know which BioMart databases are available see the listEnsembl function.  To know which datasets are available within a BioMart database, first select the BioMart database using useMart and then use the listDatasets function on the selected BioMart, see listDatasets function.}
+\description{A first step in using the biomaRt package is to select a BioMart
+database and dataset to use.  The \code{useEnsembl} function enables one to 
+connect to a specified BioMart database and dataset hosted by Ensembl without 
+having to specify the Ensembl URL.  To know which BioMart databases are 
+available see the \code{\link{listEnsembl}} function.  To know which datasets 
+are available within a BioMart database, first select the BioMart database 
+using \code{useEnsembl} and then use the \code{\link{listDatasets}} function 
+on the selected Mart object.}
+
 \usage{
 useEnsembl(biomart, dataset, host="www.ensembl.org", version = NULL, 
             GRCh = NULL, mirror = NULL, verbose = FALSE)
@@ -10,7 +18,7 @@ useEnsembl(biomart, dataset, host="www.ensembl.org", version = NULL,
 \arguments{
 \item{biomart}{BioMart database name you want to connect to. Possible database names can be retrieved with the function \code{\link{listEnsembl}}}
 \item{dataset}{Dataset you want to use.  To see the different datasets available within a biomaRt you can e.g. do:  mart = useEnsembl('ENSEMBL_MART_ENSEMBL'), followed by listDatasets(mart).}
-\item{host}{Host to connect to if different then www.ensembl.org}
+\item{host}{Host to connect to if different from www.ensembl.org}
 \item{version}{Ensembl version to connect to when wanting to connect to an archived Ensembl version}
 \item{GRCh}{GRCh version to connect to if not the current GRCh38, currently this can only be 37}
 \item{mirror}{Specify an Ensembl mirror to connect to.  The valid options here are 'www', 'uswest', 'useast', 'asia'.  If no mirror is specified the primary site at www.ensembl.org will be used.}
@@ -18,13 +26,15 @@ useEnsembl(biomart, dataset, host="www.ensembl.org", version = NULL,
   use, for debugging}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck & Mike Smith} 
 
 \examples{
 if(interactive()){
 
-mart <- useEnsembl("ENSEMBL_MART_ENSEMBL")
+mart <- useEnsembl("ensembl")
 
+## using the US West mirror
+us_mart <- useEnsembl(biomart = "ensembl", mirror = "uswest")
 }
 }
 \keyword{methods}

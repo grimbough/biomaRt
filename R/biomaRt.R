@@ -111,10 +111,18 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
     
     ## check this looks like the MartRegistry XML, otherwise throw an error
     if(!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
-        stop('Unexpected format to the list of available marts.\n',
-             'Please check the following URL manually, ',
-             'and try ?listMarts for advice.\n',
-             request)
+        
+        if(grepl(x = registry, pattern = "status.ensembl.org")) {
+            stop("Your query has been redirected to http://status.ensembl.org ",
+                 "indicating this Ensembl service is currently unavailable",
+                 "\nLook at ?useEnsembl for details on how to try a mirror site.",
+                 call. = FALSE)
+        } else {
+            stop('Unexpected format to the list of available marts.\n',
+                 'Please check the following URL manually, ',
+                'and try ?listMarts for advice.\n',
+                request)
+        }
     }
     registry = xmlTreeParse(registry, asText=TRUE)
     registry = registry$doc$children[[1]]
@@ -577,7 +585,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
             print(postRes)
         }
         if(!(is.character(postRes) && (length(postRes)==1L)))
-            stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. Please report this to the mailing list.")
+            stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. \nPlease report this on the support site at http://support.bioconductor.org")
         
         if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
             
@@ -599,7 +607,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
             
             if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
                 print(head(result))
-                stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
+                stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. \nPlease report this on the support site at http://support.bioconductor.org")
             }
         }
         
@@ -763,7 +771,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
         res_attributes <- c(attributes,attributesL)
         if(!(is(result, "data.frame") && (ncol(result)==length(res_attributes)))) {
             print(head(result))
-            stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. Please report this to the mailing list.")
+            stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. \nPlease report this on the support site at http://support.bioconductor.org")
         } 
         if(!bmHeader){  #assumes order of results same as order of attibutes in input
             colnames(result) = res_attributes
