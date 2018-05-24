@@ -15,8 +15,9 @@ marts there are to connect to.}
 \item{port}{port to use in HTTP communication} 
 \item{includeHosts}{boolean to indicate if function should return host of the BioMart databases}
 \item{archive}{Boolean to indicate if you want to access archived versions of 
-BioMart database. Note that this argument is now deprecated and will be removed
-in the future.  A better alternative is to specify the url of the archived 
+BioMart database. Note that this argument is now defunct and setting this value
+to \code{TRUE} will produce an error.
+A better alternative is to specify the url of the archived 
 BioMart you want to access.  For Ensembl you can view the list of archives 
 using \code{\link{listEnsemblArchives}}}
 \item{ssl.verifypeer}{Set SSL peer verification on or off.  By default ssl.verifypeer is set to TRUE}

@@ -83,18 +83,11 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
     request = NULL
     if(is.null(mart)){
         
-        ## adding option to force use of specificed host with ensembl
-        #redirect <- ifelse(!ensemblRedirect && grepl(x = host, pattern = "ensembl.org"), 
-        #                   "&redirect=no",
-        #                   "")
-        
         host <- .cleanHostURL(host)
         if(archive) {
-            warning("The archive = TRUE argument is now deprecated.\nUse listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
-            request = paste0(host, ":", port, path, "?type=registry_archive&requestid=biomaRt")
+            stop("The archive = TRUE argument is now defunct.\nUse listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
         } 
         else {
-            #request = paste0(host, ":", port, path, "?type=registry&requestid=biomaRt", redirect)	
             request = paste0(host, ":", port, path, "?type=registry&requestid=biomaRt")
         }
     }
@@ -170,12 +163,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         return(marts)
     }
     else{
-        if(archive){
-            ret = data.frame(biomart = as.character(marts$database),version = as.character(marts$version), stringsAsFactors=FALSE)
-        }
-        else{
-            ret = data.frame(biomart = as.character(marts$biomart),version = as.character(marts$version), stringsAsFactors=FALSE)
-        }
+        ret = data.frame(biomart = as.character(marts$biomart),version = as.character(marts$version), stringsAsFactors=FALSE)
         return(ret)
     } 
 }

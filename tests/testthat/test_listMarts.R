@@ -1,5 +1,28 @@
-# library(biomaRt)
-# context('Testing listMarts() function')
-# 
-# ## we expect this to error as the URL is out of date.
-# expect_error(useMart("ENSEMBL_MART_ENSEMBL",dataset="mmusculus_gene_ensembl", host="www.biomart.org"), "Unable to determine the list of available marts")
+library(biomaRt)
+
+###############################
+context('listMarts()')
+###############################
+
+test_that("listMarts retruns a data.frame", {
+    
+    ensembl_marts <- listMarts(host = "www.ensembl.org")
+    expect_is(ensembl_marts, class = "data.frame")
+    expect_identical(colnames(ensembl_marts),
+                     c("biomart", "version"))
+    
+})
+
+test_that("Error when archive = TRUE", {
+    
+    expect_error(listMarts(host = "www.ensembl.org", archive = TRUE),
+                 regexp = "Use listEnsemblArchives")
+       
+})
+
+test_that("Error when old URL is used", {
+    
+    expect_error(listMarts(host="www.biomart.org"), 
+                 "Unexpected format to the list of available marts")
+    
+})

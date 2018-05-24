@@ -82,8 +82,13 @@
             if(filter %in% listFilters(mart, what = "name") && 
                grepl('boolean', filterType(filter = filter, mart = mart)) ) {
                 if(!is.logical(values[[filter]])) 
-                    stop("biomaRt error:\n", 
-                         filter, " is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved.")
+                    stop("'", filter, 
+                         "' is a boolean filter and needs a ",
+                         "corresponding logical value of TRUE or FALSE to ",
+                         "indicate if the query should retrieve all data that ",
+                         "fulfill the boolean or alternatively that all data ", 
+                         "that not fulfill the requirement should be retrieved.", 
+                         call. = FALSE)
                 val <- ifelse(values[[filter]], yes = 0, no = 1)
                 val <- paste0("' excluded = \"", val, "\" ")
                 
@@ -122,7 +127,6 @@
         values <- values[,1]
     }
 
-    
     if(!is.list(values)){
         values <- list(values)
     }
@@ -131,6 +135,8 @@
     values <- .splitValues(list(values))
     
     filterXML_list <- lapply(values, .createFilterXMLchunk, mart)
+    
+    return(filterXML_list)
 }
 
 #' it seems like pretty common practice for users to copy and paste the host

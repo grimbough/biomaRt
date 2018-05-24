@@ -30,3 +30,4 @@ Description: In recent years a wealth of biological data has become available
 License: Artistic-2.0
 LazyLoad: yes
 NeedsCompilation: no
+Encoding: UTF-8
