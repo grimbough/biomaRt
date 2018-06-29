@@ -33,13 +33,13 @@ setReplaceMethod("martAttributes","Mart",function(obj,value){
   obj
 })
 
-setGeneric("martAttribPointers",def=function(obj,...)standardGeneric("martAttribPointers"))
-setMethod("martAttribPointers",signature("Mart"),function(obj) obj@attributePointer)
-setGeneric("martAttribPointers<-", function(obj, value) standardGeneric("martAttribPointers<-"))
-setReplaceMethod("martAttribPointers","Mart",function(obj,value){
-  obj@attributePointer <- value
-  obj
-})
+# setGeneric("martAttribPointers",def=function(obj,...)standardGeneric("martAttribPointers"))
+# setMethod("martAttribPointers",signature("Mart"),function(obj) obj@attributePointer)
+# setGeneric("martAttribPointers<-", function(obj, value) standardGeneric("martAttribPointers<-"))
+# setReplaceMethod("martAttribPointers","Mart",function(obj,value){
+#   obj@attributePointer <- value
+#   obj
+# })
 
 setGeneric("martFilters",def=function(obj,...)standardGeneric("martFilters"))
 setMethod("martFilters",signature("Mart"),function(obj) obj@filters)

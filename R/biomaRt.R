@@ -212,7 +212,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
-    if(archive) biomart = marts$biomart[mindex]
+    #if(archive) biomart = marts$biomart[mindex]
     if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     
@@ -227,8 +227,8 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
                 host = paste0(host, ":", 
                               #marts$port[mindex],
                               port,
-                              marts$path[mindex]), 
-                archive = archive)
+                              marts$path[mindex]))#, 
+               # archive = archive)
     
     if(length(grep("archive",martHost(mart)) > 0)){
         
@@ -393,10 +393,11 @@ checkDataset <- function(dataset, mart) {
 
 ## Select a BioMart dataset             
 useDataset <- function(dataset, mart, verbose = FALSE){
-    if(missing(mart) || class(mart)!="Mart") stop("No valid Mart object given, specify a Mart object with the attribute mart")
+    if(missing(mart) || class(mart)!="Mart") 
+        stop("No valid Mart object given, specify a Mart object with the attribute mart")
     
     if(missing(dataset)) {
-        stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets function.")
+        stop("No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets() function.")
     } else {
         dataset <- checkDataset(dataset = dataset, mart = mart)
     }
@@ -616,6 +617,11 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     
     martCheck(mart)
     martCheck(martL)
+    
+    if(martHost(mart) != martHost(martL)) {
+        stop('Both datasets must be located on the same host.')
+    }
+    
     invalid = !(attributes %in% listAttributes(mart, what="name"))
     if(any(invalid))
         stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),

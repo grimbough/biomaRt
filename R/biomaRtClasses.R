@@ -5,12 +5,12 @@ setClass("Mart",
                         version = "character",
                         dataset = "character",
                         filters = "data.frame",
-                        attributes = "data.frame",
-                        archive = "logical"
+                        attributes = "data.frame"#,
+                       # archive = "logical"
                         ),
          prototype(dataset = "",
-                   vschema="default",
-                   archive = FALSE
+                   vschema="default"#,
+                  # archive = FALSE
                    )
-         );
+         )
 
