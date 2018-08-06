@@ -1,16 +1,25 @@
 \name{listAttributes}
 \alias{listAttributes}
+\alias{searchAttributes}
 \title{lists the attributes available in the selected dataset}
 \description{Attributes are the outputs of a biomaRt query, they are the information we want to retrieve.  For example if we want to retrieve all entrez gene identifiers of genes located on chromosome X, entrezgene will be the attribute we use in the query.  The listAttributes function lists the available attributes in the selected dataset}
-\usage{listAttributes(mart, page,what = c("name","description","page"))}
 
-\arguments{
-\item{mart}{object of class Mart created using the useMart function}
-\item{page}{Show only the attributes that belong to the specified attribute page.}
-\item{what}{vector of types of information about the attributes that need to be displayed.  Can have values like name, description, fullDescription, page}
+\usage{
+    listAttributes(mart, page,what = c("name","description","page"))
+    searchAttributes(mart, pattern)
 }
 
-\author{Steffen Durinck} 
+\arguments{
+    \item{mart}{object of class Mart created using the useMart function}
+    \item{page}{Show only the attributes that belong to the specified attribute page.}
+    \item{what}{vector of types of information about the attributes that need to be displayed.  
+    Can have values like name, description, fullDescription, page}
+    \item{pattern}{Character vector defining the regular expression (\code{\link[base]{regex})}
+    to be used for the search.  If left blank the default is to use ".*" which will match 
+    everything.}
+}
+
+\author{Steffen Durinck, Mike Smith} 
 
 \examples{
 

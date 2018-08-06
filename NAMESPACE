@@ -13,7 +13,7 @@ export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets,
        useDataset, listEnsembl, useEnsembl, listAttributes, listFilters, 
        getBM, getXML,getLDS, attributePages, filterOptions,filterType, 
        getBMlist, NP2009code, keys, columns, keytypes, select,
-       listEnsemblArchives)
+       listEnsemblArchives, searchAttributes, searchDatasets, searchFilters)
 
 exportClasses(Mart)
 

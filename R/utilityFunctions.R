@@ -186,3 +186,77 @@
 }
 
 
+##############################################
+## searching Attributes, Filters, and Datasets
+##############################################
+
+#' given a data.frame, searches every column for
+#' the value in 'pattern'
+#' returns index of rows containing a match
+.searchInternal <- function(pattern, data) {
+    colIdx <- vapply(data, 
+                     FUN = stringr::str_detect, 
+                     FUN.VALUE = logical(length = nrow(data)), 
+                     pattern = pattern)
+    rowIdx <- apply(colIdx, 1, any)
+    
+    ## return either the matching rows, or NULL
+    if(any(rowIdx)) {
+        return(data[rowIdx,])
+    } else {
+        message('No matching datasets found')
+        return(NULL)
+    }
+}
+
+#' 
+searchDatasets <- function(mart, pattern) {
+    
+    if(missing(mart))
+        stop("Argument 'mart' must be specified")
+    if(missing(pattern)) 
+        pattern = ".*"
+    
+    datasets <- listDatasets(mart)
+    res <- .searchInternal(pattern = pattern, data = datasets)
+    
+    if(is.null(res))
+        invisible(res)
+    else
+        res
+}
+
+
+searchAttributes <- function(mart, pattern) {
+    
+    if(missing(mart))
+        stop("Argument 'mart' must be specified")
+    if(missing(pattern)) 
+        pattern = ".*"
+    
+    attributes <- listAttributes(mart)
+    res <- .searchInternal(pattern = pattern, data = attributes)
+    
+    if(is.null(res))
+        invisible(res)
+    else
+        res
+}
+
+searchFilters <- function(mart, pattern) {
+    
+    if(missing(mart))
+        stop("Argument 'mart' must be specified")
+    if(missing(pattern)) 
+        pattern = ".*"
+    
+    filters <- listFilters(mart)
+    res <- .searchInternal(pattern = pattern, data = filters)
+    
+    if(is.null(res))
+       invisible(res)
+    else
+        res
+}
+
+

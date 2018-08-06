@@ -1,12 +1,16 @@
 \name{listFilters}
 \alias{listFilters}
-\title{lists the filters available in the selected dataset}
+\alias{searchFilters}
+\title{List or search the filters available in the selected dataset}
 \description{Filters are what we use as inputs for a biomaRt query.
   For example, if we want to retrieve all entrezgene identifiers on
   chromosome X, \code{chromosome} will be the filter,
   with corresponding value X.}
 
-\usage{listFilters(mart, what = c("name", "description"))}
+\usage{
+    listFilters(mart, what = c("name", "description"))
+    searchFilters(mart, pattern)
+}
 
 \arguments{
 \item{mart}{object of class \code{Mart} created using the \code{\link{useMart}} function}
@@ -21,9 +25,11 @@
   \code{operation},
   \code{filters8},
   \code{filters9}.}
+\item{pattern}{Character vector defining the regular expression (\code{\link[base]{regex})}
+to be used for the search.  If left blank the default is to use ".*" which will match everything.}
 }
 
-\author{Steffen Durinck} 
+\author{Steffen Durinck, Mike Smith} 
 
 \examples{
 

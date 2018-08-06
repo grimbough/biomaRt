@@ -113,6 +113,28 @@ getBM(attributes=c('affy_hg_u133_plus_2', 'entrezgene'),
       mart = ensembl)
 ```  
 
+## Searching for datasets, filters and attributes
+
+The functions `listDatasets()`, `listAttributes()`, and `listFilters()` will return every available option for their respective types.  However, this can be unwieldy when the list of results is long, involving much scrolling to find the entry you are interested in.   `r Biocpkg("biomaRt")` also provides the functions `searchDatasets()`, `searchAttributes()`, and `searchFilters()` which will try to find any entries matching a specific term or pattern.  For example, if we want to find the details of any datasets in our `ensembl` mart that contain the term '*hsapiens*' we could do the following:
+
+```{r searchDatasets, echo = TRUE, eval = TRUE}
+searchDatasets(mart = ensembl, pattern = "hsapiens")
+```
+
+You can search in a simlar fashion to find available attributes and filters that you may be interested in.  The example below returns the details for all attributes that contain the pattern '*hgnc*'.
+
+```{r searchAttributes, echo = TRUE, eval = TRUE}
+searchAttributes(mart = ensembl, pattern = "hgnc")
+```
+
+For advanced use, note that the *pattern* argument takes a regular expression.  This means you can create more complex queries if required.  Imagine, for example, that we have the string *ENST00000577249.1*, which we know is an Ensembl ID of some kind, but we aren't sure what the appropriate filter term is.  The example shown next uses a pattern that will find all filters that contain both the terms '*ensembl*' and '*id*'.  This allows use to reduced the list of filters to only those that might be appropriate for our example.
+
+```{r searchFilters, echo = TRUE, eval = TRUE}
+searchFilters(mart = ensembl, pattern = "ensembl.*id")
+```
+
+From this we can see that *ENST00000577249.1* is a Trasncript ID with version, and the appropriate filter value to use with it is `ensembl_transcript_id_version`.
+
 
 # Examples of biomaRt queries
 
