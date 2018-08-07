@@ -34,8 +34,20 @@ to be used for the search.  If left blank the default is to use ".*" which will 
 \examples{
 
 if(interactive()){
-mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-listFilters(mart)
+
+    ## list the available Ensembl marts and use Ensembl Genes
+    listEnsembl()
+    ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+
+    ## list the available datasets in this Mart
+    listFilters(mart = ensembl)
+
+    ## the list of filters is long and not easy to read
+    ## we can search for a term of interest to reduce this e.g. 'gene'
+    searchFilters(mart = ensembl, pattern = "gene")
+    
+    ## search the available filters to find entries containing 'entrez' or 'hgnc'
+    searchFilters(mart = ensembl, 'entrez|hgnc') 
 }
 
 }

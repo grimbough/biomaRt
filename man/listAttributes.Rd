@@ -24,9 +24,22 @@
 \examples{
 
 if(interactive()){
-ensembl = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-listAttributes(ensembl)
+
+    ## list the available Ensembl marts and use Ensembl Genes
+    listEnsembl()
+    ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+
+    ## list the available datasets in this Mart
+    listAttributes(mart = ensembl)
+
+    ## the list of attributes is very long and gets truncated by R
+    ## we can search for a term of interest to filter this e.g. 'start'
+    searchAttributes(mart = ensembl, pattern = "start")
+    
+    ## filter the attributes to give only entries containing 'entrez' or 'hgnc'
+    searchAttributes(mart = ensembl, 'entrez|hgnc') 
 }
+
 }
 \keyword{methods}
 
