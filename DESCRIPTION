@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.37.5
+Version: 2.37.6
 Title: Interface to BioMart databases (i.e. Ensembl)
 Authors@R: c(person("Steffen", "Durinck", role = c("aut"), 
             email = "biomartdev@gmail.com"), 
@@ -22,9 +22,8 @@ Description: In recent years a wealth of biological data has become available
         BioMart software suite (http://www.biomart.org). The package enables
         retrieval of large amounts of data in a uniform way without the need to
         know the underlying database schemas or write complex SQL queries. 
-        Examples of BioMart databases are Ensembl, COSMIC, Uniprot, HGNC, 
-        Gramene, Wormbase and dbSNP mapped to Ensembl. These major databases
-        give biomaRt users direct access to a diverse set of data and enable
+        The most prominent examples of BioMart databases are Ensembl, which
+        provides biomaRt users direct access to a diverse set of data and enables
         a wide range of powerful online queries from gene annotation to 
         database mining.
 License: Artistic-2.0
