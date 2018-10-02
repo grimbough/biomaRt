@@ -176,7 +176,7 @@ The GO terms we are interested in are: **GO:0051330**, **GO:0000080**, **GO:0000
  go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082")
  chrom=c(17,20,"Y")
  getBM(attributes= "hgnc_symbol",
-        filters=c("go_id","chromosome_name"),
+        filters=c("go","chromosome_name"),
         values=list(go, chrom), mart=ensembl)
 ```
 
@@ -371,12 +371,14 @@ ensembl54 <- useMart(host='may2009.archive.ensembl.org',
 
 # Using a BioMart other than Ensembl
 
-To demonstrate the use of the `r Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.
+To demonstrate the use of the `r Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.  *Note that we use the `https` address and must provide the port as `443`*
 In this example, we use the `listMarts()` function to find the name of the available marts, given the URL of Wormbase.  We use this to connect to Wormbase BioMart, find and select the gene dataset, and print the first 6 available attributes and filters.  Then we use a list of gene names as filter and retrieve associated transcript IDs and the transcript biotype.
 
 ```{r wormbase, echo=TRUE, eval=TRUE}
 listMarts(host = "parasite.wormbase.org")
-wormbase = useMart(biomart = "parasite_mart", host = "parasite.wormbase.org")
+wormbase = useMart(biomart = "parasite_mart", 
+                   host = "https://parasite.wormbase.org", 
+                   port = 443)
 listDatasets(wormbase)
 wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
 head(listFilters(wormbase))
