@@ -170,7 +170,7 @@
     res <- httr::POST(url = host,
                       body = list('query' = query),
                       set_cookies(.cookies = c(redirect_mirror = 'no')),
-                      timeout(300))
+                      timeout(3000))
 
     ## now we set the redirection cookie, this code should never be executed
     if(res$all_headers[[1]]$status == 302) {
@@ -178,7 +178,7 @@
                                pattern = "//([a-zA-Z./]+)\\??;?redirectsrc")[,2]
         res <- httr::POST(url = host,
                           body = list('query' = query),
-                          config = list(timeout(300)))
+                          config = list(timeout(3000)))
     }
     ## content() prints a message about encoding not being supplied 
     ## for ensembl.org - no default, so we suppress it
