@@ -98,9 +98,11 @@
                 if(is.numeric(values[[filter]])) 
                     values[[filter]] <- as.integer(values[[filter]])
                 val <- paste0(values[[filter]], collapse = ",")
-                val <- paste0("' value = '", val, "' ")
+                ## convert " to ' to avoid truncating the query string
+                val <- gsub(x = val, pattern = "\"", replacement = "'", fixed = TRUE)
+                val <- paste0('" value = "', val, '" ')
             }
-            filterXML <- paste0("<Filter name = '", filter, val, "/>")
+            filterXML <- paste0("<Filter name = \"", filter, val, "/>")
             return(filterXML)
         }, FUN.VALUE = character(1), 
         filterChunk, mart,

@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.39.0
+Version: 2.39.1
 Title: Interface to BioMart databases (i.e. Ensembl)
 Authors@R: c(person("Steffen", "Durinck", role = c("aut"), 
             email = "biomartdev@gmail.com"), 
@@ -22,7 +22,7 @@ Description: In recent years a wealth of biological data has become available
         BioMart software suite (http://www.biomart.org). The package enables
         retrieval of large amounts of data in a uniform way without the need to
         know the underlying database schemas or write complex SQL queries. 
-        The most prominent examples of BioMart databases are Ensembl, which
+        The most prominent examples of BioMart databases are maintain by Ensembl, which
         provides biomaRt users direct access to a diverse set of data and enables
         a wide range of powerful online queries from gene annotation to 
         database mining.
