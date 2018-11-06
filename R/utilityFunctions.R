@@ -90,7 +90,7 @@
                          "that not fulfill the requirement should be retrieved.", 
                          call. = FALSE)
                 val <- ifelse(values[[filter]], yes = 0, no = 1)
-                val <- paste0("' excluded = \"", val, "\" ")
+                val <- paste0("\" excluded = \"", val, "\" ")
                 
             } else { 
                 ## otherwise the filter isn't boolean, or doesn't exist
@@ -259,6 +259,36 @@ searchFilters <- function(mart, pattern) {
        invisible(res)
     else
         res
+}
+
+listFilterValues <- function(mart, filter) {
+    searchFilterValues(mart = mart, filter = filter)
+}
+
+searchFilterValues <- function(mart, filter, pattern) {
+  
+  if(missing(mart))
+    stop("Argument 'mart' must be specified")
+  if(missing(filter))
+    stop("Argument 'filter' must be specified")
+  if(missing(pattern)) 
+    pattern = ".*"
+  
+  ## first get all filters & their options, then reduce to what's requested
+  filters <- listFilters(mart, what = c("name", "options"))
+  filters <- filters[ filters$name == filter, ]
+  if(nrow(filters) == 0) { 
+    stop("Filter '", filter, "' not found.")
+  }
+  options <- gsub(filters$options, pattern = "^\\[|\\]$", replacement = "")
+  options <- strsplit(options, split = ",", fixed = TRUE)[[1]]
+  
+  res <- grep(x = options, pattern = "Crohn", value = TRUE)
+  
+  if(length(res) == 0)
+    message('No matching values found')
+  else
+    res
 }
 
 
