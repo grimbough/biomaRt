@@ -58,8 +58,8 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh
     
     if(!is.null(mirror)){
         if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
-            warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
-                    "default when no mirror is specified is to be redirected to ",
+            warning("Invalid mirror. Select a mirror from [www, uswest, useast, asia].\n",
+                    "Default when no mirror is specified is to be redirected to ",
                     "www.ensembl.org")
         } else {
             host <- paste0(mirror, ".ensembl.org")
@@ -87,7 +87,8 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org",version = NULL, GRCh
 }
 
 
-useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
+useEnsembl <- function(biomart, dataset, host, 
+                       version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
     
     if(missing(biomart)) {
         stop("You must provide the argument 'biomart'\n",
@@ -96,7 +97,8 @@ useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NUL
     }
     
     if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
-        warning("version or GRCh arguments can not be used together with the mirror argument.  Will ignore the mirror argument and connect to main Ensembl site.") 
+        warning("version or GRCh arguments can not be used together with the mirror argument.', 
+                'We will ignore the mirror argument and connect to main Ensembl site.") 
         mirror = NULL
     }
     
@@ -108,12 +110,12 @@ useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NUL
                  'Use listEnsemblArchives() to view available versions.',
                  call. = FALSE)
         }
-        host = archives[idx, 'url']
+        host <- archives[idx, 'url']
     }	   
     
     if(!is.null(GRCh)){
         if(GRCh == 37){
-            host = paste("grch",GRCh,".ensembl.org",sep="")
+            host <- paste("grch",GRCh,".ensembl.org",sep="")
         }
         else{
             print("Only 37 can be specified for GRCh version")
@@ -122,12 +124,12 @@ useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NUL
     
     if(!is.null(mirror)){
         if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
-            warning("Invalid mirror select a mirror from [www, uswest, useast, asia].\n",
-                    "default when no mirror is specified is to use ",
+            warning("Invalid mirror. Select a mirror from [www, uswest, useast, asia].\n",
+                    "Default when no mirror is specified is to use ",
                     "www.ensembl.org")
-            host <- "www.ensembl.org"
+            host <- "https://www.ensembl.org"
         } else {
-            host <- paste0(mirror, ".ensembl.org")
+            host <- paste0("https://", mirror, ".ensembl.org")
         }
     }
     
@@ -143,10 +145,19 @@ useEnsembl <- function(biomart, dataset, host = "www.ensembl.org", version = NUL
     if(biomart == "vega"){
         biomart = "ENSEMBL_MART_VEGA"
     }
+  
+    if(missing(host)) {
+        host = "https://www.ensembl.org"
+    }
+  
+    ## choose the port based on whether we use https or not
+    port <- ifelse(grepl(pattern = "https://", x = host), 
+                   yes = 443, no = 80)
     
     ens = useMart(biomart = biomart, 
                   dataset = dataset, 
                   host = host, 
-                  verbose = verbose)	   
+                  verbose = verbose,
+                  port = port)	   
     return(ens)
 }
