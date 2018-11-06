@@ -53,17 +53,17 @@ test_that("Filter generation works", {
     expect_equal(biomaRt:::.generateFilterXML(filters = c('affy_hg_u133a_2', 'chromosome_name'),
                                     values = list(affyid=c('1939_at','1000_at'), chromosome= '16'),
                                     mart = ensembl)[[1]],
-                 "<Filter name = 'affy_hg_u133a_2' value = '1939_at,1000_at' /><Filter name = 'chromosome_name' value = '16' />")
+                 "<Filter name = \"affy_hg_u133a_2\" value = \"1939_at,1000_at\" /><Filter name = \"chromosome_name\" value = \"16\" />")
     
     expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
                                     values = '16',
                                     mart = ensembl)[[1]],
-                 "<Filter name = 'chromosome_name' value = '16' />")
+                 "<Filter name = \"chromosome_name\" value = \"16\" />")
     
     expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
                                     values = c('16', '18'),
                                     mart = ensembl)[[1]],
-                 "<Filter name = 'chromosome_name' value = '16,18' />")
+                 "<Filter name = \"chromosome_name\" value = \"16,18\" />")
     
     expect_equal(biomaRt:::.generateFilterXML(filters = ''), "")
 })
@@ -76,7 +76,7 @@ test_that("Boolean filter handled correctly", {
     expect_equal(biomaRt:::.generateFilterXML(filters = 'transcript_tsl',
                                 values = TRUE,
                                 mart = ensembl)[[1]],
-             "<Filter name = 'transcript_tsl' excluded = \"0\" />")
+             "<Filter name = \"transcript_tsl\" excluded = \"0\" />")
 })
 
 test_that("list is required for multiple filters", {
@@ -90,14 +90,14 @@ test_that("passing a single column data.frame works", {
     expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
                                               values = data.frame('chr' = c('16', '18')),
                                               mart = ensembl)[[1]],
-                 "<Filter name = 'chromosome_name' value = '16,18' />")
+                 "<Filter name = \"chromosome_name\" value = \"16,18\" />")
 })
 
 test_that("numeric values to filters work", {
     expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
                                               values = c(16, 18),
                                               mart = ensembl)[[1]],
-                 "<Filter name = 'chromosome_name' value = '16,18' />")
+                 "<Filter name = \"chromosome_name\" value = \"16,18\" />")
 })
 
 #############################
