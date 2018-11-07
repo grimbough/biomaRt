@@ -225,17 +225,15 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
                 biomart = biomart,
                 vschema = marts$vschema[mindex], 
                 host = paste0(host, ":", 
-                              #marts$port[mindex],
                               port,
-                              marts$path[mindex]))#, 
-               # archive = archive)
+                              marts$path[mindex]))
     
     if(length(grep("archive",martHost(mart)) > 0)){
         
         ## hack to work around redirection of most recent mirror URL
         archives <- listEnsemblArchives()
         current_release <- archives[archives$current_release == "*", 'url']
-        mart@host <- stringr::str_replace(mart@host, pattern = current_release, "http://www.ensembl.org")
+        mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
         
         if(length(grep(reqHost,martHost(mart))) == 0){
             message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
@@ -273,7 +271,6 @@ listDatasets <- function(mart, verbose = FALSE) {
     bmResult = bmRequest(request = request, verbose = verbose)
     con = textConnection(bmResult)
     txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE, quote = "\"")
-    #txt = tryCatch(scan(request, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE), error = function(e){stop("Request to BioMart web service failed. Verify if you are still connected to the internet.  Alternatively the BioMart web service is temporarily down.")})
     close(con)
     
     ## select visible ("1") table sets

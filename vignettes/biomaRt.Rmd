@@ -12,7 +12,7 @@ vignette: >
 ---
 
 ```{r setup, cache = F, echo = FALSE}
-knitr::opts_chunk$set(error = TRUE)
+knitr::opts_chunk$set(error = TRUE, cache = TRUE)
 ```
 
 # Introduction
@@ -54,11 +54,12 @@ The `useMart()` function can now be used to connect to a specified BioMart datab
 ensembl=useMart("ensembl")
 ```
 
-BioMart databases can contain several datasets, for Ensembl every species is a different dataset.  In a next step we look at which datasets are available in the selected BioMart by using the function `listDatasets()`.
+BioMart databases can contain several datasets, for Ensembl every species is a different dataset.  In a next step we look at which datasets are available in the selected BioMart by using the function `listDatasets()`. *Note: use the function `head()` to display only the first 5 entries as the complete list has `r nrow(listDatasets(ensembl))` entries.*
 
 
 ```{r listDatasets}
-listDatasets(ensembl)
+datasets <- listDatasets(ensembl)
+head(datasets)
 ```
 
 
@@ -133,7 +134,28 @@ For advanced use, note that the *pattern* argument takes a regular expression.  
 searchFilters(mart = ensembl, pattern = "ensembl.*id")
 ```
 
-From this we can see that *ENST00000577249.1* is a Trasncript ID with version, and the appropriate filter value to use with it is `ensembl_transcript_id_version`.
+From this we can see that *ENST00000577249.1* is a Transcript ID with version, and the appropriate filter value to use with it is `ensembl_transcript_id_version`.
+
+## Using predefined filter values
+
+Many filters have a predefined list of values that are known to be in the dataset they are associated with.  An common example would be the names of chromosomes when searching a dataset at Ensembl.  In this online interface to BioMart these available options are displayed as a list as shown in Figure \@ref(fig:filtervalues).
+
+```{r filtervalues, fig.cap='The options available to the Chromosome/Scaffold field are limited to a pretermined list based on the values in this dataset.', echo = FALSE}
+knitr::include_graphics('filtervalues.png')
+```
+
+You can list this in an R session with the function `listFilterValues()`, passing it a mart object and the name of the filter.  For example, to list the possible chromosome names you could run the following:
+
+```{r chromosomeNames, results = FALSE}
+listFilterValues(mart = ensembl, filter = "chromosome_name")
+```
+
+It is also possible to search the list of available values via `searchFilterValues()`.  In the examples below, the first returns all chromosome names starting with "*GL*", which the second will find any phenotype descriptions that contain the string "*Crohn*".
+
+```{r searchFilterValues, results = FALSE}
+searchFilterValues(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
+searchFilterValues(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
+```
 
 
 # Examples of biomaRt queries
@@ -308,7 +330,7 @@ getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'),
 The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
-```{r getLDS}
+```{r getLDS, cache = TRUE}
 human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),

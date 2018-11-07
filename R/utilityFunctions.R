@@ -261,10 +261,9 @@ searchFilters <- function(mart, pattern) {
         res
 }
 
-listFilterValues <- function(mart, filter) {
-    searchFilterValues(mart = mart, filter = filter)
-}
 
+## Some filters have a predefined list of options that can be selected.
+## This function lets us search those values, given a specified filter.
 searchFilterValues <- function(mart, filter, pattern) {
   
   if(missing(mart))
@@ -283,7 +282,8 @@ searchFilterValues <- function(mart, filter, pattern) {
   options <- gsub(filters$options, pattern = "^\\[|\\]$", replacement = "")
   options <- strsplit(options, split = ",", fixed = TRUE)[[1]]
   
-  res <- grep(x = options, pattern = "Crohn", value = TRUE)
+  res <- grep(x = options, pattern = pattern, 
+              ignore.case = TRUE, value = TRUE)
   
   if(length(res) == 0)
     message('No matching values found')
@@ -292,3 +292,6 @@ searchFilterValues <- function(mart, filter, pattern) {
 }
 
 
+listFilterValues <- function(mart, filter) {
+    searchFilterValues(mart = mart, filter = filter)
+}
