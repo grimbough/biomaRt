@@ -23,6 +23,6 @@ test_that("Error when archive = TRUE", {
 test_that("Error when old URL is used", {
     
     expect_error(listMarts(host="www.biomart.org"), 
-                 "Unexpected format to the list of available marts")
+                 "Not Found \\(HTTP 404\\).")
     
 })

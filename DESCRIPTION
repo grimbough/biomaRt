@@ -19,7 +19,7 @@ Description: In recent years a wealth of biological data has become available
         resources and firm integration with data analysis is needed for
         comprehensive bioinformatics data analysis.  biomaRt provides an
         interface to a growing collection of databases implementing the
-        BioMart software suite (http://www.biomart.org). The package enables
+        BioMart software suite (<http://www.biomart.org>). The package enables
         retrieval of large amounts of data in a uniform way without the need to
         know the underlying database schemas or write complex SQL queries. 
         The most prominent examples of BioMart databases are maintain by Ensembl, which
