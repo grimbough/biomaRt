@@ -113,8 +113,8 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         } else {
             stop('Unexpected format to the list of available marts.\n',
                  'Please check the following URL manually, ',
-                'and try ?listMarts for advice.\n',
-                request)
+                 'and try ?listMarts for advice.\n',
+                 request)
         }
     }
     registry = xmlTreeParse(registry, asText=TRUE)
@@ -259,7 +259,10 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
 }
 
 listDatasets <- function(mart, verbose = FALSE) {
-    
+    .listDatasets(mart = mart, verbose = verbose, sort = TRUE)
+}
+
+.listDatasets <- function(mart, verbose = FALSE, sort = FALSE) {
     if(missing(mart) || !is(mart, 'Mart'))
         stop("No Mart object given or object not of class 'Mart'")
     
@@ -281,7 +284,8 @@ listDatasets <- function(mart, verbose = FALSE) {
                      version     = I(txt[i+4L]))
     
     ## sort alphabetically
-    res <- res[ order(res$dataset), ]
+    if(sort)
+        res <- res[ order(res$dataset), ]
     rownames(res) <- NULL
     
     return(res)
@@ -315,7 +319,6 @@ bmVersion <- function(mart, verbose=FALSE){
 }
 
 ## Retrieve attributes and filters from web service
-
 bmAttrFilt <- function(type, mart, verbose=FALSE){
     
     ## we choose a separator based on whether 'redirect=no' is present
@@ -374,7 +377,7 @@ bmAttrFilt <- function(type, mart, verbose=FALSE){
 ## have been passed.
 checkDataset <- function(dataset, mart) {
     
-    validDatasets=listDatasets(mart)
+    validDatasets <- .listDatasets(mart, sort = FALSE)
     ## subseting data.frames can produce some weird classes
     ## which aren't character(), so we coerce it here
     dataset <- as.character(dataset)
@@ -419,7 +422,8 @@ getName <- function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]]
 
 listAttributes <- function(mart, page, what = c("name","description","page")) {
     martCheck(mart)
-    if(!missing(page) && !page %in% attributePages(mart)) stop(paste("The chosen page: ",page," is not valid, please use the correct page name using the attributePages function",sep=""))
+    if(!missing(page) && !page %in% attributePages(mart)) 
+        stop("The chosen page: ",page," is not valid, please use the correct page name using the attributePages function")
     attrib=NULL
     if(!missing(page)){
         sel = which(martAttributes(mart)[,"page"] == page)
@@ -549,7 +553,6 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     }
     
     ## we submit a query for each chunk of the filter list
-    resultList <- vector(mode = "list", length = length(filterXmlList))
     for(i in seq_along(filterXmlList)) {
         
         if(exists('pb')) {
@@ -567,7 +570,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
         
         postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
-                                query = fullXmlQuery)
+                                   query = fullXmlQuery)
         
         if(verbose){
             writeLines("#################\nResults from server:")
@@ -748,7 +751,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     ## POST query
     postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
-                            query = xmlQuery)
+                               query = xmlQuery)
     
     ## 10-01-2014
     if(length(grep("^Query ERROR", postRes))>0L)
@@ -787,8 +790,8 @@ getXML <- function(host="http://www.ensembl.org/biomart/martservice?", xmlquery)
     ## Deprecated 29-01-2018
     .Deprecated("biomaRt:::.submitQueryXML", 
                 msg = paste0("Function 'getXML()' is deprecated.\n",
-                "Use 'biomaRt:::.submitQueryXML' instead\n",
-                "See help('getXML') for further details"))
+                             "Use 'biomaRt:::.submitQueryXML' instead\n",
+                             "See help('getXML') for further details"))
     
     pf = postForm(host,"query"=xmlquery)
     con = textConnection(pf)
@@ -856,20 +859,37 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
     if(!missing(chromosome) && !missing(id))stop("The getSequence function retrieves sequences given a vector of identifiers specified with the id argument of a type specified by the type argument.  Or alternatively getSequence retrieves sequences given a chromosome, a start and a stop position on the chromosome.  As you specified both a vector of identifiers and chromsomal coordinates. Your query won't be processed.")
     
     if(!missing(chromosome)){
-        if(!missing(start) && missing(end))stop("You specified a chromosomal start position but no end position.  Please also specify a chromosomal end position.")
-        if(!missing(end) && missing(start))stop("You specified a chromosomal end position but no start position.  Please also specify a chromosomal start position.")
+        if(!missing(start) && missing(end))
+            stop("You specified a chromosomal start position but no end position.  Please also specify a chromosomal end position.")
+        if(!missing(end) && missing(start))
+            stop("You specified a chromosomal end position but no start position.  Please also specify a chromosomal start position.")
         if(!missing(start)){ start = as.integer(start)
         end = as.integer(end)
         }
         if(missing(upstream) && missing(downstream)){
-            sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end"), values = list(chromosome, start, end), mart = mart, checkFilters = FALSE, verbose=verbose)
+            sequence = getBM(c(seqType,type), 
+                             filters = c("chromosome_name","start","end"), 
+                             values = list(chromosome, start, end), 
+                             mart = mart, 
+                             checkFilters = FALSE, 
+                             verbose=verbose)
         }
         else{
             if(!missing(upstream) && missing(downstream)){
-                sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end","upstream_flank"), values = list(chromosome, start, end, upstream), mart = mart, checkFilters = FALSE, verbose=verbose)
+                sequence = getBM(c(seqType,type), 
+                                 filters = c("chromosome_name","start","end","upstream_flank"), 
+                                 values = list(chromosome, start, end, upstream), 
+                                 mart = mart, 
+                                 checkFilters = FALSE, 
+                                 verbose=verbose)
             }
             if(!missing(downstream) && missing(upstream)){
-                sequence = getBM(c(seqType,type), filters = c("chromosome_name","start","end","downstream_flank"), values = list(chromosome, start, end, downstream), mart = mart, checkFilters = FALSE, verbose = verbose)
+                sequence = getBM(c(seqType,type), 
+                                 filters = c("chromosome_name","start","end","downstream_flank"), 
+                                 values = list(chromosome, start, end, downstream), 
+                                 mart = mart, 
+                                 checkFilters = FALSE, 
+                                 verbose = verbose)
             }
             if(!missing(downstream) && !missing(upstream)){
                 stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
@@ -904,7 +924,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
 #export FASTA      #
 ####################
 
-exportFASTA <- function( sequences, file ){
+exportFASTA <- function( sequences, file ) {
     if( missing( sequences ) || class( sequences ) != "data.frame"){
         stop("No data.frame given to write FASTA.  The data.frame should be the output of the getSequence function.");
     }
