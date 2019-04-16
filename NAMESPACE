@@ -5,7 +5,7 @@ importFrom(utils, edit, head, read.table)
 importFrom(AnnotationDbi, keys, columns, keytypes, select)
 importFrom(progress, progress_bar)
 importFrom(stringr, str_extract_all, str_match)
-importFrom(httr, POST, content, content_type, timeout, set_cookies, stop_for_status)
+importFrom(httr, POST, content, content_type, timeout, set_cookies, stop_for_status, status_code)
 
 export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets, 
        useDataset, listEnsembl, useEnsembl, listAttributes, listFilters, 
