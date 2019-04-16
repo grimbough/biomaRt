@@ -63,9 +63,10 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
     #                              "Check the following URL and see if this website is available:\n",
     #                              request)
     #                  })
-    result <- httr::GET(request, content_type("text/plain"))
+    result <- httr::GET(request, content_type("text/plain"),
+                        set_cookies(.cookies = c(redirect_mirror = 'no')))
     stop_for_status(result)
-    result <- content(result)
+    result <- content(result, encoding = "UTF-8")
     return(result)
 }
 

@@ -1,11 +1,11 @@
 library(biomaRt)
 context('getLDS() function')
 
-ensembl_hsapiens <- useMart("ENSEMBL_MART_ENSEMBL", 
+ensembl_hsapiens <- useEnsembl("ENSEMBL_MART_ENSEMBL", 
                 dataset="hsapiens_gene_ensembl")
-plants <- useMart("plants_mart", host="plants.ensembl.org", 
+plants <- useMart("plants_mart", host="http://plants.ensembl.org", 
                  dataset="athaliana_eg_gene")
-ensembl_rnorvegicus <- useMart("ENSEMBL_MART_ENSEMBL", 
+ensembl_rnorvegicus <- useEnsembl("ENSEMBL_MART_ENSEMBL", 
                        dataset="rnorvegicus_gene_ensembl")
 
 test_that("Error with separate hosts", { 
