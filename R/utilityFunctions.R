@@ -172,7 +172,7 @@
     res <- httr::POST(url = host,
                       body = list('query' = query),
                       set_cookies(.cookies = c(redirect_mirror = 'no')),
-                      timeout(600))
+                      timeout(590))
 
     ## now we set the redirection cookie, this code should never be executed
     if(status_code(res) == 302) {
