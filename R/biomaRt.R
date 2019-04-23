@@ -66,8 +66,11 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
     result <- httr::GET(request, content_type("text/plain"),
                         set_cookies(.cookies = c(redirect_mirror = 'no')))
     stop_for_status(result)
-    result <- content(result, encoding = "UTF-8")
-    return(result)
+    result2 <- content(result, encoding = "UTF-8")
+    if(is.na(result2)) {
+        result2 <- content(result, encoding = "Latin1")
+    }
+    return(result2)
 }
 
 #######################################################
