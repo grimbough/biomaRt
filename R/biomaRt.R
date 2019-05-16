@@ -553,17 +553,17 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     
     resultList <- list()
     if(length(filterXmlList) > 1) {
-        pb <- progress_bar$new(total = length(filterXmlList),
+        pb_biomaRt <- progress_bar$new(total = length(filterXmlList),
                                width = options()$width - 10,
                                format = "Batch submitting query [:bar] :percent eta: :eta")
-        pb$tick(0)
+        pb_biomaRt$tick(0)
     }
     
     ## we submit a query for each chunk of the filter list
     for(i in seq_along(filterXmlList)) {
         
-        if(exists('pb')) {
-            pb$tick()
+        if(exists('pb_biomaRt')) {
+            pb_biomaRt$tick()
         }
         
         filterXML <- filterXmlList[[ i ]]
