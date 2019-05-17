@@ -562,7 +562,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     ## we submit a query for each chunk of the filter list
     for(i in seq_along(filterXmlList)) {
         
-        if(exists('pb')) {
+        if(i > 1) {
             pb$tick()
         }
         
