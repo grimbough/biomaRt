@@ -174,6 +174,14 @@
                       set_cookies(.cookies = c(redirect_mirror = 'no')),
                       timeout(590))
 
+    ## if internal server error suggest using a mirror
+    if(status_code(res) == 500) {
+          err_msg <- 'biomaRt has encountered an server error.'
+          if(grepl('ensembl', host)) 
+            err_msg <- c(err_msg, 'Consider trying one of the Ensembl mirrors (for more details try ?useEnembl')
+          stop(err_msg)
+    }
+    
     ## now we set the redirection cookie, this code should never be executed
     if(status_code(res) == 302) {
         host <- stringr::str_match(string = res$all_headers[[1]]$headers$location,
