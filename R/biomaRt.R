@@ -525,9 +525,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
                       martVSchema(mart),
                       "' uniqueRows = '",
                       as.numeric(uniqueRows),
-                      "' count = '0' datasetConfigVersion = '0.6' header='",
+                      "' count='0' datasetConfigVersion='0.6' header='",
                       as.numeric(callHeader),
-                      "' requestid= 'biomaRt'> <Dataset name = '",
+                      "' formatter='TSV' requestid='biomaRt'> <Dataset name = '",
                       martDataset(mart),"'>")
     
     #checking the Attributes
@@ -588,7 +588,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
         
         if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
             
-            result = as.data.frame(matrix("", ncol=length(attributes), nrow=0), stringsAsFactors=FALSE)
+            result = as.data.frame(matrix(ncol=length(attributes), nrow=0))
             
         } else {
             
@@ -597,13 +597,22 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
             
             ## convert the serialized table into a dataframe
             con = textConnection(postRes)
-            result = read.table(con, sep="\t", header=callHeader, quote = quote, comment.char = "", check.names = FALSE, stringsAsFactors=FALSE)
+            on.exit(close(con))
+            result <- tryCatch(read.table(con, sep="\t", header=callHeader, quote = quote, 
+                                          comment.char = "", stringsAsFactors = FALSE, check.names = FALSE),
+                               error = function(e) {
+                                   ## if the error relates to number of element, try reading HTML version
+                                   if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
+                                       biomaRt:::.fetchHTMLresults(host, query)
+                                   else
+                                       stop(e)
+                               }
+            )
             if(verbose){
                 writeLines("#################\nParsed results:")
                 print(result)
             }
-            close(con)
-            
+
             if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
                 print(head(result))
                 stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. \nPlease report this on the support site at http://support.bioconductor.org")
@@ -614,6 +623,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     }
     ## collate results
     result <- do.call('rbind', resultList)
+    if(length(filterXmlList) > 1) {
+        pb$terminate()
+    }
     return(result)
 }
 
@@ -653,7 +665,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
                        "\nPlease use the function 'listFilters' to get valid filter names"))
     }
     
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' requestid= \"biomaRt\"> <Dataset name = '",martDataset(mart),"'>",sep="")
+    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' formatter = 'TSV' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
     attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
     if(length(filters) > 1){
         if(class(values)!= "list")
@@ -794,17 +806,12 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
 
 getXML <- function(host="http://www.ensembl.org/biomart/martservice?", xmlquery){
     
-    ## Deprecated 29-01-2018
-    .Deprecated("biomaRt:::.submitQueryXML", 
-                msg = paste0("Function 'getXML()' is deprecated.\n",
+    ## Deprecated   29-01-2018
+    ## Defunct      03-06-2019
+    .Defunct("biomaRt:::.submitQueryXML", 
+                msg = paste0("Function 'getXML()' is defunct\n",
                              "Use 'biomaRt:::.submitQueryXML' instead\n",
                              "See help('getXML') for further details"))
-    
-    pf = postForm(host,"query"=xmlquery)
-    con = textConnection(pf)
-    result = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-    close(con)
-    return(result)
 }
 
 ######################

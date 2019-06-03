@@ -65,7 +65,7 @@
             }
         }
         ## recursively call the function to process next filter
-        valuesList <- .splitValues(tmpList)
+        valuesList <- .splitValues(tmpList, maxChunkSize = maxChunkSize)
     }
     return(valuesList)
 }
@@ -134,7 +134,7 @@
     }
     names(values) <- filters
     
-    values <- .splitValues(list(values))
+    values <- .splitValues(list(values), maxChunkSize = 1000)
     
     filterXML_list <- lapply(values, .createFilterXMLchunk, mart)
     
@@ -174,12 +174,12 @@
                       set_cookies(.cookies = c(redirect_mirror = 'no')),
                       timeout(590))
 
-    ## if internal server error suggest using a mirror
+    ## if we encounter internal server error, suggest using a mirror
     if(status_code(res) == 500) {
-          err_msg <- 'biomaRt has encountered an server error.'
+          err_msg <- 'biomaRt has encountered an unexpected server error.'
           if(grepl('ensembl', host)) 
-            err_msg <- c(err_msg, 'Consider trying one of the Ensembl mirrors (for more details try ?useEnembl')
-          stop(err_msg)
+            err_msg <- c(err_msg, '\nConsider trying one of the Ensembl mirrors (for more details look at ?useEnsembl)')
+          stop(err_msg, call. = FALSE)
     }
     
     ## now we set the redirection cookie, this code should never be executed
@@ -193,6 +193,13 @@
     ## content() prints a message about encoding not being supplied 
     ## for ensembl.org - no default, so we suppress it
     return( suppressMessages(content(res)) )
+}
+
+#' if parsing of TSV results fails, try this
+.fetchHTMLresults <- function(host, query) {
+    query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
+    html_res <- biomaRt:::.submitQueryXML(host, query)
+    XML::readHTMLTable(html_res)
 }
 
 
