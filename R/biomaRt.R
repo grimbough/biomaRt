@@ -603,7 +603,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
                                error = function(e) {
                                    ## if the error relates to number of element, try reading HTML version
                                    if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
-                                       biomaRt:::.fetchHTMLresults(host, query)
+                                       .fetchHTMLresults(host = paste0(martHost(mart), sep), query = fullXmlQuery)
                                    else
                                        stop(e)
                                }

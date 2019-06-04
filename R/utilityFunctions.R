@@ -198,8 +198,8 @@
 #' if parsing of TSV results fails, try this
 .fetchHTMLresults <- function(host, query) {
     query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
-    html_res <- biomaRt:::.submitQueryXML(host, query)
-    XML::readHTMLTable(html_res)
+    html_res <- .submitQueryXML(host, query)
+    XML::readHTMLTable(html_res, stringsAsFactors = FALSE)[[1]]
 }
 
 

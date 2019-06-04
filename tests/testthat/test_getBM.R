@@ -12,13 +12,20 @@ test_that("Fail when no dataset is specified", {
      ensembl=useMart("ensembl")
      expect_error(getBM(mart = ensembl), "No dataset selected, please select a dataset first")
 })
-# 
-# ## no attributes are specified')
-# ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
-# expect_error(getBM(mart = ensembl), "Argument 'attributes' must be specified")
-# 
-# t1 <- getBM(attributes='entrezgene', filters = 'affy_hg_u133_plus_2', values = '207500_at', mart = ensembl)[1,1]
-# expect_equal(as.integer(t1), 838)
-# 
-# 
+
+
+#######################
+## the definition_1006 entry for this gene includes unescaped new lines, so the HTML result is requested
+########################
+test_that("HTML reading code is used when needed", {
+    expect_silent(ensembl <- useMart("ensembl"))
+    attributes <-  c("ensembl_gene_id", "hgnc_symbol",  "go_id", "name_1006",  "definition_1006")
+    expect_silent(go_sets <- getBM(attributes =  attributes,
+                                   filters = "ensembl_gene_id",
+                                   values = c('ENSG00000100036'),
+                                   mart = mart,
+                                   bmHeader = FALSE))
+    expect_is(go_sets, "data.frame")
+    expect_equal(colnames(go_sets), attributes)
+})
  
