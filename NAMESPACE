@@ -1,5 +1,5 @@
 import(methods)
-import(RCurl,XML)
+import(XML)
 
 importFrom(utils, edit, head, read.table)
 importFrom(AnnotationDbi, keys, columns, keytypes, select)

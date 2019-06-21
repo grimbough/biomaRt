@@ -11,8 +11,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}  
 ---
 
-```{r setup, cache = F, echo = FALSE}
-knitr::opts_chunk$set(error = TRUE, cache = FALSE)
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE)
 ```
 
 # Introduction
@@ -51,7 +51,7 @@ options(RCurlOptions = list(proxy="uscache.kcc.com:80",proxyuserpwd="------:----
 The `useMart()` function can now be used to connect to a specified BioMart database, this must be a valid name given by `listMarts()`. In the next example we choose to query the Ensembl BioMart database.
 
 ```{r ensembl1}
-ensembl=useMart("ensembl")
+ensembl <- useMart("ensembl")
 ```
 
 BioMart databases can contain several datasets, for Ensembl every species is a different dataset.  In a next step we look at which datasets are available in the selected BioMart by using the function `listDatasets()`. *Note: use the function `head()` to display only the first 5 entries as the complete list has `r nrow(listDatasets(ensembl))` entries.*
