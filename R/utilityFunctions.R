@@ -122,7 +122,9 @@
     }
     ## if we have multiple filters, the values must be specified as a list.
     if(length(filters) > 1 && class(values) != "list") {
-        stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
+        stop("If using multiple filters, the 'value' has to be a list.",
+        "\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')",
+        "\nHere we select on Affymetrix identifier and chromosome, only results that pass both filters will be returned");
     } 
     ## it's easy to not realise you're passing a data frame here, so check
     if(is.data.frame(values) && ncol(values == 1)) {
@@ -172,7 +174,7 @@
     res <- httr::POST(url = host,
                       body = list('query' = query),
                       set_cookies(.cookies = c(redirect_mirror = 'no')),
-                      timeout(590))
+                      timeout(300))
 
     ## if we encounter internal server error, suggest using a mirror
     if(status_code(res) == 500) {

@@ -54,7 +54,7 @@ checkWrapperArgs = function(id, type, mart){
 }
 
 
-bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
+bmRequest <- function(request, verbose = FALSE){
     if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
 
     result <- httr::GET(request, content_type("text/plain"),
@@ -74,11 +74,12 @@ bmRequest <- function(request, ssl.verifypeer = TRUE, verbose = FALSE){
 #BioMart databases are present                        #
 #######################################################
 
-listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", port=80, includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, ensemblRedirect = NULL, verbose = FALSE){
+listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
+                       port=80, includeHosts = FALSE, archive = FALSE, ensemblRedirect = NULL, verbose = FALSE){
     
     if(!is.null(ensemblRedirect)) {
-        warning('The argument "ensemblRedirect" has been deprecated and will be removed in the next biomaRt release.')
-        ensemblRedirect <- NULL
+        warning('The argument "ensemblRedirect" has been deprecated and does not do anything.',
+                '\nSee ?useEnsembl for details on using mirror sites.')
     }
     
     request = NULL
@@ -101,7 +102,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         }
     } 	
     
-    registry = bmRequest(request = request, ssl.verifypeer = ssl.verifypeer, verbose = verbose)
+    registry = bmRequest(request = request, verbose = verbose)
     
     ## check this looks like the MartRegistry XML, otherwise throw an error
     if(!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
@@ -115,7 +116,8 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
             stop('Unexpected format to the list of available marts.\n',
                  'Please check the following URL manually, ',
                  'and try ?listMarts for advice.\n',
-                 request)
+                 request, 
+                 call. = FALSE)
         }
     }
     registry = xmlTreeParse(registry, asText=TRUE)
@@ -175,7 +177,8 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 # #                           # #
 #################################
 
-useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, archive = FALSE, ssl.verifypeer = TRUE, ensemblRedirect = NULL, version, verbose = FALSE){
+useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, 
+                    archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE){
     
     if(!is.null(ensemblRedirect)) {
         warning('The argument "ensemblRedirect" has been deprecated and will be removed in the next biomaRt release.')
@@ -197,7 +200,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     host <- .cleanHostURL(host)
     
     marts <- listMarts(host=host, path=path, port=port, includeHosts = TRUE,
-                       archive = archive, ssl.verifypeer = ssl.verifypeer)
+                       archive = archive)
     mindex = NA
     if(!missing(biomart)){ 
         mindex=match(biomart,marts$biomart)
@@ -211,7 +214,11 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     if(is.na(mindex))
         stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
     
-    if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || is.na(marts$path[mindex])) stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
+    if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || 
+       is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || 
+       is.na(marts$path[mindex])) 
+        stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
+    
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
     #if(archive) biomart = marts$biomart[mindex]
     if(!missing(version)) biomart = marts$biomart[mindex]

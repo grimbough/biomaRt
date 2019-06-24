@@ -4,7 +4,7 @@
 ## a data frame containing the versions and their URL
 listEnsemblArchives <- function() {
     
-    html <- htmlParse("http://www.ensembl.org/info/website/archives/index.html?redirect=no")
+    html <- htmlParse("https://www.ensembl.org/info/website/archives/index.html?redirect=no")
     
     archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
     
@@ -25,8 +25,7 @@ listEnsemblArchives <- function() {
     
     tab <- do.call("rbind", extracted)
     tab <- cbind(tab, current)
-   # tab <- tab[,c(2,3,1,4,5)]
-    
+
     dframe <- data.frame("name" = as.character(tab[,2]), 
                          "date" = as.character(tab[,3]), 
                          "url" = tolower(as.character(tab[,1])),

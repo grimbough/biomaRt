@@ -3,7 +3,7 @@
 \title{lists the available BioMart databases}
 \description{This function returns a list of BioMart databases to which biomaRt can connect to.  By default all public BioMart databases are displayed.  To establish a connection use the useMart function.}
 \usage{listMarts(mart = NULL, host="www.ensembl.org", path="/biomart/martservice",
-port=80, includeHosts = FALSE, archive = FALSE, ssl.verifypeer = TRUE, 
+port=80, includeHosts = FALSE, archive = FALSE, 
 ensemblRedirect = NULL, verbose = FALSE)}
 
 \arguments{
@@ -20,7 +20,6 @@ to \code{TRUE} will produce an error.
 A better alternative is to specify the url of the archived 
 BioMart you want to access.  For Ensembl you can view the list of archives 
 using \code{\link{listEnsemblArchives}}}
-\item{ssl.verifypeer}{Set SSL peer verification on or off.  By default ssl.verifypeer is set to TRUE}
 \item{ensemblRedirect}{This argument has now been deprecated.}
 \item{verbose}{Give detailed output of what the method is doing, for debugging purposes}
 }
