@@ -171,8 +171,8 @@
 .submitQueryXML <- function(host, query) {
     res <- httr::POST(url = host,
                       body = list('query' = query),
-                      set_cookies(.cookies = c(redirect_mirror = 'no')),
-                      timeout(590))
+                     # set_cookies(.cookies = c(redirect_mirror = 'no')),
+                      timeout(300))
 
     ## now we set the redirection cookie, this code should never be executed
     if(status_code(res) == 302) {
@@ -180,7 +180,7 @@
                                pattern = "//([a-zA-Z./]+)\\??;?redirectsrc")[,2]
         res <- httr::POST(url = host,
                           body = list('query' = query),
-                          config = list(timeout(600)))
+                          config = list(timeout(300)))
     }
     ## content() prints a message about encoding not being supplied 
     ## for ensembl.org - no default, so we suppress it
