@@ -242,6 +242,7 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
         archives <- listEnsemblArchives()
         current_release <- archives[archives$current_release == "*", 'url']
         mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
+        mart@host <- stringr::str_replace(mart@host, pattern = ":80/", ":443/")
         
         if(length(grep(reqHost,martHost(mart))) == 0){
             message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
@@ -500,7 +501,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
                   useCache = TRUE){
     
     bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
-    hash <- createHash(attributes, filters, values)
+    hash <- createHash(mart, attributes, filters, values)
     if( checkCache(bfc, hash) ) {
         
         message("Cache found")
@@ -651,6 +652,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
         tf <- tempfile()
         save(result, file = tf)
         bfcadd(bfc, rname = hash, fpath = tf, action = "copy")
+        file.remove(tf)
     }
     
     return(result)
