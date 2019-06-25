@@ -312,3 +312,28 @@ searchFilterValues <- function(mart, filter, pattern) {
 listFilterValues <- function(mart, filter) {
     searchFilterValues(mart = mart, filter = filter)
 }
+
+###########################################################
+## Functions for caching
+###########################################################
+
+createHash <- function(attributes, filters, values) {
+  
+  tmp <- lapply( list(attributes, filters, values), 
+          FUN = function(x) {
+            if(is.list(x))
+              x <- unlist(lapply(x, sort))
+            else
+              x <- sort(x)
+            paste( x, collapse = "")
+          })
+  
+  combined <- paste(unlist(tmp), collapse = "")
+  as.character(openssl::md5(combined))
+}
+
+
+checkCache <- function(bfc, hash) {
+  res <- bfcquery(bfc, query = hash, field = "rname")
+  as.logical(nrow(res))
+}

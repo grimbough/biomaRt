@@ -10,7 +10,8 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
         person("Mike", "Smith", role=c("ctb", "cre"), 
             email = "grimbough@gmail.com"))
 Depends: methods
-Imports: utils, XML, AnnotationDbi, progress, stringr, httr
+Imports: utils, XML, AnnotationDbi, progress, stringr, httr,
+        openssl, BiocFileCache
 Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat
 VignetteBuilder: knitr
 biocViews: Annotation

@@ -495,7 +495,26 @@ filterType <- function(filter, mart){
 #getBM: generic BioMart query function   # 
 ##########################################
 
-getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE, quote="\""){
+getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, 
+                  checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE, quote="\"",
+                  useCache = TRUE){
+    
+    bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+    hash <- createHash(attributes, filters, values)
+    if( checkCache(bfc, hash) ) {
+        
+        message("Cache found")
+        cache_hits <- bfcquery(bfc, hash, field = "rname")
+        if(nrow(cache_hits) > 1) {
+            error("Multiple cache results found")
+        } else {
+            rid <- cache_hits$rid
+            load( bfc[[ rid ]] )
+            return(result)
+        }
+
+        
+    } else { 
     
     martCheck(mart)
     if(missing( attributes ))
@@ -627,7 +646,15 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL, chec
     if(length(filterXmlList) > 1) {
         pb$terminate()
     }
+    
+    if(useCache) {
+        tf <- tempfile()
+        save(result, file = tf)
+        bfcadd(bfc, rname = hash, fpath = tf, action = "copy")
+    }
+    
     return(result)
+    }
 }
 
 ###################################
