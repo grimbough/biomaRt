@@ -2,7 +2,7 @@
 ## Functions for caching
 ###########################################################
 
-createHash <- function(mart, attributes, filters, values) {
+.createHash <- function(mart, attributes, filters, values) {
     
     ## if we are using the current version Ensembl URL
     ## swap for the archive version so we can check when it is outdated
@@ -23,11 +23,17 @@ createHash <- function(mart, attributes, filters, values) {
     
     combined <- paste(c(host, unlist(tmp)), 
                       collapse = "")
-    as(openssl::md5(combined), "character")
+    paste0("biomaRt_", 
+           as(openssl::md5(combined), "character"))
 }
 
 
-checkCache <- function(bfc, hash) {
+.checkCache <- function(bfc, hash) {
     res <- bfcquery(bfc, query = hash, field = "rname")
     as.logical(nrow(res))
+}
+
+clearBiomartCache <-function(bfc) {
+    res <- bfcquery(bfc, query = "biomaRt_", field = "rname")
+    bfcremove(bfc, res$rid)
 }
