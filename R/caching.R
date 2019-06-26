@@ -12,17 +12,19 @@
         host <- archives[which(archives$current_release == "*"), "url"]
     }
     
-    tmp <- lapply( list(attributes, filters, values), 
-                   FUN = function(x) {
-                       if(is.list(x))
-                           x <- unlist(lapply(x, sort))
-                       else
-                           x <- sort(x)
-                       paste( x, collapse = "")
-                   })
+    attributes <- paste( sort(attributes), collapse = "" )
+    idx <- order(filters)
+    filters <- paste( filters[idx], collapse = "" )
+    if(is.list(values)) {
+        values <- values[idx]
+        values <- unlist(lapply(values, sort))
+    } else {
+        values <- sort(values)
+    }
+    values <- paste( values, collapse = "" )    
     
-    combined <- paste(c(host, unlist(tmp)), 
-                      collapse = "")
+    combined <- paste(c(host, mart@biomart, mart@dataset, attributes, filters, values), 
+                      collapse = "_")
     paste0("biomaRt_", 
            as(openssl::md5(combined), "character"))
 }
@@ -33,7 +35,8 @@
     as.logical(nrow(res))
 }
 
-clearBiomartCache <-function(bfc) {
-    res <- bfcquery(bfc, query = "biomaRt_", field = "rname")
-    bfcremove(bfc, res$rid)
+clearBiomartCache <- function() {
+    cache <- rappdirs::user_cache_dir(appname="biomaRt")
+    bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+    removebfc(bfc, ask = FALSE)
 }

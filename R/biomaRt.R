@@ -500,9 +500,10 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
                   checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE, quote="\"",
                   useCache = TRUE){
     
-    bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+    cache <- rappdirs::user_cache_dir(appname="biomaRt")
+    bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     hash <- .createHash(mart, attributes, filters, values)
-    if( .checkCache(bfc, hash) ) {
+    if( .checkCache(bfc, hash) && useCache ) {
         
         message("Cache found")
         cache_hits <- bfcquery(bfc, hash, field = "rname")
