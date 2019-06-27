@@ -1,20 +1,18 @@
 library(biomaRt)
-context('Testing Ensembl specific functions')
+context('Ensembl specific functions')
 
 test_that("useEnsembl() works", { 
 
   ensembl <- useEnsembl(biomart = "snp")
   expect_is(ensembl, class = "Mart")
-  
 
-  
 })
 
-test_that("useEnsembl() options", { 
+test_that("useEnsembl() options are respected", { 
   
-  expect_silent(ensembl_asia <- useEnsembl(biomart = "snp", mirror = "uswest"))
+  expect_silent(ensembl_asia <- useEnsembl(biomart = "snp", mirror = "asia"))
   expect_equal(ensembl_asia@host, 
-               "https://uswest.ensembl.org:443/biomart/martservice")
+               "https://asia.ensembl.org:443/biomart/martservice")
   
   expect_silent(ensembl_archive <- useEnsembl(biomart = "ensembl", version = 93))
   expect_equal(ensembl_archive@host,
@@ -22,7 +20,7 @@ test_that("useEnsembl() options", {
 })
 
 
-test_that("useEnsembl() error handling", { 
+test_that("useEnsembl() error handling is OK", { 
   
   expect_error(useEnsembl(), regexp = "You must provide the argument")
   

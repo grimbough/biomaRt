@@ -157,6 +157,10 @@ searchFilterValues(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
 searchFilterValues(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
 ```
 
+# Result Caching
+
+To save time `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have run before.  Each time a new query is run, the results will be saved to a cache on your computer.  The location of this cache can be found by running `rappdirs::user_cache_dir(appname = "biomaRt")`.  If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
+
 
 # Examples of biomaRt queries
 
