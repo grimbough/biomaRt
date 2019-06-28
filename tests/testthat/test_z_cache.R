@@ -16,10 +16,14 @@ test_that("Hashing is order insensitive", {
    )
 })
 
+test_that("Cache details are printed", {
+    expect_message( biomartCacheInfo(),
+                   regexp = "biomaRt cache")  
+})
 
 test_that("Cache can be cleared", {
     cache_file <- rappdirs::user_cache_dir(appname = "biomaRt")
     expect_true( file.exists( cache_file ) )
-    expect_silent( biomaRt:::clearBiomartCache() )
+    expect_silent( biomaRt:::biomartCacheClear() )
     expect_false( file.exists( cache_file) )
 })

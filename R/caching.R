@@ -35,8 +35,29 @@
     as.logical(nrow(res))
 }
 
-clearBiomartCache <- function() {
+biomartCacheClear <- function() {
     cache <- rappdirs::user_cache_dir(appname="biomaRt")
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     removebfc(bfc, ask = FALSE)
 }
+
+biomartCacheInfo <- function() {
+    cache <- rappdirs::user_cache_dir(appname="biomaRt")
+    
+    if(!file.exists(cache)) {
+        message("biomaRt cache uninitialized\n", 
+                "- Location: ", cache)
+    } else {
+        
+        bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+        files <- bfcinfo(bfc)$rpath
+        total_size <- sum(file.size(files))
+        size_obj <- structure(total_size, class = "object_size")
+    
+        message("biomaRt cache\n", 
+                "- Location: ", cache, "\n",
+                "- No. of files: ", length(files), "\n",
+                "- Total size: ", format(size_obj, units = "auto"))
+    }
+}
+

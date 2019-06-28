@@ -24,28 +24,13 @@ In recent years a wealth of biological data has become available in public data 
 Every analysis with `r Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  A first step is to check which BioMart web services are available.  The function `listMarts()` will display all available BioMart web services   
 
 ```{r annotate,echo=FALSE}
-## library("annotate")
-options(width=120)
+options(width=100)
 ```
 
 
 ```{r biomaRt}
 library("biomaRt")
 listMarts()
-```
-
-
-Note: if the function `useMart()` runs into proxy problems you should set your proxy first before calling any `r Biocpkg("biomaRt")` functions.  
-You can do this using the Sys.putenv command:
-
-```{r putenv, eval = FALSE}
-Sys.setenv("http_proxy" = "http://my.proxy.org:9999")
-```
-
-Some users have reported that the workaround above does not work, in this case an alternative proxy solution below can be tried: 
-
-```{r rCurlOptions, eval = FALSE}
-options(RCurlOptions = list(proxy="uscache.kcc.com:80",proxyuserpwd="------:-------"))
 ```
 
 The `useMart()` function can now be used to connect to a specified BioMart database, this must be a valid name given by `listMarts()`. In the next example we choose to query the Ensembl BioMart database.
@@ -159,8 +144,15 @@ searchFilterValues(mart = ensembl, filter = "phenotype_description", pattern = "
 
 # Result Caching
 
-To save time `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have run before.  Each time a new query is run, the results will be saved to a cache on your computer.  The location of this cache can be found by running `rappdirs::user_cache_dir(appname = "biomaRt")`.  If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
+To save time and computing resources `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
 
+You can get some information on the size and location of the cache using the function `biomartCacheInfo()`:
+
+```{r cacheInfo}
+biomartCacheInfo()
+```
+
+The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
 
 # Examples of biomaRt queries
 
@@ -347,33 +339,6 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 
 It is possible to query archived versions of Ensembl through `r Biocpkg("biomaRt")`.
 
-<!-- 
-######################################
-I dont think the archive=TRUE version works anymore.  The registry of archives is out-of-date
-and none of them are live now.  Identifying the host is far more reliable
-Mike Smith - 20/10/2016
-######################################
-
-There are currently two ways to access archived versions.
-
-## Using `archive = TRUE` 
-First we list the available Ensembl archives by using the `listMarts()` function and setting the archive attribute to TRUE.
-Note that not all archives are available this way and it seems that recently this only gives access to few archives if you don't see the version of the archive you need please look at the 2nd way to access archives.
-```{r archiveMarts1}
-listMarts(archive = TRUE)
-``` 
-Next we select the archive we want to use using the `useMart()` function, again setting the archive attribute to TRUE and giving the full name of the BioMart e.g. ensembl_mart_46.
-
-```{r archiveMarts2, echo = TRUE, eval = TRUE}
-ensembl = useMart("ensembl_mart_46", dataset="hsapiens_gene_ensembl", archive = TRUE)
-``` 
-
-If you don't know the dataset you want to use could first connect to the BioMart using `useMart()` and then use the `listDatasets()` function on this object.
-After you selected the BioMart database and dataset, queries can be performed in the same way as when using the current BioMart versions.
-
-## Accessing archives through specifying the archive host
--->
-
 `r Biocpkg("biomaRt")` provides the function `listEnsemblArchives()` to view the available archives.  This function takes no arguments, and produces a table containing the names of the available archived versions, the date they were first available, and the URL where they can be accessed.
 
 ```{r archiveMarts, echo = TRUE, eval = TRUE}
@@ -541,6 +506,20 @@ with select and it's helper methods, they can now proceed to use `r Biocpkg("bio
 them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more
 convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
 
+# Connection troubleshooting
+
+Note: if the function `useMart()` runs into proxy problems you should set your proxy first before calling any `r Biocpkg("biomaRt")` functions.  
+You can do this using the Sys.putenv command:
+
+```{r putenv, eval = FALSE}
+Sys.setenv("http_proxy" = "http://my.proxy.org:9999")
+```
+
+Some users have reported that the workaround above does not work, in this case an alternative proxy solution below can be tried: 
+
+```{r rCurlOptions, eval = FALSE}
+options(RCurlOptions = list(proxy="uscache.kcc.com:80",proxyuserpwd="------:-------"))
+```
 
 # Session Info
 ```{r sessionInfo}

@@ -241,8 +241,10 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
         ## hack to work around redirection of most recent mirror URL
         archives <- listEnsemblArchives()
         current_release <- archives[archives$current_release == "*", 'url']
-        mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
-        mart@host <- stringr::str_replace(mart@host, pattern = ":80/", ":443/")
+        if(grepl(mart@host, pattern = current_release)) {
+            mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
+            mart@host <- stringr::str_replace(mart@host, pattern = ":80/", ":443/")
+        }
         
         if(length(grep(reqHost,martHost(mart))) == 0){
             message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
@@ -500,8 +502,31 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
                   checkFilters = TRUE, verbose=FALSE, uniqueRows=TRUE, bmHeader=FALSE, quote="\"",
                   useCache = TRUE){
     
-    cache <- rappdirs::user_cache_dir(appname="biomaRt")
-    bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+    ## check the arguments are all valid
+    martCheck(mart)
+    if(missing( attributes ))
+        stop("Argument 'attributes' must be specified.")
+    
+    if(is.list(filters) && !missing( values ))
+        warning("Argument 'values' should not be used when argument 'filters' is a list and will be ignored.")
+    if(is.list(filters) && is.null(names(filters)))
+        stop("Argument 'filters' must be a named list when sent as a list.")
+    if(!is.list(filters) && all(filters != "") && missing( values ))
+        stop("Argument 'values' must be specified.")
+    if(length(filters) > 0 && length(values) == 0)
+        stop("Values argument contains no data.")
+    if(is.list(filters)){
+        values = filters
+        filters = names(filters)
+    }
+    if(class(uniqueRows) != "logical")
+        stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
+    
+    ## determine if we should use the results cache
+    if(useCache) {
+        cache <- rappdirs::user_cache_dir(appname="biomaRt")
+        bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+    }
     hash <- .createHash(mart, attributes, filters, values)
     if( .checkCache(bfc, hash) && useCache ) {
         
@@ -517,28 +542,6 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
 
         
     } else { 
-    
-    martCheck(mart)
-    if(missing( attributes ))
-        stop("Argument 'attributes' must be specified.")
-    
-    if(is.list(filters) && !missing( values ))
-        warning("Argument 'values' should not be used when argument 'filters' is a list and will be ignored.")
-    if(is.list(filters) && is.null(names(filters)))
-        stop("Argument 'filters' must be a named list when sent as a list.")
-    if(!is.list(filters) && all(filters != "") && missing( values ))
-        stop("Argument 'values' must be specified.")
-    
-    if(length(filters) > 0 && length(values) == 0)
-        stop("Values argument contains no data.")
-    
-    if(is.list(filters)){
-        values = filters
-        filters = names(filters)
-    }
-    
-    if(class(uniqueRows) != "logical")
-        stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
     
     ## force the query to return the 'english text' header names with the result
     ## we use these later to match and order attribute/column names    
