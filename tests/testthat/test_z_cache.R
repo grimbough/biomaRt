@@ -16,6 +16,20 @@ test_that("Hashing is order insensitive", {
    )
 })
 
+test_that("We find cache for previous query", {
+    
+    mart <- useMart(biomart = "ensembl",
+                    host = "https://useast.ensembl.org",
+                    dataset ="mmusculus_gene_ensembl",
+                    port = 443)
+    
+    expect_message(res <- getBM(filter = "ensembl_gene_id",
+                 values = "ENSMUSG00000028798",
+                 attributes = c("ensembl_transcript_id", "neugenii_homolog_canonical_transcript_protein"),
+                 mart = mart),  
+                 regexp = "Cache found")
+})
+
 test_that("Cache details are printed", {
     expect_message( biomartCacheInfo(),
                    regexp = "biomaRt cache")  

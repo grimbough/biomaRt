@@ -2,7 +2,7 @@
 ## Functions for caching
 ###########################################################
 
-.createHash <- function(mart, attributes, filters, values) {
+.createHash <- function(mart, attributes, filters, values, uniqueRows = TRUE, bmHeader = FALSE) {
     
     ## if we are using the current version Ensembl URL
     ## swap for the archive version so we can check when it is outdated
@@ -23,7 +23,7 @@
     }
     values <- paste( values, collapse = "" )    
     
-    combined <- paste(c(host, mart@biomart, mart@dataset, attributes, filters, values), 
+    combined <- paste(c(host, mart@biomart, mart@dataset, attributes, filters, values, uniqueRows, bmHeader), 
                       collapse = "_")
     paste0("biomaRt_", 
            as(openssl::md5(combined), "character"))
