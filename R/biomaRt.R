@@ -533,14 +533,13 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
         message("Cache found")
         cache_hits <- bfcquery(bfc, hash, field = "rname")
         if(nrow(cache_hits) > 1) {
-            error("Multiple cache results found")
+            stop("Multiple cache results found")
         } else {
             rid <- cache_hits$rid
             load( bfc[[ rid ]] )
             return(result)
         }
 
-        
     } else { 
     
     ## force the query to return the 'english text' header names with the result
@@ -601,49 +600,19 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
         ## we choose a separator based on whether '?redirect=no' is present
         sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
         
-        postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
+        ## create a unique name for this chunk & see if it has been run before
+        chunk_hash <- as(openssl::md5(paste(martHost(mart), fullXmlQuery)), "character")
+        tf <- file.path(tempdir(), paste0("biomaRt_", chunk_hash, ".rds"))
+        if(!file.exists(tf)) {
+            postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                                    query = fullXmlQuery)
-        
-        if(verbose){
-            writeLines("#################\nResults from server:")
-            print(postRes)
-        }
-        if(!(is.character(postRes) && (length(postRes)==1L)))
-            stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. \nPlease report this on the support site at http://support.bioconductor.org")
-        
-        if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
-            
-            result = as.data.frame(matrix(ncol=length(attributes), nrow=0))
-            
+            result <- .processResults(postRes, mart = mart, sep = sep, fullXmlQuery = fullXmlQuery,
+                                      verbose = verbose, callHeader = callHeader, 
+                                      quote = quote, attributes = attributes)
+            saveRDS(result, file = tf)
         } else {
-            
-            if(length(grep("^Query ERROR", postRes))>0L)
-                stop(postRes)
-            
-            ## convert the serialized table into a dataframe
-            con = textConnection(postRes)
-            on.exit(close(con))
-            result <- tryCatch(read.table(con, sep="\t", header=callHeader, quote = quote, 
-                                          comment.char = "", stringsAsFactors = FALSE, check.names = FALSE),
-                               error = function(e) {
-                                   ## if the error relates to number of element, try reading HTML version
-                                   if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
-                                       .fetchHTMLresults(host = paste0(martHost(mart), sep), query = fullXmlQuery)
-                                   else
-                                       stop(e)
-                               }
-            )
-            if(verbose){
-                writeLines("#################\nParsed results:")
-                print(result)
-            }
-
-            if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
-                print(head(result))
-                stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. \nPlease report this on the support site at http://support.bioconductor.org")
-            }
+            result <- readRDS(tf)
         }
-        
         resultList[[i]] <- .setResultColNames(result, mart = mart, attributes = attributes, bmHeader = bmHeader)
     }
     ## collate results
@@ -659,6 +628,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
         file.remove(tf)
     }
     
+    ## remove any temp chunk files
+    file.remove( list.files(tempdir(), pattern = "^biomaRt.*rds$", full.names = TRUE) )
     return(result)
     }
 }

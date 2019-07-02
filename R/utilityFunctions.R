@@ -204,6 +204,49 @@
     XML::readHTMLTable(html_res, stringsAsFactors = FALSE)[[1]]
 }
 
+.processResults <- function(postRes, mart, sep, fullXmlQuery, verbose, callHeader, quote, attributes) {
+
+    if(verbose){
+      writeLines("#################\nResults from server:")
+      print(postRes)
+    }
+    if(!(is.character(postRes) && (length(postRes)==1L)))
+      stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. \nPlease report this on the support site at http://support.bioconductor.org")
+    
+    if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
+      
+      result = as.data.frame(matrix(ncol=length(attributes), nrow=0))
+      
+    } else {
+      
+      if(length(grep("^Query ERROR", postRes))>0L)
+        stop(postRes)
+      
+      ## convert the serialized table into a dataframe
+      con = textConnection(postRes)
+      on.exit(close(con))
+      result <- tryCatch(read.table(con, sep="\t", header=callHeader, quote = quote, 
+                                    comment.char = "", stringsAsFactors = FALSE, check.names = FALSE),
+                         error = function(e) {
+                           ## if the error relates to number of element, try reading HTML version
+                           if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
+                             .fetchHTMLresults(host = paste0(martHost(mart), sep), query = fullXmlQuery)
+                           else
+                             stop(e)
+                         }
+      )
+      if(verbose){
+        writeLines("#################\nParsed results:")
+        print(result)
+      }
+      
+      if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
+        print(head(result))
+        stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. \nPlease report this on the support site at http://support.bioconductor.org")
+      }
+    }
+    return(result)
+}
 
 ##############################################
 ## searching Attributes, Filters, and Datasets
