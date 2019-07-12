@@ -6,7 +6,7 @@
 
 \arguments{
   \item{id}{vector of gene identifiers one wants to annotate}
-  \item{type}{type of identifier, possible values can be obtained by the listFilters function.  Examples are  entrezgene, hgnc\_symbol (for hugo gene symbol), ensembl\_gene\_id, unigene, agilentprobe, affy\_hg\_u133\_plus\_2,  refseq\_dna, etc.}
+  \item{type}{type of identifier, possible values can be obtained by the listFilters function.  Examples are  entrezgene\_id, hgnc\_symbol (for hugo gene symbol), ensembl\_gene\_id, unigene, agilentprobe, affy\_hg\_u133\_plus\_2,  refseq\_dna, etc.}
   \item{mart}{object of class Mart, containing connections to the BioMart databases.  You can create such an object using the function useMart.}
 }
 
@@ -25,7 +25,7 @@ show(g)
 
 #example using Entrez Gene id
 
-g = getGene( id = "100", type = "entrezgene", mart = mart)
+g = getGene( id = "100", type = "entrezgene_id", mart = mart)
 show(g)
 }
 }

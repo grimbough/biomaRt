@@ -10,9 +10,9 @@ test_that("useEnsembl() works", {
 
 test_that("useEnsembl() options are respected", { 
   
-  expect_silent(ensembl_asia <- useEnsembl(biomart = "snp", mirror = "asia"))
+  expect_silent(ensembl_asia <- useEnsembl(biomart = "snp", mirror = "useast"))
   expect_equal(ensembl_asia@host, 
-               "https://asia.ensembl.org:443/biomart/martservice")
+               "https://useast.ensembl.org:443/biomart/martservice")
   
   expect_silent(ensembl_archive <- useEnsembl(biomart = "ensembl", version = 93))
   expect_equal(ensembl_archive@host,

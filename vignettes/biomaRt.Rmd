@@ -7,8 +7,10 @@ output:
     md_extensions: "-autolink_bare_uris"
 vignette: >
   %\VignetteIndexEntry{The biomaRt users guide}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}  
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, echo = FALSE}
@@ -91,9 +93,9 @@ Now that we selected a BioMart database and dataset, and know about attributes, 
 The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output (attributes) for the query we want to retrieve the EntrezGene and u133plus2 identifiers so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the `listAttributes()` and `listFilters()` function respectively.  Let's now run the query:
 
 
-```{r getBM1, echo=TRUE,eval=TRUE}
+```{r getBM1, echo=TRUE, eval=TRUE}
 affyids=c("202763_at","209310_s_at","207500_at")
-getBM(attributes=c('affy_hg_u133_plus_2', 'entrezgene'), 
+getBM(attributes=c('affy_hg_u133_plus_2', 'entrezgene_id'), 
       filters = 'affy_hg_u133_plus_2', 
       values = affyids, 
       mart = ensembl)
@@ -179,8 +181,8 @@ In this task we start out with a list of EntrezGene identiers and we want to ret
 
 ```{r task2, echo=TRUE,eval=TRUE}
 entrez=c("673","837")
-goids = getBM(attributes = c('entrezgene', 'go_id'), 
-              filters = 'entrezgene', 
+goids = getBM(attributes = c('entrezgene_id', 'go_id'), 
+              filters = 'entrezgene_id', 
               values = entrez, 
               mart = ensembl)
 head(goids)
@@ -224,11 +226,11 @@ getBM(attributes = c('affy_hg_u133_plus_2','ensembl_gene_id'),
 ```
 
  
-## Retrieve all entrezgene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.
-The GO identifier for MAP kinase activity is **GO:0004707**.  In our query we will use *go_id* as our filter, and *entrezgene* and *hgnc_symbol* as attributes.  Here's the query:
+## Retrieve all EntrezGene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.
+The GO identifier for MAP kinase activity is **GO:0004707**.  In our query we will use *go_id* as our filter, and *entrezgene_id* and *hgnc_symbol* as attributes.  Here's the query:
 
 ```{r task6, echo=TRUE, eval = TRUE}
-getBM(attributes = c('entrezgene','hgnc_symbol'), 
+getBM(attributes = c('entrezgene_id','hgnc_symbol'), 
       filters = 'go', 
       values = 'GO:0004707', 
       mart = ensembl)
@@ -259,13 +261,13 @@ The type of sequence returned can be specified by the *seqType* argument which t
 
 In MySQL mode the `getSequence()` function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
 
-This task requires us to retrieve 100bp upstream promoter sequences from a set of EntrzGene identifiers.  The *type* argument in `getSequence()` can be thought of as the filter in this query and uses the same input names given by `listFilters()`. In our query we use entrezgene for the type argument.  Next we have to specify which type of sequences we want to retrieve, here we are interested in the sequences of the promoter region, starting right next to the coding start of the gene.  Setting the *seqType* to coding_gene_flank will give us what we need.  The *upstream* argument is used to specify how many bp of upstream sequence we want to retrieve, here we'll retrieve a rather short sequence of 100bp.  Putting this all together in `getSequence()` gives:
+This task requires us to retrieve 100bp upstream promoter sequences from a set of EntrezGene identifiers.  The *type* argument in `getSequence()` can be thought of as the filter in this query and uses the same input names given by `listFilters()`. In our query we use entrezgene for the type argument.  Next we have to specify which type of sequences we want to retrieve, here we are interested in the sequences of the promoter region, starting right next to the coding start of the gene.  Setting the *seqType* to coding_gene_flank will give us what we need.  The *upstream* argument is used to specify how many bp of upstream sequence we want to retrieve, here we'll retrieve a rather short sequence of 100bp.  Putting this all together in `getSequence()` gives:
 
 
 ```{r task7, eval=TRUE}
 entrez=c("673","7157","837")
 getSequence(id = entrez, 
-            type="entrezgene",
+            type="entrezgene_id",
             seqType="coding_gene_flank",
             upstream=100, 
             mart=ensembl) 
@@ -278,7 +280,7 @@ As described in the provious task getSequence can also use chromosomal coordinat
 
 ```{r task8, echo=TRUE,eval=TRUE}
 utr5 = getSequence(chromosome=3, start=185514033, end=185535839,
-                   type="entrezgene",
+                   type="entrezgene_id",
                    seqType="5utr", 
                    mart=ensembl)
 utr5
@@ -293,7 +295,7 @@ To get an overview of other valid identifier types we refer to the `listFilters(
 
 ```{r task9, echo=TRUE, eval=TRUE}
 protein = getSequence(id=c(100, 5728),
-                      type="entrezgene",
+                      type="entrezgene_id",
                       seqType="peptide", 
                       mart=ensembl)
 protein
@@ -303,7 +305,7 @@ protein
 
 For this example we'll first have to connect to a different BioMart database, namely snp.  
 ```{r task10, echo=TRUE, eval=TRUE}
-snpmart = useMart(biomart = "ENSEMBL_MART_SNP", dataset="hsapiens_snp")
+snpmart = useEnsembl(biomart = "snp", dataset="hsapiens_snp")
 ``` 
 
 The `listAttributes()` and `listFilters()` functions give us an overview of the available attributes and filters.  
