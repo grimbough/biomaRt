@@ -36,7 +36,7 @@ function.
   \item{start}{start position of sequence on chromosome}
   \item{end}{end position of sequence on chromosome}
   \item{id}{ An identifier or vector of identifiers.}
-  \item{type}{The type of identifier used.  Supported types are hugo, ensembl, embl, entrezgene, refseq, ensemblTrans and unigene. Alternatively one can also use a filter to specify the type. Possible filters are given by the listFilters function}
+  \item{type}{The type of identifier used.  Supported types are hugo, ensembl, embl, entrezgene\_id, refseq, ensemblTrans and unigene. Alternatively one can also use a filter to specify the type. Possible filters are given by the listFilters function}
   \item{seqType}{Type of sequence that you want to retrieve.  Allowed seqTypes are given in the details section.}
   \item{upstream}{To add the upstream sequence of a specified number of basepairs to the output.}
   \item{downstream}{To add the downstream sequence of a specified number of basepairs to the output.}
