@@ -240,8 +240,11 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
         ## hack to work around redirection of most recent mirror URL
         archives <- listEnsemblArchives()
         current_release <- archives[archives$current_release == "*", 'url']
-        mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
-        
+        if(grepl(mart@host, pattern = current_release)) {
+            mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
+            mart@host <- stringr::str_replace(mart@host, pattern = ":80/", ":443/")
+        }
+
         if(length(grep(reqHost,martHost(mart))) == 0){
             message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
             message("This often occurs when connecting to the archive URL for the current Ensembl release")
