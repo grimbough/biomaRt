@@ -57,8 +57,8 @@ checkWrapperArgs = function(id, type, mart){
 bmRequest <- function(request, verbose = FALSE){
     if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
 
-    result <- httr::GET(request, content_type("text/plain"),
-                        set_cookies(.cookies = c(redirect_mirror = 'no')))
+    result <- httr::GET(request, content_type("text/plain")#, set_cookies(.cookies = c(redirect_mirror = 'no'))
+                        )
     stop_for_status(result)
     result2 <- content(result, encoding = "UTF-8")
     if(is.na(result2)) {
@@ -82,15 +82,23 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
                 '\nSee ?useEnsembl for details on using mirror sites.')
     }
     
+    .listMarts(mart = mart, host = host, path = path, port = port, includeHosts = includeHosts,
+                archive = archive, verbose = verbose, ensemblRedirect = TRUE)
+    
+}
+
+.listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
+                       port=80, includeHosts = FALSE, archive = FALSE, verbose = FALSE, 
+                       ensemblRedirect = NULL){
+
     request = NULL
     if(is.null(mart)){
         
         host <- .cleanHostURL(host)
         if(archive) {
             stop("The archive = TRUE argument is now defunct.\nUse listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
-        } 
-        else {
-            request = paste0(host, ":", port, path, "?type=registry&requestid=biomaRt")
+        } else {
+            request <- paste0(host, ":", port, path, "?type=registry&requestid=biomaRt")
         }
     }
     else{
@@ -102,6 +110,9 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         }
     } 	
     
+    if(!ensemblRedirect && grepl(x = request, pattern = "ensembl.org")) {
+        request <- paste0(request, "&redirect=no")
+    }
     registry = bmRequest(request = request, verbose = verbose)
     
     ## check this looks like the MartRegistry XML, otherwise throw an error
@@ -126,7 +137,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
     marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL, database = NULL)
     index = 1
     
-    if(host != "www.biomart.org" || archive){
+    # if(host != "www.biomart.org" || archive){
         for(i in seq(len=xmlSize(registry))){
             if(xmlName(registry[[i]])=="MartURLLocation"){  
                 if(xmlGetAttr(registry[[i]],"visible") == 1){
@@ -143,30 +154,32 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
                 }
             }
         }
-    }
-    else{
-        for(i in seq(len=xmlSize(registry))){
-            if(xmlName(registry[[i]])=="MartURLLocation"){  
-                if(xmlGetAttr(registry[[i]],"visible") == 1){
-                    if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
-                    if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
-                    if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
-                    marts$host[index] = host
-                    marts$path[index] = path
-                    marts$port[index] = 80
-                    if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-                        marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
-                    }
-                    index=index+1
-                }
-            }
-        }
-    }
+    # }
+    # else{
+    #     for(i in seq(len=xmlSize(registry))){
+    #         if(xmlName(registry[[i]])=="MartURLLocation"){  
+    #             if(xmlGetAttr(registry[[i]],"visible") == 1){
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
+    #                 marts$host[index] = host
+    #                 marts$path[index] = path
+    #                 marts$port[index] = 80
+    #                 if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
+    #                     marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
+    #                 }
+    #                 index=index+1
+    #             }
+    #         }
+    #     }
+    # }
     if(includeHosts){
         return(marts)
     }
     else{
-        ret = data.frame(biomart = as.character(marts$biomart),version = as.character(marts$version), stringsAsFactors=FALSE)
+        ret = data.frame(biomart = as.character(marts$biomart),
+                         version = as.character(marts$version), 
+                         stringsAsFactors=FALSE)
         return(ret)
     } 
 }
@@ -178,14 +191,21 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 #################################
 
 useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, 
-                    archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE){
+                     archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE) {
     
     if(!is.null(ensemblRedirect)) {
         warning('The argument "ensemblRedirect" has been deprecated and will be removed in the next biomaRt release.')
-        ensemblRedirect <- NULL
     }
     
-    if(missing(biomart) && missing(version)) stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
+    mart <- .useMart(biomart, dataset, host = host, path = path, port = port, 
+                     archive = archive, version = version, verbose = verbose, ensemblRedirect = TRUE)
+}
+
+.useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, 
+                    archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE){
+    
+    if(missing(biomart) && missing(version)) 
+        stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
     if(!missing(biomart)){ 
         if(!(is.character(biomart)))
             stop("biomart argument is not a string. ",
@@ -225,16 +245,17 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     
     ## adding option to force use of specificed host with ensembl
-    #redirect <- ifelse(!ensemblRedirect && grepl(x = host, pattern = "ensembl.org"), 
-    #                   "?redirect=no",
-    #                   "")
+    redirect <- ifelse(!ensemblRedirect && grepl(x = host, pattern = "ensembl.org"), 
+                       "?redirect=no",
+                       "")
     
     mart <- new("Mart", 
                 biomart = biomart,
                 vschema = marts$vschema[mindex], 
                 host = paste0(host, ":", 
                               port,
-                              marts$path[mindex]))
+                              marts$path[mindex],
+                              redirect))
     
     if(length(grep("archive",martHost(mart)) > 0)){
         
@@ -246,11 +267,11 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
             mart@host <- stringr::str_replace(mart@host, pattern = ":80/", ":443/")
         }
         
-        if(length(grep(reqHost,martHost(mart))) == 0){
-            message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
-            message("This often occurs when connecting to the archive URL for the current Ensembl release")
-            message("You can check the current version number using listEnsemblArchives()")
-        }
+        #if(length(grep(reqHost,martHost(mart))) == 0){
+        #    message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
+        #    message("This often occurs when connecting to the archive URL for the current Ensembl release")
+        #    message("You can check the current version number using listEnsemblArchives()")
+        #}
     }
     
     BioMartVersion=bmVersion(mart, verbose=verbose)

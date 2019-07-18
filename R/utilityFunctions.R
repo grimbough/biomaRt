@@ -173,7 +173,7 @@
 .submitQueryXML <- function(host, query) {
     res <- httr::POST(url = host,
                       body = list('query' = query),
-                      set_cookies(.cookies = c(redirect_mirror = 'no')),
+                      #set_cookies(.cookies = c(redirect_mirror = 'no')),
                       timeout(300))
 
     ## if we encounter internal server error, suggest using a mirror
