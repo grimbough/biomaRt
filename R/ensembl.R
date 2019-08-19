@@ -111,6 +111,7 @@ useEnsembl <- function(biomart, dataset, host,
                  call. = FALSE)
         }
         host <- archives[idx, 'url']
+        host <- gsub(x = host, pattern = "http://", replacement = "https://", fixed = TRUE)
     }	   
     
     if(!is.null(GRCh)){

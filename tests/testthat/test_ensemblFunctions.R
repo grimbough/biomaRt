@@ -18,7 +18,7 @@ test_that("useEnsembl() options", {
   
   expect_silent(ensembl_archive <- useEnsembl(biomart = "ensembl", version = 93))
   expect_equal(ensembl_archive@host,
-               "http://jul2018.archive.ensembl.org:80/biomart/martservice")
+               "https://jul2018.archive.ensembl.org:443/biomart/martservice")
 })
 
 
