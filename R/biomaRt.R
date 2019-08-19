@@ -549,7 +549,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
         bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     }
     hash <- .createHash(mart, attributes, filters, values, uniqueRows, bmHeader)
-    if( .checkCache(bfc, hash) && useCache ) {
+    if( useCache && .checkCache(bfc, hash) ) {
         
         message("Cache found")
         cache_hits <- bfcquery(bfc, hash, field = "rname")
