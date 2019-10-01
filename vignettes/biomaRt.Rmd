@@ -499,7 +499,7 @@ that match a particular set of keys (this is basically a wrapper for
 
 ```{r select}
 affy=c("202763_at","209310_s_at","207500_at")
-select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene'),
+select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
   keytype='affy_hg_u133_plus_2')
 ``` 
 
