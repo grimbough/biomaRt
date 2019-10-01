@@ -8,10 +8,10 @@ NEW FEATURES
     
 MINOR CHANGES
 
-    o Ensembl users will be redirect to their closest mirror unless the 
+    o Ensembl users will be redirected to their closest mirror unless the 
     host argument is explicitly provided.  In this case the defined value
     will be enforced.
-    o Unused argument 'ssl.verifypeer' removed from listMarts() and useMarts()
+    o Unused argument 'ssl.verifypeer' removed from listMarts() and useMarts().
     o RCurl removed from package dependecies.
     
 BUG FIXES
