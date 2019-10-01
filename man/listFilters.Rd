@@ -3,7 +3,7 @@
 \alias{searchFilters}
 \title{List or search the filters available in the selected dataset}
 \description{Filters are what we use as inputs for a biomaRt query.
-  For example, if we want to retrieve all entrezgene identifiers on
+  For example, if we want to retrieve all EntrezGene identifiers on
   chromosome X, \code{chromosome} will be the filter,
   with corresponding value X.}
 

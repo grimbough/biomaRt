@@ -5,6 +5,7 @@ package: "`r pkg_ver('biomaRt')`"
 output: 
   BiocStyle::html_document:
     md_extensions: "-autolink_bare_uris"
+    css: style.css
 vignette: >
   %\VignetteIndexEntry{The biomaRt users guide}
   %\VignetteEncoding{UTF-8}  
@@ -261,7 +262,7 @@ The type of sequence returned can be specified by the *seqType* argument which t
 
 In MySQL mode the `getSequence()` function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
 
-This task requires us to retrieve 100bp upstream promoter sequences from a set of EntrezGene identifiers.  The *type* argument in `getSequence()` can be thought of as the filter in this query and uses the same input names given by `listFilters()`. In our query we use entrezgene for the type argument.  Next we have to specify which type of sequences we want to retrieve, here we are interested in the sequences of the promoter region, starting right next to the coding start of the gene.  Setting the *seqType* to coding_gene_flank will give us what we need.  The *upstream* argument is used to specify how many bp of upstream sequence we want to retrieve, here we'll retrieve a rather short sequence of 100bp.  Putting this all together in `getSequence()` gives:
+This task requires us to retrieve 100bp upstream promoter sequences from a set of EntrezGene identifiers.  The *type* argument in `getSequence()` can be thought of as the filter in this query and uses the same input names given by `listFilters()`. In our query we use `entrezgene_id` for the type argument.  Next we have to specify which type of sequences we want to retrieve, here we are interested in the sequences of the promoter region, starting right next to the coding start of the gene.  Setting the *seqType* to `coding_gene_flank` will give us what we need.  The *upstream* argument is used to specify how many bp of upstream sequence we want to retrieve, here we'll retrieve a rather short sequence of 100bp.  Putting this all together in `getSequence()` gives:
 
 
 ```{r task7, eval=TRUE}

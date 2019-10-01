@@ -5,6 +5,21 @@ NEW FEATURES
 
     o The results of queries will now be cached, and if repeated queries
     are detected the results are loaded from disk.  
+    
+MINOR CHANGES
+
+    o Ensembl users will be redirect to their closest mirror unless the 
+    host argument is explicitly provided.  In this case the defined value
+    will be enforced.
+    o Unused argument 'ssl.verifypeer' removed from listMarts() and useMarts()
+    o RCurl removed from package dependecies.
+    
+BUG FIXES
+
+    o Improvements made to selecting the correct port when using http
+    vs https
+    o Results that contain unescaped new line characters are now returned
+    successfully.
 
 CHANGES IN VERSION 2.36.0
 -------------------------
