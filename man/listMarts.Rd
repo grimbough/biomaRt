@@ -3,7 +3,7 @@
 \title{lists the available BioMart databases}
 \description{This function returns a list of BioMart databases to which biomaRt can connect to.  By default all public BioMart databases are displayed.  To establish a connection use the useMart function.}
 \usage{listMarts(mart = NULL, host="www.ensembl.org", path="/biomart/martservice",
-port=80, includeHosts = FALSE, archive = FALSE, 
+port, includeHosts = FALSE, archive = FALSE, 
 ensemblRedirect = NULL, verbose = FALSE)}
 
 \arguments{

@@ -57,7 +57,8 @@ checkWrapperArgs = function(id, type, mart){
 bmRequest <- function(request, verbose = FALSE){
     if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
 
-    result <- httr::GET(request, content_type("text/plain")#, set_cookies(.cookies = c(redirect_mirror = 'no'))
+    result <- httr::GET(request, content_type("text/plain")
+                        #, set_cookies(.cookies = c(redirect_mirror = 'no'))
                         )
     stop_for_status(result)
     result2 <- content(result, encoding = "UTF-8")
@@ -75,7 +76,11 @@ bmRequest <- function(request, verbose = FALSE){
 #######################################################
 
 listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
-                       port=80, includeHosts = FALSE, archive = FALSE, ensemblRedirect = NULL, verbose = FALSE){
+                       port, includeHosts = FALSE, archive = FALSE, ensemblRedirect = NULL, verbose = FALSE){
+    
+    if(missing(port)) {
+        port <- ifelse(grepl("https", host), yes = 443, no = 80)
+    }
     
     if(!is.null(ensemblRedirect)) {
         warning('The argument "ensemblRedirect" has been deprecated and does not do anything.',
@@ -154,25 +159,6 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
                 }
             }
         }
-    # }
-    # else{
-    #     for(i in seq(len=xmlSize(registry))){
-    #         if(xmlName(registry[[i]])=="MartURLLocation"){  
-    #             if(xmlGetAttr(registry[[i]],"visible") == 1){
-    #                 if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = xmlGetAttr(registry[[i]],"name")
-    #                 if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = xmlGetAttr(registry[[i]],"database")
-    #                 if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = xmlGetAttr(registry[[i]],"displayName")
-    #                 marts$host[index] = host
-    #                 marts$path[index] = path
-    #                 marts$port[index] = 80
-    #                 if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-    #                     marts$vschema[index] =  xmlGetAttr(registry[[i]],"serverVirtualSchema")
-    #                 }
-    #                 index=index+1
-    #             }
-    #         }
-    #     }
-    # }
     if(includeHosts){
         return(marts)
     }
@@ -190,8 +176,12 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 # #                           # #
 #################################
 
-useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, 
+useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port, 
                      archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE) {
+    
+    if(missing(port)) {
+        port <- ifelse(grepl("https", host), yes = 443, no = 80)
+    }
     
     if(!is.null(ensemblRedirect)) {
         warning('The argument "ensemblRedirect" has been deprecated and will be removed in the next biomaRt release.')
@@ -266,12 +256,6 @@ useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart
             mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
             mart@host <- stringr::str_replace(mart@host, pattern = ":80/", ":443/")
         }
-        
-        #if(length(grep(reqHost,martHost(mart))) == 0){
-        #    message("Note: requested host was redirected from\n", reqHost, " to " , martHost(mart))
-        #    message("This often occurs when connecting to the archive URL for the current Ensembl release")
-        #    message("You can check the current version number using listEnsemblArchives()")
-        #}
     }
     
     BioMartVersion=bmVersion(mart, verbose=verbose)
@@ -798,10 +782,10 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                                query = xmlQuery)
     
-    ## 10-01-2014
+
     if(length(grep("^Query ERROR", postRes))>0L)
         stop(postRes)  
-    ##
+
     if(postRes != ""){
         con = textConnection(postRes)
         result = read.table(con, sep="\t", header=bmHeader, quote = "\"", comment.char = "", as.is=TRUE, check.names = TRUE)
@@ -809,15 +793,17 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
         
         if(nrow(result) > 0 && all(is.na(result[,ncol(result)])))
             result = result[,-ncol(result),drop=FALSE]
-        ## 10 - 01 - 2014
+
         res_attributes <- c(attributes,attributesL)
         if(!(is(result, "data.frame") && (ncol(result)==length(res_attributes)))) {
             print(head(result))
-            stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. \nPlease report this on the support site at http://support.bioconductor.org")
+            stop("The query to the BioMart webservice returned an invalid result: ", 
+            "the number of columns in the result table does not equal the number of attributes in the query. \n",
+            "Please report this on the support site at http://support.bioconductor.org")
         } 
         if(!bmHeader){  #assumes order of results same as order of attibutes in input
             colnames(result) = res_attributes
-            ##
+
         }
     } else {
         warning("getLDS returns NULL.")
