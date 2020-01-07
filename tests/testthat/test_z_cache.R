@@ -7,7 +7,7 @@ chrom <- c(17,20,"Y")
 attributes <- "hgnc_symbol"
 filters <- c("go","chromosome_name")
 values <- list(go, chrom)
-ensembl <- useEnsembl("ensembl", "hsapiens_gene_ensembl", mirror = "uswest")
+ensembl <- useEnsembl("ensembl", "hsapiens_gene_ensembl", mirror = "www")
 
 test_that("Hashing is order insensitive", {
    expect_identical(

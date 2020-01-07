@@ -19,12 +19,14 @@ test_that("Fail when no dataset is specified", {
 ########################
 test_that("HTML reading code is used when needed", {
     expect_silent(ensembl <- useMart("ensembl", dataset = 'hsapiens_gene_ensembl'))
-    attributes <-  c("ensembl_gene_id", "hgnc_symbol",  "go_id", "name_1006",  "definition_1006")
+    #attributes <-  c("ensembl_gene_id", "hgnc_symbol",  "go_id", "name_1006",  "definition_1006")
+    attributes <-  c("ensembl_gene_id", "go_id", "definition_1006")
     expect_silent(go_sets <- getBM(attributes =  attributes,
                                    filters = "ensembl_gene_id",
                                    values = c('ENSG00000100036'),
                                    mart = ensembl,
-                                   bmHeader = FALSE))
+                                   bmHeader = FALSE,
+                                   useCache = FALSE))
     expect_is(go_sets, "data.frame")
     expect_equal(colnames(go_sets), attributes)
 })
