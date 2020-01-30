@@ -18,6 +18,8 @@ export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets,
        listFilterValues, searchFilterValues,
        biomartCacheClear, biomartCacheInfo)
 
+export(useEnsemblGenomes, listEnsemblGenomes)
+
 exportClasses(Mart)
 
 exportMethods("show")
