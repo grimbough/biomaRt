@@ -16,6 +16,11 @@ test_that("Hashing is order insensitive", {
    )
 })
 
+test_that("Environment variable for cache location is used", {
+    expect_message(biomartCacheInfo(),
+                   regexp = "biomart_cache_test")
+})
+
 test_that("We find cache for previous query", {
     
     mart <- useMart(biomart = "ensembl",
@@ -36,7 +41,7 @@ test_that("Cache details are printed", {
 })
 
 test_that("Cache can be cleared", {
-    cache_file <- rappdirs::user_cache_dir(appname = "biomaRt")
+    cache_file <- biomartCacheInfo()
     expect_true( file.exists( cache_file ) )
     expect_silent( biomaRt:::biomartCacheClear() )
     expect_false( file.exists( cache_file) )

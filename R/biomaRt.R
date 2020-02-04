@@ -529,7 +529,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
     
     ## determine if we should use the results cache
     if(useCache) {
-        cache <- rappdirs::user_cache_dir(appname="biomaRt")
+        cache <- Sys.getenv(x = "BIOMART_CACHE", 
+                            unset = rappdirs::user_cache_dir(appname="biomaRt"))
         bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     }
     hash <- .createHash(mart, attributes, filters, values, uniqueRows, bmHeader)

@@ -36,13 +36,15 @@
 }
 
 biomartCacheClear <- function() {
-    cache <- rappdirs::user_cache_dir(appname="biomaRt")
+    cache <- Sys.getenv(x = "BIOMART_CACHE", 
+                        unset = rappdirs::user_cache_dir(appname="biomaRt"))
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     removebfc(bfc, ask = FALSE)
 }
 
 biomartCacheInfo <- function() {
-    cache <- rappdirs::user_cache_dir(appname="biomaRt")
+    cache <- Sys.getenv(x = "BIOMART_CACHE", 
+                        unset = rappdirs::user_cache_dir(appname="biomaRt"))
     
     if(!file.exists(cache)) {
         message("biomaRt cache uninitialized\n", 
@@ -59,5 +61,6 @@ biomartCacheInfo <- function() {
                 "- No. of files: ", length(files), "\n",
                 "- Total size: ", format(size_obj, units = "auto"))
     }
+    return(invisible(cache))
 }
 
