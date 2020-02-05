@@ -1,4 +1,7 @@
 library(biomaRt)
+cache <- file.path(tempdir(), "biomart_cache_test")
+Sys.setenv(BIOMART_CACHE = cache)
+
 context('Ensembl specific functions')
 
 test_that("useEnsembl() works", { 
@@ -10,9 +13,9 @@ test_that("useEnsembl() works", {
 
 test_that("useEnsembl() options are respected", { 
   
-  expect_silent(ensembl_asia <- useEnsembl(biomart = "snp", mirror = "useast"))
-  expect_equal(ensembl_asia@host, 
-               "https://useast.ensembl.org:443/biomart/martservice?redirect=no")
+  expect_silent(ensembl_mirror <- useEnsembl(biomart = "snp", mirror = "uswest"))
+  expect_equal(ensembl_mirror@host, 
+               "https://uswest.ensembl.org:443/biomart/martservice?redirect=no")
   
   expect_silent(ensembl_archive <- useEnsembl(biomart = "ensembl", version = 93))
   expect_equal(ensembl_archive@host,

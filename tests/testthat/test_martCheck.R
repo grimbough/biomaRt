@@ -1,4 +1,7 @@
 library(biomaRt)
+cache <- file.path(tempdir(), "biomart_cache_test")
+Sys.setenv(BIOMART_CACHE = cache)
+
 context('Testing martCheck function')
 
 test_that("martCheck() catches bad input", { 

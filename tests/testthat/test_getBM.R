@@ -1,4 +1,6 @@
 library(biomaRt)
+cache <- file.path(tempdir(), "biomart_cache_test")
+Sys.setenv(BIOMART_CACHE = cache)
 
 ########################
 context('getBM()')

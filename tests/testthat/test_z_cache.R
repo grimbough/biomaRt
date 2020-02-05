@@ -1,4 +1,6 @@
 library(biomaRt)
+cache <- file.path(tempdir(), "biomart_cache_test")
+Sys.setenv(BIOMART_CACHE = cache)
 
 context("Result caching")
 
@@ -23,10 +25,9 @@ test_that("Environment variable for cache location is used", {
 
 test_that("We find cache for previous query", {
     
-    mart <- useMart(biomart = "ensembl",
-                    host = "https://useast.ensembl.org",
-                    dataset ="mmusculus_gene_ensembl",
-                    port = 443)
+    mart <- useEnsembl(biomart = "ensembl", 
+                       mirror = "useast", 
+                       dataset ="mmusculus_gene_ensembl")
     
     expect_message(res <- getBM(filter = "ensembl_gene_id",
                  values = "ENSMUSG00000028798",
