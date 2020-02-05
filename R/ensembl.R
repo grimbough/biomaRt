@@ -138,6 +138,7 @@ useEnsembl <- function(biomart, dataset, host,
       host <- "https://www.ensembl.org"
     } else {
       ensemblRedirect <- FALSE
+      host <- paste0("https://", mirror, ".ensembl.org")
     }
   }
   

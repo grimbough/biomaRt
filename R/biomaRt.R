@@ -57,9 +57,22 @@ checkWrapperArgs = function(id, type, mart){
 bmRequest <- function(request, verbose = FALSE){
     if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
 
-    result <- httr::GET(request, content_type("text/plain")
-                        #, set_cookies(.cookies = c(redirect_mirror = 'no'))
-                        )
+    result <- tryCatch(httr::GET(request, content_type("text/plain"), timeout(10)),
+                       error = function(c) { "timeout" } )
+    
+    tryAgain <- result == "timeout" || httr::status_code(result) == 500
+    
+    ## try an alternative mirror if ensembl returns 500
+    if(tryAgain && grepl("ensembl", request)) {
+        mirrors <- c("www", "uswest", "useast", "asia")
+        subdomain <- stringr::str_match(request, "://([a-z]{3,5})\\.")[1,2]
+        mirror_option <- sample(mirrors[!mirrors %in% subdomain], size = 1)
+        message("Ensembl site unresponsive, trying ", mirror_option, " mirror")
+        request2 <- str_replace(request, pattern = "://([a-z]{3,5})\\.", 
+                                replacement = paste0("://", mirror_option, "."))
+        result <- httr::GET(request2, content_type("text/plain"))
+    }
+    
     stop_for_status(result)
     result2 <- content(result, encoding = "UTF-8")
     if(is.na(result2)) {
