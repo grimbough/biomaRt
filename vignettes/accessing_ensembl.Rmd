@@ -84,11 +84,23 @@ As mentioned previously, if the dataset one wants to use is known in advance i.e
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
+## Ensembl mirror sites
+
+To improve performance Ensembl provides several mirrors of their site distributed around the globe.  When you use the default settings for `useEnsembl()` your queries will be directed to your closest mirror geographically.  In theory this should give you the best performance, however this is not always the case in practice.  For example the if the nearest mirror is experiencing many queries from other users it may perform poorly for you.  You can use the `mirror` argument to `useEnsembl()` to explicitly request a specific mirror.
+
+```{r, mirrors}
+ensembl <- useEnsembl(biomart = "ensembl", 
+                   dataset = "hsapiens_gene_ensembl", 
+                   mirror = "useast")
+```
+
+Values for the mirror argument are: `useast`, `uswest`, `asia`, and `www`.
+
 ## Using Ensembl Genomes
 
 Ensembl Genomes expands the effort to provide annotation from the vertebrate genomes provided by the main Ensembl project across taxonomic space, with separate BioMart interfaces for Protists, Plants, Metazoa and Fungi.
 
-*Note: Unfortunately there is not BioMart interface to the Ensembl Bacteria data.  The number of bacterial genomes is in the tens of thousands, and BioMart does not perform well when providing data on that scale.*
+*Note: Unfortunately there is no BioMart interface to the Ensembl Bacteria data.  The number of bacterial genomes is in the tens of thousands and BioMart does not perform well when providing data on that scale.*
 
 You can use the functions `listEnsemblGenomes()` and `useEnsemblGenomes()` in similar fashion to the functions shown previously.  For example first we can list the available Ensembl Genomes marts:
 

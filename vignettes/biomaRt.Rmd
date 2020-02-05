@@ -157,7 +157,6 @@ biomartCacheInfo()
 
 The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
 
-
 # Using a BioMart other than Ensembl
 
 To demonstrate the use of the `r Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.  *Note that we use the `https` address and must provide the port as `443`*
