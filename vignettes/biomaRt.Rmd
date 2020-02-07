@@ -265,9 +265,7 @@ select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
 ``` 
 
 So why would we want to do this when we already have functions like `getBM()`?  For two reasons: 1) for people who are familiar
-with select and it's helper methods, they can now proceed to use `r Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to
-them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more
-convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
+with select and it's helper methods, they can now proceed to use `r Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
 
 # Connection troubleshooting
 

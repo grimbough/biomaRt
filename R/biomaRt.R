@@ -60,7 +60,7 @@ bmRequest <- function(request, verbose = FALSE){
     result <- tryCatch(httr::GET(request, content_type("text/plain"), timeout(10)),
                        error = function(c) { "timeout" } )
     
-    tryAgain <- result == "timeout" || httr::status_code(result) == 500
+    tryAgain <- any(result == "timeout") || httr::status_code(result) == 500
     
     ## try an alternative mirror if ensembl returns 500
     if(tryAgain && grepl("ensembl", request)) {
