@@ -17,9 +17,9 @@ test_that("useEnsembl() options are respected", {
   expect_equal(ensembl_mirror@host, 
                "https://uswest.ensembl.org:443/biomart/martservice?redirect=no")
   
-  expect_silent(ensembl_archive <- useEnsembl(biomart = "ensembl", version = 93))
+  expect_silent(ensembl_archive <- useEnsembl(biomart = "ensembl", version = 87))
   expect_equal(ensembl_archive@host,
-               "http://jul2018.archive.ensembl.org:80/biomart/martservice")
+               "http://dec2016.archive.ensembl.org:80/biomart/martservice")
 })
 
 
