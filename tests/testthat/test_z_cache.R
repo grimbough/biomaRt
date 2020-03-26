@@ -32,7 +32,8 @@ test_that("We find cache for previous query", {
     expect_message(res <- getBM(filter = "ensembl_gene_id",
                  values = "ENSMUSG00000028798",
                  attributes = c("ensembl_transcript_id", "neugenii_homolog_canonical_transcript_protein"),
-                 mart = mart),  
+                 mart = mart,
+                 verbose = TRUE),  
                  regexp = "Cache found")
 })
 

@@ -549,7 +549,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
     hash <- .createHash(mart, attributes, filters, values, uniqueRows, bmHeader)
     if( useCache && .checkCache(bfc, hash) ) {
         
-        message("Cache found")
+        if(verbose) {
+            message("Cache found")
+        }
         cache_hits <- bfcquery(bfc, hash, field = "rname")
         if(nrow(cache_hits) > 1) {
             stop("Multiple cache results found")
