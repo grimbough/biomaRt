@@ -443,10 +443,6 @@ useDataset <- function(dataset, mart, verbose = FALSE){
     return( mart )
 }
 
-## getName
-
-getName <- function(x, pos) if(is.null(x[[pos]])) NA else x[[pos]] 
-
 ## listAttributes
 
 listAttributes <- function(mart, page, what = c("name","description","page")) {
