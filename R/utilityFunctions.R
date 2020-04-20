@@ -167,6 +167,22 @@
     return(host)
 }
 
+.createErrorMessage <- function( error_code, host = "" ) {
+  
+  ## if we encounter internal server error, suggest using a mirror
+  if( error_code == 500) {
+    err_msg <- 'biomaRt has encountered an unexpected server error.'
+  } else if ( error_code == 509) {
+    err_msg <- 'biomaRt has exceeded the bandwidth allowance with this server.'
+  }
+  
+  if( grepl("ensembl", x = host) ) {
+      err_msg <- c(err_msg, '\nConsider trying one of the Ensembl mirrors (for more details look at ?useEnsembl)')
+  }
+
+  return(err_msg)
+}
+
 #' ensembl redirection doesn't seem to be working properly as of 12-12-2017
 #' This is a wrapper function to catch POSTS that are redirected and fail
 #' The new host is captured from the header and used in a re-submission
@@ -176,12 +192,9 @@
                       #set_cookies(.cookies = c(redirect_mirror = 'no')),
                       timeout(300))
 
-    ## if we encounter internal server error, suggest using a mirror
-    if(status_code(res) == 500) {
-          err_msg <- 'biomaRt has encountered an unexpected server error.'
-          if(grepl('ensembl', host)) 
-            err_msg <- c(err_msg, '\nConsider trying one of the Ensembl mirrors (for more details look at ?useEnsembl)')
-          stop(err_msg, call. = FALSE)
+    if( httr::http_error(res) ) {
+        err_msg <- .createErrorMessage( error_code = status_code(res), host = host )
+        stop(err_msg, call. = FALSE)
     }
     
     ## now we set the redirection cookie, this code should never be executed
@@ -210,8 +223,11 @@
       writeLines("#################\nResults from server:")
       print(postRes)
     }
-    if(!(is.character(postRes) && (length(postRes)==1L)))
-      stop("The query to the BioMart webservice returned an invalid result: biomaRt expected a character string of length 1. \nPlease report this on the support site at http://support.bioconductor.org")
+    if(!(is.character(postRes) && (length(postRes)==1L))) {
+      stop("The query to the BioMart webservice returned an invalid result\n",
+      "biomaRt expected a character string of length 1.\n",
+      "Please report this on the support site at http://support.bioconductor.org")
+    }
     
     if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
       
@@ -242,7 +258,9 @@
       
       if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
         print(head(result))
-        stop("The query to the BioMart webservice returned an invalid result: the number of columns in the result table does not equal the number of attributes in the query. \nPlease report this on the support site at http://support.bioconductor.org")
+        stop("The query to the BioMart webservice returned an invalid result.\n", 
+        "The number of columns in the result table does not equal the number of attributes in the query.\n",
+        "Please report this on the support site at http://support.bioconductor.org")
       }
     }
     return(result)

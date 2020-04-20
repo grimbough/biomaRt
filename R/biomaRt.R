@@ -30,11 +30,10 @@ martCheck = function(mart, biomart = NULL){
         stop("You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information.")
     }
     if(!is.null(biomart)){
-        #   martcheck = strsplit(martBM(mart),"_", fixed = TRUE, useBytes = TRUE)[[1]][1]
         martcheck = martBM(mart)
         bmok = FALSE
-        for(k in 1:length(biomart)){
-            if(martcheck[1] == biomart[k]){	
+        for(k in seq_along(biomart)) {
+            if(martcheck[1] == biomart[k]) {	
                 bmok = TRUE
             }
         }		    
@@ -559,7 +558,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
 
     } else { 
     
-    ## force the query to return the 'english text' header names with the result
+    ## force the query to return the 'descriptive text' header names with the result
     ## we use these later to match and order attribute/column names    
     callHeader <- TRUE
     xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
@@ -598,6 +597,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
                                width = options()$width - 10,
                                format = "Batch submitting query [:bar] :percent eta: :eta")
         pb$tick(0)
+        on.exit( pb$terminate() )
     }
     
     ## we submit a query for each chunk of the filter list
@@ -634,10 +634,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
     }
     ## collate results
     result <- do.call('rbind', resultList)
-    if(length(filterXmlList) > 1) {
-        pb$terminate()
-    }
-    
+
     if(useCache) {
         tf <- tempfile()
         save(result, file = tf)
