@@ -136,7 +136,7 @@
     }
     names(values) <- filters
     
-    values <- .splitValues(list(values), maxChunkSize = 1000)
+    values <- .splitValues(list(values), maxChunkSize = 5000)
     
     filterXML_list <- lapply(values, .createFilterXMLchunk, mart)
     
