@@ -145,40 +145,6 @@ searchFilterValues(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
 searchFilterValues(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
 ```
 
-# Result Caching
-
-To save time and computing resources `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
-
-You can get some information on the size and location of the cache using the function `biomartCacheInfo()`:
-
-```{r cacheInfo}
-biomartCacheInfo()
-```
-
-The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
-
-# Using a BioMart other than Ensembl
-
-To demonstrate the use of the `r Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.  *Note that we use the `https` address and must provide the port as `443`*
-In this example, we use the `listMarts()` function to find the name of the available marts, given the URL of Wormbase.  We use this to connect to Wormbase BioMart, find and select the gene dataset, and print the first 6 available attributes and filters.  Then we use a list of gene names as filter and retrieve associated transcript IDs and the transcript biotype.
-
-```{r wormbase, echo=TRUE, eval=TRUE}
-listMarts(host = "parasite.wormbase.org")
-wormbase = useMart(biomart = "parasite_mart", 
-                   host = "https://parasite.wormbase.org", 
-                   port = 443)
-listDatasets(wormbase)
-wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
-head(listFilters(wormbase))
-head(listAttributes(wormbase))
-getBM(attributes = c("external_gene_id", "wbps_transcript_id", "transcript_biotype"), 
-      filters="gene_name", 
-      values=c("unc-26","his-33"), 
-      mart=wormbase)
-     
-```
-
-
 ## Attribute Pages
 
 For large BioMart databases such as Ensembl, the number of attributes displayed by the `listAttributes()` function can be very large. 
@@ -197,7 +163,84 @@ To show us a smaller list of attributes which belong to a specific page, we can 
 head(listAttributes(ensembl, page="feature_page"))
 ```
 
-We now get a short list of attributes related to the region where the genes are located.
+We now get a short list of attributes all of which are related to the region where the genes are located.
+
+
+# Result Caching
+
+To save time and computing resources `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
+
+You can get some information on the size and location of the cache using the function `biomartCacheInfo()`:
+
+```{r cacheInfo}
+biomartCacheInfo()
+```
+
+The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
+
+# Using a BioMart other than Ensembl
+
+There are a small number of non-Ensembl databases that offer a BioMart interface to their data. The `r Biocpkg("biomaRt")` package can be used to access these in a very similar fashion to Ensembl.  The majority of `r Biocpkg("biomaRt")` functions will work in the same manner, but the construction of the initial Mart object requires slightly more setup.  In this section we demonstrate the setting requires to query [Wormbase ParaSite](https://parasite.wormbase.org/index.html) and [Phytozome](https://phytozome.jgi.doe.gov/pz/portal.html)
+
+## Wormbase
+
+To demonstrate the use of the `r Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.  In this example, we use the `listMarts()` function to find the name of the available marts, given the URL of Wormbase.  We use this to connect to Wormbase BioMart using the `useMart()` function.  *Note that we use the `https` address and must provide the port as `443`.  Queries to WormBase will fail without these options.*
+
+```{r wormbase, echo=TRUE, eval=TRUE}
+listMarts(host = "parasite.wormbase.org")
+wormbase <- useMart(biomart = "parasite_mart", 
+                   host = "https://parasite.wormbase.org", 
+                   port = 443)
+```
+
+We can then use functions described earlier in this vignette to find and select the gene dataset, and print the first 6 available attributes and filters.  Then we use a list of gene names as filter and retrieve associated transcript IDs and the transcript biotype.
+
+```{r wormbase-2, echo=TRUE, eval=TRUE}
+listDatasets(wormbase)
+wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
+head(listFilters(wormbase))
+head(listAttributes(wormbase))
+getBM(attributes = c("external_gene_id", "wbps_transcript_id", "transcript_biotype"), 
+      filters = "gene_name", 
+      values = c("unc-26","his-33"), 
+      mart = wormbase)
+     
+```
+
+## Phytozome
+
+### Version 12
+
+The Phytozome BioMart can be accessed with the following settings. *Note that we use the `https` address.  Queries to Phytozome will fail without specifying this.*
+
+```{r, phytozome-1, echo = TRUE, eval = TRUE}
+listMarts(host = "https://phytozome.jgi.doe.gov")
+phytozome <- useMart(biomart = "phytozome_mart", 
+                host = "https://phytozome.jgi.doe.gov")
+listDatasets(phytozome)
+wormbase <- useDataset(mart = phytozome, dataset = "phytozome")
+```
+
+Once this is set up the usual `r Biocpkg("biomaRt")` functions can be used to interogate the database options and run queries.
+
+```{r, pytozome-2}
+getBM(attributes = c("organism_name", "gene_name1"), 
+      filters = "gene_name_filter", 
+      values = "82092", 
+      mart = phytozome)
+```
+
+### Version 13
+
+Version 13 of Phyotozome can be found at https://phytozome-next.jgi.doe.gov/ and if you wish to query that version the URL used to create the Mart object must reflect that.
+
+```{r, phytozome-13, echo = TRUE, eval = TRUE}
+phytozome_v13 <- useMart(biomart = "phytozome_mart", 
+                dataset = "phytozome", 
+                host = "https://phytozome-next.jgi.doe.gov")
+```
+
+
 
 
 # Local BioMart databases
@@ -217,6 +260,7 @@ mart=useMart("nameOfMyMart",dataset="nameOfMyDataset",host="www.myLocalHost.org"
 For more information on how to install a public BioMart database see:  http://www.biomart.org/install.html and follow link databases.
 
 # Using `select()`
+
 In order to provide a more consistent interface to all annotations in
 Bioconductor the `select()`, `columns()`,
 `keytypes()` and `keys()` have been implemented to wrap

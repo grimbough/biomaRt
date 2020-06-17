@@ -70,6 +70,8 @@ bmRequest <- function(request, verbose = FALSE){
         request2 <- str_replace(request, pattern = "://([a-z]{3,5})\\.", 
                                 replacement = paste0("://", mirror_option, "."))
         result <- httr::GET(request2, content_type("text/plain"))
+    } else { ## this isn't ensembl run the query again so we can get the error 
+        result <- httr::GET(request, content_type("text/plain"))
     }
     
     stop_for_status(result)
