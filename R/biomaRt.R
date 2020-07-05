@@ -663,6 +663,12 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
         stop('Both datasets must be located on the same host.')
     }
     
+    if(martBM(mart) != martBM(martL)) {
+        stop('Both datasets must be located in the same Mart.\n',
+             'You are trying to combine datasets in ', 
+             biomaRt:::martBM(mart), ' and ', biomaRt:::martBM(martL))
+    }
+    
     invalid = !(attributes %in% listAttributes(mart, what="name"))
     if(any(invalid))
         stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
@@ -888,12 +894,18 @@ getGene <- function( id, type, mart){
 
 getSequence <- function(chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE){
     martCheck(mart,c("ensembl","ENSEMBL_MART_ENSEMBL"))
-    if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon","transcript_exon_intron","gene_exon_intron","coding","coding_transcript_flank","coding_gene_flank","transcript_flank","gene_flank")){
+    if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon",
+                                           "transcript_exon_intron", "gene_exon_intron","coding","coding_transcript_flank",
+                                           "coding_gene_flank","transcript_flank","gene_flank")) {
         stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either gene_exon, transcript_exon,transcript_exon_intron, gene_exon_intron, cdna, coding,coding_transcript_flank,coding_gene_flank,transcript_flank,gene_flank,peptide, 3utr or 5utr")
     }
-    if(missing(type))stop("Please specify the type argument.  If you use chromosomal coordinates to retrieve sequences, then the type argument will specify the type of gene indentifiers that you will retrieve with the sequences.  If you use a vector of identifiers to retrieve the sequences, the type argument specifies the type of identifiers you are using.")
-    if(missing(id) && missing(chromosome) && !missing(type))stop("No vector of identifiers given. Please use the id argument to give a vector of identifiers for which you want to retrieve the sequences.")
-    if(!missing(chromosome) && !missing(id))stop("The getSequence function retrieves sequences given a vector of identifiers specified with the id argument of a type specified by the type argument.  Or alternatively getSequence retrieves sequences given a chromosome, a start and a stop position on the chromosome.  As you specified both a vector of identifiers and chromsomal coordinates. Your query won't be processed.")
+    if(missing(type))
+        stop("Please specify the type argument.  If you use chromosomal coordinates to retrieve sequences, then the type argument will specify the type of gene indentifiers that you will retrieve with the sequences. ", 
+             "If you use a vector of identifiers to retrieve the sequences, the type argument specifies the type of identifiers you are using.")
+    if(missing(id) && missing(chromosome) && !missing(type))
+        stop("No vector of identifiers given. Please use the id argument to give a vector of identifiers for which you want to retrieve the sequences.")
+    if(!missing(chromosome) && !missing(id))
+        stop("The getSequence function retrieves sequences given a vector of identifiers specified with the id argument of a type specified by the type argument.  Or alternatively getSequence retrieves sequences given a chromosome, a start and a stop position on the chromosome.  As you specified both a vector of identifiers and chromsomal coordinates. Your query won't be processed.")
     
     if(!missing(chromosome)){
         if(!missing(start) && missing(end))
@@ -935,8 +947,14 @@ getSequence <- function(chromosome, start, end, id, type, seqType, upstream, dow
     }
     
     if(!missing(id)){
-        if(missing(type)) stop("Type argument is missing.  This will be used to retrieve an identifier along with the sequence so one knows which gene it is from.  Use the listFilters function to select a valid type argument.")
-        if(!type %in% listFilters(mart, what="name")) stop("Invalid type argument.  Use the listFilters function to select a valid type argument.")
+        if(missing(type)) {
+            stop("Type argument is missing. ",
+            "This will be used to retrieve an identifier along with the sequence so one knows which gene it is from. ", 
+            "Use the listFilters() function to select a valid type argument.")
+        }
+        if(!type %in% listFilters(mart, what="name")) {
+            stop("Invalid type argument.  Use the listFilters() function to select a valid type argument.")
+        }
         
         valuesString = paste(id,"",collapse=",",sep="")
         if(missing(upstream) && missing(downstream)){

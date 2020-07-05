@@ -1,3 +1,11 @@
+CHANGES IN VERSION 2.46.0
+-------------------------
+
+BUG FIXES
+
+    o getLDS() now detects if trying to use datasets from different Marts
+    and reports this to the user.
+
 CHANGES IN VERSION 2.42.0
 -------------------------
 

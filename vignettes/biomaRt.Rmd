@@ -87,8 +87,6 @@ The `getBM()` function is the main query function in `r Biocpkg("biomaRt")`.  It
 * `values`: a vector of values for the filters.  In case multple filters are in use, the values argument requires a list of values where each position in the list corresponds to the position of the filters in the filters argument (see examples below).
 * `mart`: is an object of class `Mart`, which is created by the `useMart()` function.
 
-*Note: for some frequently used queries to Ensembl, wrapper functions are available: `getGene()` and `getSequence()`.  These functions call the `getBM()` function with hard coded filter and attribute names.*
-
 Now that we selected a BioMart database and dataset, and know about attributes, filters, and the values for filters; we can build a `r Biocpkg("biomaRt")` query.  Let's make an easy query for the following problem:  We have a list of Affymetrix identifiers from the u133plus2 platform and we want to retrieve the corresponding EntrezGene identifiers using the Ensembl mappings.
 
 The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output (attributes) for the query we want to retrieve the EntrezGene and u133plus2 identifiers so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the `listAttributes()` and `listFilters()` function respectively.  Let's now run the query:
