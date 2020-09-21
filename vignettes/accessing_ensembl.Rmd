@@ -16,6 +16,7 @@ editor_options:
 
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE)
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
 ```
 
 # Introduction
@@ -51,7 +52,7 @@ The `useEnsembl()` function can now be used to connect to the desired BioMart da
 ensembl <- useEnsembl(biomart = "genes")
 ```
 
-If we print the current `ensembl` object, we can see that the `r ensembl@biomart` database ^[this is how Ensembl name the database on their server] has been selected, but that no dataset has been choosen.
+If we print the current `ensembl` object, we can see that the `r ensembl@biomart` database ^[this is how Ensembl name the database on their server] has been selected, but that no dataset has been chosen.
 
 ```{r ensembl2}
 ensembl
