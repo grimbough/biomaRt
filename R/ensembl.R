@@ -10,11 +10,12 @@ listEnsemblArchives <- function(https = TRUE) {
   
   if(Sys.info()["sysname"] == "Linux") {
     httr_config <-  config(ssl_cipher_list = "DEFAULT@SECLEVEL=1")
+    html <- xml2::read_html(with_config(config = httr_config, 
+                                        GET(url)))
   } else {
-    httr_config <- config()
+    html <- xml2::read_html(GET(url))
   }
-  html <- htmlParse( xml2::read_html(with_config(config = httr_config, 
-                                         GET(url))) )
+  html <- htmlParse( html )
   
   archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
   
