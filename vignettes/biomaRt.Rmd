@@ -59,7 +59,7 @@ ensembl = useDataset("hsapiens_gene_ensembl",mart=ensembl)
 
 Or alternatively if the dataset one wants to use is known in advance, we can select a BioMart database and dataset in one step by:
 
-```{r ensembl3}
+```{r ensembl3, eval = FALSE}
 ensembl = useMart("ensembl",dataset="hsapiens_gene_ensembl")
 ```
 
@@ -99,69 +99,6 @@ getBM(attributes=c('affy_hg_u133_plus_2', 'entrezgene_id'),
       values = affyids, 
       mart = ensembl)
 ```  
-
-## Searching for datasets, filters and attributes
-
-The functions `listDatasets()`, `listAttributes()`, and `listFilters()` will return every available option for their respective types.  However, this can be unwieldy when the list of results is long, involving much scrolling to find the entry you are interested in.   `r Biocpkg("biomaRt")` also provides the functions `searchDatasets()`, `searchAttributes()`, and `searchFilters()` which will try to find any entries matching a specific term or pattern.  For example, if we want to find the details of any datasets in our `ensembl` mart that contain the term '*hsapiens*' we could do the following:
-
-```{r searchDatasets, echo = TRUE, eval = TRUE}
-searchDatasets(mart = ensembl, pattern = "hsapiens")
-```
-
-You can search in a simlar fashion to find available attributes and filters that you may be interested in.  The example below returns the details for all attributes that contain the pattern '*hgnc*'.
-
-```{r searchAttributes, echo = TRUE, eval = TRUE}
-searchAttributes(mart = ensembl, pattern = "hgnc")
-```
-
-For advanced use, note that the *pattern* argument takes a regular expression.  This means you can create more complex queries if required.  Imagine, for example, that we have the string *ENST00000577249.1*, which we know is an Ensembl ID of some kind, but we aren't sure what the appropriate filter term is.  The example shown next uses a pattern that will find all filters that contain both the terms '*ensembl*' and '*id*'.  This allows use to reduced the list of filters to only those that might be appropriate for our example.
-
-```{r searchFilters, echo = TRUE, eval = TRUE}
-searchFilters(mart = ensembl, pattern = "ensembl.*id")
-```
-
-From this we can see that *ENST00000577249.1* is a Transcript ID with version, and the appropriate filter value to use with it is `ensembl_transcript_id_version`.
-
-## Using predefined filter values
-
-Many filters have a predefined list of values that are known to be in the dataset they are associated with.  An common example would be the names of chromosomes when searching a dataset at Ensembl.  In this online interface to BioMart these available options are displayed as a list as shown in Figure \@ref(fig:filtervalues).
-
-```{r filtervalues, fig.cap='The options available to the Chromosome/Scaffold field are limited to a pretermined list based on the values in this dataset.', echo = FALSE}
-knitr::include_graphics('filtervalues.png')
-```
-
-You can list this in an R session with the function `listFilterValues()`, passing it a mart object and the name of the filter.  For example, to list the possible chromosome names you could run the following:
-
-```{r chromosomeNames, results = FALSE}
-listFilterValues(mart = ensembl, filter = "chromosome_name")
-```
-
-It is also possible to search the list of available values via `searchFilterValues()`.  In the examples below, the first returns all chromosome names starting with "*GL*", which the second will find any phenotype descriptions that contain the string "*Crohn*".
-
-```{r searchFilterValues, results = FALSE}
-searchFilterValues(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
-searchFilterValues(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
-```
-
-## Attribute Pages
-
-For large BioMart databases such as Ensembl, the number of attributes displayed by the `listAttributes()` function can be very large. 
-In BioMart databases, attributes are put together in pages, such as sequences, features, homologs for Ensembl.
-An overview of the attributes pages present in the respective BioMart dataset can be obtained with the `attributePages()` function.
-
-
-```{r attributePages}
-pages = attributePages(ensembl)
-pages
-```
-
-To show us a smaller list of attributes which belong to a specific page, we can now specify this in the `listAttributes()` function.  *The set of attributes is still quite long, so we use `head()` to show only the first few items here.*
-
-```{r listAttributes}
-head(listAttributes(ensembl, page="feature_page"))
-```
-
-We now get a short list of attributes all of which are related to the region where the genes are located.
 
 
 # Result Caching

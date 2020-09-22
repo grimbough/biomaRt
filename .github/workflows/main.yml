@@ -63,7 +63,7 @@ jobs:
           Rscript -e "toInstall <- remotes::dev_package_deps(dependencies = TRUE)[,'package']" -e "BiocManager::install(toInstall, ask = FALSE, update = TRUE)"
 
       - name: Check
-        run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual'), error_on = 'warning', check_dir = 'check')"
+        run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-vignettes'), error_on = 'warning', check_dir = 'check')"
 
       - name: Upload check results
         uses: actions/upload-artifact@master
