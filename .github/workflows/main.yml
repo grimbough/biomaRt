@@ -32,7 +32,7 @@ jobs:
         run: | 
           git config --global core.autocrlf false
           git config --global user.email "ghau@example.com"
-          git config --global user.name "GitHub Actions User
+          git config --global user.name "GitHub Actions User"
         
       - uses: actions/checkout@v2
 
