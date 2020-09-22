@@ -21,7 +21,7 @@ httr::set_config(httr::config(ssl_verifypeer = FALSE))
 
 # Introduction
 
-Accessing the data available in Ensembl is by far most frequent use of the `r Biocpkg("biomaRt")` package.  With that in mind `r Biocpkg("biomaRt")` provides a number of functions that are tailored to work specifically with the BioMart instances provided by Ensembl.  This vignette details this Ensembl specific functionailty and provides a number of example usecases that can be used as the basis for specifying your own queries.
+Accessing the data available in Ensembl is by far most frequent use of the `r Biocpkg("biomaRt")` package.  With that in mind `r Biocpkg("biomaRt")` provides a number of functions that are tailored to work specifically with the BioMart instances provided by Ensembl.  This vignette details this Ensembl specific functionality and provides a number of example usecases that can be used as the basis for specifying your own queries.
 
 # Selecting an Ensembl BioMart database and dataset
 
@@ -511,6 +511,7 @@ getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'),
 ##  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of its homolog in mouse. 
 
 The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
+
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
 ```{r getLDS, cache = TRUE}

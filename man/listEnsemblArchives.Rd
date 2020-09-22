@@ -7,6 +7,11 @@ them.}
 
 \usage{listEnsemblArchives()}
 
+\arguments{
+\item{https}{Logical value of length 1.  Determines whether https should be
+used to contact the Ensembl server.  Defaults to \code{TRUE}.}
+}
+
 \author{Mike Smith} 
 
 \examples{

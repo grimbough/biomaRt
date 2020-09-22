@@ -2,9 +2,14 @@
 
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
-listEnsemblArchives <- function() {
+listEnsemblArchives <- function(https = TRUE) {
   
-  html <- htmlParse("http://www.ensembl.org/info/website/archives/index.html?redirect=no")
+  url <- ifelse(https,
+                "https://www.ensembl.org/info/website/archives/index.html",
+                "http://www.ensembl.org/info/website/archives/index.html")
+  
+  html <- htmlParse( content(with_config(config = config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"), 
+                                         GET(url))) )
   
   archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
   
