@@ -5,7 +5,7 @@
 Ensembl, along with the dates they were created and the URL used to access
 them.}
 
-\usage{listEnsemblArchives()}
+\usage{listEnsemblArchives(https = TRUE)}
 
 \arguments{
 \item{https}{Logical value of length 1.  Determines whether https should be

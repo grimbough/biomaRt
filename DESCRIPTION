@@ -11,7 +11,7 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
             email = "grimbough@gmail.com"))
 Depends: methods
 Imports: utils, XML, AnnotationDbi, progress, stringr, httr,
-        openssl, BiocFileCache, rappdirs
+        openssl, BiocFileCache, rappdirs, xml2
 Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat
 VignetteBuilder: knitr
 biocViews: Annotation
@@ -31,3 +31,4 @@ License: Artistic-2.0
 LazyLoad: yes
 NeedsCompilation: no
 Encoding: UTF-8
+RoxygenNote: 7.1.1

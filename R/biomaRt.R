@@ -666,7 +666,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     if(martBM(mart) != martBM(martL)) {
         stop('Both datasets must be located in the same Mart.\n',
              'You are trying to combine datasets in ', 
-             biomaRt:::martBM(mart), ' and ', biomaRt:::martBM(martL))
+             martBM(mart), ' and ', martBM(martL))
     }
     
     invalid = !(attributes %in% listAttributes(mart, what="name"))
