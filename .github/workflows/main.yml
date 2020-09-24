@@ -69,8 +69,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          Rscript -e "install.packages(c('BiocManager', 'rcmdcheck'))" -e "BiocManager::install('Bioconductor/BiocStyle')"
+          Rscript -e "install.packages(c('BiocManager', 'rcmdcheck'))"
           Rscript -e "toInstall <- remotes::dev_package_deps(dependencies = TRUE)[,'package']" -e "BiocManager::install(toInstall, ask = FALSE, update = TRUE)"
+          Rscript -e "BiocManager::install('Bioconductor/BiocStyle')"
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-vignettes'), error_on = 'warning', check_dir = 'check')"
