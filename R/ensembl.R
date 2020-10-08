@@ -8,13 +8,7 @@ listEnsemblArchives <- function(https = TRUE) {
                 "https://www.ensembl.org/info/website/archives/index.html",
                 "http://www.ensembl.org/info/website/archives/index.html")
   
-  if(Sys.info()["sysname"] == "Linux") {
-    httr_config <-  config(ssl_cipher_list = "DEFAULT@SECLEVEL=1")
-    html <- xml2::read_html(with_config(config = httr_config, 
-                                        GET(url)))
-  } else {
-    html <- xml2::read_html(GET(url))
-  }
+  html <- xml2::read_html(GET(url))
   html <- htmlParse( html )
   
   archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
