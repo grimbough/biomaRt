@@ -18,7 +18,7 @@ listEnsemblArchives <- function(https = TRUE) {
   archives <- strsplit(archive_box_string, split = "<li>")[[1]][-1]
   
   extracted <- str_extract_all(string = archives, 
-                               pattern = "Ensembl [A-Za-z0-9 ]{2,6}|http://.*ensembl\\.org|[A-Z][a-z]{2} [0-9]{4}")
+                               pattern = "Ensembl [A-Za-z0-9 ]{2,6}|http[s]?://.*ensembl\\.org|[A-Z][a-z]{2} [0-9]{4}")
   
   ## split the version number into a separate column
   extracted <- lapply(extracted, FUN = function(x) {

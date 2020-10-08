@@ -190,7 +190,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 # #                           # #
 #################################
 
-useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port, 
+useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "/biomart/martservice", port, 
                      archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE) {
     
     if(missing(port)) {
@@ -828,20 +828,6 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     }
     return(result)
 } 
-
-######################
-#getXML
-######################
-
-getXML <- function(host="http://www.ensembl.org/biomart/martservice?", xmlquery){
-    
-    ## Deprecated   29-01-2018
-    ## Defunct      03-06-2019
-    .Defunct("biomaRt:::.submitQueryXML", 
-                msg = paste0("Function 'getXML()' is defunct\n",
-                             "Use 'biomaRt:::.submitQueryXML' instead\n",
-                             "See help('getXML') for further details"))
-}
 
 ######################
 #getBMlist

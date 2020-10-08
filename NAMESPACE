@@ -14,7 +14,7 @@ importFrom(rappdirs, user_cache_dir)
 
 export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets, 
        useDataset, listEnsembl, useEnsembl, listAttributes, listFilters, 
-       getBM, getXML,getLDS, attributePages, filterOptions,filterType, 
+       getBM, getLDS, attributePages, filterOptions,filterType, 
        getBMlist, NP2009code, keys, columns, keytypes, select,
        listEnsemblArchives, searchAttributes, searchDatasets, searchFilters,
        listFilterValues, searchFilterValues,
