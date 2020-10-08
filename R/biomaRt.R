@@ -190,7 +190,7 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 # #                           # #
 #################################
 
-useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port, 
+useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "/biomart/martservice", port, 
                      archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE) {
     
     if(missing(port)) {
