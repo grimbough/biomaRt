@@ -21,8 +21,8 @@ jobs:
         - { os: windows-latest, r: '4.0'}
         - { os: macOS-latest, r: '4.0'}
         - { os: ubuntu-16.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/xenial/latest"}
-        - { os: ubuntu-18.04, r: '4.0', cran: "https://demo.rstudiopm.com/all/__linux__/bionic/latest"}
-        - { os: ubuntu-20.04, r: '4.0', cran: "https://demo.rstudiopm.com/all/__linux__/focal/latest"}
+        - { os: ubuntu-18.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/bionic/latest"}
+        - { os: ubuntu-20.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Install system libraries
-        if: ${{ matrix.config.os == 'ubuntu-18.04' || matrix.config.os == 'ubuntu-20.04' }}
+        if: ${{ runner.os == 'Linux'  }}
         run: |
           sudo apt-get install libcurl4-openssl-dev
           
@@ -83,5 +83,5 @@ jobs:
       - name: Upload check results
         uses: actions/upload-artifact@master
         with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          name: ${{ matrix.config.os }}-r${{ matrix.config.r }}-results
           path: check/*.Rcheck/00install.out
