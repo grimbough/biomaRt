@@ -79,6 +79,11 @@ jobs:
           toInstall <- setdiff(toInstall, installed.packages()[,'Package'])
           if(length(toInstall)) { BiocManager::install(toInstall, ask = FALSE) }
         shell: Rscript {0}
+        
+      - name: Force update of BiocStyle 
+        if: ${{ matrix.config.r == '3.6'  }}
+        run: BiocManager::install('Bioconductor/BiocStyle')
+        shell: Rscript {0}
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-vignettes'), error_on = 'warning', check_dir = 'check')"
