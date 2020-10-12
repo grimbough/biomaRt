@@ -12,10 +12,12 @@
     }
   }
   
-  ## This address problems with Ubuntu 20.04 and the Ensembl https certificates
+  ##  Try to catch problems with trusting the Ensembl certificate.
   test <- try(httr::GET("https://www.ensembl.org"), silent = TRUE)
   if(inherits(test, "try-error")) {
-    if(grepl(test[1], pattern = "unable to get local issuer certificate")) {
+    ## users have reported two error messages for this
+    if(grepl(x = test[1], 
+             pattern = "(unable to get local issuer certificate)|(server certificate verification failed)")) {
       if(default_sec) {
         new_config <- httr::config(ssl_verifypeer = FALSE, 
                                    ssl_cipher_list = "DEFAULT@SECLEVEL=1")
