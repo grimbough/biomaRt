@@ -1,6 +1,6 @@
 .onLoad <- function(libname, pkgname) {
 
-    verify_peer <- FALSE
+  default_sec <- FALSE
     
     ## This address problems with Ubuntu 20.04 and the Ensembl https certificates
     test <- try(httr::GET("https://www.ensembl.org"), silent = TRUE)
