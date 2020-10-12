@@ -53,7 +53,7 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org", version = NULL, GRC
   }
   if(!is.null(GRCh)){
     if(GRCh == 37){ 
-      host = paste("grch",GRCh,".ensembl.org",sep="")	
+      host = paste("https://grch",GRCh,".ensembl.org",sep="")	
     }
     else{
       print("Only 37 can be specified for GRCh version")
@@ -127,7 +127,7 @@ useEnsembl <- function(biomart, dataset, host,
   
   if(!is.null(GRCh)){
     if(GRCh == 37){
-      host <- paste("grch",GRCh,".ensembl.org",sep="")
+      host <- paste("https://grch",GRCh,".ensembl.org",sep="")
     }
     else{
       print("Only 37 can be specified for GRCh version")
