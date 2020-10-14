@@ -33,7 +33,9 @@ listEnsemblArchives <- function(https = TRUE) {
   
   dframe <- data.frame("name" = as.character(tab[,2]), 
                        "date" = as.character(tab[,3]), 
-                       "url" = tolower(as.character(tab[,1])),
+                       "url" = stringr::str_replace(tolower(as.character(tab[,1])),
+                                                    "http://",
+                                                    "https://"),
                        "version" = as.character(tab[,4]), 
                        "current_release" = as.character(tab[,5]),
                        stringsAsFactors = FALSE)
