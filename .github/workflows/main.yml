@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - refactor-tests
   pull_request:
     branches:
       - master

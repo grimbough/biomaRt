@@ -8,11 +8,12 @@ test_that("martCheck() catches bad input", {
     expect_error(biomaRt:::martCheck())
     expect_error(biomaRt:::martCheck("INVALID_OBJECT"))
     
-    ensembl <- useMart("ensembl")
+    ensembl <- Mart(biomart = "ensembl")
+    
     expect_error(biomaRt:::martCheck(ensembl), 
                  regex = "No dataset selected, please select a dataset first")
     
-    ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
+    ensembl <- Mart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
     expect_error(biomaRt:::martCheck(ensembl, biomart = "Not_real_mart"), 
                  regexp = "This function only works when used with")
 })

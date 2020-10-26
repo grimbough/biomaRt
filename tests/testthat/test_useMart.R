@@ -4,19 +4,23 @@ Sys.setenv(BIOMART_CACHE = cache)
 
 context("useMart() functionality")
 
+#############################
 ## checking the show() method
-ensembl <- useMart("ensembl")
-ensembl_with_dataset <- useDataset(ensembl, 
-                                   dataset = "xtropicalis_gene_ensembl")
+#############################
 
-test_that("Show gives sensible dataset information", {
-    expect_output(object = show(ensembl), 
-                  regexp = "No dataset selected")
-    expect_output(object = show(ensembl_with_dataset), 
+test_that("show() reports missing dataset", {
+        expect_output(object = show( Mart(biomart = "ensembl") ), 
+                      regexp = "No dataset selected")
+})
+
+###############
+
+test_that("show() reports dataset name if present", {
+    expect_output(object = show( Mart(biomart = "ensembl", dataset = "xtropicalis_gene_ensembl" )), 
                   regexp = "Using the xtropicalis_gene_ensembl dataset")
 })
 
-
+#############
 
 test_that("Deprecation warning produced", {
     

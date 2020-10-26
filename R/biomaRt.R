@@ -244,7 +244,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
         stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
-    #if(archive) biomart = marts$biomart[mindex]
+
     if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     
@@ -253,13 +253,14 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
                        "?redirect=no",
                        "")
     
-    mart <- new("Mart", 
+    mart <- Mart( 
                 biomart = biomart,
                 vschema = marts$vschema[mindex], 
                 host = paste0(host, ":", 
                               port,
                               marts$path[mindex],
-                              redirect))
+                              redirect)
+            )
     
     if(length(grep("archive",martHost(mart)) > 0)){
         
@@ -322,7 +323,6 @@ listDatasets <- function(mart, verbose = FALSE) {
 }
 
 ## Check version of BioMart service
-
 bmVersion <- function(mart, verbose=FALSE){
     
     ## we choose a separator based on whether 'redirect=no' is present
@@ -488,10 +488,13 @@ listFilters <- function(mart, what = c("name", "description")) {
 ## filterOptions
 
 filterOptions <- function(filter, mart){
-    if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the possible values.")
-    if(class(filter)!="character")stop("Filter argument should be of class character")
+    if(missing(filter)) 
+        stop("No filter given. Please specify the filter for which you want to retrieve the possible values.")
+    if(class(filter)!="character")
+        stop("Filter argument should be of class character")
     martCheck(mart)
-    if(!filter %in% listFilters(mart, what="name"))stop("Filter not valid, check for typo in filter argument.")
+    if(!filter %in% listFilters(mart, what="name"))
+        stop("Filter not valid, check for typo in filter argument.")
     sel = which(listFilters(mart, what="name") == filter)
     return(listFilters(mart,what="options")[sel])
 }
@@ -499,13 +502,16 @@ filterOptions <- function(filter, mart){
 ## filterType
 
 filterType <- function(filter, mart){
-    if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the filter type")
-    if(class(filter)!="character")stop("Filter argument should be of class character")
+    if(missing(filter)) 
+        stop("No filter given. Please specify the filter for which you want to retrieve the filter type")
+    if(class(filter)!="character")
+        stop("Filter argument should be of class character")
     martCheck(mart)
     type="unknown"
     sel = which(listFilters(mart, what="name") == filter)
-    if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
-    type = listFilters(mart,what="type")[sel]
+    if(is.null(sel))
+        stop(paste("Invalid filter",filter, sep=": "))
+    type = listFilters(mart, what="type")[sel]
     return(type)
 }
 
@@ -791,8 +797,7 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     if(verbose){
         cat(paste(xmlQuery,"\n", sep=""))
     }
-    #postRes = postForm(paste(martHost(mart),"?",sep=""),"query"=xmlQuery)
-    
+
     ## we choose a separator based on whether '?redirect=no' is present
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     ## POST query

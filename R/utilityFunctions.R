@@ -4,7 +4,7 @@
 ## results to known attribute names and rename accordingly.
 .setResultColNames <- function(result, mart, attributes, bmHeader = FALSE) {
     
-    ## get all avaialble sttributes and 
+    ## get all available attributes and 
     ## filter only for the ones we've actually asked for
     att <- listAttributes(mart, what = c("name", "description"))
     att <- att[which(att[,'name'] %in% attributes), ]

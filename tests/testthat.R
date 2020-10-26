@@ -1,6 +1,6 @@
 library(testthat)
 library(biomaRt)
 
-#biomartCacheClear()
+biomartCacheClear()
 
-#test_check("biomaRt", encoding = "UTF-8")
+test_check("biomaRt", encoding = "UTF-8")
