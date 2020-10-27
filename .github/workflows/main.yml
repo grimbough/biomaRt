@@ -74,7 +74,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages(c('BiocManager', 'rcmdcheck'))
+          install.packages(c('BiocManager', 'rcmdcheck', 'covr'))
           BiocManager::install(ask = FALSE, update = TRUE)
           toInstall <- remotes::dev_package_deps(dependencies = TRUE)[,'package']
           toInstall <- setdiff(toInstall, installed.packages()[,'Package'])
@@ -88,6 +88,10 @@ jobs:
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-vignettes'), error_on = 'warning', check_dir = 'check')"
+        
+      - name: Test coverage
+        run: covr::codecov()
+        shell: Rscript {0}
 
       - name: Upload check results
         uses: actions/upload-artifact@master

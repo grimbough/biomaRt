@@ -13,6 +13,8 @@
     }
     
     attributes <- paste( sort(attributes), collapse = "" )
+    ## need to keep the filters and values in the same order
+    ## so create a single index for reordering both
     idx <- order(filters)
     filters <- paste( filters[idx], collapse = "" )
     if(is.list(values)) {
@@ -29,7 +31,7 @@
            as(openssl::md5(combined), "character"))
 }
 
-
+#' @param bfc 
 .checkCache <- function(bfc, hash) {
     res <- bfcquery(bfc, query = hash, field = "rname")
     as.logical(nrow(res))
