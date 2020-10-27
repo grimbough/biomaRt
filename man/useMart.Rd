@@ -22,8 +22,8 @@ path="/biomart/martservice", port, archive=FALSE, version, verbose = FALSE)}
 \examples{
 if(interactive()){
 
-mart = useMart("ensembl")
-mart=useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+    mart = useMart("ensembl")
+    mart=useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
 }
 }
 \keyword{methods}

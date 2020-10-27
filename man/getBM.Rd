@@ -30,12 +30,15 @@ quote = "\"", useCache = TRUE)}
 \author{Steffen Durinck} 
 
 \examples{
-mart <- useEnsembl(biomart = "ensembl", 
-                   dataset = "hsapiens_gene_ensembl")
-getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
-      filters    = "affy_hg_u95av2",
-      values     = c("1939_at","1503_at","1454_at"), 
-      mart       = mart)
+if(interactive()){
+  mart <- useEnsembl(biomart = "ensembl", 
+                     dataset = "hsapiens_gene_ensembl")
+                     
+  getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
+        filters    = "affy_hg_u95av2",
+        values     = c("1939_at","1503_at","1454_at"), 
+        mart       = mart)
+  }
 }
 \keyword{methods}
 

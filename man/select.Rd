@@ -83,22 +83,25 @@
 \author{Marc Carlson}
 
 \examples{
-## 1st create a Mart object and specify the dataset
-mart<-useMart(dataset="hsapiens_gene_ensembl",biomart='ensembl')
-## you can list the keytypes
-keytypes(mart)
-## you can list the columns
-columns(mart)
-## And you can extract keys when this is supported for your keytype of interest
-k = keys(mart, keytype="chromosome_name")
-head(k)
-## You can even do some pattern matching on the keys
-k = keys(mart, keytype="chromosome_name", pattern="LRG")
-head(k)
-## Finally you can use select to extract records for things that you are
-## interested in.
-affy=c("202763_at","209310_s_at","207500_at")
-select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
-  keytype='affy_hg_u133_plus_2')
+if(interactive()) {
+  ## 1st create a Mart object and specify the dataset
+  mart <- useEnsembl(dataset="hsapiens_gene_ensembl",
+                     biomart='ensembl')
+  ## you can list the keytypes
+  keytypes(mart)
+  ## you can list the columns
+  columns(mart)
+  ## And you can extract keys when this is supported for your keytype of interest
+  k = keys(mart, keytype="chromosome_name")
+  head(k)
+  ## You can even do some pattern matching on the keys
+  k = keys(mart, keytype="chromosome_name", pattern="LRG")
+  head(k)
+  ## Finally you can use select to extract records for things that you are
+  ## interested in.
+  affy=c("202763_at","209310_s_at","207500_at")
+  select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
+    keytype='affy_hg_u133_plus_2')
+  }
 }
 \keyword{methods}

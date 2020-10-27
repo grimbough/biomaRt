@@ -16,12 +16,12 @@
 \examples{
 
 if(interactive()){
-mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-
-#seq<-getSequence(chromosome=c(2,2),start=c(100000,30000),end=c(100300,30500),mart=mart)
-#exportFASTA(seq,file="test.fasta")
-
-martDisconnect(mart = mart)
+    mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
+    
+    #seq<-getSequence(chromosome=c(2,2),start=c(100000,30000),end=c(100300,30500),mart=mart)
+    #exportFASTA(seq,file="test.fasta")
+    
+    martDisconnect(mart = mart)
 }
 }
 \keyword{methods}
