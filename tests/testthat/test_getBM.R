@@ -24,7 +24,7 @@ test_that("Fail when no dataset is specified", {
 test_that("HTML reading code is used when needed", {
     expect_silent(ensembl <- useEnsembl("ensembl", 
                                         dataset = 'hsapiens_gene_ensembl',
-                                        host = "www"))
+                                        mirror = "www"))
     attributes <-  c("ensembl_gene_id", "go_id", "definition_1006")
     expect_silent(go_sets <- getBM(attributes =  attributes,
                                    filters = "ensembl_gene_id",

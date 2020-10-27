@@ -20,7 +20,7 @@ test_that("martCheck() catches bad input", {
 
 test_that('martCheck() is quiet for valid input', {
     
-    ensembl <- useEnsembl('ensembl', dataset = 'hsapiens_gene_ensembl')
+    ensembl <- useEnsembl('ensembl', dataset = 'hsapiens_gene_ensembl', mirror = "www")
     expect_silent(biomaRt:::martCheck(ensembl, 
                                       biomart = "ENSEMBL_MART_ENSEMBL"))
 })
