@@ -22,7 +22,9 @@ test_that("Fail when no dataset is specified", {
 ## the definition_1006 entry for this gene includes unescaped new lines, so the HTML result is requested
 ########################
 test_that("HTML reading code is used when needed", {
-    expect_silent(ensembl <- useMart("ensembl", dataset = 'hsapiens_gene_ensembl'))
+    expect_silent(ensembl <- useEnsembl("ensembl", 
+                                        dataset = 'hsapiens_gene_ensembl',
+                                        host = "www"))
     attributes <-  c("ensembl_gene_id", "go_id", "definition_1006")
     expect_silent(go_sets <- getBM(attributes =  attributes,
                                    filters = "ensembl_gene_id",

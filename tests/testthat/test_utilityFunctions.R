@@ -47,10 +47,9 @@ test_that("Renaming columns - real data", {
                  ## Description is 'Query protein or transcript ID' lots of matches
                  "neugenii_homolog_canonical_transcript_protein")
     
-    mart <- useMart(biomart = "ensembl",
-                    host = "https://www.ensembl.org",
+    mart <- useEnsembl(biomart = "ensembl",
                     dataset ="mmusculus_gene_ensembl",
-                    port = 443)
+                    mirror = "www")
     
     res <- getBM(filter = "ensembl_gene_id",
                  values = "ENSMUSG00000028798",

@@ -289,6 +289,7 @@ We now get a short list of attributes related to the region where the genes are 
 
 
 # Using `select()`
+
 In order to provide a more consistent interface to all annotations in
 Bioconductor the `select()`, `columns()`,
 `keytypes()` and `keys()` have been implemented to wrap
@@ -302,7 +303,7 @@ Otherwise usage should be essentially the same.  You still use
 used as keys with `select()`.  
 
 ```{r columnsAndKeyTypes}
-mart <- useMart(dataset="hsapiens_gene_ensembl",biomart='ensembl')
+mart <- useEnsembl(dataset="hsapiens_gene_ensembl", biomart='ensembl')
 head(keytypes(mart), n=3)
 head(columns(mart), n=3)
 ``` 
@@ -515,11 +516,13 @@ The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 Bi
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
 ```{r getLDS, cache = TRUE}
-human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+human <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
+mouse <- useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
-       filters = "hgnc_symbol", values = "TP53",mart = human,
-      attributesL = c("refseq_mrna","chromosome_name","start_position"), martL = mouse)
+       filters = "hgnc_symbol", values = "TP53",
+       mart = human,
+       attributesL = c("refseq_mrna","chromosome_name","start_position"), 
+       martL = mouse)
 ```
 
 

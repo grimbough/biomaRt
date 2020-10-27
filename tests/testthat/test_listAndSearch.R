@@ -4,7 +4,7 @@ Sys.setenv(BIOMART_CACHE = cache)
 
 context("list and search functions")
 
-ensembl <- useMart("ensembl")
+ensembl <- useEnsembl("ensembl", host = "www")
 
 ## Construct example mart object without contacting Ensembl
 ensembl_with_dataset <- Mart(biomart = "ensembl", 

@@ -24,7 +24,5 @@ test_that("show() reports dataset name if present", {
 
 test_that("Deprecation warning produced", {
     
-    expect_warning(useMart(biomart = "ensembl", host="www.ensembl.org", ensemblRedirect = FALSE),
-                   regexp = "The argument \"ensemblRedirect\" has been deprecated and will be removed")
-    
+    expect_error(useMart(biomart = "ensembl", host="www.ensembl.org", ensemblRedirect = FALSE))
 })

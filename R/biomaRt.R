@@ -90,15 +90,10 @@ bmRequest <- function(request, verbose = FALSE){
 #######################################################
 
 listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
-                       port, includeHosts = FALSE, archive = FALSE, ensemblRedirect = NULL, verbose = FALSE){
+                       port, includeHosts = FALSE, archive = FALSE, verbose = FALSE){
     
     if(missing(port)) {
         port <- ifelse(grepl("https", host), yes = 443, no = 80)
-    }
-    
-    if(!is.null(ensemblRedirect)) {
-        warning('The argument "ensemblRedirect" has been deprecated and does not do anything.',
-                '\nSee ?useEnsembl for details on using mirror sites.')
     }
     
     .listMarts(mart = mart, host = host, path = path, port = port, includeHosts = includeHosts,
@@ -191,14 +186,10 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 #################################
 
 useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "/biomart/martservice", port, 
-                     archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE) {
+                     archive = FALSE, version, verbose = FALSE) {
     
     if(missing(port)) {
         port <- ifelse(grepl("https", host), yes = 443, no = 80)
-    }
-    
-    if(!is.null(ensemblRedirect)) {
-        warning('The argument "ensemblRedirect" has been deprecated and will be removed in the next biomaRt release.')
     }
     
     mart <- .useMart(biomart, dataset, host = host, path = path, port = port, 
