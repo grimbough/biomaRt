@@ -36,24 +36,6 @@ test_that("Renaming columns - synthetic data", {
                  c("ensembl_gene_id", "chromosome_name"))
 })
 
-test_that("Renaming columns - real data", {        
-    ## check we can handle the ambiguous description field in some datasets
-    attributes=c("ensembl_transcript_id",
-                 ## Description is 'Query protein or transcript ID' lots of matches
-                 "neugenii_homolog_canonical_transcript_protein")
-    
-    mart <- useEnsembl(biomart = "ensembl",
-                    dataset ="mmusculus_gene_ensembl",
-                    mirror = "www")
-    
-    res <- getBM(filter = "ensembl_gene_id",
-                 values = "ENSMUSG00000028798",
-                 attributes = attributes,
-                 mart = mart)
-    expect_equal(colnames(res), attributes)
-    
-})
-
 
 #############################
 context("Host name format processing")

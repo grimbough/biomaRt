@@ -2,8 +2,6 @@ library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
-context("list and search functions")
-
 ensembl <- useEnsembl("ensembl", mirror = "www")
 
 ## Construct example mart object without contacting Ensembl
