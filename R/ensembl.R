@@ -101,6 +101,63 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org", version = NULL, GRC
 }
 
 
+.constructEnsemblURL <- function(mirror = NULL, version = NULL, GRCh = NULL) {
+  
+  host <- NULL
+  
+  if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
+    warning("version or GRCh arguments cannot be used together with the mirror argument.\n", 
+            "We will ignore the mirror argument and connect to main Ensembl site.",
+            call. = FALSE) 
+    mirror = NULL
+  }
+  
+  if(!is.null(version) & !is.null(GRCh)) {
+    stop("version or GRCh arguments cannot be used together.\n", 
+         "Please specify only the 'version' or 'GRCh' argument.",
+         call. = FALSE) 
+    mirror = NULL
+  }
+  
+  if(!is.null(version)) {
+    archives <- listEnsemblArchives()
+    idx <- match(version, archives[,'version'], nomatch = NA)
+    if(is.na(idx)) {
+      stop("Specified Ensembl version is not available.\n",
+           "Use listEnsemblArchives() to view available versions.",
+           call. = FALSE)
+    }
+    host <- archives[idx, 'url']
+  }	  
+  
+  if(!is.null(GRCh)){
+    if(GRCh == 37){
+      host <- paste0("https://grch", GRCh, ".ensembl.org")
+    } else {
+      warning("Only 37 can be specified for GRCh version. Using the current version.",
+              call. = FALSE)
+    }
+  }
+  
+  if(!is.null(mirror)){
+    if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
+      warning("Invalid mirror. Select a mirror from [www, uswest, useast, asia].\n",
+              "Default when no mirror is specified is to use ",
+              "www.ensembl.org which may be automatically redirected." )
+      host <- "https://www.ensembl.org"
+    } else {
+      host <- paste0("https://", mirror, ".ensembl.org")
+    }
+  }
+  
+  if(is.null(host)) {
+    host = "https://www.ensembl.org"
+  }
+  
+  return(host)
+  
+}
+
 useEnsembl <- function(biomart, dataset, host, 
                        version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
   
@@ -109,46 +166,7 @@ useEnsembl <- function(biomart, dataset, host,
          "Available Ensembl Marts can be viewed with ",
          "the function listEnsembl()")
   }
-  
-  if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
-    warning("version or GRCh arguments can not be used together with the mirror argument.', 
-                'We will ignore the mirror argument and connect to main Ensembl site.") 
-    mirror = NULL
-  }
-  
-  if(!is.null(version)){
-    archives <- listEnsemblArchives()
-    idx <- match(version, archives[,'version'], nomatch = NA)
-    if(is.na(idx)) {
-      stop('Specified Ensembl version is not available.\n',
-           'Use listEnsemblArchives() to view available versions.',
-           call. = FALSE)
-    }
-    host <- archives[idx, 'url']
-  }	   
-  
-  if(!is.null(GRCh)){
-    if(GRCh == 37){
-      host <- paste("https://grch",GRCh,".ensembl.org",sep="")
-    }
-    else{
-      print("Only 37 can be specified for GRCh version")
-    }
-  }
-  
-  ensemblRedirect <- TRUE
-  if(!is.null(mirror)){
-    if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
-      warning("Invalid mirror. Select a mirror from [www, uswest, useast, asia].\n",
-              "Default when no mirror is specified is to use ",
-              "www.ensembl.org which may be automatically redirected." )
-      host <- "https://www.ensembl.org"
-    } else {
-      ensemblRedirect <- FALSE
-      host <- paste0("https://", mirror, ".ensembl.org")
-    }
-  }
-  
+
   if(tolower(biomart) == "ensembl" | tolower(biomart) == "genes") {
     biomart = "ENSEMBL_MART_ENSEMBL"
   }
@@ -165,9 +183,9 @@ useEnsembl <- function(biomart, dataset, host,
     biomart = "ENSEMBL_MART_MOUSE"
   }
   
-  if(missing(host)) {
-    host = "https://www.ensembl.org"
-  }
+  ## create the host URL & turn off redirection if a mirror is specified
+  host <- .constructEnsemblURL(version = version, GRCh = GRCh, mirror = mirror)
+  ensemblRedirect = is.null(mirror)
   
   ## choose the port based on whether we use https or not
   port <- ifelse(grepl(pattern = "https://", x = host), 

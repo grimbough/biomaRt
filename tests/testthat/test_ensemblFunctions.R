@@ -1,37 +1,54 @@
 library(biomaRt)
-cache <- file.path(tempdir(), "biomart_cache_test")
-Sys.setenv(BIOMART_CACHE = cache)
-
-context('Ensembl specific functions')
-
-test_that("useEnsembl() works", { 
-
-  ensembl <- useEnsembl(biomart = "snp")
-  expect_is(ensembl, class = "Mart")
-
-})
-
-test_that("useEnsembl() options are respected", { 
-  
-  expect_silent(ensembl_mirror <- useEnsembl(biomart = "snp", mirror = "uswest"))
-  expect_equal(ensembl_mirror@host, 
-               "https://uswest.ensembl.org:443/biomart/martservice?redirect=no")
-  
-  expect_silent(ensembl_archive <- useEnsembl(biomart = "ensembl", version = 87))
-  expect_equal(ensembl_archive@host,
-               "https://dec2016.archive.ensembl.org:443/biomart/martservice")
-})
-
 
 test_that("useEnsembl() error handling is OK", { 
   
   expect_error(useEnsembl(), regexp = "You must provide the argument")
   
-  expect_warning(ensembl <- useEnsembl(biomart = "snp", mirror = "INVALID_MIRROR"), 
-                 regexp = "Invalid mirror\\. Select a mirror")
-  expect_equal(ensembl@host, 
-               "https://www.ensembl.org:443/biomart/martservice")
+})
+
+test_that("Ensembl URLs are constructed correctly", {
   
-  expect_error(useEnsembl(biomart = "snp", version = "00"), 
+  ## no arguments ##
+  
+  expect_equal(.constructEnsemblURL(),
+               "https://www.ensembl.org")
+  
+  ## mirror ##
+  
+  expect_warning(.constructEnsemblURL(mirror = "INVALID_MIRROR"), 
+                 regexp = "Invalid mirror\\. Select a mirror") %>%
+    expect_equal("https://www.ensembl.org")
+  
+  expect_equal(.constructEnsemblURL(mirror = "uswest"), 
+               "https://uswest.ensembl.org")
+  
+  ## GRCh ##
+  
+  expect_equal(.constructEnsemblURL(GRCh = 37), 
+               "https://grch37.ensembl.org")
+  
+  expect_warning(.constructEnsemblURL(GRCh = 38), 
+                 regex = "Only 37 can be specified for GRCh version") %>%
+    expect_equal("https://www.ensembl.org")
+  
+  ## version ##
+  
+  expect_equal(.constructEnsemblURL(version = "100"), 
+               "https://apr2020.archive.ensembl.org")
+  
+  expect_error(.constructEnsemblURL(version = "00"), 
                regexp = "Specified Ensembl version is not available")
+  
+  ## combinations ##
+  
+  expect_error(.constructEnsemblURL(version = "100", GRCh = 37), 
+               regexp = "version or GRCh arguments cannot be used together")
+  
+  expect_warning(.constructEnsemblURL(mirror = "asia", version = 100), 
+                 regexp = "version or GRCh arguments cannot be used together with the mirror argument") %>%
+    expect_equal("https://apr2020.archive.ensembl.org")
+  
+  expect_warning(.constructEnsemblURL(mirror = "uswest", GRCh = 37), 
+                 regexp = "version or GRCh arguments cannot be used together with the mirror argument") %>%
+    expect_equal("https://grch37.ensembl.org")
 })
