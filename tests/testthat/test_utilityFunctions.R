@@ -13,7 +13,8 @@ ensembl = Mart(biomart = "ensembl",
                    description = c("AFFY HG U133A 2 probe ID(s) [e.g. 211600_at]", 
                                    "Chromosome/scaffold name",
                                    "Transcript Support Level (TSL)"),
-                   type = c("id_list", "text", "boolean")
+                   type = c("id_list", "text", "boolean"),
+                   options = c("[]", "[1,2,3,4,CHR_HG1_PATCH]", "[only,excluded]")
                )
                )
 
@@ -81,3 +82,28 @@ test_that("TSV and HTML result tables match", {
                      read.table(textConnection(res_tsv), sep = "\t", header = TRUE, 
                                 check.names = FALSE, stringsAsFactors = FALSE))
 })
+
+
+test_that("http error codes are presented nicely", {
+    expect_true(grepl(.createErrorMessage(error_code = 500, host = "test.com"),
+                pattern = 'biomaRt has encountered an unexpected server error'))
+    expect_true(grepl(.createErrorMessage(error_code = 509, host = "test.com"),
+                pattern = 'biomaRt has exceeded the bandwidth allowance with this server'))
+    
+    expect_true(grepl(.createErrorMessage(error_code = 500, host = "www.ensembl.org")[2],
+                      pattern = 'Consider trying one of the Ensembl mirrors'))
+    expect_true(grepl(.createErrorMessage(error_code = 509, host = "www.ensembl.org")[2],
+                      pattern = 'Consider trying one of the Ensembl mirrors'))
+    
+})
+
+
+test_that("we can search predefined filter values", {
+    
+    expect_equal(length(searchFilterValues(ensembl, filter = "chromosome_name")), 5)
+    
+    expect_equal(length(searchFilterValues(ensembl, "chromosome_name", "^[0-9]*$")), 4)
+    
+    expect_equal(searchFilterValues(ensembl, "chromosome_name", "PATCH"), "CHR_HG1_PATCH")
+})
+

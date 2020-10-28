@@ -31,22 +31,57 @@
            as(openssl::md5(combined), "character"))
 }
 
-#' @param bfc 
-.checkCache <- function(bfc, hash) {
+#' @param bfc Object of class BiocFileCache, created by a call to 
+#' BiocFileCache::BiocFileCache()
+#' @param hash unique hash representing a query.
+.addToCache <- function(bfc, result, hash) {
+    tf <- tempfile()
+    saveRDS(result, file = tf)
+    bfcadd(bfc, rname = hash, fpath = tf, action = "copy")
+    file.remove(tf)
+}
+
+#' @param bfc Object of class BiocFileCache, created by a call to 
+#' BiocFileCache::BiocFileCache()
+#' @param hash unique hash representing a query.
+.readFromCache <- function(bfc, hash) {
+
+    cache_hits <- bfcquery(bfc, hash, field = "rname")
+    if(nrow(cache_hits) > 1) {
+        stop("Multiple cache results found.",
+             "\nPlease clear your cache by running biomartCacheClear()")
+    } else {
+        rid <- cache_hits$rid
+        result <- readRDS( bfc[[ rid ]] )
+        return(result)
+    }
+}
+
+#' @param bfc Object of class BiocFileCache, created by a call to 
+#' BiocFileCache::BiocFileCache()
+#' @param hash unique hash representing a query.
+#' 
+#' This function returns TRUE if a record with the requested hash already 
+#' exists in the file cache, otherwise returns FALSE.
+#' @keywords Internal
+.checkCache <- function(bfc, hash, verbose = FALSE) {
     res <- bfcquery(bfc, query = hash, field = "rname")
     as.logical(nrow(res))
 }
 
+.biomartCacheLocation <- function() {
+    Sys.getenv(x = "BIOMART_CACHE", 
+               unset = rappdirs::user_cache_dir(appname="biomaRt"))
+}
+
 biomartCacheClear <- function() {
-    cache <- Sys.getenv(x = "BIOMART_CACHE", 
-                        unset = rappdirs::user_cache_dir(appname="biomaRt"))
+    cache <- .biomartCacheLocation()
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     removebfc(bfc, ask = FALSE)
 }
 
 biomartCacheInfo <- function() {
-    cache <- Sys.getenv(x = "BIOMART_CACHE", 
-                        unset = rappdirs::user_cache_dir(appname="biomaRt"))
+    cache <- .biomartCacheLocation()
     
     if(!file.exists(cache)) {
         message("biomaRt cache uninitialized\n", 
