@@ -12,8 +12,6 @@ importFrom(openssl, md5)
 importFrom(BiocFileCache, bfcnew, bfcadd, bfcquery, bfcinfo, removebfc)
 importFrom(rappdirs, user_cache_dir)
 
-export(Mart)
-
 export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets, 
        useDataset, listEnsembl, useEnsembl, listAttributes, listFilters, 
        getBM, getLDS, attributePages, filterOptions,filterType, 
