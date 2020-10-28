@@ -44,35 +44,8 @@ listEnsemblArchives <- function(https = TRUE) {
 
 listEnsembl <- function(mart = NULL, host="www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
   
-  if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
-    warning("version or GRCh arguments can not be used together with the mirror argument.\n",  
-            "Will ignore the mirror argument and connect to default ensembl host") 
-    mirror = NULL
-  }
-  
-  if(!is.null(version)){
-    host <- paste0("e", version, ".ensembl.org")
-  }
-  if(!is.null(GRCh)){
-    if(GRCh == 37){ 
-      host = paste("https://grch",GRCh,".ensembl.org",sep="")	
-    }
-    else{
-      print("Only 37 can be specified for GRCh version")
-    }
-  }
-  
-  ensemblRedirect <- TRUE
-  if(!is.null(mirror)){
-    if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
-      warning("Invalid mirror. Select a mirror from [www, uswest, useast, asia].\n",
-              "Default when no mirror is specified is to be redirected to ",
-              "www.ensembl.org")
-    } else {
-      host <- paste0(mirror, ".ensembl.org")
-      ensemblRedirect <- FALSE
-    }
-  }
+  host <- .constructEnsemblURL(mirror = mirror, version = version, GRCh = GRCh)
+  ensemblRedirect <- is.null(mirror)
   
   marts <- .listMarts(mart = mart, host = host, verbose = verbose, 
                       ensemblRedirect = ensemblRedirect)
@@ -100,23 +73,25 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org", version = NULL, GRC
   return(marts)
 }
 
-
+#' creates an Ensembl URL based on the arguments provided to useEnsembl.
+#' If there are conflicting options, order of precedence is:
+#' GRCh, version, mirror
+#' Default return value is https://www.ensembl.org
 .constructEnsemblURL <- function(mirror = NULL, version = NULL, GRCh = NULL) {
   
   host <- NULL
   
   if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
     warning("version or GRCh arguments cannot be used together with the mirror argument.\n", 
-            "We will ignore the mirror argument and connect to main Ensembl site.",
+            "We will ignore the mirror argument and connect to the main Ensembl site.",
             call. = FALSE) 
-    mirror = NULL
+    mirror <- NULL
   }
   
   if(!is.null(version) & !is.null(GRCh)) {
     stop("version or GRCh arguments cannot be used together.\n", 
          "Please specify only the 'version' or 'GRCh' argument.",
          call. = FALSE) 
-    mirror = NULL
   }
   
   if(!is.null(version)) {
@@ -247,4 +222,6 @@ useEnsemblGenomes <- function(biomart, dataset) {
                  verbose = FALSE,
                  port = 443, 
                  ensemblRedirect = FALSE)	  
+  
+  return(ens)
 }

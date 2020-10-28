@@ -7,15 +7,6 @@
 #Author: Steffen Durinck #
 ##########################
 
-###############
-#messageToUser#
-###############
-
-messageToUser <- function(message){
-    if(interactive()){
-        cat(message)
-    }
-}
 
 ##############################################################
 #martCheck                                                   # 
@@ -424,14 +415,14 @@ useDataset <- function(dataset, mart, verbose = FALSE){
     }
     martDataset(mart) <- dataset  
     
-    if(verbose) messageToUser("Checking attributes ...")
+    if(verbose) message("Checking attributes ...", appendLF = FALSE)
     martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
     if(verbose){
-        messageToUser(" ok\n")
-        messageToUser("Checking filters ...")
+        message(" ok")
+        message("Checking filters ...", appendLF = FALSE)
     }
     martFilters(mart) <- bmAttrFilt("filters",mart, verbose = verbose)
-    if(verbose) messageToUser(" ok\n")
+    if(verbose) message(" ok")
     return( mart )
 }
 

@@ -9,12 +9,10 @@ test_that("useEnsembl() error handling is OK", {
 test_that("Ensembl URLs are constructed correctly", {
   
   ## no arguments ##
-  
   expect_equal(.constructEnsemblURL(),
                "https://www.ensembl.org")
   
   ## mirror ##
-  
   expect_warning(.constructEnsemblURL(mirror = "INVALID_MIRROR"), 
                  regexp = "Invalid mirror\\. Select a mirror") %>%
     expect_equal("https://www.ensembl.org")
@@ -23,7 +21,6 @@ test_that("Ensembl URLs are constructed correctly", {
                "https://uswest.ensembl.org")
   
   ## GRCh ##
-  
   expect_equal(.constructEnsemblURL(GRCh = 37), 
                "https://grch37.ensembl.org")
   
@@ -32,7 +29,6 @@ test_that("Ensembl URLs are constructed correctly", {
     expect_equal("https://www.ensembl.org")
   
   ## version ##
-  
   expect_equal(.constructEnsemblURL(version = "100"), 
                "https://apr2020.archive.ensembl.org")
   
@@ -40,7 +36,6 @@ test_that("Ensembl URLs are constructed correctly", {
                regexp = "Specified Ensembl version is not available")
   
   ## combinations ##
-  
   expect_error(.constructEnsemblURL(version = "100", GRCh = 37), 
                regexp = "version or GRCh arguments cannot be used together")
   
