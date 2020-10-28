@@ -35,11 +35,11 @@ result <- data.frame(
     type = c("id_list", "text", "boolean"),
     options = c("[]", "[1,2,3,4,CHR_HG1_PATCH]", "[only,excluded]")
 )
+bfc <- BiocFileCache::BiocFileCache(biomartCacheInfo(), ask = FALSE)
 
 test_that("Entries can be added to the cache", {
     
-    bfc <- BiocFileCache::BiocFileCache(biomartCacheInfo(), ask = FALSE)
-    .addToCache(bfc = bfc, result = result, hash = hash)
+    expect_true(.addToCache(bfc = bfc, result = result, hash = hash))
     
 })
 
@@ -47,10 +47,8 @@ test_that("Entries can be added to the cache", {
 test_that("We find cache for previous query", {
     
     expect_true(.checkCache(bfc, hash = hash))
-    
-    result_2 <- .readFromCache(bfc, hash = hash)
-    expect_identical(result, result_2)
-      
+    expect_identical(result, .readFromCache(bfc, hash = hash))
+  
 })
 
 
