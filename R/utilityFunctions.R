@@ -112,7 +112,7 @@
     return(filterXML)
 }
 
-.generateFilterXML <- function(filters = "", values, mart) {
+.generateFilterXML <- function(filters = "", values, mart, maxChunkSize = 5000) {
     
     ## return empty string if no filter specified & this isn't ensembl
     ## specifying no filter is generally bad, as it will get 'everything'
@@ -136,7 +136,7 @@
     }
     names(values) <- filters
     
-    values <- .splitValues(list(values), maxChunkSize = 5000)
+    values <- .splitValues(list(values), maxChunkSize = maxChunkSize)
     
     filterXML_list <- lapply(values, .createFilterXMLchunk, mart)
     

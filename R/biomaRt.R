@@ -670,102 +670,22 @@ getLDS <- function(attributes, filters = "", values = "", mart,
     
     xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' formatter = 'TSV' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
     attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
-    if(length(filters) > 1){
-        if(class(values)!= "list")
-            stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
-        filterXML = NULL
-        for(i in seq(along=filters)){
-            if(filterType(filters[i],mart) == 'boolean' || filterType(filters[i],mart) == 'boolean_list'){
-                if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!values[[i]]){
-                    values[[i]] = 1
-                }
-                else{
-                    values[[i]] = 0 
-                }
-                filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
-            }
-            else{
-                valuesString = paste(values[[i]],"",collapse=",",sep="")
-                filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-            }
-        }
-    }
-    else{
-        if(filters != ""){       
-            if(filterType(filters,mart) == 'boolean' || filterType(filters,mart) == 'boolean_list'){
-                if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!values){
-                    values = 1
-                }
-                else{
-                    values = 0 
-                }
-                
-                filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
-            }
-            else{
-                valuesString = paste(values,"",collapse=",",sep="")
-                filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
-            }
-        }
-        else{
-            filterXML=""
-        }
-    }
+
+    ## ignore the chunk size here
+    filterXML <- .generateFilterXML(filters = filters, values = values, 
+    								mart = mart, maxChunkSize = Inf)
     
-    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
-    xmlQuery = paste(xmlQuery, "<Dataset name = '",martDataset(martL),"' >", sep="")
-    linkedAttributeXML =  paste("<Attribute name = '", attributesL, "'/>", collapse="", sep="")
-    
-    if(length(filtersL) > 1){
-        if(class(valuesL)!= "list")
-            stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
-        linkedFilterXML = NULL
-        for(i in seq(along=filtersL)){
-            if(filterType(filtersL,martL) == 'boolean' || filterType(filtersL,martL) == 'boolean_list'){
-                if(!is.logical(valuesL[[i]])) stop(paste("biomaRt error: ",filtersL[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!valuesL[[i]]){
-                    valuesL[[i]] = 1
-                }
-                else{
-                    valuesL[[i]] = 0 
-                } 
-                linkedFilterXML = paste(linkedFilterXML,paste("<Filter name = '",filtersL[i],"' excluded = \"",valuesL[[i]],"\" />", collapse="",sep=""),sep="")
-            }
-            else{
-                valuesString = paste(valuesL[[i]],"",collapse=",",sep="")
-                linkedFilterXML = paste(linkedFilterXML,paste("<Filter name = '",filtersL[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-            }
-        }
-    }
-    else{
-        if(filtersL != ""){
-            if(filterType(filtersL,martL) == 'boolean' || filterType(filtersL,martL) == 'boolean_list'){
-                if(!is.logical(valuesL)) stop(paste("biomaRt error: ",filtersL," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!valuesL){
-                    valuesL = 1
-                }
-                else{
-                    valuesL = 0 
-                }
-                
-                linkedFilterXML = paste("<Filter name = '",filtersL,"' excluded = \"",valuesL,"\" />", collapse="",sep="")
-            }
-            else{
-                valuesString = paste(valuesL,"",collapse=",",sep="")
-                linkedFilterXML = paste("<Filter name = '",filtersL,"' value = '",valuesString,"' />", collapse="",sep="")
-            }
-        }
-        else{
-            linkedFilterXML=""
-        }
-    }
-    
+    xmlQuery = paste0(xmlQuery, attributeXML, filterXML,"</Dataset>")
+
+    xmlQuery = paste0(xmlQuery, "<Dataset name = '",martDataset(martL),"' >")
+    linkedAttributeXML =  paste("<Attribute name = '", attributesL, "'/>", collapse="", sep="")  
+    linkedFilterXML <- .generateFilterXML(filters = filtersL, values = valuesL, 
+    									  mart = mart, maxChunkSize = Inf)
+        
     xmlQuery = paste(xmlQuery, linkedAttributeXML, linkedFilterXML,"</Dataset></Query>",sep="")
     
     if(verbose){
-        cat(paste(xmlQuery,"\n", sep=""))
+        message(xmlQuery)
     }
 
     ## we choose a separator based on whether '?redirect=no' is present
@@ -774,7 +694,6 @@ getLDS <- function(attributes, filters = "", values = "", mart,
     postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                                query = xmlQuery)
     
-
     if(length(grep("^Query ERROR", postRes))>0L)
         stop(postRes)  
 
