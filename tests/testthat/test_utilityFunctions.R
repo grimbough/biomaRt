@@ -100,10 +100,17 @@ test_that("http error codes are presented nicely", {
 
 test_that("we can search predefined filter values", {
     
-    expect_equal(length(searchFilterValues(ensembl, filter = "chromosome_name")), 5)
+    expect_equal(length(searchFilterOptions(ensembl, filter = "chromosome_name")), 5)
     
-    expect_equal(length(searchFilterValues(ensembl, "chromosome_name", "^[0-9]*$")), 4)
+    expect_equal(length(searchFilterOptions(ensembl, "chromosome_name", "^[0-9]*$")), 4)
     
-    expect_equal(searchFilterValues(ensembl, "chromosome_name", "PATCH"), "CHR_HG1_PATCH")
+    expect_equal(searchFilterOptions(ensembl, "chromosome_name", "PATCH"), "CHR_HG1_PATCH")
 })
 
+
+test_that("deprecated functions show warnings", {
+    
+    expect_warning(searchFilterValues(ensembl, filter = "chromosome_name"))
+    
+    expect_warning(listFilterValues(ensembl, filter = "chromosome_name"))
+})

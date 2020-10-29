@@ -342,7 +342,7 @@ searchFilters <- function(mart, pattern) {
 
 ## Some filters have a predefined list of options that can be selected.
 ## This function lets us search those values, given a specified filter.
-searchFilterValues <- function(mart, filter, pattern) {
+searchFilterOptions <- function(mart, filter, pattern) {
   
   if(missing(mart))
     stop("Argument 'mart' must be specified")
@@ -369,8 +369,21 @@ searchFilterValues <- function(mart, filter, pattern) {
     res
 }
 
-
-listFilterValues <- function(mart, filter) {
-    searchFilterValues(mart = mart, filter = filter)
+searchFilterValues <- function(mart, filter, pattern) {
+  .Deprecated(new = "listFilterOptions",
+              msg = c("This function has been renamed searchFilterOptions()",
+                      "\nsearchFilterValues() is deprecated and will be removed in the future."))
+  searchFilterOptions(mart, filter, pattern = pattern)
 }
 
+
+listFilterOptions <- function(mart, filter) {
+    searchFilterOptions(mart = mart, filter = filter)
+}
+
+listFilterValues <- function(mart, filter) {
+  .Deprecated(new = "listFilterOptions",
+              msg = c("This function has been renamed listFilterOptions()",
+                      "\nlistFilterValues() is deprecated and will be removed in the future."))
+  listFilterOptions(mart, filter)
+}

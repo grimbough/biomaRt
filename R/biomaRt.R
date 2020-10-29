@@ -470,15 +470,10 @@ listFilters <- function(mart, what = c("name", "description")) {
 ## filterOptions
 
 filterOptions <- function(filter, mart){
-    if(missing(filter)) 
-        stop("No filter given. Please specify the filter for which you want to retrieve the possible values.")
-    if(class(filter)!="character")
-        stop("Filter argument should be of class character")
-    martCheck(mart)
-    if(!filter %in% listFilters(mart, what="name"))
-        stop("Filter not valid, check for typo in filter argument.")
-    sel = which(listFilters(mart, what="name") == filter)
-    return(listFilters(mart,what="options")[sel])
+    .Deprecated(new = "listFilterOptions",
+                msg = c("filterOptions() has been deprecated and will be removed from biomaRt.",
+                "\nPlease use listFilterOptions() instead."))
+    listFilterOptions(mart = mart, filter = filter)
 }
 
 ## filterType

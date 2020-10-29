@@ -67,10 +67,7 @@ setReplaceMethod("martVSchema","Mart",function(obj,value){
 #####################################################################
 ## new wrappers to enable keys, columns, select and keytypes
 .keys <- function(x, keytype){
-    res <- filterOptions(filter=keytype, mart=x)
-    res <- sub("\\]$","",res)
-    res <- sub("^\\[","",res)
-    unlist(strsplit(res, split=","))
+    searchFilterOptions(mart = x, filter = keytype)
 }
 setMethod("keys", "Mart",
     function(x, keytype, ...){

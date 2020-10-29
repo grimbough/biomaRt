@@ -180,23 +180,23 @@ From this we can compare *ENST00000577249.1* with the examples given in the desc
 
 ## Using predefined filter values
 
-Many filters have a predefined list of values that are known to be in the dataset they are associated with.  An common example would be the names of chromosomes when searching a dataset at Ensembl.  In this online interface to BioMart these available options are displayed as a list as shown in Figure \@ref(fig:filtervalues).
+Many filters have a predefined list of values that are known to be in the dataset they are associated with.  A common example would be the names of chromosomes when searching a dataset at Ensembl.  In this online interface to BioMart these available options are displayed as a list as shown in Figure \@ref(fig:filtervalues).
 
 ```{r filtervalues, fig.cap='The options available to the Chromosome/Scaffold field are limited to a pretermined list based on the values in this dataset.', echo = FALSE}
 knitr::include_graphics('filtervalues.png')
 ```
 
-You can list this in an R session with the function `listFilterValues()`, passing it a mart object and the name of the filter.  For example, to list the possible chromosome names you could run the following:
+You can list this in an R session with the function `listFilterOptions()`, passing it a mart object and the name of the filter.  For example, to list the possible chromosome names you could run the following:
 
 ```{r chromosomeNames, results = FALSE}
-listFilterValues(mart = ensembl, filter = "chromosome_name")
+listFilterOptions(mart = ensembl, filter = "chromosome_name")
 ```
 
-It is also possible to search the list of available values via `searchFilterValues()`.  In the two examples below, the first returns all chromosome names starting with "*GL*", while the second will find any phenotype descriptions that contain the string "*Crohn*".
+It is also possible to search the list of available values via `searchFilterOptions()`.  In the two examples below, the first returns all chromosome names starting with "*GL*", while the second will find any phenotype descriptions that contain the string "*Crohn*".
 
-```{r searchFilterValues, results = FALSE}
-searchFilterValues(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
-searchFilterValues(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
+```{r listFilterOptions, results = FALSE}
+searchFilterOptions(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
+searchFilterOptions(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
 ```
 
 # Using archived versions of Ensembl
@@ -255,17 +255,6 @@ For most of the filters, their name indicates if the type is a boolean or not an
 ```{r filterType}
 filterType("with_affy_hg_u133_plus_2",ensembl)
 ```
-
-### filterOptions
-
-Some filters have a limited set of values that can be given to them.  To know which values these are one can use the `filterOptions()` function to retrieve the predetermed values of the respective filter.
-
-
-```{r filterOptions}
-filterOptions("biotype", ensembl)
-```
-
-If there are no predetermed values e.g. for the entrezgene filter, then `filterOptions()` will return the type of filter it is. And most of the times the filter name or it's description will suggest what values one case use for the respective filter (e.g. entrezgene filter will work with enterzgene identifiers as values)
 
 ## Attribute Pages
 
@@ -337,10 +326,7 @@ select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
   keytype='affy_hg_u133_plus_2')
 ``` 
 
-So why would we want to do this when we already have functions like `getBM()`?  For two reasons: 1) for people who are familiar
-with select and it's helper methods, they can now proceed to use `r Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to
-them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more
-convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
+So why would we want to do this when we already have functions like `getBM()`?  For two reasons: 1) for people who are familiar with select and it's helper methods, they can now proceed to use `r Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
 
 # Examples of biomaRt queries
 
