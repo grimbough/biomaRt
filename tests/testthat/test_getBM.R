@@ -2,10 +2,6 @@ library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
-########################
-context('getBM()')
-########################
-
 test_that("Fail with no arguments", {
     expect_error(getBM(), 
                  "You must provide a valid Mart object")
@@ -17,6 +13,11 @@ test_that("Fail when no dataset is specified", {
                   "No dataset selected, please select a dataset first")
 })
 
+
+test_that("getBMlist removal message is shown", {
+    expect_error(getBMlist(),
+                 regex = "getBMlist\\(\\) has been removed from biomaRt")
+})
 
 #######################
 ## the definition_1006 entry for this gene includes unescaped new lines, so the HTML result is requested

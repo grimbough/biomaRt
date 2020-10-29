@@ -17,6 +17,7 @@ editor_options:
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE)
 httr::set_config(httr::config(ssl_verifypeer = FALSE))
+options(width=100)
 ```
 
 # Introduction
@@ -25,11 +26,7 @@ Accessing the data available in Ensembl is by far most frequent use of the `r Bi
 
 # Selecting an Ensembl BioMart database and dataset
 
-Every analysis with `r Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  
-
-```{r annotate,echo=FALSE}
-options(width=100)
-```
+Every analysis with `r Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  The commands below will connect us to Ensembl's most recent version of the Human Genes BioMart.
 
 ```{r useEnsembl}
 library(biomaRt)

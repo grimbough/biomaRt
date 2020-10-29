@@ -3,6 +3,7 @@
 \alias{filterOptions}
 \alias{listFilterValues}
 \alias{searchFilterValues}
+\alias{getBMlist}
 \title{Deprecated functions in package \sQuote{biomaRt}}
 \description{
   These functions are provided for compatibility with older versions
@@ -19,5 +20,11 @@
     \item{listFilterValues: \code{\link{listFilterOptions}}}
     \item{searchFilterValues: \code{\link{searchFilterOptions}}}
 
+  }
+  
+  The following functions are defunct and no longer work; use
+  the replacement indicated below:
+  \itemize{
+      \item{getBMlist: \code{\link{getBM}}}
   }
 }

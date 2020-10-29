@@ -16,27 +16,26 @@ editor_options:
 
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE)
+options(width=100)
 ```
 
 # Introduction
 
 In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
 
+# Ensembl
+
+If you are trying to retrieve genomic information from Ensembl or Ensembl genomes, it is recommended to read [Accessing Ensembl annotation with biomaRt](https://www.bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/accessing_ensembl.html) which contains similar iformation to this document, but with a specific focus on accessing those resources.
+
 # Selecting a BioMart database and dataset
 
 Every analysis with `r Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  A first step is to check which BioMart web services are available.  The function `listMarts()` will display all available BioMart web services   
-
-```{r annotate,echo=FALSE}
-options(width=100)
-```
-
-
 ```{r biomaRt}
 library("biomaRt")
 listMarts()
 ```
 
-The `useMart()` function can now be used to connect to a specified BioMart database, this must be a valid name given by `listMarts()`. In the next example we choose to query the Ensembl BioMart database.
+The `useMart()` function can now be used to connect to a specified BioMart database. This must be a valid name given by `listMarts()`. In the next example we choose to query the Ensembl BioMart database.
 
 ```{r ensembl1}
 ensembl <- useMart("ensembl")

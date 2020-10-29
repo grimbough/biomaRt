@@ -808,32 +808,12 @@ getLDS <- function(attributes, filters = "", values = "", mart,
 #getBMlist
 ######################
 
-getBMlist <- function(attributes, filters = "", values = "", mart, list.names = NULL, na.value = NA, verbose=FALSE, giveWarning=TRUE){
-    if(giveWarning) writeLines("Performing your query using getBM is preferred as getBMlist perfoms a separate getBM query for each of the values one gives.  This is ok for a short list but will definitely fail when used with longer lists.  Ideally one does a batch query with getBM and then iterates over that result.")
-    out <- vector("list", length(attributes))
-    if(is.null(list.names))
-        names(out) <- attributes
-    else
-        names(out) <- list.names
-    for(j in seq(along = attributes)){
-        tmp2 <- vector("list", length(values))
-        names(tmp2) <- values
-        for(k in seq(along = tmp2)){
-            tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart, verbose = verbose)
-            
-            if(class(tst) == "data.frame"){
-                tmp <- unlist(unique(tst[!is.na(tst)]), use.names = FALSE)
-                if(length(tmp) > 0)
-                    tmp2[[k]] <- tmp
-                else
-                    tmp2[[k]] <- na.value
-            }else{
-                tmp2[[k]] <- na.value
-            }
-            out[[j]] <- tmp2
-        }
-    }
-    return(out)
+getBMlist <- function(attributes, filters = "", values = "", mart, list.names = NULL, 
+                      na.value = NA, verbose=FALSE, giveWarning=TRUE){
+    .Defunct(new = "getBM",
+             msg = c("getBMlist() has been removed from biomaRt",
+                     "\nPlease use getBM() instead")
+    )
 }
 
 
