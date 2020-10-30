@@ -16,7 +16,7 @@ test_that("Fail when no dataset is specified", {
 
 test_that("getBMlist removal message is shown", {
     expect_error(getBMlist(),
-                 regex = "getBMlist\\(\\) has been removed from biomaRt")
+                 class = "defunctError")
 })
 
 #######################

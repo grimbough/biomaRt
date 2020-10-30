@@ -53,16 +53,14 @@ setReplaceMethod("martDataset","Mart",function(obj,value){
 
 setGeneric("martHost",def=function(obj,...)standardGeneric("martHost"))
 setMethod("martHost",signature("Mart"), function(obj) obj@host)
+setGeneric("martHost<-", function(obj, value) standardGeneric("martHost<-"))
+setReplaceMethod("martHost","Mart",function(obj,value){
+  obj@host <- value
+  obj
+})
 
 setGeneric("martVSchema",def=function(obj,...)standardGeneric("martVSchema"))
 setMethod("martVSchema",signature("Mart"), function(obj) obj@vschema)
-setGeneric("martVSchema<-", function(obj, value) standardGeneric("martVSchema<-"))
-setReplaceMethod("martVSchema","Mart",function(obj,value){
-    obj@vschema <- value
-      obj
-  })
-
-
 
 #####################################################################
 ## new wrappers to enable keys, columns, select and keytypes
@@ -77,11 +75,11 @@ setMethod("keys", "Mart",
 )
 
 setMethod("keytypes", "Mart",
-    function(x) listFilters(mart=x)[["name"]]
+    function(x) listFilters(mart=x, what = "name")
 )
 
 setMethod("columns", "Mart",
-    function(x) listAttributes(mart=x)[["name"]]
+    function(x) listAttributes(mart=x, what = "name")
 )
 
 ## Arg checking is similar (but more limited) to what is done for getBM
