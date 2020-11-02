@@ -1,6 +1,3 @@
-library(biomaRt)
-cache <- file.path(tempdir(), "biomart_cache_test")
-Sys.setenv(BIOMART_CACHE = cache)
 
 ensembl = Mart(biomart = "ensembl", 
                dataset = "hsapiens_gene_ensembl",
@@ -37,6 +34,22 @@ test_that("Renaming columns - synthetic data", {
                  c("ensembl_gene_id", "chromosome_name"))
 })
 
+example_return <- "GO term accession\tGene name\tGO domain\nGO:0004465\tLpl\tmolecular_function\nGO:0006631\tLpl\tbiological_process\nGO:0005509\tLpl\tmolecular_function\n"
+
+test_that("Results processing works", {
+    
+    expect_is(result_table <- .processResults(postRes = example_return, mart = ensembl, 
+                              fullXmlQuery = "", numAttributes = 3), 
+              "data.frame")
+    expect_identical(ncol(result_table), 3L)
+    
+    expect_error(.processResults(postRes = LETTERS, mart = ensembl, 
+                                 fullXmlQuery = "", numAttributes = 3))
+    expect_error(.processResults(postRes = example_return, mart = ensembl, 
+                                 fullXmlQuery = "", numAttributes = 1))
+    expect_error(.processResults(postRes = "Query ERROR", mart = ensembl, 
+                                 fullXmlQuery = "", numAttributes = 3))
+})
 
 #############################
 context("Host name format processing")

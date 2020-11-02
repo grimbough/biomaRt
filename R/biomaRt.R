@@ -538,13 +538,11 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
     
         ## force the query to return the 'descriptive text' header names with the result
         ## we use these later to match and order attribute/column names    
-        callHeader <- TRUE
         xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
                           martVSchema(mart),
                           "' uniqueRows = '",
                           as.numeric(uniqueRows),
-                          "' count='0' datasetConfigVersion='0.6' header='",
-                          as.numeric(callHeader),
+                          "' count='0' datasetConfigVersion='0.6' header='1'",
                           "' formatter='TSV' requestid='biomaRt'> <Dataset name = '",
                           martDataset(mart),"'>")
         
@@ -555,7 +553,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
                        "\nPlease use the function 'listAttributes' to get valid attribute names"))
         
         #attribute are ok lets add them to the query
-        attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
+        attributeXML = paste0("<Attribute name = '", attributes, "'/>", collapse="")
         
         #checking the filters
         if(filters[1] != "" && checkFilters){
@@ -601,9 +599,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
             if(!file.exists(tf)) {
                 postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                                        query = fullXmlQuery)
-                result <- .processResults(postRes, mart = mart, sep = sep, fullXmlQuery = fullXmlQuery,
-                                          verbose = verbose, callHeader = callHeader, 
-                                          quote = quote, attributes = attributes)
+                result <- .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,
+                                          quote = quote, numAttributes = length(attributes))
                 saveRDS(result, file = tf)
             } else {
                 result <- readRDS(tf)
