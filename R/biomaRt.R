@@ -541,7 +541,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
                           "' uniqueRows = '",
                           as.numeric(uniqueRows),
                           "' count='0' datasetConfigVersion='0.6' header='1'",
-                          "' formatter='TSV' requestid='biomaRt'> <Dataset name = '",
+                          " formatter='TSV' requestid='biomaRt'> <Dataset name = '",
                           martDataset(mart),"'>")
         
         #checking the Attributes

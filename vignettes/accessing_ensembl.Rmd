@@ -15,7 +15,7 @@ editor_options:
 ---
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE)
+knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE, out.width = "100%")
 httr::set_config(httr::config(ssl_verifypeer = FALSE))
 options(width=100)
 ```
@@ -78,7 +78,7 @@ ensembl <- useDataset(dataset = "hsapiens_gene_ensembl", mart = ensembl)
 
 As mentioned previously, if the dataset one wants to use is known in advance i.e. you've gone through this process before, we can select a both the database and dataset in one step:
 
-```{r ensembl4}
+```{r ensembl4, eval = FALSE}
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
@@ -86,7 +86,7 @@ ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 
 To improve performance Ensembl provides several mirrors of their site distributed around the globe.  When you use the default settings for `useEnsembl()` your queries will be directed to your closest mirror geographically.  In theory this should give you the best performance, however this is not always the case in practice.  For example, if the nearest mirror is experiencing many queries from other users it may perform poorly for you.  You can use the `mirror` argument to `useEnsembl()` to explicitly request a specific mirror.
 
-```{r, mirrors}
+```{r, mirrors, eval = FALSE}
 ensembl <- useEnsembl(biomart = "ensembl", 
                    dataset = "hsapiens_gene_ensembl", 
                    mirror = "useast")
@@ -113,7 +113,7 @@ Whichever method you use to find the URL of the archive you wish to query, copy 
 
 ```{r archiveMarts3, echo = TRUE, eval = TRUE}
 listEnsembl(version = 95)
-ensembl54 <- useEnsembl(biomart = 'genes', 
+ensembl95 <- useEnsembl(biomart = 'genes', 
                        dataset = 'hsapiens_gene_ensembl',
                        version = 95)
 ```
@@ -218,8 +218,10 @@ listFilterOptions(mart = ensembl, filter = "chromosome_name")
 It is also possible to search the list of available values via `searchFilterOptions()`.  In the two examples below, the first returns all chromosome names starting with "*GL*", while the second will find any phenotype descriptions that contain the string "*Crohn*".
 
 ```{r listFilterOptions, results = FALSE}
-searchFilterOptions(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
-searchFilterOptions(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
+searchFilterOptions(mart = ensembl, filter = "chromosome_name", 
+                    pattern = "^GL")
+searchFilterOptions(mart = ensembl, filter = "phenotype_description", 
+                    pattern = "Crohn")
 ```
 
 ## Finding out more information on filters
@@ -257,7 +259,7 @@ We now get a short list of attributes related to the region where the genes are 
 In order to provide a more consistent interface to all annotations in Bioconductor the `select()`, `columns()`, `keytypes()` and `keys()` have been implemented to wrap some of the existing functionality above.  These methods can be called in the same manner that they are used in other parts of the project except that instead of taking a `AnnotationDb` derived class they take instead a `Mart` derived class as their 1st argument.  Otherwise usage should be essentially the same.  You still use `columns()` to discover things that can be extracted from a `Mart`, and `keytypes()` to discover which things can be used as keys with `select()`.  
 
 ```{r columnsAndKeyTypes}
-mart <- useMart(dataset = "hsapiens_gene_ensembl", biomart='ensembl')
+mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart='ensembl')
 head(keytypes(mart), n = 3)
 head(columns(mart), n = 3)
 ``` 
