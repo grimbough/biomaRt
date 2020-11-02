@@ -45,7 +45,8 @@ checkWrapperArgs = function(id, type, mart){
 
 
 bmRequest <- function(request, verbose = FALSE){
-    if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
+    if(verbose) 
+        message("Attempting web service request:\n", request)
 
     result <- tryCatch(httr::GET(request, content_type("text/plain"), timeout(10)),
                        error = function(c) { "timeout" } )
@@ -101,18 +102,15 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         
         host <- .cleanHostURL(host)
         if(archive) {
-            stop("The archive = TRUE argument is now defunct.\nUse listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
+            stop("The archive = TRUE argument is now defunct.\n", 
+                 "Use listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
         } else {
             request <- paste0(host, ":", port, path, "?type=registry&requestid=biomaRt")
         }
-    }
-    else{
-        if(class(mart) == 'Mart'){
+    } else if(class(mart) == 'Mart') {
             request = paste0(martHost(mart), "?type=registry&requestid=biomaRt") 
-        }
-        else{
+    } else{
             warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
-        }
     } 	
     
     if(!ensemblRedirect && grepl(x = request, pattern = "ensembl.org")) {

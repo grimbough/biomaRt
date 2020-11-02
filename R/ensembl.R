@@ -45,10 +45,11 @@ listEnsemblArchives <- function(https = TRUE) {
 listEnsembl <- function(mart = NULL, host="www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
   
   host <- .constructEnsemblURL(mirror = mirror, version = version, GRCh = GRCh)
+  port <- ifelse(grepl("https", host), yes = 443, no = 80)
   ensemblRedirect <- is.null(mirror)
   
   marts <- .listMarts(mart = mart, host = host, verbose = verbose, 
-                      ensemblRedirect = ensemblRedirect)
+                      port = port, ensemblRedirect = ensemblRedirect)
   
   sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
   if(length(sel) > 0){ 
