@@ -1,5 +1,5 @@
 ---
-title: "The biomaRt users guide"
+title: "Using a BioMart other than Ensembl"
 author: "Steffen Durinck, Wolfgang Huber, Mike Smith"
 package: "`r pkg_ver('biomaRt')`"
 output: 
@@ -7,7 +7,7 @@ output:
     md_extensions: "-autolink_bare_uris"
     css: style.css
 vignette: >
-  %\VignetteIndexEntry{The biomaRt users guide}
+  %\VignetteIndexEntry{Using a BioMart other than Ensembl}
   %\VignetteEncoding{UTF-8}  
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -22,21 +22,6 @@ options(width=100)
 # Introduction
 
 In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
-
-# Ensembl
-
-
-# Result Caching
-
-To save time and computing resources `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
-
-You can get some information on the size and location of the cache using the function `biomartCacheInfo()`:
-
-```{r cacheInfo}
-biomartCacheInfo()
-```
-
-The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
 
 # Using a BioMart other than Ensembl
 

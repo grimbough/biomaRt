@@ -328,58 +328,46 @@ bmVersion <- function(mart, verbose=FALSE){
     return(bmv)
 }
 
-## Retrieve attributes and filters from web service
-bmAttrFilt <- function(type, mart, verbose=FALSE){
+
+.getAttrFilt <- function(mart, verbose, type) {
     
     ## we choose a separator based on whether 'redirect=no' is present
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     
-    request = paste0(martHost(mart), sep, "type=", type,
+    request <- paste0(martHost(mart), sep, "type=", type,
                      "&dataset=", martDataset(mart),
                      "&requestid=biomaRt&mart=", martBM(mart),
                      "&virtualSchema=", martVSchema(mart))
-    attrfilt = bmRequest(request = request, verbose = verbose)
-    con = textConnection(attrfilt)
-    attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-    close(con)
-    if(type=="attributes"){
-        if(dim(attrfiltParsed)[2] < 3)
-            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-        cnames = seq_len(dim(attrfiltParsed)[2])
-        cnames=paste(type,cnames,sep="")
-        cnames[1] = "name"
-        cnames[2] = "description"
-        cnames[3] = "fullDescription"
-        if(dim(attrfiltParsed)[2] < 4){
-            warning("biomaRt warning: looks like we're connecting to an older ",
-                    "version of BioMart suite.\nSome biomaRt functions might ",
-                    "not work.")
-        }
-        else{
-            cnames[4] = "page"
-        }
-        colnames(attrfiltParsed) = cnames
-    }
-    if(type=="filters"){
-        if(dim(attrfiltParsed)[2] < 4)
-            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-        cnames = seq(1:dim(attrfiltParsed)[2])
-        cnames=paste(type,cnames,sep="")
-        cnames[1] = "name"
-        cnames[2] = "description"
-        cnames[3] = "options"
-        cnames[4] = "fullDescription"
-        if(dim(attrfiltParsed)[2] < 7){
-            warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
-        }
-        else{
-            cnames[5] = "filters"
-            cnames[6] = "type"
-            cnames[7] = "operation"
-        }
-        colnames(attrfiltParsed) = cnames
-    }
+    attrfilt <- bmRequest(request = request, verbose = verbose)
+    attrfiltParsed <- read.table(text = attrfilt, sep="\t", header=FALSE, 
+                                quote = "", comment.char = "", as.is=TRUE)
     return(attrfiltParsed)
+
+}
+
+.getAttributes <- function(mart, verbose = FALSE) {
+    
+    attributes_table <- .getAttrFilt(mart = mart, verbose = verbose, type = "attributes")
+    
+    if(ncol(attributes_table) < 4)
+        stop("biomaRt error: looks like we're connecting to incompatible version of BioMart.")
+    
+    colnames(attributes_table) <- c("name", "description",
+                                    "fullDescription", "page")
+    return(attributes_table)
+}
+
+.getFilters <- function(mart, verbose = FALSE) {
+    
+    filters_table <- .getAttrFilt(mart = mart, verbose = verbose, type = "filters")
+    
+    if(ncol(filters_table) < 7)
+        stop("biomaRt error: looks like we're connecting to incompatible version of BioMart.")
+    
+    colnames(filters_table) <- c("name", "description", "options",
+                                 "fullDescription", "filters",
+                                 "type", "operation")
+    return(filters_table)
 }
 
 ## Utility function to check dataset specification
@@ -414,18 +402,17 @@ useDataset <- function(dataset, mart, verbose = FALSE){
     martDataset(mart) <- dataset  
     
     if(verbose) message("Checking attributes ...", appendLF = FALSE)
-    martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
+    martAttributes(mart) <- .getAttributes(mart, verbose = verbose)
     if(verbose){
         message(" ok")
         message("Checking filters ...", appendLF = FALSE)
     }
-    martFilters(mart) <- bmAttrFilt("filters",mart, verbose = verbose)
+    martFilters(mart) <- .getFilters(mart, verbose = verbose)
     if(verbose) message(" ok")
     return( mart )
 }
 
 ## listAttributes
-
 listAttributes <- function(mart, page, what = c("name","description","page")) {
     martCheck(mart)
     if(!missing(page) && !page %in% attributePages(mart)) 
@@ -442,7 +429,6 @@ listAttributes <- function(mart, page, what = c("name","description","page")) {
 }
 
 ## attributePages
-
 attributePages <- function(mart){
     
     martCheck(mart)
@@ -451,7 +437,6 @@ attributePages <- function(mart){
 }
 
 ## listFilters
-
 listFilters <- function(mart, what = c("name", "description")) {
     
     martCheck(mart)
@@ -466,7 +451,6 @@ listFilters <- function(mart, what = c("name", "description")) {
 }
 
 ## filterOptions
-
 filterOptions <- function(filter, mart){
     .Deprecated(new = "listFilterOptions",
                 msg = c("filterOptions() has been deprecated and will be removed from biomaRt.",
@@ -475,7 +459,6 @@ filterOptions <- function(filter, mart){
 }
 
 ## filterType
-
 filterType <- function(filter, mart){
     if(missing(filter)) 
         stop("No filter given. Please specify the filter for which you want to retrieve the filter type")

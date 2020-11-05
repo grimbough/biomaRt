@@ -1,5 +1,5 @@
 
-## sometimes results can be returned by getMB() in a different order to we 
+## sometimes results can be returned by getBM() in a different order to we 
 ## asked for them, which messes up the column names.  Here we try to match
 ## results to known attribute names and rename accordingly.
 .setResultColNames <- function(result, mart, attributes, bmHeader = FALSE) {

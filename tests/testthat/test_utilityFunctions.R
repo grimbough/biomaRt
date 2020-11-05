@@ -1,6 +1,7 @@
 
-ensembl = Mart(biomart = "ensembl", 
+ensembl <- Mart(biomart = "ensembl", 
                dataset = "hsapiens_gene_ensembl",
+               host = "www.ensembl.org",
                attributes = data.frame(
                    name = c("chromosome_name", "ensembl_gene_id"),
                    description = c("Chromosome/scaffold name", "Gene stable ID")
@@ -126,4 +127,18 @@ test_that("deprecated functions show warnings", {
     expect_warning(searchFilterValues(ensembl, filter = "chromosome_name"))
     
     expect_warning(listFilterValues(ensembl, filter = "chromosome_name"))
+})
+
+test_that("attribute and filter tables are parsed correctly", {
+
+    stub(.getAttrFilt, 'bmRequest', function(request, verbose = FALSE) {
+            paste0(
+                "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n",
+                "ensembl_gene_id_version\tGene stable ID version\tVersionned stable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tgene__main_stable_id_version\n",
+                "ensembl_transcript_id\tTranscript stable ID\tStable ID of the Transcript\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__transcript__main\tstable_id_1066\n",
+                collapse = ""
+                )
+        }, depth = 2
+    )
+    expect_is(.getAttributes(mart = ensembl, verbose = TRUE), "data.frame")
 })
