@@ -5,7 +5,7 @@ test_that("Error handling works", {
   
     stub(useEnsemblGenomes,
          'listEnsemblGenomes',
-         function(includeHosts) { 
+         function(includeHosts) {
              data.frame(
                biomart = c("protists_mart", "fungi_mart"),
                version = c("Ensembl Protists Genes 48", "Ensembl Fungi Genes 48")

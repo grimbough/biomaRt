@@ -1,4 +1,3 @@
-
 ensembl <- Mart(biomart = "ensembl", 
                dataset = "hsapiens_gene_ensembl",
                host = "www.ensembl.org",
@@ -52,9 +51,6 @@ test_that("Results processing works", {
                                  fullXmlQuery = "", numAttributes = 3))
 })
 
-#############################
-context("Host name format processing")
-#############################
 
 test_that("URL formatting works", {
     ## adding http if needed
@@ -77,10 +73,6 @@ test_that("URL formatting works", {
     expect_equal(object = .cleanHostURL(host = host),
                  expected = "http://www.ensembl.org")
 })
-
-#############################
-context("Query submission")
-#############################
 
 test_that("TSV and HTML result tables match", {
     host <- "https://www.ensembl.org:443/biomart/martservice?"
@@ -131,14 +123,25 @@ test_that("deprecated functions show warnings", {
 
 test_that("attribute and filter tables are parsed correctly", {
 
-    stub(.getAttrFilt, 'bmRequest', function(request, verbose = FALSE) {
-            paste0(
-                "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n",
-                "ensembl_gene_id_version\tGene stable ID version\tVersionned stable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tgene__main_stable_id_version\n",
-                "ensembl_transcript_id\tTranscript stable ID\tStable ID of the Transcript\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__transcript__main\tstable_id_1066\n",
-                collapse = ""
-                )
-        }, depth = 2
+    stub(.getAttrFilt, 
+        'bmRequest',
+        'ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n',
+    )
+    expect_is(.getAttrFilt(mart = ensembl, verbose = TRUE, type = "attributes"), "data.frame")
+    
+    stub(.getAttributes, 
+         '.getAttrFilt',
+         read.table(text = "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\n",
+                    sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
     )
     expect_is(.getAttributes(mart = ensembl, verbose = TRUE), "data.frame")
+    
+    
+    stub(.getFilters, 
+         '.getAttrFilt',
+         read.table(text = "chromosome_name\tChromosome/scaffold name\t[]\t\tfilters\ttext\t=\tbnatans_eg_gene__gene__main\tname_1059\n\n",
+                    sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+    )
+    expect_is(.getFilters(mart = ensembl, verbose = TRUE), "data.frame")
+      
 })

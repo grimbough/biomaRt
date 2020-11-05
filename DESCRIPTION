@@ -32,3 +32,11 @@ LazyLoad: yes
 NeedsCompilation: no
 Encoding: UTF-8
 RoxygenNote: 7.1.1
+Collate: biomaRtClasses.R
+         methods-Mart.R
+         biomaRt.R
+         caching.R
+         ensembl.R
+         utilityFunctions.R
+         zzz.R
+

@@ -332,9 +332,9 @@ bmVersion <- function(mart, verbose=FALSE){
 .getAttrFilt <- function(mart, verbose, type) {
     
     ## we choose a separator based on whether 'redirect=no' is present
-    sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+    sep <- ifelse(grepl(x = mart@host, pattern = ".+\\?.+"), "&", "?")
     
-    request <- paste0(martHost(mart), sep, "type=", type,
+    request <- paste0(mart@host, sep, "type=", type,
                      "&dataset=", martDataset(mart),
                      "&requestid=biomaRt&mart=", martBM(mart),
                      "&virtualSchema=", martVSchema(mart))

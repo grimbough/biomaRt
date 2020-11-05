@@ -51,8 +51,8 @@ setReplaceMethod("martDataset","Mart",function(obj,value){
   obj
 })
 
-setGeneric("martHost",def=function(obj,...)standardGeneric("martHost"))
-setMethod("martHost",signature("Mart"), function(obj) obj@host)
+setGeneric("martHost", def=function(obj,...) standardGeneric("martHost"))
+setMethod("martHost", signature("Mart"), function(obj) obj@host)
 setGeneric("martHost<-", function(obj, value) standardGeneric("martHost<-"))
 setReplaceMethod("martHost","Mart",function(obj,value){
   obj@host <- value

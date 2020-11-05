@@ -1,8 +1,5 @@
-library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
-
-context("Result caching")
 
 go <- c("GO:0051330","GO:0000080","GO:0000114","GO:0000082")
 chrom <- c(17,20,"Y")
@@ -15,8 +12,8 @@ ensembl <- Mart(biomart = "ensembl",
 
 test_that("Hashing is order insensitive", {
    expect_identical(
-       biomaRt:::.createHash(ensembl, attributes, filters, values),
-       biomaRt:::.createHash(ensembl, rev(attributes), rev(filters), rev(values))
+       .createHash(ensembl, attributes, filters, values),
+       .createHash(ensembl, rev(attributes), rev(filters), rev(values))
    )
 })
 
@@ -26,7 +23,7 @@ test_that("Environment variable for cache location is used", {
 })
 
 ## create an example hash and dataframe to test code with
-hash <- biomaRt:::.createHash(ensembl, attributes, filters, values)
+hash <- .createHash(ensembl, attributes, filters, values)
 result <- data.frame(
     name = c("affy_hg_u133a_2", "chromosome_name", "transcript_tsl"),
     description = c("AFFY HG U133A 2 probe ID(s) [e.g. 211600_at]", 
