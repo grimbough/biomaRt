@@ -38,9 +38,6 @@ getGene <- function( id, type, mart){
              call. = FALSE)
     }
     
-    validIdTypes <- c()
-    
-    
     if(missing(type))
         stop("Please specify the type argument.\n",
             "If you use chromosomal coordinates to retrieve sequences ",

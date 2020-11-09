@@ -47,3 +47,35 @@ test_that("Ensembl URLs are constructed correctly", {
                  regexp = "version or GRCh arguments cannot be used together with the mirror argument") %>%
     expect_equal("https://grch37.ensembl.org")
 })
+
+test_that("getSequence works", {
+  
+  stub(.getSequenceFromId, 
+       "getBM",
+       function(...) { 
+         message(paste(ls(), collapse = " "))
+         if("hgnc_symbol" %in% attributes) {
+           data.frame(hgnc_symbol = "STAT1", ensembl_gene_id = "ENSG00000115415")
+         } else {
+           data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415")
+         }
+      })
+  
+  ex_mart <- Mart(biomart = "ensembl", 
+                  dataset = "hsapiens_gene_ensembl",
+                  host = "www.ensembl.org",
+                  attributes = data.frame(
+                    name = c("ensembl_gene_id", "gene_exon_intron", "hgnc_symbol"),
+                    page = c("sequences", "sequences", "feature_page")
+                  ),
+                  filters = data.frame(
+                    name = c("hgnc_symbol", "gene_exon_intron"),
+                    description = c("HGNC Symbol", "Gene seq including exons and introns"),
+                    type = c("id_list", "text")
+                  )
+  )
+  
+  expect_is(.getSequenceFromId(id = "STAT1", type = "hgnc_symbol", seqType = "gene_exon_intron", mart = ex_mart), 
+            "data.frame")
+  
+})
