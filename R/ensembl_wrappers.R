@@ -116,7 +116,7 @@ getGene <- function( id, type, mart){
         stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
     }
     
-    if(!type %in% listAttributes(ensembl, page = "sequences", what = "name")) {
+    if(!type %in% listAttributes(mart, page = "sequences", what = "name")) {
         mapping_id <- getBM(attributes = c(type, "ensembl_gene_id"), 
                                filters = type, 
                                value = id,

@@ -50,16 +50,11 @@ test_that("Ensembl URLs are constructed correctly", {
 
 test_that("getSequence works", {
   
-  stub(.getSequenceFromId, 
-       "getBM",
-       function(...) { 
-         message(paste(ls(), collapse = " "))
-         if("hgnc_symbol" %in% attributes) {
-           data.frame(hgnc_symbol = "STAT1", ensembl_gene_id = "ENSG00000115415")
-         } else {
-           data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415")
-         }
-      })
+  m <- mock(data.frame(hgnc_symbol = "STAT1", ensembl_gene_id = "ENSG00000115415"),
+            data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415"),
+            data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415"))
+  
+  stub(.getSequenceFromId, "getBM", m)
   
   ex_mart <- Mart(biomart = "ensembl", 
                   dataset = "hsapiens_gene_ensembl",
@@ -69,13 +64,18 @@ test_that("getSequence works", {
                     page = c("sequences", "sequences", "feature_page")
                   ),
                   filters = data.frame(
-                    name = c("hgnc_symbol", "gene_exon_intron"),
-                    description = c("HGNC Symbol", "Gene seq including exons and introns"),
-                    type = c("id_list", "text")
+                    name = c("ensembl_gene_id", "hgnc_symbol", "gene_exon_intron"),
+                    description = c("Ensembl ID", "HGNC Symbol", "Gene seq including exons and introns"),
+                    type = c("id_list", "id_list", "text")
                   )
   )
   
-  expect_is(.getSequenceFromId(id = "STAT1", type = "hgnc_symbol", seqType = "gene_exon_intron", mart = ex_mart), 
+  expect_is(hgnc <- .getSequenceFromId(id = "STAT1", type = "hgnc_symbol", 
+                               seqType = "gene_exon_intron", mart = ex_mart), 
             "data.frame")
+  expect_is(ens_id <- .getSequenceFromId(id = "ENSG00000115415", type = "ensembl_gene_id", 
+                                       seqType = "gene_exon_intron", mart = ex_mart), 
+            "data.frame")
+  expect_identical(hgnc$gene_exon_intron, ens_id$gene_exon_intron)
   
 })
