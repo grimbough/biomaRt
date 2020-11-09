@@ -37,6 +37,7 @@ Collate: biomaRtClasses.R
          biomaRt.R
          caching.R
          ensembl.R
+         ensembl_wrappers.R
          utilityFunctions.R
          zzz.R
 

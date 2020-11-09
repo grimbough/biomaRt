@@ -19,17 +19,10 @@
 \item{'gene_flank': gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute}
 }
 
-In MySQL mode the getSequence function is more limited and the sequence that
-is returned is the 5' to 3'+ strand of the genomic sequence, given a 
-chromosome, as start and an end position. So if the sequence of interest is
-the minus strand, one has to compute the reverse complement of the retrieved
-sequence, which can be done using functions provided in the matchprobes 
-package.  The biomaRt vignette contains more examples on how to use this 
-function.
 }
 
 \usage{getSequence(chromosome, start, end, id, type, seqType, 
-                   upstream, downstream, mart, verbose = FALSE)}
+                   upstream, downstream, mart, useCache = TRUE, verbose = FALSE)}
 
 \arguments{
   \item{chromosome}{Chromosome name}
@@ -40,7 +33,9 @@ function.
   \item{seqType}{Type of sequence that you want to retrieve.  Allowed seqTypes are given in the details section.}
   \item{upstream}{To add the upstream sequence of a specified number of basepairs to the output.}
   \item{downstream}{To add the downstream sequence of a specified number of basepairs to the output.}
-  \item{mart}{object of class Mart created using the useMart function}
+  \item{mart}{object of class Mart created using the \code{\link{useEnsembl}} function}
+  \item{useCache}{If \code{useCache = TRUE} then biomaRt will try to store succesful query results on disk,
+  and will load these if a query is run again, rather than contacting the Ensembl server.}
   \item{verbose}{If verbose = TRUE then the XML query that was send to the webservice will be displayed.}
 }
 
@@ -48,7 +43,7 @@ function.
 
 \examples{
 if(interactive()){
-mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
+mart <- useEnsembl("ensembl", dataset="hsapiens_gene_ensembl")
 
 seq = getSequence(id = "BRCA1", 
                   type = "hgnc_symbol", 
