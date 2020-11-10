@@ -1,13 +1,19 @@
-library(biomaRt)
-cache <- file.path(tempdir(), "biomart_cache_test")
-Sys.setenv(BIOMART_CACHE = cache)
-
-ensembl = useMart("ensembl")
-ensembl = useDataset("hsapiens_gene_ensembl", mart=ensembl)
-
-#############################
-context('Column name assignments')
-#############################
+ensembl <- Mart(biomart = "ensembl", 
+               dataset = "hsapiens_gene_ensembl",
+               host = "www.ensembl.org",
+               attributes = data.frame(
+                   name = c("chromosome_name", "ensembl_gene_id"),
+                   description = c("Chromosome/scaffold name", "Gene stable ID")
+               ),
+               filters = data.frame(
+                   name = c("affy_hg_u133a_2", "chromosome_name", "transcript_tsl"),
+                   description = c("AFFY HG U133A 2 probe ID(s) [e.g. 211600_at]", 
+                                   "Chromosome/scaffold name",
+                                   "Transcript Support Level (TSL)"),
+                   type = c("id_list", "text", "boolean"),
+                   options = c("[]", "[1,2,3,4,CHR_HG1_PATCH]", "[only,excluded]")
+               )
+               )
 
 ## create two test data.frames
 bad_result <- data.frame("Not a real column" = 1:2, "Ensembl Gene ID" = 3:4, check.names = FALSE)
@@ -28,83 +34,23 @@ test_that("Renaming columns - synthetic data", {
                  c("ensembl_gene_id", "chromosome_name"))
 })
 
-test_that("Renaming columns - real data", {        
-    ## check we can handle the ambiguous description field in some datasets
-    attributes=c("ensembl_transcript_id",
-                 ## Description is 'Query protein or transcript ID' lots of matches
-                 "neugenii_homolog_canonical_transcript_protein")
+example_return <- "GO term accession\tGene name\tGO domain\nGO:0004465\tLpl\tmolecular_function\nGO:0006631\tLpl\tbiological_process\nGO:0005509\tLpl\tmolecular_function\n"
+
+test_that("Results processing works", {
     
-    mart <- useMart(biomart = "ensembl",
-                    host = "https://www.ensembl.org",
-                    dataset ="mmusculus_gene_ensembl",
-                    port = 443)
+    expect_is(result_table <- .processResults(postRes = example_return, mart = ensembl, 
+                              fullXmlQuery = "", numAttributes = 3), 
+              "data.frame")
+    expect_identical(ncol(result_table), 3L)
     
-    res <- getBM(filter = "ensembl_gene_id",
-                 values = "ENSMUSG00000028798",
-                 attributes = attributes,
-                 mart = mart)
-    expect_equal(colnames(res), attributes)
-    
+    expect_error(.processResults(postRes = LETTERS, mart = ensembl, 
+                                 fullXmlQuery = "", numAttributes = 3))
+    expect_error(.processResults(postRes = example_return, mart = ensembl, 
+                                 fullXmlQuery = "", numAttributes = 1))
+    expect_error(.processResults(postRes = "Query ERROR", mart = ensembl, 
+                                 fullXmlQuery = "", numAttributes = 3))
 })
 
-#############################
-context('Testing filter XML generation')
-#############################
-
-test_that("Filter generation works", {
-    expect_equal(biomaRt:::.generateFilterXML(filters = c('affy_hg_u133a_2', 'chromosome_name'),
-                                    values = list(affyid=c('1939_at','1000_at'), chromosome= '16'),
-                                    mart = ensembl)[[1]],
-                 "<Filter name = \"affy_hg_u133a_2\" value = \"1939_at,1000_at\" /><Filter name = \"chromosome_name\" value = \"16\" />")
-    
-    expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
-                                    values = '16',
-                                    mart = ensembl)[[1]],
-                 "<Filter name = \"chromosome_name\" value = \"16\" />")
-    
-    expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
-                                    values = c('16', '18'),
-                                    mart = ensembl)[[1]],
-                 "<Filter name = \"chromosome_name\" value = \"16,18\" />")
-    
-    expect_equal(biomaRt:::.generateFilterXML(filters = ''), "")
-})
-
-test_that("Boolean filter handled correctly", {
-    expect_error(biomaRt:::.generateFilterXML(filters = 'transcript_tsl',
-                                values = '16',
-                                mart = ensembl),
-             "'transcript_tsl' is a boolean filter")
-    expect_equal(biomaRt:::.generateFilterXML(filters = 'transcript_tsl',
-                                values = TRUE,
-                                mart = ensembl)[[1]],
-             "<Filter name = \"transcript_tsl\" excluded = \"0\" />")
-})
-
-test_that("list is required for multiple filters", {
-    
-    expect_error(.generateFilterXML(filters = c('affy_hg_u133a_2', 'chromosome_name'),
-                       values = c(affyid=c('1939_at','1000_at'), chromosome= '16'),
-                       mart = ensembl)[[1]])
-})
-
-test_that("passing a single column data.frame works", {
-    expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
-                                              values = data.frame('chr' = c('16', '18')),
-                                              mart = ensembl)[[1]],
-                 "<Filter name = \"chromosome_name\" value = \"16,18\" />")
-})
-
-test_that("numeric values to filters work", {
-    expect_equal(biomaRt:::.generateFilterXML(filters = 'chromosome_name',
-                                              values = c(16, 18),
-                                              mart = ensembl)[[1]],
-                 "<Filter name = \"chromosome_name\" value = \"16,18\" />")
-})
-
-#############################
-context("Host name format processing")
-#############################
 
 test_that("URL formatting works", {
     ## adding http if needed
@@ -128,10 +74,6 @@ test_that("URL formatting works", {
                  expected = "http://www.ensembl.org")
 })
 
-#############################
-context("Query submission")
-#############################
-
 test_that("TSV and HTML result tables match", {
     host <- "https://www.ensembl.org:443/biomart/martservice?"
     query <- "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query>
@@ -145,4 +87,61 @@ test_that("TSV and HTML result tables match", {
     expect_identical(res_html,
                      read.table(textConnection(res_tsv), sep = "\t", header = TRUE, 
                                 check.names = FALSE, stringsAsFactors = FALSE))
+})
+
+
+test_that("http error codes are presented nicely", {
+    expect_true(grepl(.createErrorMessage(error_code = 500, host = "test.com"),
+                pattern = 'biomaRt has encountered an unexpected server error'))
+    expect_true(grepl(.createErrorMessage(error_code = 509, host = "test.com"),
+                pattern = 'biomaRt has exceeded the bandwidth allowance with this server'))
+    
+    expect_true(grepl(.createErrorMessage(error_code = 500, host = "www.ensembl.org")[2],
+                      pattern = 'Consider trying one of the Ensembl mirrors'))
+    expect_true(grepl(.createErrorMessage(error_code = 509, host = "www.ensembl.org")[2],
+                      pattern = 'Consider trying one of the Ensembl mirrors'))
+    
+})
+
+
+test_that("we can search predefined filter values", {
+    
+    expect_equal(length(searchFilterOptions(ensembl, filter = "chromosome_name")), 5)
+    
+    expect_equal(length(searchFilterOptions(ensembl, "chromosome_name", "^[0-9]*$")), 4)
+    
+    expect_equal(searchFilterOptions(ensembl, "chromosome_name", "PATCH"), "CHR_HG1_PATCH")
+})
+
+
+test_that("deprecated functions show warnings", {
+    
+    expect_warning(searchFilterValues(ensembl, filter = "chromosome_name"))
+    
+    expect_warning(listFilterValues(ensembl, filter = "chromosome_name"))
+})
+
+test_that("attribute and filter tables are parsed correctly", {
+
+    stub(.getAttrFilt, 
+        'bmRequest',
+        'ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n',
+    )
+    expect_is(.getAttrFilt(mart = ensembl, verbose = TRUE, type = "attributes"), "data.frame")
+    
+    stub(.getAttributes, 
+         '.getAttrFilt',
+         read.table(text = "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\n",
+                    sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+    )
+    expect_is(.getAttributes(mart = ensembl, verbose = TRUE), "data.frame")
+    
+    
+    stub(.getFilters, 
+         '.getAttrFilt',
+         read.table(text = "chromosome_name\tChromosome/scaffold name\t[]\t\tfilters\ttext\t=\tbnatans_eg_gene__gene__main\tname_1059\n\n",
+                    sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+    )
+    expect_is(.getFilters(mart = ensembl, verbose = TRUE), "data.frame")
+      
 })

@@ -1,3 +1,17 @@
+CHANGES IN VERSION 2.48.0
+-------------------------
+
+NEW FEATURES
+
+    o getSequence() now allows the cache to be turned off via the 'useCache'
+    argument.
+
+BUG FIXES
+
+    o Addressed issue with getSequence() and ID types that are not
+    available on the 'sequences' page.  This could result in truncated
+    sequences being returned from a query.
+    
 CHANGES IN VERSION 2.46.0
 -------------------------
 

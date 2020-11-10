@@ -7,15 +7,6 @@
 #Author: Steffen Durinck #
 ##########################
 
-###############
-#messageToUser#
-###############
-
-messageToUser <- function(message){
-    if(interactive()){
-        cat(message)
-    }
-}
 
 ##############################################################
 #martCheck                                                   # 
@@ -46,15 +37,10 @@ martCheck = function(mart, biomart = NULL){
     }
 }
 
-checkWrapperArgs = function(id, type, mart){
-    if(missing(type))stop("Specify the type of identifier you are using, see ?getGene for details. Valid values for the type argument can be found with the listFilters function.") 
-    if(!type %in% listFilters(mart)[,1])stop(paste("Invalid identifier type:",type," see ?getGene for details. Use the listFilters function to get the valid value for the type argument.", sep=""))   
-    if(missing(id))stop("No identifiers specified.  Use the id argument to specify a vector of identifiers for which you want to retrieve the annotation.")
-}
-
 
 bmRequest <- function(request, verbose = FALSE){
-    if(verbose) writeLines(paste("Attempting web service request:\n",request, sep=""))
+    if(verbose) 
+        message("Attempting web service request:\n", request)
 
     result <- tryCatch(httr::GET(request, content_type("text/plain"), timeout(10)),
                        error = function(c) { "timeout" } )
@@ -90,15 +76,10 @@ bmRequest <- function(request, verbose = FALSE){
 #######################################################
 
 listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
-                       port, includeHosts = FALSE, archive = FALSE, ensemblRedirect = NULL, verbose = FALSE){
+                       port, includeHosts = FALSE, archive = FALSE, verbose = FALSE){
     
     if(missing(port)) {
         port <- ifelse(grepl("https", host), yes = 443, no = 80)
-    }
-    
-    if(!is.null(ensemblRedirect)) {
-        warning('The argument "ensemblRedirect" has been deprecated and does not do anything.',
-                '\nSee ?useEnsembl for details on using mirror sites.')
     }
     
     .listMarts(mart = mart, host = host, path = path, port = port, includeHosts = includeHosts,
@@ -115,18 +96,15 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         
         host <- .cleanHostURL(host)
         if(archive) {
-            stop("The archive = TRUE argument is now defunct.\nUse listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
+            stop("The archive = TRUE argument is now defunct.\n", 
+                 "Use listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
         } else {
             request <- paste0(host, ":", port, path, "?type=registry&requestid=biomaRt")
         }
-    }
-    else{
-        if(class(mart) == 'Mart'){
+    } else if(class(mart) == 'Mart') {
             request = paste0(martHost(mart), "?type=registry&requestid=biomaRt") 
-        }
-        else{
+    } else{
             warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
-        }
     } 	
     
     if(!ensemblRedirect && grepl(x = request, pattern = "ensembl.org")) {
@@ -191,14 +169,10 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 #################################
 
 useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "/biomart/martservice", port, 
-                     archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE) {
+                     archive = FALSE, version, verbose = FALSE) {
     
     if(missing(port)) {
         port <- ifelse(grepl("https", host), yes = 443, no = 80)
-    }
-    
-    if(!is.null(ensemblRedirect)) {
-        warning('The argument "ensemblRedirect" has been deprecated and will be removed in the next biomaRt release.')
     }
     
     mart <- .useMart(biomart, dataset, host = host, path = path, port = port, 
@@ -244,7 +218,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
         stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
-    #if(archive) biomart = marts$biomart[mindex]
+
     if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     
@@ -253,22 +227,23 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
                        "?redirect=no",
                        "")
     
-    mart <- new("Mart", 
+    mart <- Mart( 
                 biomart = biomart,
                 vschema = marts$vschema[mindex], 
                 host = paste0(host, ":", 
                               port,
                               marts$path[mindex],
-                              redirect))
+                              redirect)
+            )
     
     if(length(grep("archive",martHost(mart)) > 0)){
         
         ## hack to work around redirection of most recent mirror URL
         archives <- listEnsemblArchives()
         current_release <- archives[archives$current_release == "*", 'url']
-        if(grepl(mart@host, pattern = current_release)) {
-            mart@host <- stringr::str_replace(mart@host, pattern = current_release, "https://www.ensembl.org")
-            mart@host <- stringr::str_replace(mart@host, pattern = ":80/", ":443/")
+        if(grepl(martHost(mart), pattern = current_release)) {
+            martHost(mart) <- stringr::str_replace(martHost(mart), pattern = current_release, "https://www.ensembl.org")
+            martHost(mart) <- stringr::str_replace(martHost(mart), pattern = ":80/", ":443/")
         }
     }
     
@@ -322,7 +297,6 @@ listDatasets <- function(mart, verbose = FALSE) {
 }
 
 ## Check version of BioMart service
-
 bmVersion <- function(mart, verbose=FALSE){
     
     ## we choose a separator based on whether 'redirect=no' is present
@@ -348,67 +322,55 @@ bmVersion <- function(mart, verbose=FALSE){
     return(bmv)
 }
 
-## Retrieve attributes and filters from web service
-bmAttrFilt <- function(type, mart, verbose=FALSE){
+
+.getAttrFilt <- function(mart, verbose, type) {
     
     ## we choose a separator based on whether 'redirect=no' is present
-    sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+    sep <- ifelse(grepl(x = mart@host, pattern = ".+\\?.+"), "&", "?")
     
-    request = paste0(martHost(mart), sep, "type=", type,
+    request <- paste0(mart@host, sep, "type=", type,
                      "&dataset=", martDataset(mart),
                      "&requestid=biomaRt&mart=", martBM(mart),
                      "&virtualSchema=", martVSchema(mart))
-    attrfilt = bmRequest(request = request, verbose = verbose)
-    con = textConnection(attrfilt)
-    attrfiltParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-    close(con)
-    if(type=="attributes"){
-        if(dim(attrfiltParsed)[2] < 3)
-            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-        cnames = seq_len(dim(attrfiltParsed)[2])
-        cnames=paste(type,cnames,sep="")
-        cnames[1] = "name"
-        cnames[2] = "description"
-        cnames[3] = "fullDescription"
-        if(dim(attrfiltParsed)[2] < 4){
-            warning("biomaRt warning: looks like we're connecting to an older ",
-                    "version of BioMart suite.\nSome biomaRt functions might ",
-                    "not work.")
-        }
-        else{
-            cnames[4] = "page"
-        }
-        colnames(attrfiltParsed) = cnames
-    }
-    if(type=="filters"){
-        if(dim(attrfiltParsed)[2] < 4)
-            stop("biomaRt error: looks like we're connecting to incompatible version of BioMart suite.")
-        cnames = seq(1:dim(attrfiltParsed)[2])
-        cnames=paste(type,cnames,sep="")
-        cnames[1] = "name"
-        cnames[2] = "description"
-        cnames[3] = "options"
-        cnames[4] = "fullDescription"
-        if(dim(attrfiltParsed)[2] < 7){
-            warning("biomaRt warning: looks like we're connecting to an older version of BioMart suite. Some biomaRt functions might not work.")
-        }
-        else{
-            cnames[5] = "filters"
-            cnames[6] = "type"
-            cnames[7] = "operation"
-        }
-        colnames(attrfiltParsed) = cnames
-    }
+    attrfilt <- bmRequest(request = request, verbose = verbose)
+    attrfiltParsed <- read.table(text = attrfilt, sep="\t", header=FALSE, 
+                                quote = "", comment.char = "", as.is=TRUE)
     return(attrfiltParsed)
+
 }
 
-## Utilty function to check dataset specification
+.getAttributes <- function(mart, verbose = FALSE) {
+    
+    attributes_table <- .getAttrFilt(mart = mart, verbose = verbose, type = "attributes")
+    
+    if(ncol(attributes_table) < 4)
+        stop("biomaRt error: looks like we're connecting to incompatible version of BioMart.")
+    
+    colnames(attributes_table) <- c("name", "description",
+                                    "fullDescription", "page")
+    return(attributes_table)
+}
+
+.getFilters <- function(mart, verbose = FALSE) {
+    
+    filters_table <- .getAttrFilt(mart = mart, verbose = verbose, type = "filters")
+    
+    if(ncol(filters_table) < 7)
+        stop("biomaRt error: looks like we're connecting to incompatible version of BioMart.")
+    
+    colnames(filters_table) <- c("name", "description", "options",
+                                 "fullDescription", "filters",
+                                 "type", "operation")
+    return(filters_table)
+}
+
+## Utility function to check dataset specification
 ## Returns dataset name as a character assuming all checks
 ## have been passed.
 checkDataset <- function(dataset, mart) {
     
     validDatasets <- .listDatasets(mart, sort = FALSE)
-    ## subseting data.frames can produce some weird classes
+    ## subsetting data.frames can produce some weird classes
     ## which aren't character(), so we coerce it here
     dataset <- as.character(dataset)
     
@@ -433,19 +395,18 @@ useDataset <- function(dataset, mart, verbose = FALSE){
     }
     martDataset(mart) <- dataset  
     
-    if(verbose) messageToUser("Checking attributes ...")
-    martAttributes(mart) <- bmAttrFilt("attributes",mart, verbose = verbose)
+    if(verbose) message("Checking attributes ...", appendLF = FALSE)
+    martAttributes(mart) <- .getAttributes(mart, verbose = verbose)
     if(verbose){
-        messageToUser(" ok\n")
-        messageToUser("Checking filters ...")
+        message(" ok")
+        message("Checking filters ...", appendLF = FALSE)
     }
-    martFilters(mart) <- bmAttrFilt("filters",mart, verbose = verbose)
-    if(verbose) messageToUser(" ok\n")
+    martFilters(mart) <- .getFilters(mart, verbose = verbose)
+    if(verbose) message(" ok")
     return( mart )
 }
 
 ## listAttributes
-
 listAttributes <- function(mart, page, what = c("name","description","page")) {
     martCheck(mart)
     if(!missing(page) && !page %in% attributePages(mart)) 
@@ -462,7 +423,6 @@ listAttributes <- function(mart, page, what = c("name","description","page")) {
 }
 
 ## attributePages
-
 attributePages <- function(mart){
     
     martCheck(mart)
@@ -471,7 +431,6 @@ attributePages <- function(mart){
 }
 
 ## listFilters
-
 listFilters <- function(mart, what = c("name", "description")) {
     
     martCheck(mart)
@@ -486,26 +445,25 @@ listFilters <- function(mart, what = c("name", "description")) {
 }
 
 ## filterOptions
-
 filterOptions <- function(filter, mart){
-    if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the possible values.")
-    if(class(filter)!="character")stop("Filter argument should be of class character")
-    martCheck(mart)
-    if(!filter %in% listFilters(mart, what="name"))stop("Filter not valid, check for typo in filter argument.")
-    sel = which(listFilters(mart, what="name") == filter)
-    return(listFilters(mart,what="options")[sel])
+    .Deprecated(new = "listFilterOptions",
+                msg = c("filterOptions() has been deprecated and will be removed from biomaRt.",
+                "\nPlease use listFilterOptions() instead."))
+    listFilterOptions(mart = mart, filter = filter)
 }
 
 ## filterType
-
 filterType <- function(filter, mart){
-    if(missing(filter)) stop("No filter given. Please specify the filter for which you want to retrieve the filter type")
-    if(class(filter)!="character")stop("Filter argument should be of class character")
+    if(missing(filter)) 
+        stop("No filter given. Please specify the filter for which you want to retrieve the filter type")
+    if(class(filter)!="character")
+        stop("Filter argument should be of class character")
     martCheck(mart)
     type="unknown"
     sel = which(listFilters(mart, what="name") == filter)
-    if(is.null(sel))stop(paste("Invalid filter",filter, sep=": "))
-    type = listFilters(mart,what="type")[sel]
+    if(is.null(sel))
+        stop(paste("Invalid filter",filter, sep=": "))
+    type = listFilters(mart, what="type")[sel]
     return(type)
 }
 
@@ -539,8 +497,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
     
     ## determine if we should use the results cache
     if(useCache) {
-        cache <- Sys.getenv(x = "BIOMART_CACHE", 
-                            unset = rappdirs::user_cache_dir(appname="biomaRt"))
+        cache <- .biomartCacheLocation()
         bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     }
     hash <- .createHash(mart, attributes, filters, values, uniqueRows, bmHeader)
@@ -549,104 +506,93 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
         if(verbose) {
             message("Cache found")
         }
-        cache_hits <- bfcquery(bfc, hash, field = "rname")
-        if(nrow(cache_hits) > 1) {
-            stop("Multiple cache results found")
-        } else {
-            rid <- cache_hits$rid
-            load( bfc[[ rid ]] )
-            return(result)
-        }
+        result <- .readFromCache(bfc, hash)
+        return(result)
 
     } else { 
     
-    ## force the query to return the 'descriptive text' header names with the result
-    ## we use these later to match and order attribute/column names    
-    callHeader <- TRUE
-    xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
-                      martVSchema(mart),
-                      "' uniqueRows = '",
-                      as.numeric(uniqueRows),
-                      "' count='0' datasetConfigVersion='0.6' header='",
-                      as.numeric(callHeader),
-                      "' formatter='TSV' requestid='biomaRt'> <Dataset name = '",
-                      martDataset(mart),"'>")
-    
-    #checking the Attributes
-    invalid = !(attributes %in% listAttributes(mart, what="name"))
-    if(any(invalid))
-        stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
-                   "\nPlease use the function 'listAttributes' to get valid attribute names"))
-    
-    #attribute are ok lets add them to the query
-    attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
-    
-    #checking the filters
-    if(filters[1] != "" && checkFilters){
-        invalid = !(filters %in% listFilters(mart, what="name"))
+        ## force the query to return the 'descriptive text' header names with the result
+        ## we use these later to match and order attribute/column names    
+        xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
+                          martVSchema(mart),
+                          "' uniqueRows = '",
+                          as.numeric(uniqueRows),
+                          "' count='0' datasetConfigVersion='0.6' header='1'",
+                          " formatter='TSV' requestid='biomaRt'> <Dataset name = '",
+                          martDataset(mart),"'>")
+        
+        #checking the Attributes
+        invalid = !(attributes %in% listAttributes(mart, what="name"))
         if(any(invalid))
-            stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
-                       "\nPlease use the function 'listFilters' to get valid filter names"))
-    }
-    
-    ## filterXML is a list containing filters with reduced numbers of values
-    ## to meet the 500 value limit in BioMart queries
-    filterXmlList <- .generateFilterXML(filters, values, mart)
-    
-    resultList <- list()
-    if(length(filterXmlList) > 1) {
-        pb <- progress_bar$new(total = length(filterXmlList),
-                               width = options()$width - 10,
-                               format = "Batch submitting query [:bar] :percent eta: :eta")
-        pb$tick(0)
-        on.exit( pb$terminate() )
-    }
-    
-    ## we submit a query for each chunk of the filter list
-    for(i in seq_along(filterXmlList)) {
+            stop(paste("Invalid attribute(s):", paste(attributes[invalid], collapse=", "),
+                       "\nPlease use the function 'listAttributes' to get valid attribute names"))
         
-        if(i > 1) {
-            pb$tick()
+        #attribute are ok lets add them to the query
+        attributeXML = paste0("<Attribute name = '", attributes, "'/>", collapse="")
+        
+        #checking the filters
+        if(filters[1] != "" && checkFilters){
+            invalid = !(filters %in% listFilters(mart, what="name"))
+            if(any(invalid))
+                stop(paste("Invalid filters(s):", paste(filters[invalid], collapse=", "),
+                           "\nPlease use the function 'listFilters' to get valid filter names"))
         }
         
-        filterXML <- filterXmlList[[ i ]]
-        fullXmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
+        ## filterXML is a list containing filters with reduced numbers of values
+        ## to meet the 500 value limit in BioMart queries
+        filterXmlList <- .generateFilterXML(filters, values, mart)
         
-        if(verbose) {
-            message(fullXmlQuery)
-        }      
-        
-        ## we choose a separator based on whether '?redirect=no' is present
-        sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
-        
-        ## create a unique name for this chunk & see if it has been run before
-        chunk_hash <- as(openssl::md5(paste(martHost(mart), fullXmlQuery)), "character")
-        tf <- file.path(tempdir(), paste0("biomaRt_", chunk_hash, ".rds"))
-        if(!file.exists(tf)) {
-            postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
-                                   query = fullXmlQuery)
-            result <- .processResults(postRes, mart = mart, sep = sep, fullXmlQuery = fullXmlQuery,
-                                      verbose = verbose, callHeader = callHeader, 
-                                      quote = quote, attributes = attributes)
-            saveRDS(result, file = tf)
-        } else {
-            result <- readRDS(tf)
+        resultList <- list()
+        if(length(filterXmlList) > 1) {
+            pb <- progress_bar$new(total = length(filterXmlList),
+                                   width = options()$width - 10,
+                                   format = "Batch submitting query [:bar] :percent eta: :eta")
+            pb$tick(0)
+            on.exit( pb$terminate() )
         }
-        resultList[[i]] <- .setResultColNames(result, mart = mart, attributes = attributes, bmHeader = bmHeader)
-    }
-    ## collate results
-    result <- do.call('rbind', resultList)
-
-    if(useCache) {
-        tf <- tempfile()
-        save(result, file = tf)
-        bfcadd(bfc, rname = hash, fpath = tf, action = "copy")
-        file.remove(tf)
-    }
     
-    ## remove any temp chunk files
-    file.remove( list.files(tempdir(), pattern = "^biomaRt.*rds$", full.names = TRUE) )
-    return(result)
+        ## we submit a query for each chunk of the filter list
+        for(i in seq_along(filterXmlList)) {
+            
+            if(i > 1) {
+                pb$tick()
+            }
+            
+            filterXML <- filterXmlList[[ i ]]
+            fullXmlQuery <- paste(xmlQuery, attributeXML, filterXML,"</Dataset></Query>",sep="")
+            
+            if(verbose) {
+                message(fullXmlQuery)
+            }      
+            
+            ## we choose a separator based on whether '?redirect=no' is present
+            sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+            
+            ## create a unique name for this chunk & see if it has been run before
+            chunk_hash <- as(openssl::md5(paste(martHost(mart), fullXmlQuery)), "character")
+            tf <- file.path(tempdir(), paste0("biomaRt_", chunk_hash, ".rds"))
+            if(!file.exists(tf)) {
+                postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
+                                       query = fullXmlQuery)
+                result <- .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,
+                                          quote = quote, numAttributes = length(attributes))
+                saveRDS(result, file = tf)
+            } else {
+                result <- readRDS(tf)
+            }
+            resultList[[i]] <- .setResultColNames(result, mart = mart, 
+                                                  attributes = attributes, bmHeader = bmHeader)
+        }
+        ## collate results
+        result <- do.call('rbind', resultList)
+    
+        if(useCache) {
+            .addToCache(bfc = bfc, result = result, hash = hash)
+        }
+        
+        ## remove any temp chunk files
+        file.remove( list.files(tempdir(), pattern = "^biomaRt.*rds$", full.names = TRUE) )
+        return(result)
     }
 }
 
@@ -654,7 +600,9 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
 #getLDS: Multiple dataset linking #
 ###################################
 
-getLDS <- function(attributes, filters = "", values = "", mart, attributesL, filtersL = "", valuesL = "", martL, verbose = FALSE, uniqueRows = TRUE, bmHeader = TRUE) {
+getLDS <- function(attributes, filters = "", values = "", mart, 
+                   attributesL, filtersL = "", valuesL = "", martL, 
+                   verbose = FALSE, uniqueRows = TRUE, bmHeader = TRUE) {
     
     martCheck(mart)
     martCheck(martL)
@@ -694,112 +642,30 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
     
     xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' formatter = 'TSV' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
     attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
-    if(length(filters) > 1){
-        if(class(values)!= "list")
-            stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
-        filterXML = NULL
-        for(i in seq(along=filters)){
-            if(filterType(filters[i],mart) == 'boolean' || filterType(filters[i],mart) == 'boolean_list'){
-                if(!is.logical(values[[i]])) stop(paste("biomaRt error: ",filters[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!values[[i]]){
-                    values[[i]] = 1
-                }
-                else{
-                    values[[i]] = 0 
-                }
-                filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' excluded = \"",values[[i]],"\" />", collapse="",sep=""),sep="")
-            }
-            else{
-                valuesString = paste(values[[i]],"",collapse=",",sep="")
-                filterXML = paste(filterXML,paste("<Filter name = '",filters[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-            }
-        }
-    }
-    else{
-        if(filters != ""){       
-            if(filterType(filters,mart) == 'boolean' || filterType(filters,mart) == 'boolean_list'){
-                if(!is.logical(values)) stop(paste("biomaRt error: ",filters," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!values){
-                    values = 1
-                }
-                else{
-                    values = 0 
-                }
-                
-                filterXML = paste("<Filter name = '",filters,"' excluded = \"",values,"\" />", collapse="",sep="")
-            }
-            else{
-                valuesString = paste(values,"",collapse=",",sep="")
-                filterXML = paste("<Filter name = '",filters,"' value = '",valuesString,"' />", collapse="",sep="")
-            }
-        }
-        else{
-            filterXML=""
-        }
-    }
+
+    ## ignore the chunk size here
+    filterXML <- .generateFilterXML(filters = filters, values = values, 
+    								mart = mart, maxChunkSize = Inf)
     
-    xmlQuery = paste(xmlQuery, attributeXML, filterXML,"</Dataset>",sep="")
-    xmlQuery = paste(xmlQuery, "<Dataset name = '",martDataset(martL),"' >", sep="")
-    linkedAttributeXML =  paste("<Attribute name = '", attributesL, "'/>", collapse="", sep="")
-    
-    if(length(filtersL) > 1){
-        if(class(valuesL)!= "list")
-            stop("If using multiple filters, the 'value' has to be a list.\nFor example, a valid list for 'value' could be: list(affyid=c('1939_at','1000_at'), chromosome= '16')\nHere we select on affyid and chromosome, only results that pass both filters will be returned");
-        linkedFilterXML = NULL
-        for(i in seq(along=filtersL)){
-            if(filterType(filtersL,martL) == 'boolean' || filterType(filtersL,martL) == 'boolean_list'){
-                if(!is.logical(valuesL[[i]])) stop(paste("biomaRt error: ",filtersL[i]," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!valuesL[[i]]){
-                    valuesL[[i]] = 1
-                }
-                else{
-                    valuesL[[i]] = 0 
-                } 
-                linkedFilterXML = paste(linkedFilterXML,paste("<Filter name = '",filtersL[i],"' excluded = \"",valuesL[[i]],"\" />", collapse="",sep=""),sep="")
-            }
-            else{
-                valuesString = paste(valuesL[[i]],"",collapse=",",sep="")
-                linkedFilterXML = paste(linkedFilterXML,paste("<Filter name = '",filtersL[i],"' value = '",valuesString,"' />", collapse="",sep=""),sep="")
-            }
-        }
-    }
-    else{
-        if(filtersL != ""){
-            if(filterType(filtersL,martL) == 'boolean' || filterType(filtersL,martL) == 'boolean_list'){
-                if(!is.logical(valuesL)) stop(paste("biomaRt error: ",filtersL," is a boolean filter and needs a corresponding logical value of TRUE or FALSE to indicate if the query should retrieve all data that fulfill the boolean or alternatively that all data that not fulfill the requirement should be retrieved."), sep="") 
-                if(!valuesL){
-                    valuesL = 1
-                }
-                else{
-                    valuesL = 0 
-                }
-                
-                linkedFilterXML = paste("<Filter name = '",filtersL,"' excluded = \"",valuesL,"\" />", collapse="",sep="")
-            }
-            else{
-                valuesString = paste(valuesL,"",collapse=",",sep="")
-                linkedFilterXML = paste("<Filter name = '",filtersL,"' value = '",valuesString,"' />", collapse="",sep="")
-            }
-        }
-        else{
-            linkedFilterXML=""
-        }
-    }
-    
+    xmlQuery = paste0(xmlQuery, attributeXML, filterXML,"</Dataset>")
+
+    xmlQuery = paste0(xmlQuery, "<Dataset name = '",martDataset(martL),"' >")
+    linkedAttributeXML =  paste("<Attribute name = '", attributesL, "'/>", collapse="", sep="")  
+    linkedFilterXML <- .generateFilterXML(filters = filtersL, values = valuesL, 
+    									  mart = mart, maxChunkSize = Inf)
+        
     xmlQuery = paste(xmlQuery, linkedAttributeXML, linkedFilterXML,"</Dataset></Query>",sep="")
     
     if(verbose){
-        cat(paste(xmlQuery,"\n", sep=""))
+        message(xmlQuery)
     }
-    #postRes = postForm(paste(martHost(mart),"?",sep=""),"query"=xmlQuery)
-    
+
     ## we choose a separator based on whether '?redirect=no' is present
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     ## POST query
     postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                                query = xmlQuery)
     
-
     if(length(grep("^Query ERROR", postRes))>0L)
         stop(postRes)  
 
@@ -833,133 +699,15 @@ getLDS <- function(attributes, filters = "", values = "", mart, attributesL, fil
 #getBMlist
 ######################
 
-getBMlist <- function(attributes, filters = "", values = "", mart, list.names = NULL, na.value = NA, verbose=FALSE, giveWarning=TRUE){
-    if(giveWarning) writeLines("Performing your query using getBM is preferred as getBMlist perfoms a separate getBM query for each of the values one gives.  This is ok for a short list but will definitely fail when used with longer lists.  Ideally one does a batch query with getBM and then iterates over that result.")
-    out <- vector("list", length(attributes))
-    if(is.null(list.names))
-        names(out) <- attributes
-    else
-        names(out) <- list.names
-    for(j in seq(along = attributes)){
-        tmp2 <- vector("list", length(values))
-        names(tmp2) <- values
-        for(k in seq(along = tmp2)){
-            tst <- getBM(attributes = attributes[j], filters=filters, values = values[k], mart = mart, verbose = verbose)
-            
-            if(class(tst) == "data.frame"){
-                tmp <- unlist(unique(tst[!is.na(tst)]), use.names = FALSE)
-                if(length(tmp) > 0)
-                    tmp2[[k]] <- tmp
-                else
-                    tmp2[[k]] <- na.value
-            }else{
-                tmp2[[k]] <- na.value
-            }
-            out[[j]] <- tmp2
-        }
-    }
-    return(out)
+getBMlist <- function(attributes, filters = "", values = "", mart, list.names = NULL, 
+                      na.value = NA, verbose=FALSE, giveWarning=TRUE){
+    .Defunct(new = "getBM",
+             msg = c("getBMlist() has been removed from biomaRt",
+                     "\nPlease use getBM() instead")
+    )
 }
 
 
-###############################
-#                             #
-#Ensembl specific functions   #
-###############################
-
-
-getGene <- function( id, type, mart){
-    martCheck(mart,"ensembl") 
-    checkWrapperArgs(id, type, mart)
-    symbolAttrib = switch(strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],hsapiens = "hgnc_symbol",mmusculus = "mgi_symbol","external_gene_id")
-    typeAttrib = switch(type,affy_hg_u133a_2 = "affy_hg_u133a_v2",type)
-    attrib = c(typeAttrib,symbolAttrib,"description","chromosome_name","band","strand","start_position","end_position","ensembl_gene_id")
-    table = getBM(attributes = attrib,filters = type, values = id, mart=mart)
-    return(table)
-}
-
-getSequence <- function(chromosome, start, end, id, type, seqType, upstream, downstream, mart, verbose=FALSE){
-    martCheck(mart,c("ensembl","ENSEMBL_MART_ENSEMBL"))
-    if(missing(seqType) || !seqType %in% c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon",
-                                           "transcript_exon_intron", "gene_exon_intron","coding","coding_transcript_flank",
-                                           "coding_gene_flank","transcript_flank","gene_flank")) {
-        stop("Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode.  Choose either gene_exon, transcript_exon,transcript_exon_intron, gene_exon_intron, cdna, coding,coding_transcript_flank,coding_gene_flank,transcript_flank,gene_flank,peptide, 3utr or 5utr")
-    }
-    if(missing(type))
-        stop("Please specify the type argument.  If you use chromosomal coordinates to retrieve sequences, then the type argument will specify the type of gene indentifiers that you will retrieve with the sequences. ", 
-             "If you use a vector of identifiers to retrieve the sequences, the type argument specifies the type of identifiers you are using.")
-    if(missing(id) && missing(chromosome) && !missing(type))
-        stop("No vector of identifiers given. Please use the id argument to give a vector of identifiers for which you want to retrieve the sequences.")
-    if(!missing(chromosome) && !missing(id))
-        stop("The getSequence function retrieves sequences given a vector of identifiers specified with the id argument of a type specified by the type argument.  Or alternatively getSequence retrieves sequences given a chromosome, a start and a stop position on the chromosome.  As you specified both a vector of identifiers and chromsomal coordinates. Your query won't be processed.")
-    
-    if(!missing(chromosome)){
-        if(!missing(start) && missing(end))
-            stop("You specified a chromosomal start position but no end position.  Please also specify a chromosomal end position.")
-        if(!missing(end) && missing(start))
-            stop("You specified a chromosomal end position but no start position.  Please also specify a chromosomal start position.")
-        if(!missing(start)){ start = as.integer(start)
-        end = as.integer(end)
-        }
-        if(missing(upstream) && missing(downstream)){
-            sequence = getBM(c(seqType,type), 
-                             filters = c("chromosome_name","start","end"), 
-                             values = list(chromosome, start, end), 
-                             mart = mart, 
-                             checkFilters = FALSE, 
-                             verbose=verbose)
-        }
-        else{
-            if(!missing(upstream) && missing(downstream)){
-                sequence = getBM(c(seqType,type), 
-                                 filters = c("chromosome_name","start","end","upstream_flank"), 
-                                 values = list(chromosome, start, end, upstream), 
-                                 mart = mart, 
-                                 checkFilters = FALSE, 
-                                 verbose=verbose)
-            }
-            if(!missing(downstream) && missing(upstream)){
-                sequence = getBM(c(seqType,type), 
-                                 filters = c("chromosome_name","start","end","downstream_flank"), 
-                                 values = list(chromosome, start, end, downstream), 
-                                 mart = mart, 
-                                 checkFilters = FALSE, 
-                                 verbose = verbose)
-            }
-            if(!missing(downstream) && !missing(upstream)){
-                stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
-            }
-        }
-    }
-    
-    if(!missing(id)){
-        if(missing(type)) {
-            stop("Type argument is missing. ",
-            "This will be used to retrieve an identifier along with the sequence so one knows which gene it is from. ", 
-            "Use the listFilters() function to select a valid type argument.")
-        }
-        if(!type %in% listFilters(mart, what="name")) {
-            stop("Invalid type argument.  Use the listFilters() function to select a valid type argument.")
-        }
-        
-        valuesString = paste(id,"",collapse=",",sep="")
-        if(missing(upstream) && missing(downstream)){
-            sequence = getBM(c(seqType,type), filters = type, values = id, mart = mart, verbose=verbose)
-        }
-        else{
-            if(!missing(upstream) && missing(downstream)){
-                sequence = getBM(c(seqType,type), filters = c(type, "upstream_flank"), values = list(id, upstream), mart = mart, checkFilters = FALSE, verbose=verbose)
-            }
-            if(!missing(downstream) && missing(upstream)){
-                sequence = getBM(c(seqType,type), filters = c(type, "downstream_flank"), values = list(id, downstream), mart = mart, checkFilters = FALSE, verbose=verbose)
-            }
-            if(!missing(downstream) && !missing(upstream)){
-                stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
-            }
-        }
-    }
-    return(sequence)
-}
 
 ####################
 #export FASTA      #

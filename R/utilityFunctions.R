@@ -1,10 +1,10 @@
 
-## sometimes results can be returned by getMB() in a different order to we 
+## sometimes results can be returned by getBM() in a different order to we 
 ## asked for them, which messes up the column names.  Here we try to match
 ## results to known attribute names and rename accordingly.
 .setResultColNames <- function(result, mart, attributes, bmHeader = FALSE) {
     
-    ## get all avaialble sttributes and 
+    ## get all available attributes and 
     ## filter only for the ones we've actually asked for
     att <- listAttributes(mart, what = c("name", "description"))
     att <- att[which(att[,'name'] %in% attributes), ]
@@ -112,7 +112,7 @@
     return(filterXML)
 }
 
-.generateFilterXML <- function(filters = "", values, mart) {
+.generateFilterXML <- function(filters = "", values, mart, maxChunkSize = 5000) {
     
     ## return empty string if no filter specified & this isn't ensembl
     ## specifying no filter is generally bad, as it will get 'everything'
@@ -136,7 +136,7 @@
     }
     names(values) <- filters
     
-    values <- .splitValues(list(values), maxChunkSize = 5000)
+    values <- .splitValues(list(values), maxChunkSize = maxChunkSize)
     
     filterXML_list <- lapply(values, .createFilterXMLchunk, mart)
     
@@ -197,14 +197,6 @@
         stop(err_msg, call. = FALSE)
     }
     
-    ## now we set the redirection cookie, this code should never be executed
-    if(status_code(res) == 302) {
-        host <- stringr::str_match(string = res$all_headers[[1]]$headers$location,
-                               pattern = "//([a-zA-Z./]+)\\??;?redirectsrc")[,2]
-        res <- httr::POST(url = host,
-                          body = list('query' = query),
-                          config = list(timeout(600)))
-    }
     ## content() prints a message about encoding not being supplied 
     ## for ensembl.org - no default, so we suppress it
     return( suppressMessages(content(res)) )
@@ -217,52 +209,40 @@
     XML::readHTMLTable(html_res, stringsAsFactors = FALSE)[[1]]
 }
 
-.processResults <- function(postRes, mart, sep, fullXmlQuery, verbose, callHeader, quote, attributes) {
-
-    if(verbose){
-      writeLines("#################\nResults from server:")
-      print(postRes)
-    }
+#' @param postRes Character vector of length 1 returned by server.  We expect
+#' this to be a tab delimited string that comprises the whole table of results
+#' including column headers.
+.processResults <- function(postRes, mart, hostURLsep = "?", 
+                            fullXmlQuery, quote = "\"", numAttributes) {
+    
+    ## we expect only a character vector of length 1
     if(!(is.character(postRes) && (length(postRes)==1L))) {
       stop("The query to the BioMart webservice returned an invalid result\n",
-      "biomaRt expected a character string of length 1.\n",
-      "Please report this on the support site at http://support.bioconductor.org")
+           "biomaRt expected a character string of length 1.\n",
+           "Please report this on the support site at http://support.bioconductor.org")
     }
     
-    if(gsub("\n", "", postRes, fixed = TRUE, useBytes = TRUE) == "") { # meaning an empty result
-      
-      result = as.data.frame(matrix(ncol=length(attributes), nrow=0))
-      
-    } else {
-      
-      if(length(grep("^Query ERROR", postRes))>0L)
-        stop(postRes)
-      
-      ## convert the serialized table into a dataframe
-      con = textConnection(postRes)
-      on.exit(close(con))
-      result <- tryCatch(read.table(con, sep="\t", header=callHeader, quote = quote, 
-                                    comment.char = "", stringsAsFactors = FALSE, check.names = FALSE),
-                         error = function(e) {
-                           ## if the error relates to number of element, try reading HTML version
-                           if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
-                             .fetchHTMLresults(host = paste0(martHost(mart), sep), query = fullXmlQuery)
-                           else
-                             stop(e)
-                         }
-      )
-      if(verbose){
-        writeLines("#################\nParsed results:")
-        print(result)
-      }
-      
-      if(!(is(result, "data.frame") && (ncol(result)==length(attributes)))) {
-        print(head(result))
-        stop("The query to the BioMart webservice returned an invalid result.\n", 
-        "The number of columns in the result table does not equal the number of attributes in the query.\n",
-        "Please report this on the support site at http://support.bioconductor.org")
-      }
+    if(grepl(pattern = "^Query ERROR", x = postRes))
+      stop(postRes)
+    
+    ## convert the serialized table into a dataframe
+    result <- tryCatch(read.table(text = postRes, sep="\t", header = TRUE, quote = quote, 
+                                  comment.char = "", stringsAsFactors = FALSE, check.names = FALSE),
+                       error = function(e) {
+                         ## if the error relates to number of element, try reading HTML version
+                         if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
+                           .fetchHTMLresults(host = paste0(martHost(mart), hostURLsep), query = fullXmlQuery)
+                         else
+                           stop(e)
+                       }
+    )
+
+    if(!(is(result, "data.frame") && (ncol(result) == numAttributes))) {
+      stop("The query to the BioMart webservice returned an invalid result.\n", 
+           "The number of columns in the result table does not equal the number of attributes in the query.\n",
+           "Please report this on the support site at http://support.bioconductor.org")
     }
+    
     return(result)
 }
 
@@ -342,7 +322,7 @@ searchFilters <- function(mart, pattern) {
 
 ## Some filters have a predefined list of options that can be selected.
 ## This function lets us search those values, given a specified filter.
-searchFilterValues <- function(mart, filter, pattern) {
+searchFilterOptions <- function(mart, filter, pattern) {
   
   if(missing(mart))
     stop("Argument 'mart' must be specified")
@@ -369,8 +349,21 @@ searchFilterValues <- function(mart, filter, pattern) {
     res
 }
 
-
-listFilterValues <- function(mart, filter) {
-    searchFilterValues(mart = mart, filter = filter)
+searchFilterValues <- function(mart, filter, pattern) {
+  .Deprecated(new = "listFilterOptions",
+              msg = c("This function has been renamed searchFilterOptions()",
+                      "\nsearchFilterValues() is deprecated and will be removed in the future."))
+  searchFilterOptions(mart, filter, pattern = pattern)
 }
 
+
+listFilterOptions <- function(mart, filter) {
+    searchFilterOptions(mart = mart, filter = filter)
+}
+
+listFilterValues <- function(mart, filter) {
+  .Deprecated(new = "listFilterOptions",
+              msg = c("This function has been renamed listFilterOptions()",
+                      "\nlistFilterValues() is deprecated and will be removed in the future."))
+  listFilterOptions(mart, filter)
+}

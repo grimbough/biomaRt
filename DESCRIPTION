@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.45.9
+Version: 2.47.1
 Title: Interface to BioMart databases (i.e. Ensembl)
 Authors@R: c(person("Steffen", "Durinck", role = c("aut"), 
             email = "biomartdev@gmail.com"), 
@@ -12,7 +12,7 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
 Depends: methods
 Imports: utils, XML, AnnotationDbi, progress, stringr, httr,
         openssl, BiocFileCache, rappdirs, xml2
-Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat
+Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat, mockery
 VignetteBuilder: knitr
 biocViews: Annotation
 Description: In recent years a wealth of biological data has become available
@@ -32,3 +32,12 @@ LazyLoad: yes
 NeedsCompilation: no
 Encoding: UTF-8
 RoxygenNote: 7.1.1
+Collate: biomaRtClasses.R
+         methods-Mart.R
+         biomaRt.R
+         caching.R
+         ensembl.R
+         ensembl_wrappers.R
+         utilityFunctions.R
+         zzz.R
+

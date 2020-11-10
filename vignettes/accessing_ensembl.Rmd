@@ -15,8 +15,9 @@ editor_options:
 ---
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE)
+knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE, out.width = "100%")
 httr::set_config(httr::config(ssl_verifypeer = FALSE))
+options(width=100)
 ```
 
 # Introduction
@@ -25,11 +26,7 @@ Accessing the data available in Ensembl is by far most frequent use of the `r Bi
 
 # Selecting an Ensembl BioMart database and dataset
 
-Every analysis with `r Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  
-
-```{r annotate,echo=FALSE}
-options(width=100)
-```
+Every analysis with `r Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  The commands below will connect us to Ensembl's most recent version of the Human Genes BioMart.
 
 ```{r useEnsembl}
 library(biomaRt)
@@ -38,7 +35,7 @@ ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 
 If this your first time using `r Biocpkg("biomaRt")` , you might wonder how to find the two arguments we supplied to the `useEnsembl()` command.  This is a two step process, but once you know the setting you need you can use the version shown above as a single command.  These initial steps are outlined below.
 
-## Identifying the database you need
+## Step1: Identifying the database you need
 
 The first step is to find the names of the BioMart services Ensembl is currently providing.  We can do this using the function `listEnsembl()`, which will display all available Ensembl BioMart web services.  The first column gives us the name we should provide to the `biomart` argument in `useEnsembl()`, and the second gives a more comprehensive title for the dataset along with the Ensembl version.
 
@@ -58,7 +55,7 @@ If we print the current `ensembl` object, we can see that the `r ensembl@biomart
 ensembl
 ```
 
-## Choosing a dataset
+## Step 2: Choosing a dataset
 
 BioMart databases can contain several datasets. For example, within the Ensembl genes mart every species is a different dataset.  In the next step we look at which datasets are available in the selected BioMart by using the function `listDatasets()`. *Note: here we use the function `head()` to display only the first 5 entries as the complete list has `r nrow(listDatasets(ensembl))` entries.*
 
@@ -81,15 +78,15 @@ ensembl <- useDataset(dataset = "hsapiens_gene_ensembl", mart = ensembl)
 
 As mentioned previously, if the dataset one wants to use is known in advance i.e. you've gone through this process before, we can select a both the database and dataset in one step:
 
-```{r ensembl4}
+```{r ensembl4, eval = FALSE}
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
 ## Ensembl mirror sites
 
-To improve performance Ensembl provides several mirrors of their site distributed around the globe.  When you use the default settings for `useEnsembl()` your queries will be directed to your closest mirror geographically.  In theory this should give you the best performance, however this is not always the case in practice.  For example the if the nearest mirror is experiencing many queries from other users it may perform poorly for you.  You can use the `mirror` argument to `useEnsembl()` to explicitly request a specific mirror.
+To improve performance Ensembl provides several mirrors of their site distributed around the globe.  When you use the default settings for `useEnsembl()` your queries will be directed to your closest mirror geographically.  In theory this should give you the best performance, however this is not always the case in practice.  For example, if the nearest mirror is experiencing many queries from other users it may perform poorly for you.  You can use the `mirror` argument to `useEnsembl()` to explicitly request a specific mirror.
 
-```{r, mirrors}
+```{r, mirrors, eval = FALSE}
 ensembl <- useEnsembl(biomart = "ensembl", 
                    dataset = "hsapiens_gene_ensembl", 
                    mirror = "useast")
@@ -97,11 +94,34 @@ ensembl <- useEnsembl(biomart = "ensembl",
 
 Values for the mirror argument are: `useast`, `uswest`, `asia`, and `www`.
 
+## Using archived versions of Ensembl
+
+It is possible to query archived versions of Ensembl through `r Biocpkg("biomaRt")`, so you can maintain consistent annotation throughout the duration of a project.
+
+`r Biocpkg("biomaRt")` provides the function `listEnsemblArchives()` to view the available Ensembl archives.  This function takes no arguments, and produces a table containing the name and version number of the available archives, the date they were first released, and the URL where they can be accessed.
+
+```{r archiveMarts, echo = TRUE, eval = TRUE}
+listEnsemblArchives()
+```
+
+Alternatively, one can use the <http://www.ensembl.org> website to find an archived version.  From the main page scroll down the bottom of the page, click on 'view in Archive' and select the archive you need.  
+
+*You will notice that there is an archive URL even for the current release of Ensembl.  It can be useful to use this if you wish to ensure that script you write now will return exactly the same results in the future.  Using `www.ensembl.org` will always access the current release, and so the data retrieved may change over time as new releases come out.*
+
+Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
+
+
+```{r archiveMarts3, echo = TRUE, eval = TRUE}
+listEnsembl(version = 95)
+ensembl95 <- useEnsembl(biomart = 'genes', 
+                       dataset = 'hsapiens_gene_ensembl',
+                       version = 95)
+```
+
+
 ## Using Ensembl Genomes
 
-Ensembl Genomes expands the effort to provide annotation from the vertebrate genomes provided by the main Ensembl project across taxonomic space, with separate BioMart interfaces for Protists, Plants, Metazoa and Fungi.
-
-*Note: Unfortunately there is no BioMart interface to the Ensembl Bacteria data.  The number of bacterial genomes is in the tens of thousands and BioMart does not perform well when providing data on that scale.*
+Ensembl Genomes expands the effort to provide annotation from the vertebrate genomes provided by the main Ensembl project across taxonomic space, with separate BioMart interfaces for Protists, Plants, Metazoa and Fungi. ^[Note: Unfortunately there is no BioMart interface to the Ensembl Bacteria data.  The number of bacterial genomes is in the tens of thousands and BioMart does not perform well when providing data on that scale].
 
 You can use the functions `listEnsemblGenomes()` and `useEnsemblGenomes()` in similar fashion to the functions shown previously.  For example first we can list the available Ensembl Genomes marts:
 
@@ -125,27 +145,30 @@ ensembl_arabidopsis <- useEnsemblGenomes(biomart = "plants_mart",
 
 # How to build a biomaRt query
 
-The `getBM()` function has three arguments that need to be introduced: filters, attributes and values.
-*Filters* define a restriction on the query.  For example you want to restrict the output to all genes located on the human X chromosome then the filter *chromosome_name* can be used with value 'X'. The `listFilters()` function shows you all available filters in the selected dataset.
+Once we've selected a dataset to get data from, we need to create a query and send it to the Ensembl BioMart server.  We do this using the `getBM()` function.
+
+The `getBM()` function has three arguments that need to be introduced: *filters*, *values* and *attributes*.
+
+*Filters* and *values* are used to define restrictions on the query.  For example, if you want to restrict the output to all genes located on the human X chromosome then the filter *chromosome_name* can be used with *value* 'X'. The `listFilters()` function shows you all available filters in the selected dataset.
 
 ```{r filters}
 filters = listFilters(ensembl)
 filters[1:5,]
 ``` 
 
-*Attributes* define the values we are interested in to retrieve.  For example we want to retrieve the gene symbols or chromosomal coordinates.  The `listAttributes()` function displays all available attributes in the selected dataset.
+*Attributes* define the data we are interested in retrieving.  For example, maybe we want to retrieve the gene symbols or chromosomal coordinates.  The `listAttributes()` function displays all available attributes in the selected dataset.
 
 ```{r attributes}
 attributes = listAttributes(ensembl)
 attributes[1:5,]
 ```
 
-The `getBM()` function is the main query function in `r Biocpkg("biomaRt")`.  It has four main arguments:
+The `getBM()` function is the primary query function in `r Biocpkg("biomaRt")`.  It has four main arguments:
 
 * `attributes`:  is a vector of attributes that one wants to retrieve (= the output of the query).
 * `filters`:  is a vector of filters that one wil use as input to the query.
 * `values`: a vector of values for the filters.  In case multple filters are in use, the values argument requires a list of values where each position in the list corresponds to the position of the filters in the filters argument (see examples below).
-* `mart`: is an object of class `Mart`, which is created by the `useMart()` function.
+* `mart`: is an object of class `Mart`, which is created by the `useEnsembl()` function.
 
 *Note: for some frequently used queries to Ensembl, wrapper functions are available: `getGene()` and `getSequence()`.  These functions call the `getBM()` function with hard coded filter and attribute names.*
 
@@ -180,92 +203,36 @@ From this we can compare *ENST00000577249.1* with the examples given in the desc
 
 ## Using predefined filter values
 
-Many filters have a predefined list of values that are known to be in the dataset they are associated with.  An common example would be the names of chromosomes when searching a dataset at Ensembl.  In this online interface to BioMart these available options are displayed as a list as shown in Figure \@ref(fig:filtervalues).
+Many filters have a predefined list of values that are known to be in the dataset they are associated with.  A common example would be the names of chromosomes when searching a dataset at Ensembl.  In this online interface to BioMart these available options are displayed as a list as shown in Figure \@ref(fig:filtervalues).
 
 ```{r filtervalues, fig.cap='The options available to the Chromosome/Scaffold field are limited to a pretermined list based on the values in this dataset.', echo = FALSE}
 knitr::include_graphics('filtervalues.png')
 ```
 
-You can list this in an R session with the function `listFilterValues()`, passing it a mart object and the name of the filter.  For example, to list the possible chromosome names you could run the following:
+You can list this in an R session with the function `listFilterOptions()`, passing it a `Mart` object and the name of the filter.  For example, to list the possible chromosome names you could run the following:
 
 ```{r chromosomeNames, results = FALSE}
-listFilterValues(mart = ensembl, filter = "chromosome_name")
+listFilterOptions(mart = ensembl, filter = "chromosome_name")
 ```
 
-It is also possible to search the list of available values via `searchFilterValues()`.  In the two examples below, the first returns all chromosome names starting with "*GL*", while the second will find any phenotype descriptions that contain the string "*Crohn*".
+It is also possible to search the list of available values via `searchFilterOptions()`.  In the two examples below, the first returns all chromosome names starting with "*GL*", while the second will find any phenotype descriptions that contain the string "*Crohn*".
 
-```{r searchFilterValues, results = FALSE}
-searchFilterValues(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
-searchFilterValues(mart = ensembl, filter = "phenotype_description", pattern = "Crohn")
+```{r listFilterOptions, results = FALSE}
+searchFilterOptions(mart = ensembl, filter = "chromosome_name", 
+                    pattern = "^GL")
+searchFilterOptions(mart = ensembl, filter = "phenotype_description", 
+                    pattern = "Crohn")
 ```
-
-# Using archived versions of Ensembl
-
-It is possible to query archived versions of Ensembl through `r Biocpkg("biomaRt")`, so you can maintain consistent annotation throughout the duration of a project.
-
-`r Biocpkg("biomaRt")` provides the function `listEnsemblArchives()` to view the available Ensembl archives.  This function takes no arguments, and produces a table containing the name and version number of the available archives, the date they were first released, and the URL where they can be accessed.
-
-```{r archiveMarts, echo = TRUE, eval = TRUE}
-listEnsemblArchives()
-```
-
-Alternatively, one can use the <http://www.ensembl.org> website to find an archived version.  From the main page scroll down the bottom of the page, click on 'view in Archive' and select the archive you need.  
-
-*You will notice that there is an archive URL even for the current release of Ensembl.  It can be useful to use this if you wish to ensure that script you write now will return exactly the same results in the future.  Using `www.ensembl.org` will always access the current release, and so the data retrieved may change over time as new releases come out.*
-
-Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 54. 
-
-
-```{r archiveMarts3, echo = TRUE, eval = TRUE}
-listEnsembl(version = 54)
-ensembl54 <- useEnsembl(biomart = 'genes', 
-                       dataset = 'hsapiens_gene_ensembl',
-                       version = 54)
-```
-
-
-# Result Caching
-
-To save time and computing resources `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
-
-You can get some information on the size and location of the cache using the function `biomartCacheInfo()`:
-
-```{r cacheInfo}
-biomartCacheInfo()
-```
-
-The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
-
-
-# biomaRt helper functions
-
-This section describes a set of `r Biocpkg("biomaRt")` helper functions that can be used to export FASTA format sequences, retrieve values for certain filters and exploring the available filters and attributes in a more systematic manner. 
-
-## exportFASTA
-
-The data.frames obtained by the getSequence function can be exported to FASTA files using the `exportFASTA()` function.  One has to specify the data.frame to export and the filename using the file argument.
 
 ## Finding out more information on filters
 
 ### filterType
 
-Boolean filters need a value TRUE or FALSE in `r Biocpkg("biomaRt")`.  Setting the value TRUE will include all information that fulfill the filter requirement.  Setting FALSE will exclude the information that fulfills the filter requirement and will return all values that don't fulfill the filter.
-For most of the filters, their name indicates if the type is a boolean or not and they will usually start with "with".  However this is not a rule and to make sure you got the type right you can use the function `filterType()` to investigate the type of the filter you want to use.
+Boolean filters need a value TRUE or FALSE in `r Biocpkg("biomaRt")`.  Setting the value TRUE will include all information that fulfil the filter requirement.  Setting FALSE will exclude the information that fulfills the filter requirement and will return all values that don't fulfil the filter. For most of the filters, their name indicates if the type is a boolean or not and they will usually start with "with".  However this is not a rule and to make sure you got the type right you can use the function `filterType()` to investigate the type of the filter you want to use.
 
 ```{r filterType}
-filterType("with_affy_hg_u133_plus_2",ensembl)
+filterType("with_affy_hg_u133_plus_2", ensembl)
 ```
-
-### filterOptions
-
-Some filters have a limited set of values that can be given to them.  To know which values these are one can use the `filterOptions()` function to retrieve the predetermed values of the respective filter.
-
-
-```{r filterOptions}
-filterOptions("biotype", ensembl)
-```
-
-If there are no predetermed values e.g. for the entrezgene filter, then `filterOptions()` will return the type of filter it is. And most of the times the filter name or it's description will suggest what values one case use for the respective filter (e.g. entrezgene filter will work with enterzgene identifiers as values)
 
 ## Attribute Pages
 
@@ -279,7 +246,7 @@ pages = attributePages(ensembl)
 pages
 ```
 
-To show us a smaller list of attributes which belong to a specific page, we can now specify this in the `listAttributes()` function.  *The set of attributes is still quite long, so we use `head()` to show only the first few items here.*
+To show us a smaller list of attributes which belong to a specific page, we can now specify this in the `listAttributes()` function.^[The set of attributes is still quite long, so we use `head()` to show only the first few items here.]
 
 ```{r listAttributes}
 head(listAttributes(ensembl, page="feature_page"))
@@ -287,24 +254,14 @@ head(listAttributes(ensembl, page="feature_page"))
 
 We now get a short list of attributes related to the region where the genes are located.
 
+## Using `select()`
 
-# Using `select()`
-In order to provide a more consistent interface to all annotations in
-Bioconductor the `select()`, `columns()`,
-`keytypes()` and `keys()` have been implemented to wrap
-some of the existing functionality above.  These methods can be called
-in the same manner that they are used in other parts of the project
-except that instead of taking a `AnnotationDb` derived class
-they take instead a `Mart` derived class as their 1st argument.
-Otherwise usage should be essentially the same.  You still use
-`columns()` to discover things that can be extracted from a
-`Mart`, and `keytypes()` to discover which things can be
-used as keys with `select()`.  
+In order to provide a more consistent interface to all annotations in Bioconductor the `select()`, `columns()`, `keytypes()` and `keys()` have been implemented to wrap some of the existing functionality above.  These methods can be called in the same manner that they are used in other parts of the project except that instead of taking a `AnnotationDb` derived class they take instead a `Mart` derived class as their 1st argument.  Otherwise usage should be essentially the same.  You still use `columns()` to discover things that can be extracted from a `Mart`, and `keytypes()` to discover which things can be used as keys with `select()`.  
 
 ```{r columnsAndKeyTypes}
-mart <- useMart(dataset="hsapiens_gene_ensembl",biomart='ensembl')
-head(keytypes(mart), n=3)
-head(columns(mart), n=3)
+mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart='ensembl')
+head(keytypes(mart), n = 3)
+head(columns(mart), n = 3)
 ``` 
 
 And you still can use `keys()` to extract potential keys, for a
@@ -337,9 +294,31 @@ select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
 ``` 
 
 So why would we want to do this when we already have functions like `getBM()`?  For two reasons: 1) for people who are familiar
-with select and it's helper methods, they can now proceed to use `r Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to
-them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more
-convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
+with select and it's helper methods, they can now proceed to use `r Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
+
+# Result Caching
+
+To save time and computing resources `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
+
+You can get some information on the size and location of the cache using the function `biomartCacheInfo()`:
+
+```{r cacheInfo}
+biomartCacheInfo()
+```
+
+The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
+
+
+# biomaRt helper functions
+
+This section describes a set of `r Biocpkg("biomaRt")` helper functions that can be used to export FASTA format sequences, retrieve values for certain filters and exploring the available filters and attributes in a more systematic manner. 
+
+## exportFASTA
+
+The data.frames obtained by the getSequence function can be exported to FASTA files using the `exportFASTA()` function.  One has to specify the data.frame to export and the filename using the file argument.
+
+
+
 
 # Examples of biomaRt queries
 
@@ -515,11 +494,38 @@ The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 Bi
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
 ```{r getLDS, cache = TRUE}
-human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+human <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
+mouse <- useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
-       filters = "hgnc_symbol", values = "TP53",mart = human,
-      attributesL = c("refseq_mrna","chromosome_name","start_position"), martL = mouse)
+       filters = "hgnc_symbol", values = "TP53",
+       mart = human,
+       attributesL = c("refseq_mrna","chromosome_name","start_position"), 
+       martL = mouse)
+```
+
+
+
+# Connection troubleshooting
+
+It is not uncommon to encounter connection problems when trying to access online resources such as the Ensembl BioMart.  In this section we list error messages that have been reported by users, along with suggested code to fix the problem.  If a suggested solution doesn't work, or you have a new error not listed here, please reported it on the [Bioconductor Support Site](https://support.bioconductor.org/).
+
+```
+Error in curl::curl_fetch_memory(url, handle = handle) :
+SSL certificate problem: unable to get local issuer certificate
+```
+
+```{r, ssl-verifypeer, eval = FALSE}
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+```
+
+
+```
+Error in curl::curl_fetch_memory(url, handle = handle) : 
+error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure
+```
+
+```{r, ssl-cipher-list, eval = FALSE}
+httr::set_config(httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))
 ```
 
 
