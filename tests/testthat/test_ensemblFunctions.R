@@ -1,4 +1,17 @@
-library(biomaRt)
+## example Mart object
+ex_mart <- Mart(biomart = "ensembl", 
+                dataset = "hsapiens_gene_ensembl",
+                host = "www.ensembl.org",
+                attributes = data.frame(
+                  name = c("ensembl_gene_id", "gene_exon_intron", "hgnc_symbol"),
+                  page = c("sequences", "sequences", "feature_page")
+                ),
+                filters = data.frame(
+                  name = c("ensembl_gene_id", "hgnc_symbol", "gene_exon_intron"),
+                  description = c("Ensembl ID", "HGNC Symbol", "Gene seq including exons and introns"),
+                  type = c("id_list", "id_list", "text")
+                )
+)
 
 test_that("useEnsembl() error handling is OK", { 
   
@@ -48,28 +61,14 @@ test_that("Ensembl URLs are constructed correctly", {
     expect_equal("https://grch37.ensembl.org")
 })
 
-test_that("getSequence works", {
+test_that("sequence correct code is used to get sequence based on ID type", {
   
   m <- mock(data.frame(hgnc_symbol = "STAT1", ensembl_gene_id = "ENSG00000115415"),
             data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415"),
             data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415"))
   
   stub(.getSequenceFromId, "getBM", m)
-  
-  ex_mart <- Mart(biomart = "ensembl", 
-                  dataset = "hsapiens_gene_ensembl",
-                  host = "www.ensembl.org",
-                  attributes = data.frame(
-                    name = c("ensembl_gene_id", "gene_exon_intron", "hgnc_symbol"),
-                    page = c("sequences", "sequences", "feature_page")
-                  ),
-                  filters = data.frame(
-                    name = c("ensembl_gene_id", "hgnc_symbol", "gene_exon_intron"),
-                    description = c("Ensembl ID", "HGNC Symbol", "Gene seq including exons and introns"),
-                    type = c("id_list", "id_list", "text")
-                  )
-  )
-  
+
   expect_is(hgnc <- .getSequenceFromId(id = "STAT1", type = "hgnc_symbol", 
                                seqType = "gene_exon_intron", mart = ex_mart), 
             "data.frame")
@@ -77,5 +76,38 @@ test_that("getSequence works", {
                                        seqType = "gene_exon_intron", mart = ex_mart), 
             "data.frame")
   expect_identical(hgnc$gene_exon_intron, ens_id$gene_exon_intron)
+
+})
+
+test_that("correct settings are applied for getSequence using coordinates.", {
+  
+  m <- mock(TRUE, cycle = TRUE)
+  stub(.getSequenceFromCoords, "getBM", m)
+  
+  expect_true(.getSequenceFromCoords(chromosome = 1, start = 1, end = 2, type = "ensembl_gene_id", 
+                                   seqType = "gene_exon_intron", mart = ex_mart))
+  expect_true(.getSequenceFromCoords(chromosome = 1, start = 1, end = 2, upstream = 50,
+                                     type = "ensembl_gene_id", seqType = "gene_exon_intron", 
+                                     mart = ex_mart))
+  expect_true(.getSequenceFromCoords(chromosome = 1, start = 1, end = 2, downstream = 50,
+                                     type = "ensembl_gene_id", seqType = "gene_exon_intron", 
+                                     mart = ex_mart))
+  
+  expect_length(mock_args(m)[[1]]$filters, 3L)
+  expect_true("upstream_flank"   %in% names(mock_args(m)[[2]]$filters))
+  expect_true("downstream_flank" %in% names(mock_args(m)[[3]]$filters))
+  
   
 })
+
+test_that("getSequence deploys correct sub-function", {
+  
+  stub(getSequence, ".getSequenceFromCoords", TRUE)
+  stub(getSequence, ".getSequenceFromId", FALSE)
+  
+  expect_true(getSequence(chromosome = 1, start = 1, end = 2, type = "ensembl_gene_id", 
+                          seqType = "gene_exon_intron", mart = ex_mart))
+  expect_false(getSequence(id = "STAT1", type = "hgnc_symbol", seqType = "gene_exon_intron", mart = ex_mart))
+  
+})
+

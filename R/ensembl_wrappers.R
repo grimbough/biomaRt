@@ -63,23 +63,19 @@ getGene <- function( id, type, mart){
     start = as.integer(start)
     end = as.integer(end)
     
-    if(missing(upstream) && missing(downstream)){
-        filters <- list("chromosome_name" = chromosome,
-                        "start" = start,
-                        "end" = end)
-    } else if(!missing(upstream) && missing(downstream)){
-        filters <- list("chromosome_name" = chromosome,
-                        "start" = start,
-                        "end" = end,
-                        "upstream_flank" = upstream)
-    } else if(!missing(downstream) && missing(upstream)){
-        filters <- list("chromosome_name" = chromosome,
-                        "start" = start,
-                        "end" = end,
-                        "downstream_flank" = downstream)
-    } else {
-        stop("Currently getSequence only allows the user to specify either an upstream of a downstream argument but not both.")
+    if(!missing(upstream) && !missing(downstream)) {
+        stop("getSequence() only allows specifying either the 'upstream' or 'downstream' argument but not both.")
     }
+    
+    filters <- list("chromosome_name" = chromosome,
+                    "start" = start,
+                    "end" = end)
+    
+    if(!missing(upstream)) {
+        filters[[ "upstream_flank" ]] <- upstream
+    } else if(!missing(downstream)) {
+        filters[[ "downstream_flank" ]] <- downstream
+    } 
     
     sequence <- getBM(attributes = c(seqType, type), 
                       filters = filters, 
@@ -139,7 +135,6 @@ getGene <- function( id, type, mart){
         sequence <- sequence[, !(names(sequence) %in% "ensembl_gene_id")]
         
     } else {
-
         sequence <- getBM(attributes = c(seqType, type), 
                           filters = filters,
                           mart = mart, 
