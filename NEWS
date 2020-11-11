@@ -5,6 +5,8 @@ NEW FEATURES
 
     o getSequence() now allows the cache to be turned off via the 'useCache'
     argument.
+    o Automatic detection of SSL issues with Ensembl, and appropriate settings
+    applied to httr functions used by biomaRt.
 
 BUG FIXES
 
@@ -19,6 +21,7 @@ BUG FIXES
 
     o getLDS() now detects if trying to use datasets from different Marts
     and reports this to the user.
+    
 
 CHANGES IN VERSION 2.42.0
 -------------------------
