@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - RELEASE_3_12
   pull_request:
     branches:
       - master
@@ -23,9 +24,6 @@ jobs:
         - { os: ubuntu-16.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/xenial/latest"}
         - { os: ubuntu-18.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/bionic/latest"}
         - { os: ubuntu-20.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
-        - { os: ubuntu-16.04, r: '3.6', cran: "https://packagemanager.rstudio.com/all/__linux__/xenial/latest"}
-        - { os: ubuntu-18.04, r: '3.6', cran: "https://packagemanager.rstudio.com/all/__linux__/bionic/latest"}
-        - { os: ubuntu-20.04, r: '3.6', cran: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
