@@ -11,11 +11,17 @@
       
       if(grepl(test[1], ## This address problems with Ubuntu 20.04 et al and the Ensembl https certificates
                pattern = "sslv3 alert handshake failure")) {
+        message("Failed test 1:\n", test)
         new_config <- httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1")
         
       } else if(grepl(x = test[1], ## two reported error messages solved with the same setting
                       pattern = "(unable to get local issuer certificate)|(server certificate verification failed)")) {
+        message("Failed test 2:\n", test)
         new_config <- httr::config(ssl_verifypeer = FALSE)
+      } else {
+        message("Unknown error encountered:\n", test)
+        ## temporary workaround.  This shouldn't change anything.
+        new_config <- httr::config(NULL)
       }
       httr::set_config(new_config, override = FALSE)
     } else {
