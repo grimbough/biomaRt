@@ -2,7 +2,7 @@ on:
   push:
     branches:
       - master
-      - RELEASE_3_12
+      - 3_12_testing
   pull_request:
     branches:
       - master
