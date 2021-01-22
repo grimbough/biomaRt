@@ -6,7 +6,7 @@ importFrom(AnnotationDbi, keys, columns, keytypes, select)
 importFrom(progress, progress_bar)
 importFrom(stringr, str_extract_all, str_match, str_replace)
 importFrom(httr, POST, GET, content, content_type, timeout, set_cookies, 
-           stop_for_status, status_code, with_config, config)
+           stop_for_status, status_code, with_config, config, set_config)
 importFrom(xml2, read_html)
 importFrom(openssl, md5)
 importFrom(BiocFileCache, bfcnew, bfcadd, bfcquery, bfcinfo, removebfc)
