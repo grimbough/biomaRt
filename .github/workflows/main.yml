@@ -19,11 +19,11 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { os: windows-latest, r: '4.0'}
-        - { os: macOS-latest, r: '4.0'}
-        - { os: ubuntu-16.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/xenial/latest"}
-        - { os: ubuntu-18.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/bionic/latest"}
-        - { os: ubuntu-20.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
+        - { os: windows-latest, r: 'release'}
+        - { os: macOS-latest, r: 'release'}
+        - { os: ubuntu-16.04, r: 'release', cran: "https://packagemanager.rstudio.com/all/__linux__/xenial/latest"}
+        - { os: ubuntu-18.04, r: 'release', cran: "https://packagemanager.rstudio.com/all/__linux__/bionic/latest"}
+        - { os: ubuntu-20.04, r: 'release', cran: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -85,6 +85,13 @@ jobs:
 
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-vignettes'), error_on = 'warning', check_dir = 'check')"
+        
+      - name: Check R check
+        run: |
+          new_config <- httr::config(ssl_verifypeer = FALSE)
+          httr::set_config(new_config, override = FALSE)
+          devtools::check(vignettes = FALSE, args = '--timings')
+        shell: Rscript {0}
 
       - name: Upload check results
         uses: actions/upload-artifact@master
