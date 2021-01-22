@@ -143,11 +143,11 @@
     return(filterXML_list)
 }
 
-#' it seems like pretty common practice for users to copy and paste the host
-#' name from a browser if they're not accessing Ensembl.  Typically this will
-#' include the "http://" and maybe a trailing "/" and this messes up our
-#' paste the complete URL strategy and produces something invalid.  
-#' This function tidies that up to catch common variants.
+# it seems like pretty common practice for users to copy and paste the host
+# name from a browser if they're not accessing Ensembl.  Typically this will
+# include the "http://" and maybe a trailing "/" and this messes up our
+# paste the complete URL strategy and produces something invalid.  
+# This function tidies that up to catch common variants.
 .cleanHostURL <- function(host) {
     
     ## strip trailing slash
@@ -183,9 +183,9 @@
   return(err_msg)
 }
 
-#' ensembl redirection doesn't seem to be working properly as of 12-12-2017
-#' This is a wrapper function to catch POSTS that are redirected and fail
-#' The new host is captured from the header and used in a re-submission
+# ensembl redirection doesn't seem to be working properly as of 12-12-2017
+# This is a wrapper function to catch POSTS that are redirected and fail
+# The new host is captured from the header and used in a re-submission
 .submitQueryXML <- function(host, query) {
     res <- httr::POST(url = host,
                       body = list('query' = query),
@@ -210,7 +210,7 @@
     return( suppressMessages(content(res)) )
 }
 
-#' if parsing of TSV results fails, try this
+# if parsing of TSV results fails, try this
 .fetchHTMLresults <- function(host, query) {
     query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
     html_res <- .submitQueryXML(host, query)
@@ -270,9 +270,9 @@
 ## searching Attributes, Filters, and Datasets
 ##############################################
 
-#' given a data.frame, searches every column for
-#' the value in 'pattern'
-#' returns index of rows containing a match
+# given a data.frame, searches every column for
+# the value in 'pattern'
+# returns index of rows containing a match
 .searchInternal <- function(pattern, data) {
     colIdx <- vapply(data, 
                      FUN = stringr::str_detect, 
@@ -289,7 +289,7 @@
     }
 }
 
-#' 
+ 
 searchDatasets <- function(mart, pattern) {
     
     if(missing(mart))
