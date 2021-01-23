@@ -55,3 +55,13 @@ jobs:
           sessionInfo()
         shell: Rscript {0}
 
+      - name: Install biomart again
+        run: |
+          BiocManager::install('grimbough/biomaRt', ref = "3_12_testing")
+        shell: Rscript {0}
+        
+      - name: Load biomaRt
+        run: |
+          library(biomaRt)
+          sessionInfo()
+        shell: Rscript {0}
