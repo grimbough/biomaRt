@@ -1,0 +1,57 @@
+on:
+  push:
+    branches:
+      - 3_12_testing
+
+name: R-CMD-check
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - { os: windows-latest, r: 'release'}
+        - { os: macOS-latest, r: 'release'}
+        - { os: ubuntu-16.04, r: 'release', cran: "https://packagemanager.rstudio.com/all/__linux__/xenial/latest"}
+        - { os: ubuntu-18.04, r: 'release', cran: "https://packagemanager.rstudio.com/all/__linux__/bionic/latest"}
+        - { os: ubuntu-20.04, r: 'release', cran: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      CRAN: ${{ matrix.config.cran }}
+
+    steps:
+      - name: Install system libraries
+        if: ${{ runner.os == 'Linux'  }}
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
+          
+      - name: Install Mac system libraries
+        if: ${{ matrix.config.os == 'macOS-latest' }}
+        run: |
+          brew install openssl
+    
+      - uses: r-lib/actions/setup-r@master
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      - uses: r-lib/actions/setup-pandoc@master
+
+      - name: Install dependencies
+        run: |
+          install.packages(c('BiocManager'))
+          BiocManager::install('biomaRt', ask = FALSE, update = TRUE)
+          BiocManager::install('grimbough/biomaRt', ref = "RELEASE_3_12")
+        shell: Rscript {0}
+        
+      - name: Load biomaRt
+        run: |
+          library(biomaRt)
+          sessionInfo()
+        shell: Rscript {0}
+
