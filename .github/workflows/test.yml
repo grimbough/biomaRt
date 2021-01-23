@@ -3,10 +3,10 @@ on:
     branches:
       - 3_12_testing
 
-name: R-CMD-check
+name: Trigger error
 
 jobs:
-  R-CMD-check:
+  Trigger error:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
@@ -44,7 +44,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages(c('BiocManager'))
+          install.packages(c('BiocManager', 'remotes'))
           BiocManager::install('biomaRt', ask = FALSE, update = TRUE)
           BiocManager::install('grimbough/biomaRt', ref = "RELEASE_3_12")
         shell: Rscript {0}
