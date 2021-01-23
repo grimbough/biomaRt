@@ -3,10 +3,10 @@ on:
     branches:
       - 3_12_testing
 
-name: Trigger error
+name: Trigger-error
 
 jobs:
-  Trigger error:
+  Trigger-error:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
