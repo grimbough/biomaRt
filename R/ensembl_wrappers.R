@@ -115,7 +115,7 @@ getGene <- function( id, type, mart){
     if(!type %in% listAttributes(mart, page = "sequences", what = "name")) {
         mapping_id <- getBM(attributes = c(type, "ensembl_gene_id"), 
                                filters = type, 
-                               value = id,
+                               values = id,
                                mart = mart, 
                                useCache = useCache)
         
