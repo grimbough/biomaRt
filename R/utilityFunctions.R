@@ -269,7 +269,7 @@
     }
 }
 
-#' 
+
 searchDatasets <- function(mart, pattern) {
     
     if(missing(mart))

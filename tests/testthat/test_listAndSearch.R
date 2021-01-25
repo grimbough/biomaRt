@@ -2,7 +2,12 @@ library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
-ensembl <- useEnsembl("ensembl", mirror = "www")
+#ensembl <- useEnsembl("ensembl", mirror = "www")
+ensembl <- Mart(biomart = "ensembl")
+
+example_datasets <- data.frame(dataset = paste0(LETTERS[1:5], "_gene_ensembl"),
+                               description = paste0(letters[1:5], " genes"),
+                               version = as.character(1:5))
 
 ## Construct example mart object without contacting Ensembl
 ensembl_with_dataset <- Mart(biomart = "ensembl", 
@@ -23,8 +28,11 @@ test_that("Fail with no mart argument", {
 
 test_that("'Long' table of results for no search term", {
     
+    stub(searchDatasets, "listDatasets", how = example_datasets)
+    
     expect_is(x <- searchDatasets(ensembl), class = 'data.frame')
-    expect_gt(nrow(x), 20) ## arbitrary definition of 'long'
+    expect_equal(nrow(x), 5) 
+    expect_identical(example_datasets, x)
     
 })
 
@@ -39,6 +47,7 @@ test_that("Return complete table of results for no search term", {
 
 test_that("Message when nothing found", {
     
+    stub(searchDatasets, "listDatasets", how = example_datasets)
     expect_message(searchDatasets(ensembl, pattern = "foobaa"), "No matching") %>%
         expect_null()
 
@@ -52,8 +61,9 @@ test_that("Message when nothing found", {
 
 test_that("'Sensible' table of results for specific search term", {
     
-    expect_is(x <- searchDatasets(ensembl, pattern = "hsapiens"), class = 'data.frame')
-    expect_equal(nrow(x), 1) ## only one human dataset
+    stub(searchDatasets, "listDatasets", how = example_datasets)
+    expect_is(x <- searchDatasets(ensembl, pattern = "B_"), class = 'data.frame')
+    expect_equal(nrow(x), 1) ## only one dataset should be found
     
     expect_is(x <- searchAttributes(ensembl_with_dataset, pattern = "Attr(A|B)"), 
               class = 'data.frame')
