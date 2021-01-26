@@ -48,7 +48,9 @@ test_that("getBMlist removal message is shown", {
 
 test_that("getBM returns sensible things", {
     
-    stub(getBM,
+    skip_if_not_installed('mockery')
+    
+    mockery::stub(getBM,
          '.submitQueryXML',
          'Gene stable ID\tChromosome/scaffold name\nENSG01\t13\nENSG02\t15\nENSG03\t17\n'
     )
@@ -64,21 +66,3 @@ test_that("getBM returns sensible things", {
     
 })
 
-#######################
-## the definition_1006 entry for this gene includes unescaped new lines, so the HTML result is requested
-########################
-# test_that("HTML reading code is used when needed", {
-#     expect_silent(ensembl <- useEnsembl("ensembl", 
-#                                         dataset = 'hsapiens_gene_ensembl',
-#                                         mirror = "www"))
-#     attributes <-  c("ensembl_gene_id", "go_id", "definition_1006")
-#     expect_silent(go_sets <- getBM(attributes =  attributes,
-#                                    filters = "ensembl_gene_id",
-#                                    values = c('ENSG00000100036'),
-#                                    mart = ensembl,
-#                                    bmHeader = FALSE,
-#                                    useCache = FALSE))
-#     expect_is(go_sets, "data.frame")
-#     expect_equal(colnames(go_sets), attributes)
-# })
- 

@@ -1,9 +1,11 @@
 test_that("Error handling works", {
   
+    skip_if_not_installed('mockery')
+  
     expect_error(useEnsemblGenomes(), 
                  regex = "You must provide the argument 'biomart'")
   
-    stub(useEnsemblGenomes,
+    mockery::stub(useEnsemblGenomes,
          'listEnsemblGenomes',
          function(includeHosts) {
              data.frame(

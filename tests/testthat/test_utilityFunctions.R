@@ -123,13 +123,15 @@ test_that("deprecated functions show warnings", {
 
 test_that("attribute and filter tables are parsed correctly", {
 
-    stub(.getAttrFilt, 
+    skip_if_not_installed('mockery')
+  
+    mockery::stub(.getAttrFilt, 
         'bmRequest',
         'ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n',
     )
     expect_is(.getAttrFilt(mart = ensembl, verbose = TRUE, type = "attributes"), "data.frame")
     
-    stub(.getAttributes, 
+    mockery::stub(.getAttributes, 
          '.getAttrFilt',
          read.table(text = "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\n",
                     sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
@@ -137,7 +139,7 @@ test_that("attribute and filter tables are parsed correctly", {
     expect_is(.getAttributes(mart = ensembl, verbose = TRUE), "data.frame")
     
     
-    stub(.getFilters, 
+    mockery::stub(.getFilters, 
          '.getAttrFilt',
          read.table(text = "chromosome_name\tChromosome/scaffold name\t[]\t\tfilters\ttext\t=\tbnatans_eg_gene__gene__main\tname_1059\n\n",
                     sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)

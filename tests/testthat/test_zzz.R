@@ -1,12 +1,14 @@
 test_that("Both SSL settings are applied if needed", { 
     
+    skip_if_not_installed('mockery')
+    
     ## clear any httr configuration before running these tests
     httr::reset_config()
     
-    m <- mock(stop("sslv3 alert handshake failure"),
+    m <- mockery::mock(stop("sslv3 alert handshake failure"),
               stop("unable to get local issuer certificate"), 
               "")
-    stub(.check_ensembl_ssl, ".test_ensembl", m)
+    mockery::stub(.check_ensembl_ssl, ".test_ensembl", m)
     
     expect_silent(.check_ensembl_ssl())
     expect_length(getOption("httr_config")$options, 2L)
@@ -16,15 +18,17 @@ test_that("Both SSL settings are applied if needed", {
 })
 
 test_that("Only one SSL setting is applied", { 
+
+    skip_if_not_installed('mockery')
     
     ## clear any httr configuration before running these tests
     httr::reset_config()
     
-    m <- mock(stop("sslv3 alert handshake failure"),
+    m <- mockery::mock(stop("sslv3 alert handshake failure"),
               "",
               stop("unable to get local issuer certificate"),
               "")
-    stub(.check_ensembl_ssl, ".test_ensembl", m)
+    mockery::stub(.check_ensembl_ssl, ".test_ensembl", m)
     
     expect_silent(.check_ensembl_ssl())
     expect_length(getOption("httr_config")$options, 1L)
@@ -41,12 +45,14 @@ test_that("Only one SSL setting is applied", {
 
 test_that("If we hit an unknown error", { 
     
+    skip_if_not_installed('mockery')
+    
     ## clear any httr configuration before running these tests
     httr::reset_config()
     
-    m <- mock(stop("This is an unexpected SSL error"), 
+    m <- mockery::mock(stop("This is an unexpected SSL error"), 
               "")
-    stub(.check_ensembl_ssl, ".test_ensembl", m)
+    mockery::stub(.check_ensembl_ssl, ".test_ensembl", m)
     
     expect_message(.check_ensembl_ssl(), "Possible SSL connectivity problems detected")
     expect_length(getOption("httr_config")$options, 0L)
