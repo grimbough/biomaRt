@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { os: windows-latest, r: 'devel'}
-        - { os: macOS-latest, r: 'devel'}
+        - { os: windows-latest, r: '4.0'}
+        - { os: macOS-latest, r: '4.0'}
         - { os: ubuntu-16.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/xenial/latest"}
         - { os: ubuntu-18.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/bionic/latest"}
         - { os: ubuntu-20.04, r: '4.0', cran: "https://packagemanager.rstudio.com/all/__linux__/focal/latest"}
@@ -73,10 +73,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages(c('BiocManager', 'rcmdcheck', 'covr'))
+          install.packages(c('BiocManager', 'rcmdcheck'))
           BiocManager::install(ask = FALSE, update = TRUE)
+          library(remotes)
           toInstall <- remotes::dev_package_deps(dependencies = TRUE)
-          remotes::update(toInstall)
+          update(toInstall)
         shell: Rscript {0}
         
       - name: Check
@@ -84,7 +85,9 @@ jobs:
         
       - name: Test coverage
         if: ${{ matrix.config.os == 'macOS-latest' }}
-        run: covr::codecov()
+        run: |
+          install.packages('covr')
+          covr::codecov()
         shell: Rscript {0}
 
       - name: Upload check results
