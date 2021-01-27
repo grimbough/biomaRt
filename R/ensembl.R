@@ -3,7 +3,7 @@
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
 listEnsemblArchives <- function(https = FALSE) {
-  .listEnsemblArchives(http = https, httr_config = list())
+  .listEnsemblArchives(https = https, httr_config = list())
 }
 
 .listEnsemblArchives <- function(https = TRUE, httr_config) {
