@@ -1,3 +1,9 @@
+cache <- file.path(tempdir(), "biomart_cache_test")
+Sys.setenv(BIOMART_CACHE = cache)
+bfc <- BiocFileCache::BiocFileCache(biomartCacheInfo(), ask = FALSE)
+
+httr_config <- do.call(c, biomaRt:::.getEnsemblSSL())
+
 ensembl <- Mart(biomart = "ensembl", 
                dataset = "hsapiens_gene_ensembl",
                host = "www.ensembl.org",
@@ -82,8 +88,8 @@ test_that("TSV and HTML result tables match", {
             <Attribute name = 'hgnc_symbol'/>
             <Filter name = \"ensembl_gene_id\" value = \"ENSG00000100036\" />
             </Dataset></Query>"
-    expect_silent(res_tsv <- biomaRt:::.submitQueryXML(host, query))
-    expect_silent(res_html <- biomaRt:::.fetchHTMLresults(host, query))
+    expect_silent(res_tsv <- biomaRt:::.submitQueryXML(host, query, httr_config = httr_config))
+    expect_silent(res_html <- biomaRt:::.fetchHTMLresults(host, query, httr_config = httr_config))
     expect_identical(res_html,
                      read.table(textConnection(res_tsv), sep = "\t", header = TRUE, 
                                 check.names = FALSE, stringsAsFactors = FALSE))
@@ -117,7 +123,6 @@ test_that("we can search predefined filter values", {
 test_that("deprecated functions show warnings", {
     
     expect_warning(searchFilterValues(ensembl, filter = "chromosome_name"))
-    
     expect_warning(listFilterValues(ensembl, filter = "chromosome_name"))
 })
 

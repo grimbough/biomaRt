@@ -38,26 +38,28 @@ martCheck = function(mart, biomart = NULL){
 }
 
 
-bmRequest <- function(request, verbose = FALSE){
+bmRequest <- function(request, httr_config, verbose = FALSE){
     if(verbose) 
         message("Attempting web service request:\n", request)
 
-    result <- tryCatch(httr::GET(request, content_type("text/plain"), timeout(10)),
+    result <- tryCatch(httr::GET(request, config = httr_config, 
+                                 content_type("text/plain"), timeout(10)),
                        error = function(c) { "timeout" } )
     
     tryAgain <- any(result == "timeout") || httr::status_code(result) == 500
     
-    ## try an alternative mirror if ensembl returns 500
-    if(tryAgain && grepl("ensembl", request)) {
+    if(tryAgain) { ## try an alternative mirror if ensembl returns 500
+        if(grepl("ensembl", request)) {
         mirrors <- c("www", "uswest", "useast", "asia")
         subdomain <- stringr::str_match(request, "://([a-z]{3,5})\\.")[1,2]
         mirror_option <- sample(mirrors[!mirrors %in% subdomain], size = 1)
         message("Ensembl site unresponsive, trying ", mirror_option, " mirror")
         request2 <- str_replace(request, pattern = "://([a-z]{3,5})\\.", 
                                 replacement = paste0("://", mirror_option, "."))
-        result <- httr::GET(request2, content_type("text/plain"))
-    } else { ## this isn't ensembl run the query again so we can get the error 
-        result <- httr::GET(request, content_type("text/plain"))
+        result <- httr::GET(request2, config = httr_config, content_type("text/plain"))
+        } else  { ## this isn't ensembl run the query again so we can get the error 
+            result <- httr::GET(request, config = httr_config, content_type("text/plain"))
+        }
     }
     
     stop_for_status(result)
@@ -76,24 +78,27 @@ bmRequest <- function(request, verbose = FALSE){
 #######################################################
 
 listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
-                       port, includeHosts = FALSE, archive = FALSE, verbose = FALSE){
+                       port, includeHosts = FALSE, archive = FALSE, httr_config, verbose = FALSE){
     
     if(missing(port)) {
         port <- ifelse(grepl("https", host), yes = 443, no = 80)
     }
     
+    if(missing(httr_config)) {
+        httr_config <- httr::config()
+    }
+    
     .listMarts(mart = mart, host = host, path = path, port = port, includeHosts = includeHosts,
-                archive = archive, verbose = verbose, ensemblRedirect = TRUE)
+                archive = archive, verbose = verbose, httr_config = httr_config, ensemblRedirect = TRUE)
     
 }
 
 .listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
                        port=80, includeHosts = FALSE, archive = FALSE, verbose = FALSE, 
-                       ensemblRedirect = NULL){
+                       httr_config, ensemblRedirect = NULL){
 
     request = NULL
     if(is.null(mart)){
-        
         host <- .cleanHostURL(host)
         if(archive) {
             stop("The archive = TRUE argument is now defunct.\n", 
@@ -101,23 +106,29 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
         } else {
             request <- paste0(host, ":", port, path, "?type=registry&requestid=biomaRt")
         }
-    } else if(class(mart) == 'Mart') {
+        if(is(httr_config, 'list')) {
+            httr_config <- do.call(c, httr_config)
+        }
+    } else if(is(mart, 'Mart')) {
             request = paste0(martHost(mart), "?type=registry&requestid=biomaRt") 
+            httr_config <- martHTTRConfig(mart)
     } else{
-            warning(paste(mart,"object needs to be of class Mart created with the useMart function.  If you don't have a Mart object yet, use listMarts without arguments or only specify the host argument",sep=" "))
+            stop(mart, " object needs to be of class Mart created with the useMart function.\n",
+            "If you don't have a Mart object yet, use listMarts() without arguments or only specify the host argument")
     } 	
     
     if(!ensemblRedirect && grepl(x = request, pattern = "ensembl.org")) {
         request <- paste0(request, "&redirect=no")
     }
-    registry = bmRequest(request = request, verbose = verbose)
+    
+    registry = bmRequest(request = request, httr_config = httr_config, verbose = verbose)
     
     ## check this looks like the MartRegistry XML, otherwise throw an error
     if(!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
         
         if(grepl(x = registry, pattern = "status.ensembl.org")) {
             stop("Your query has been redirected to http://status.ensembl.org ",
-                 "indicating this Ensembl service is currently unavailable",
+                 "indicating this Ensembl service is currently unavailable.",
                  "\nLook at ?useEnsembl for details on how to try a mirror site.",
                  call. = FALSE)
         } else {
@@ -180,7 +191,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
 }
 
 .useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, 
-                    archive = FALSE, ensemblRedirect = NULL, version, verbose = FALSE){
+                    archive = FALSE, ensemblRedirect = NULL, version, httr_config, verbose = FALSE){
     
     if(missing(biomart) && missing(version)) 
         stop("No biomart databases specified. Specify a biomart database to use using the biomart or version argument")
@@ -198,7 +209,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
     host <- .cleanHostURL(host)
     
     marts <- listMarts(host=host, path=path, port=port, includeHosts = TRUE,
-                       archive = archive)
+                       httr_config = httr_config, archive = archive)
     mindex = NA
     if(!missing(biomart)){ 
         mindex=match(biomart,marts$biomart)
@@ -227,13 +238,18 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
                        "?redirect=no",
                        "")
     
+    if(missing(httr_config)) {
+        httr_config <- list()
+    }
+    
     mart <- Mart( 
                 biomart = biomart,
                 vschema = marts$vschema[mindex], 
                 host = paste0(host, ":", 
                               port,
                               marts$path[mindex],
-                              redirect)
+                              redirect),
+                httr_config = httr_config
             )
     
     if(length(grep("archive",martHost(mart)) > 0)){
@@ -276,7 +292,9 @@ listDatasets <- function(mart, verbose = FALSE) {
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     
     request = paste0(martHost(mart), sep, "type=datasets&requestid=biomaRt&mart=", martBM(mart))
-    bmResult = bmRequest(request = request, verbose = verbose)
+    httr_config <- martHTTRConfig(mart)
+    
+    bmResult = bmRequest(request = request, httr_config = httr_config, verbose = verbose)
     con = textConnection(bmResult)
     txt = scan(con, sep="\t", blank.lines.skip=TRUE, what="character", quiet=TRUE, quote = "\"")
     close(con)
@@ -303,7 +321,9 @@ bmVersion <- function(mart, verbose=FALSE){
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     
     request = paste0(martHost(mart), sep, "type=version", "&requestid=biomaRt&mart=", martBM(mart))
-    BioMartVersion = bmRequest(request = request, verbose = verbose)
+    httr_config <- martHTTRConfig(mart)
+    
+    BioMartVersion = bmRequest(request = request, httr_config = httr_config, verbose = verbose)
     bmv = ""
     if(BioMartVersion == "\n" | BioMartVersion == ""){
         bmv = NA
@@ -332,7 +352,8 @@ bmVersion <- function(mart, verbose=FALSE){
                      "&dataset=", martDataset(mart),
                      "&requestid=biomaRt&mart=", martBM(mart),
                      "&virtualSchema=", martVSchema(mart))
-    attrfilt <- bmRequest(request = request, verbose = verbose)
+
+    attrfilt <- bmRequest(request = request, httr_config = martHTTRConfig(mart), verbose = verbose)
     attrfiltParsed <- read.table(text = attrfilt, sep="\t", header=FALSE, 
                                 quote = "", comment.char = "", as.is=TRUE)
     return(attrfiltParsed)
@@ -573,7 +594,8 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
             tf <- file.path(tempdir(), paste0("biomaRt_", chunk_hash, ".rds"))
             if(!file.exists(tf)) {
                 postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
-                                       query = fullXmlQuery)
+                                       query = fullXmlQuery,
+                                       httr_config = martHTTRConfig(mart))
                 result <- .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery,
                                           quote = quote, numAttributes = length(attributes))
                 saveRDS(result, file = tf)
@@ -664,7 +686,8 @@ getLDS <- function(attributes, filters = "", values = "", mart,
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
     ## POST query
     postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
-                               query = xmlQuery)
+                               query = xmlQuery,
+                               httr_config = martHTTRConfig(mart))
     
     if(length(grep("^Query ERROR", postRes))>0L)
         stop(postRes)  

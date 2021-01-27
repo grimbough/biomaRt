@@ -8,7 +8,7 @@
     ## swap for the archive version so we can check when it is outdated
     host <- martHost(mart)
     if(grepl("(www|uswest|useast|asia)\\.ensembl\\.org", host)) {
-        archives <- biomaRt::listEnsemblArchives()
+        archives <- listEnsemblArchives()
         host <- archives[which(archives$current_release == "*"), "url"]
     }
     

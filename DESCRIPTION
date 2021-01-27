@@ -39,6 +39,6 @@ Collate: biomaRtClasses.R
          caching.R
          ensembl.R
          ensembl_wrappers.R
+         ensembl_ssl_settings.R
          utilityFunctions.R
-         zzz.R
 
