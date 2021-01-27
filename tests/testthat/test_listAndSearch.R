@@ -28,7 +28,8 @@ test_that("Fail with no mart argument", {
 
 test_that("'Long' table of results for no search term", {
     
-    stub(searchDatasets, "listDatasets", how = example_datasets)
+    skip_if_not_installed('mockery')
+    mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
     
     expect_is(x <- searchDatasets(ensembl), class = 'data.frame')
     expect_equal(nrow(x), 5) 
@@ -47,7 +48,9 @@ test_that("Return complete table of results for no search term", {
 
 test_that("Message when nothing found", {
     
-    stub(searchDatasets, "listDatasets", how = example_datasets)
+    skip_if_not_installed('mockery')
+    
+    mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
     expect_message(searchDatasets(ensembl, pattern = "foobaa"), "No matching") %>%
         expect_null()
 
@@ -61,7 +64,9 @@ test_that("Message when nothing found", {
 
 test_that("'Sensible' table of results for specific search term", {
     
-    stub(searchDatasets, "listDatasets", how = example_datasets)
+    skip_if_not_installed('mockery')
+    
+    mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
     expect_is(x <- searchDatasets(ensembl, pattern = "B_"), class = 'data.frame')
     expect_equal(nrow(x), 1) ## only one dataset should be found
     

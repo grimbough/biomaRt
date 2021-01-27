@@ -186,10 +186,10 @@
 #' ensembl redirection doesn't seem to be working properly as of 12-12-2017
 #' This is a wrapper function to catch POSTS that are redirected and fail
 #' The new host is captured from the header and used in a re-submission
-.submitQueryXML <- function(host, query) {
+.submitQueryXML <- function(host, query, httr_config) {
     res <- httr::POST(url = host,
                       body = list('query' = query),
-                      #set_cookies(.cookies = c(redirect_mirror = 'no')),
+                      config = httr_config,
                       timeout(300))
 
     if( httr::http_error(res) ) {
@@ -203,9 +203,9 @@
 }
 
 #' if parsing of TSV results fails, try this
-.fetchHTMLresults <- function(host, query) {
+.fetchHTMLresults <- function(host, query, httr_config) {
     query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
-    html_res <- .submitQueryXML(host, query)
+    html_res <- .submitQueryXML(host, query, httr_config)
     XML::readHTMLTable(html_res, stringsAsFactors = FALSE)[[1]]
 }
 

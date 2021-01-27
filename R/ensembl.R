@@ -2,13 +2,17 @@
 
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
-listEnsemblArchives <- function(https = TRUE) {
+listEnsemblArchives <- function(https = FALSE) {
+  .listEnsemblArchives(https = https, httr_config = list())
+}
+
+.listEnsemblArchives <- function(https = TRUE, httr_config) {
   
   url <- ifelse(https,
                 "https://www.ensembl.org/info/website/archives/index.html",
                 "http://www.ensembl.org/info/website/archives/index.html")
   
-  html <- xml2::read_html(GET(url))
+  html <- xml2::read_html(GET(url, config = httr_config))
   html <- htmlParse( html )
   
   archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
@@ -42,13 +46,16 @@ listEnsemblArchives <- function(https = TRUE) {
   return(dframe)
 }
 
-listEnsembl <- function(mart = NULL, host="www.ensembl.org", version = NULL, GRCh = NULL, mirror = NULL, verbose = FALSE){
+listEnsembl <- function(mart = NULL, version = NULL, 
+                        GRCh = NULL, mirror = NULL, verbose = FALSE){
   
   host <- .constructEnsemblURL(mirror = mirror, version = version, GRCh = GRCh)
   port <- ifelse(grepl("https", host), yes = 443, no = 80)
   ensemblRedirect <- is.null(mirror)
   
-  marts <- .listMarts(mart = mart, host = host, verbose = verbose, 
+  httr_config <- .getEnsemblSSL()
+  
+  marts <- .listMarts(mart = mart, host = host, verbose = verbose, httr_config = httr_config,
                       port = port, ensemblRedirect = ensemblRedirect)
   
   sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
@@ -96,7 +103,7 @@ listEnsembl <- function(mart = NULL, host="www.ensembl.org", version = NULL, GRC
   }
   
   if(!is.null(version)) {
-    archives <- listEnsemblArchives()
+    archives <- listEnsemblArchives(https = FALSE)
     idx <- match(version, archives[,'version'], nomatch = NA)
     if(is.na(idx)) {
       stop("Specified Ensembl version is not available.\n",
@@ -161,18 +168,22 @@ useEnsembl <- function(biomart, dataset, host,
   
   ## create the host URL & turn off redirection if a mirror is specified
   host <- .constructEnsemblURL(version = version, GRCh = GRCh, mirror = mirror)
-  ensemblRedirect = is.null(mirror)
+  ensemblRedirect <- is.null(mirror)
   
   ## choose the port based on whether we use https or not
   port <- ifelse(grepl(pattern = "https://", x = host), 
                  yes = 443, no = 80)
   
-  ens = .useMart(biomart = biomart, 
-                 dataset = dataset, 
-                 host = host, 
-                 verbose = verbose,
-                 port = port, 
-                 ensemblRedirect = ensemblRedirect)	   
+  ## test https connection and store required settings
+  httr_config <- .getEnsemblSSL()
+  
+  ens <- .useMart(biomart = biomart, 
+                  dataset = dataset, 
+                  host = host, 
+                  verbose = verbose,
+                  port = port,
+                  ensemblRedirect = ensemblRedirect,
+                  httr_config = httr_config)	   
   return(ens)
 }
 
@@ -185,9 +196,11 @@ listEnsemblGenomes <- function(includeHosts = FALSE){
              "https://metazoa.ensembl.org/",
              "https://plants.ensembl.org/")
   
+  httr_config <- .getEnsemblSSL()
+  
   marts <- lapply(hosts, FUN = function(x) { 
     as.data.frame(
-      .listMarts(host = x, mart = NULL, 
+      .listMarts(host = x, mart = NULL, httr_config = httr_config,
                  verbose = FALSE, ensemblRedirect = FALSE, 
                  port = 443, includeHosts = includeHosts)
     ) } 
@@ -217,12 +230,15 @@ useEnsemblGenomes <- function(biomart, dataset) {
   
   host <- paste0("https://", martDetails$host)
   
+  httr_config <- .getEnsemblSSL()
+  
   ens <- .useMart(biomart = biomart, 
                  dataset = dataset, 
                  host = host, 
                  verbose = FALSE,
                  port = 443, 
-                 ensemblRedirect = FALSE)	  
+                 ensemblRedirect = FALSE,
+                 httr_config = httr_config)	  
   
   return(ens)
 }

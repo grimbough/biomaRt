@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.47.3
+Version: 2.47.4
 Title: Interface to BioMart databases (i.e. Ensembl)
 Authors@R: c(person("Steffen", "Durinck", role = c("aut"), 
             email = "biomartdev@gmail.com"), 
@@ -39,6 +39,6 @@ Collate: biomaRtClasses.R
          caching.R
          ensembl.R
          ensembl_wrappers.R
+         ensembl_ssl_settings.R
          utilityFunctions.R
-         zzz.R
 

@@ -63,11 +63,13 @@ test_that("Ensembl URLs are constructed correctly", {
 
 test_that("sequence correct code is used to get sequence based on ID type", {
   
-  m <- mock(data.frame(hgnc_symbol = "STAT1", ensembl_gene_id = "ENSG00000115415"),
+  skip_if_not_installed('mockery')
+  
+  m <- mockery::mock(data.frame(hgnc_symbol = "STAT1", ensembl_gene_id = "ENSG00000115415"),
             data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415"),
             data.frame(gene_exon_intron = "ACGTACGT", ensembl_gene_id = "ENSG00000115415"))
   
-  stub(.getSequenceFromId, "getBM", m)
+  mockery::stub(.getSequenceFromId, "getBM", m)
 
   expect_is(hgnc <- .getSequenceFromId(id = "STAT1", type = "hgnc_symbol", 
                                seqType = "gene_exon_intron", mart = ex_mart), 
@@ -81,8 +83,10 @@ test_that("sequence correct code is used to get sequence based on ID type", {
 
 test_that("correct settings are applied for getSequence using coordinates.", {
   
-  m <- mock(TRUE, cycle = TRUE)
-  stub(.getSequenceFromCoords, "getBM", m)
+  skip_if_not_installed('mockery')
+  
+  m <- mockery::mock(TRUE, cycle = TRUE)
+  mockery::stub(.getSequenceFromCoords, "getBM", m)
   
   expect_true(.getSequenceFromCoords(chromosome = 1, start = 1, end = 2, type = "ensembl_gene_id", 
                                    seqType = "gene_exon_intron", mart = ex_mart))
@@ -93,17 +97,18 @@ test_that("correct settings are applied for getSequence using coordinates.", {
                                      type = "ensembl_gene_id", seqType = "gene_exon_intron", 
                                      mart = ex_mart))
   
-  expect_length(mock_args(m)[[1]]$filters, 3L)
-  expect_true("upstream_flank"   %in% names(mock_args(m)[[2]]$filters))
-  expect_true("downstream_flank" %in% names(mock_args(m)[[3]]$filters))
+  expect_length(mockery::mock_args(m)[[1]]$filters, 3L)
+  expect_true("upstream_flank"   %in% names(mockery::mock_args(m)[[2]]$filters))
+  expect_true("downstream_flank" %in% names(mockery::mock_args(m)[[3]]$filters))
   
   
 })
 
 test_that("getSequence deploys correct sub-function", {
+  skip_if_not_installed('mockery')
   
-  stub(getSequence, ".getSequenceFromCoords", TRUE)
-  stub(getSequence, ".getSequenceFromId", FALSE)
+  mockery::stub(getSequence, ".getSequenceFromCoords", TRUE)
+  mockery::stub(getSequence, ".getSequenceFromId", FALSE)
   
   expect_true(getSequence(chromosome = 1, start = 1, end = 2, type = "ensembl_gene_id", 
                           seqType = "gene_exon_intron", mart = ex_mart))

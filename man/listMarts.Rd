@@ -1,9 +1,12 @@
 \name{listMarts}
 \alias{listMarts}
 \title{lists the available BioMart databases}
-\description{This function returns a list of BioMart databases to which biomaRt can connect to.  By default all public BioMart databases are displayed.  To establish a connection use the useMart function.}
+\description{This function returns a list of BioMart databases to which 
+biomaRt can connect.  By default the Ensembl BioMart databases are displayed.
+To establish a connection use the \link{useMart} function.}
+
 \usage{listMarts(mart = NULL, host="www.ensembl.org", path="/biomart/martservice",
-port, includeHosts = FALSE, archive = FALSE, verbose = FALSE)}
+port, includeHosts = FALSE, archive = FALSE, httr_config, verbose = FALSE)}
 
 \arguments{
 \item{mart}{mart object created with the \code{\link{useMart}} function.  
@@ -19,7 +22,11 @@ to \code{TRUE} will produce an error.
 A better alternative is to specify the url of the archived 
 BioMart you want to access.  For Ensembl you can view the list of archives 
 using \code{\link{listEnsemblArchives}}}
-\item{verbose}{Give detailed output of what the method is doing, for debugging purposes}
+\item{httr_config}{Some hosts require specific HTTP settings to be used when 
+connecting. This argument takes the output of \code{\link[httr]{config}} and
+will be used when connecting to \code{host}.  Can be ignored if you experience
+no problems accessing \code{host}.}
+\item{verbose}{Give detailed output of what the method is doing, for debugging purposes.}
 }
 
 \details{

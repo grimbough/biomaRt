@@ -2,7 +2,7 @@ on:
   push:
     branches:
       - master
-      - refactor-tests
+      - ssl-in-class
   pull_request:
     branches:
       - master
@@ -56,8 +56,7 @@ jobs:
           r-version: ${{ matrix.config.r }}
 
       - uses: r-lib/actions/setup-pandoc@master
-      #- uses: r-lib/actions/setup-tinytex@master
-      
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -74,11 +73,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages(c('BiocManager', 'rcmdcheck', 'covr'))
+          install.packages(c('BiocManager', 'rcmdcheck'))
           BiocManager::install(ask = FALSE, update = TRUE)
-          toInstall <- remotes::dev_package_deps(dependencies = TRUE)[,'package']
-          toInstall <- setdiff(toInstall, installed.packages()[,'Package'])
-          if(length(toInstall)) { BiocManager::install(toInstall, ask = FALSE) }
+          library(remotes)
+          toInstall <- remotes::dev_package_deps(dependencies = TRUE)
+          update(toInstall)
         shell: Rscript {0}
         
       - name: Check
@@ -86,7 +85,9 @@ jobs:
         
       - name: Test coverage
         if: ${{ matrix.config.os == 'macOS-latest' }}
-        run: covr::codecov()
+        run: |
+          install.packages('covr')
+          covr::codecov()
         shell: Rscript {0}
 
       - name: Upload check results

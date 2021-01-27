@@ -5,7 +5,8 @@ Mart <- setClass("Mart",
                         version = "character",
                         dataset = "character",
                         filters = "data.frame",
-                        attributes = "data.frame"
+                        attributes = "data.frame",
+                        httr_config = "list"
                         ),
          prototype(dataset = "",
                    vschema="default"
