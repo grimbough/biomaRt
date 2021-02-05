@@ -6,18 +6,21 @@
 .check_ensembl_ssl <- function() {
   
   test <- try(stop(), silent = TRUE)
+  test1_done_already <- test2_done_already <- FALSE
   while(is(test, "try-error")) {
     test <- try(.test_ensembl(), silent = TRUE)
     
     if(is(test, "try-error")) {
       
       if(grepl(test[1], ## This address problems with Ubuntu 20.04 et al and the Ensembl https certificates
-               pattern = "sslv3 alert handshake failure")) {
+               pattern = "sslv3 alert handshake failure") && 
+        !test1_done_already) {
         message("Failed test 1: ", test[1])
         new_config <- httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1")
-        
+        test1_done_already <- TRUE
       } else if (grepl(x = test[1], ## two reported error messages solved with the same setting
-                      pattern = "(unable to get local issuer certificate)|(server certificate verification failed)")) {
+                      pattern = "(unable to get local issuer certificate)|(server certificate verification failed)") &&
+                 !test2_done_already) {
         message("Failed test 2: ", test[1])
         new_config <- httr::config(ssl_verifypeer = FALSE)
       } else if (grepl(x = test[1], ## We end up here if the test timed out
@@ -30,15 +33,14 @@
                 "Please report this issue at https://github.com/grimbough/biomaRt/issues\n",
                 test[1])
         ## We can't fix this, so just quit the tests
-        return(invisible(0))
+        break
       }
       httr::set_config(new_config, override = FALSE)
     } else {
       ## no need to loop again if there's no error
-      return(invisible(0))
+      break
     }
   }
-  return(invisible(0))
 }
 
 
