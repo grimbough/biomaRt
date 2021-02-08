@@ -86,13 +86,6 @@ jobs:
       - name: Check
         run: Rscript -e "rcmdcheck::rcmdcheck(args = c('--no-manual', '--no-vignettes'), error_on = 'warning', check_dir = 'check')"
         
-      - name: Check R check
-        run: |
-          new_config <- httr::config(ssl_verifypeer = FALSE)
-          httr::set_config(new_config, override = FALSE)
-          devtools::check(vignettes = FALSE, args = '--timings')
-        shell: Rscript {0}
-
       - name: Upload check results
         uses: actions/upload-artifact@master
         with:
