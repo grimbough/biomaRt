@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - RELEASE_3_12
   pull_request:
     branches:
       - master
