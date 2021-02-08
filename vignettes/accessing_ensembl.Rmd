@@ -522,6 +522,39 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
       attributesL = c("refseq_mrna","chromosome_name","start_position"), martL = mouse)
 ```
 
+# Connection troubleshooting
+
+It is not uncommon to encounter connection problems when trying to access online resources such as the Ensembl BioMart.  In this section we list error messages that have been reported by users, along with suggested code to fix the problem.  If a suggested solution doesn't work, or you have a new error not listed here, please reported it on the [Bioconductor Support Site](https://support.bioconductor.org/).
+
+## `SSL certificate problem`
+
+```
+Error in curl::curl_fetch_memory(url, handle = handle) :
+SSL certificate problem: unable to get local issuer certificate
+```
+
+```{r, ssl-verifypeer, eval = FALSE}
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+```
+
+## `sslv3 alert handshake failure`
+
+```
+Error in curl::curl_fetch_memory(url, handle = handle) : 
+error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure
+```
+
+If you're running Ubuntu 20.04 or newer the following command should fix the issue.
+
+```{r, ssl-cipher-list, eval = FALSE}
+httr::set_config(httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))
+```
+
+If you encounter this error on Fedora 33, the code above doesn't seem to work.  At the moment, the only workaround we have discovered is to change the security settings at the system level.  Please see more information at [fedoraproject.org](https://fedoraproject.org/wiki/Changes/StrongCryptoSettings2) and trouble shooting discussion at [GitHub](https://github.com/grimbough/biomaRt/issues/42).  This change can be applied by running the following command in a terminal outside of R, but please consider whether this is something you want to change.  You could also consider alerting Ensembl to this issue.
+
+```
+update-crypto-policies --set LEGACY
+```
 
 # Session Info
 ```{r sessionInfo}
