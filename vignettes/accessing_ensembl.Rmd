@@ -280,12 +280,9 @@ k = keys(mart, keytype="chromosome_name", pattern="LRG")
 head(k, n=3)
 ``` 
 
-Unfortunately the `keys()` method will not work with all key
-types because they are not all supported.
+Unfortunately the `keys()` method will not work with all key types because they are not all supported.
 
-But you can still use `select()` here to extract columns of data
-that match a particular set of keys (this is basically a wrapper for
-`getBM()`).
+But you can still use `select()` here to extract columns of data that match a particular set of keys (this is basically a wrapper for `getBM()`).
 
 ```{r select}
 affy=c("202763_at","209310_s_at","207500_at")
@@ -307,6 +304,15 @@ biomartCacheInfo()
 ```
 
 The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
+
+The default location for the cache is specifc to your computer and operating system.  If you want to use a specific location you can set this via the `BIOMART_CACHE` environment variable.  You can either set this outside of R, or within R via a call to `Sys.setenv(BIOMART_CACHE = "</where/i/store/my/cache>")`.  The code below gives an example where we change the location to a temporary file^[This would not be a sensible choice on your machine, but is convenient on the Bioconductor server.] and then confirm that the location has changed.
+
+```{r cache-location, echo=2:3}
+loc <- biomaRt:::.biomartCacheLocation()
+Sys.setenv(BIOMART_CACHE = tempdir())
+biomartCacheInfo()
+Sys.setenv(BIOMART_CACHE = loc)
+```
 
 
 # biomaRt helper functions
@@ -507,7 +513,16 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 
 # Connection troubleshooting
 
-It is not uncommon to encounter connection problems when trying to access online resources such as the Ensembl BioMart.  In this section we list error messages that have been reported by users, along with suggested code to fix the problem.  If a suggested solution doesn't work, or you have a new error not listed here, please reported it on the [Bioconductor Support Site](https://support.bioconductor.org/).
+It is not uncommon to encounter connection problems when trying to access online resources such as the Ensembl BioMart. 
+In this section we list error messages that have been reported by users, along with suggested code to fix the problem.  If a suggested solution doesn't work, or you have a new error not listed here, please reported it on the [Bioconductor Support Site](https://support.bioconductor.org/). 
+
+## `r Biocpkg("biomaRt")` specific solutions
+
+If you are using `r Biocpkg("biomaRt")` directly make sure you are using `useEnsembl()` to create the **Mart** object, rather than `useMart()`.  `useEnsembl()` is aware of some specific connection details required to connect to Ensembl, and using it may fix any connection problems without requiring you to do anything further.
+
+## Global connection settings 
+
+If you are unable to modify the `r Biocpkg("biomaRt")` code (for example if you are using another package that calls `r Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session, but the settings will not persist between R sessions.
 
 ```
 Error in curl::curl_fetch_memory(url, handle = handle) :
@@ -517,7 +532,6 @@ SSL certificate problem: unable to get local issuer certificate
 ```{r, ssl-verifypeer, eval = FALSE}
 httr::set_config(httr::config(ssl_verifypeer = FALSE))
 ```
-
 
 ```
 Error in curl::curl_fetch_memory(url, handle = handle) : 
