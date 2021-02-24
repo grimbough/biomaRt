@@ -307,11 +307,10 @@ The cache can be deleted using the command `biomartCacheClear()`.  This will rem
 
 The default location for the cache is specifc to your computer and operating system.  If you want to use a specific location you can set this via the `BIOMART_CACHE` environment variable.  You can either set this outside of R, or within R via a call to `Sys.setenv(BIOMART_CACHE = "</where/i/store/my/cache>")`.  The code below gives an example where we change the location to a temporary file^[This would not be a sensible choice on your machine, but is convenient on the Bioconductor server.] and then confirm that the location has changed.
 
-```{r cache-location, echo=2:3}
-loc <- biomaRt:::.biomartCacheLocation()
+```{r cache-location, echo=1:2}
 Sys.setenv(BIOMART_CACHE = tempdir())
 biomartCacheInfo()
-Sys.setenv(BIOMART_CACHE = loc)
+Sys.unsetenv("BIOMART_CACHE")
 ```
 
 
