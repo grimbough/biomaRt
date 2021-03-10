@@ -323,8 +323,6 @@ This section describes a set of `r Biocpkg("biomaRt")` helper functions that can
 The data.frames obtained by the getSequence function can be exported to FASTA files using the `exportFASTA()` function.  One has to specify the data.frame to export and the filename using the file argument.
 
 
-
-
 # Examples of biomaRt queries
 
 In the sections below a variety of example queries are described.  Every example is written as a task, and we have to come up with a `r Biocpkg("biomaRt")` solution to the problem.
@@ -396,6 +394,7 @@ getBM(attributes = c('affy_hg_u133_plus_2','ensembl_gene_id'),
 
  
 ## Retrieve all EntrezGene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.
+
 The GO identifier for MAP kinase activity is **GO:0004707**.  In our query we will use *go_id* as our filter, and *entrezgene_id* and *hgnc_symbol* as attributes.  Here's the query:
 
 ```{r task6, echo=TRUE, eval = TRUE}
@@ -470,7 +469,7 @@ protein = getSequence(id=c(100, 5728),
 protein
 ``` 
 
-##  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148612
+##  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148420
 
 For this example we'll first have to connect to a different BioMart database, namely snp.  
 ```{r task10, echo=TRUE, eval=TRUE}
@@ -479,15 +478,14 @@ snpmart = useEnsembl(biomart = "snp", dataset="hsapiens_snp")
 
 The `listAttributes()` and `listFilters()` functions give us an overview of the available attributes and filters.  
 From these we need: *refsnp_id*, *allele*, *chrom_start* and *chrom_strand* as attributes; and as filters we'll use: *chrom_start*, *chrom_end* and *chr_name*.  
-Note that when a chromosome name, a start position and an end position are jointly used as filters, 
-the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions. 
-Putting our selected attributes and filters into getBM gives:
+^[Note that when a chromosome name, a start position and an end position are jointly used as filters, 
+the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions.] Putting our selected attributes and filters into `getBM()` gives:
 
 
 ```{r task10b}
 getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'), 
       filters = c('chr_name','start','end'), 
-      values = list(8,148350,148612), 
+      values = list(8, 148350, 148420), 
       mart = snpmart)
 ``` 
 
@@ -523,23 +521,31 @@ If you are using `r Biocpkg("biomaRt")` directly make sure you are using `useEns
 
 If you are unable to modify the `r Biocpkg("biomaRt")` code (for example if you are using another package that calls `r Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session, but the settings will not persist between R sessions.
 
-### `SSL certificate problem`
+### Error: "SSL certificate problem"
+
+**Error message**
 
 ```
 Error in curl::curl_fetch_memory(url, handle = handle) :
 SSL certificate problem: unable to get local issuer certificate
 ```
 
+**Fix**
+
 ```{r, ssl-verifypeer, eval = FALSE}
 httr::set_config(httr::config(ssl_verifypeer = FALSE))
 ```
 
-### `sslv3 alert handshake failure`
+### Error: "sslv3 alert handshake failure"
+
+**Error message**
 
 ```
 Error in curl::curl_fetch_memory(url, handle = handle) : 
 error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure
 ```
+
+**Fix**
 
 If you're running Ubuntu 20.04 or newer the following command should fix the issue.
 
