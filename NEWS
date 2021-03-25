@@ -13,6 +13,8 @@ BUG FIXES
     o Addressed issue with getSequence() and ID types that are not
     available on the 'sequences' page.  This could result in truncated
     sequences being returned from a query.
+    o getBM() would fail if it found a cache entry, but the file was corrupted.
+    Invalid entries are now detected and deleted if encountered.
     
 CHANGES IN VERSION 2.46.0
 -------------------------
