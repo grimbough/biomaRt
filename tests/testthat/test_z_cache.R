@@ -35,18 +35,25 @@ result <- data.frame(
 bfc <- BiocFileCache::BiocFileCache(biomartCacheInfo(), ask = FALSE)
 
 test_that("Entries can be added to the cache", {
-    
     expect_true(.addToCache(bfc = bfc, result = result, hash = hash))
-    
 })
-
 
 test_that("We find cache for previous query", {
-    
     expect_true(.checkInCache(bfc, hash = hash))
     expect_identical(result, .readFromCache(bfc, hash = hash))
-  
 })
+
+## add an invalid file
+tf <- tempfile()
+writeLines(LETTERS, con = tf)
+BiocFileCache::bfcadd(bfc, rname = "invalid-file", fpath = tf)
+prev_count <- bfccount(bfc)
+
+test_that("invalid cache entry detected", {
+  expect_false(.checkValidCache(bfc, hash = "invalid-file"))
+  expect_equal(bfccount(bfc), prev_count - 1)
+})
+
 
 
 test_that("Cache details are printed", {

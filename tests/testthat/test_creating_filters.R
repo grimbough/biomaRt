@@ -63,3 +63,13 @@ test_that("numeric values to filters work", {
                                               mart = ensembl)[[1]],
                  "<Filter name = \"chromosome_name\" value = \"16,18\" />")
 })
+
+# test_that("large numbers of values are split into chunks", {
+#     
+#     for(max_size in c(2, 10, 50, 100, 200, 500)) {
+#         expect_length(biomaRt:::.generateFilterXML(filters = 'start',
+#                                  values = 1:500, maxChunkSize = max_size,
+#                                  mart = ensembl),
+#                       ceiling(500 / max_size))
+#     }
+# })
