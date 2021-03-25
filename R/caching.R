@@ -64,9 +64,33 @@
 #' This function returns TRUE if a record with the requested hash already 
 #' exists in the file cache, otherwise returns FALSE.
 #' @keywords Internal
-.checkCache <- function(bfc, hash, verbose = FALSE) {
+.checkInCache <- function(bfc, hash, verbose = FALSE) {
     res <- bfcquery(bfc, query = hash, field = "rname")
     as.logical(nrow(res))
+}
+
+#' @param bfc Object of class BiocFileCache, created by a call to 
+#' BiocFileCache::BiocFileCache()
+#' @param hash unique hash representing a query.
+#' 
+#' This function checks if a cache entry is a valid RDS file.
+#' Returns TRUE if the cache entry is valid, FALSE otherwise.
+#' In the case of an invalid file the cache entry and file are 
+#' deleted.
+#' @keywords Internal
+.checkValidCache <- function(bfc, hash) {
+    res <- bfcquery(bfc, query = hash, field = "rname")
+    if(nrow(res) == 0) {
+        return(FALSE)
+    } else {
+        ## check this is a valid RDS file
+        ## remove the cache entry if it's not a valid RDS
+        test <- tryCatch(is.list(infoRDS(res$rpath[1])), 
+                         error = function(e) { return(FALSE) })
+        if(!test) 
+            bfcremove(bfc, res$rid[1])
+        return(test)
+    }
 }
 
 .biomartCacheLocation <- function() {

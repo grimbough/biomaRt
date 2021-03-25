@@ -70,5 +70,5 @@ test_that("SSL settings are stored in the cache", {
     
     expect_silent(httr_config <- .getEnsemblSSL())
     expect_is(httr_config, "list")
-    expect_true(.checkCache(bfc, "ensembl-ssl-settings"))
+    expect_true(.checkInCache(bfc, "ensembl-ssl-settings"))
 })

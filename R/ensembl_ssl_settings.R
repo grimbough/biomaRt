@@ -44,7 +44,7 @@
   
   cache <- .biomartCacheLocation()
   bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-  if(.checkCache(bfc, hash = "ensembl-ssl-settings")) {
+  if(.checkInCache(bfc, hash = "ensembl-ssl-settings")) {
     ensembl_config <- .readFromCache(bfc, "ensembl-ssl-settings")
   } else {
     ensembl_config <- .checkEnsemblSSL()

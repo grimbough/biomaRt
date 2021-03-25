@@ -43,7 +43,7 @@ test_that("Entries can be added to the cache", {
 
 test_that("We find cache for previous query", {
     
-    expect_true(.checkCache(bfc, hash = hash))
+    expect_true(.checkInCache(bfc, hash = hash))
     expect_identical(result, .readFromCache(bfc, hash = hash))
   
 })
