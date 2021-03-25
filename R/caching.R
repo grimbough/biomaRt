@@ -77,6 +77,7 @@
 #' Returns TRUE if the cache entry is valid, FALSE otherwise.
 #' In the case of an invalid file the cache entry and file are 
 #' deleted.
+#' @importFrom BiocFileCache bfcremove
 #' @keywords Internal
 .checkValidCache <- function(bfc, hash) {
     res <- bfcquery(bfc, query = hash, field = "rname")

@@ -47,11 +47,11 @@ test_that("We find cache for previous query", {
 tf <- tempfile()
 writeLines(LETTERS, con = tf)
 BiocFileCache::bfcadd(bfc, rname = "invalid-file", fpath = tf)
-prev_count <- bfccount(bfc)
+prev_count <- BiocFileCache::bfccount(bfc)
 
 test_that("invalid cache entry detected", {
   expect_false(.checkValidCache(bfc, hash = "invalid-file"))
-  expect_equal(bfccount(bfc), prev_count - 1)
+  expect_equal(BiocFileCache::bfccount(bfc), prev_count - 1)
 })
 
 
