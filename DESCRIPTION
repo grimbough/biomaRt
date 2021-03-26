@@ -12,8 +12,8 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
             comment = c(ORCID = "0000-0002-7800-3848")))
 Depends: methods
 Imports: utils, XML, AnnotationDbi, progress, stringr, httr,
-        openssl, BiocFileCache, rappdirs, xml2
-Suggests: annotate, BiocStyle, knitr, rmarkdown, testthat, mockery
+        digest, BiocFileCache, rappdirs
+Suggests: BiocStyle, knitr, rmarkdown, testthat, mockery
 VignetteBuilder: knitr
 biocViews: Annotation
 Description: In recent years a wealth of biological data has become available

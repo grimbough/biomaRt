@@ -12,8 +12,8 @@ listEnsemblArchives <- function(https = FALSE) {
                 "https://www.ensembl.org/info/website/archives/index.html",
                 "http://www.ensembl.org/info/website/archives/index.html")
   
-  html <- xml2::read_html(GET(url, config = httr_config))
-  html <- htmlParse( html )
+  html <- GET(url, config = httr_config)
+  html <- htmlParse( content(html) )
   
   archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
   

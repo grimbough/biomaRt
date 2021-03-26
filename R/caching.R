@@ -27,8 +27,7 @@
     
     combined <- paste(c(host, mart@biomart, mart@dataset, attributes, filters, values, uniqueRows, bmHeader), 
                       collapse = "_")
-    paste0("biomaRt_", 
-           as(openssl::md5(combined), "character"))
+    paste0("biomaRt_", digest::digest(combined, algo = "md5", serialize = FALSE))
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to 
