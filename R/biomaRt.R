@@ -187,7 +187,8 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
     }
     
     mart <- .useMart(biomart, dataset, host = host, path = path, port = port, 
-                     archive = archive, version = version, verbose = verbose, ensemblRedirect = TRUE)
+                     archive = archive, version = version, verbose = verbose, 
+                     httr_config = list(httr::config()), ensemblRedirect = TRUE)
 }
 
 .useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, 

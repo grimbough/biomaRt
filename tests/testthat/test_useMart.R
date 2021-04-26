@@ -2,7 +2,9 @@ library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
-context("useMart() functionality")
+test_that("useMart can connect to ensembl", {
+  expect_silent(ensembl <- useMart(biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl'))
+})
 
 #############################
 ## checking the show() method
@@ -23,6 +25,8 @@ test_that("show() reports dataset name if present", {
 #############
 
 test_that("Deprecation warning produced", {
-    
     expect_error(useMart(biomart = "ensembl", host="www.ensembl.org", ensemblRedirect = FALSE))
 })
+
+
+
