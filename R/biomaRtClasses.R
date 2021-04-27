@@ -9,6 +9,8 @@ Mart <- setClass("Mart",
                         httr_config = "list"
                         ),
          prototype(dataset = "",
-                   vschema="default"
+                   vschema="default",
+                   version = "",
+                   httr_config = list(httr::config())
                    )
          )

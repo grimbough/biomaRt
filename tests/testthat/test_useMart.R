@@ -3,12 +3,10 @@ cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
 test_that("useMart can connect to ensembl", {
+  ## Skip on linux.  SSL problems are addressed in useEnsembl()
+  testthat::skip_on_os("linux")
   expect_silent(ensembl <- useMart(biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl'))
 })
-
-#############################
-## checking the show() method
-#############################
 
 test_that("show() reports missing dataset", {
         expect_output(object = show( Mart(biomart = "ensembl") ), 
