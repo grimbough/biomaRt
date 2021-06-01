@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.49.0
+Version: 2.49.1
 Title: Interface to BioMart databases (i.e. Ensembl)
 Authors@R: c(person("Steffen", "Durinck", role = c("aut"), 
             email = "biomartdev@gmail.com"), 
@@ -10,7 +10,7 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
         person("Mike", "Smith", role=c("ctb", "cre"), 
             email = "grimbough@gmail.com",
             comment = c(ORCID = "0000-0002-7800-3848")))
-Depends: methods
+Depends: methods, xml2
 Imports: utils, XML, AnnotationDbi, progress, stringr, httr,
         digest, BiocFileCache, rappdirs
 Suggests: BiocStyle, knitr, rmarkdown, testthat, mockery
