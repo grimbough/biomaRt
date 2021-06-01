@@ -1,5 +1,34 @@
 ## location of Ensembl specific functions
 
+.getArchiveList <- function(https = TRUE, httr_config = list()) {
+  
+  url_worked <- FALSE
+  mirrors <- c("www", "asia", "uswest", "useast")
+  protocol <- ifelse(https, "https://", "http://" )
+  
+  while(!url_worked) {
+    
+    if(length(mirrors) == 0) {
+      stop("Unable to contact any Ensembl mirror")
+    }
+
+    mirror_option <- mirrors[1]
+    mirrors <- mirrors[-1]
+
+    url <- paste0(protocol, mirror_option, ".ensembl.org/info/website/archives/index.html?redirect=no")
+  
+    html <- GET(url, config = httr_config)
+  
+    ## this is TRUE if there's an HTTP error or we get the Ensembl error page
+    if(identical(status_code(html), 200L) && 
+       !grepl("The Ensembl web service you requested is temporarily unavailable", content(html))) {
+      return( content(html) )
+    }
+      
+  } 
+
+}
+
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
 listEnsemblArchives <- function(https = FALSE) {
@@ -8,12 +37,8 @@ listEnsemblArchives <- function(https = FALSE) {
 
 .listEnsemblArchives <- function(https = TRUE, httr_config) {
   
-  url <- ifelse(https,
-                "https://www.ensembl.org/info/website/archives/index.html",
-                "http://www.ensembl.org/info/website/archives/index.html")
-  
-  html <- GET(url, config = httr_config)
-  html <- htmlParse( content(html) )
+  html <- .getArchiveList(https, httr_config)
+  html <- htmlParse( html )
   
   archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
   
