@@ -1,3 +1,11 @@
+CHANGES IN VERSION 2.50.0
+-------------------------
+
+BUG FIXES
+
+    o Address issue where checking the list of Ensembl Archives would stop
+    all queries from working if the main www.ensembl.org site was unavailable.
+
 CHANGES IN VERSION 2.48.0
 -------------------------
 
