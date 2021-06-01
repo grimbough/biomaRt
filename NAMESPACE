@@ -10,6 +10,7 @@ importFrom(httr, POST, GET, content, content_type, timeout, set_cookies,
 importFrom(digest, digest)
 importFrom(BiocFileCache, bfcnew, bfcadd, bfcquery, bfcinfo, removebfc, bfcremove)
 importFrom(rappdirs, user_cache_dir)
+importFrom(xml2, read_html)
 
 export(listMarts, getGene, getSequence, exportFASTA, useMart, listDatasets, 
        useDataset,  listAttributes, listFilters, 
