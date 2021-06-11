@@ -81,7 +81,7 @@ test_that("URL formatting works", {
 })
 
 test_that("TSV and HTML result tables match", {
-    host <- "https://www.ensembl.org:443/biomart/martservice?"
+    host <- "https://www.ensembl.org:443/biomart/martservice?redirect=no"
     query <- "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query>
             <Query virtualSchemaName='default' uniqueRows='1' count='0' datasetConfigVersion='0.6' header='1' requestid='biomaRt' formatter='TSV'>
             <Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'ensembl_gene_id'/>
