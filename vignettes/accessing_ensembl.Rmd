@@ -217,7 +217,7 @@ listFilterOptions(mart = ensembl, filter = "chromosome_name")
 
 It is also possible to search the list of available values via `searchFilterOptions()`.  In the two examples below, the first returns all chromosome names starting with "*GL*", while the second will find any phenotype descriptions that contain the string "*Crohn*".
 
-```{r listFilterOptions, results = FALSE}
+```{r listFilterOptions, results = TRUE}
 searchFilterOptions(mart = ensembl, filter = "chromosome_name", 
                     pattern = "^GL")
 searchFilterOptions(mart = ensembl, filter = "phenotype_description", 
