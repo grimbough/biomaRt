@@ -231,7 +231,9 @@
                        error = function(e) {
                          ## if the error relates to number of element, try reading HTML version
                          if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
-                           .fetchHTMLresults(host = paste0(martHost(mart), hostURLsep), query = fullXmlQuery)
+                           .fetchHTMLresults(host = paste0(martHost(mart), hostURLsep), 
+                                             query = fullXmlQuery, 
+                                             httr_config = martHTTRConfig(mart))
                          else
                            stop(e)
                        }
