@@ -119,8 +119,8 @@ getGene <- function( id, type, mart){
                                mart = mart, 
                                useCache = useCache)
         
-        filters <- list(mapping_id$ensembl_gene_id)
-        names(filters) <- "ensembl_gene_id"
+        filters[[1]] <- mapping_id$ensembl_gene_id
+        names(filters)[1] <- "ensembl_gene_id"
         
         mapping_seq <- getBM(attributes = c(seqType, "ensembl_gene_id"), 
                           filters = filters,
@@ -156,13 +156,13 @@ getSequence <- function(chromosome, start, end, id, type, seqType,
     if(!missing(chromosome)){
         sequence <- .getSequenceFromCoords(chromosome, start, end, type, seqType, 
                                            upstream, downstream, mart, 
-                                           useCache = useCache, verbose=FALSE)
+                                           useCache = useCache, verbose=verbose)
     }
     
     if(!missing(id)){
         sequence <- .getSequenceFromId(id, type, seqType, 
                                        upstream, downstream, mart, 
-                                       useCache = useCache, verbose=FALSE)
+                                       useCache = useCache, verbose=verbose)
     }
     return(sequence)
 }
