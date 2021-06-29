@@ -5,6 +5,8 @@ BUG FIXES
 
     o Address issue where checking the list of Ensembl Archives would stop
     all queries from working if the main www.ensembl.org site was unavailable.
+    o Fix bug introduced in getSequence() where asking for flanking sequences
+    resulted in an invalid query.
 
 CHANGES IN VERSION 2.48.0
 -------------------------
