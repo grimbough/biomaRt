@@ -320,7 +320,7 @@ This section describes a set of `r Biocpkg("biomaRt")` helper functions that can
 
 ## exportFASTA
 
-The data.frames obtained by the getSequence function can be exported to FASTA files using the `exportFASTA()` function.  One has to specify the data.frame to export and the filename using the file argument.
+The data.frames obtained by the `getSequence()` function can be exported to FASTA files using the `exportFASTA()` function.  One has to specify the data.frame to export and the filename using the file argument.
 
 
 # Examples of biomaRt queries
@@ -407,7 +407,7 @@ getBM(attributes = c('entrezgene_id','hgnc_symbol'),
 
 ##  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences
  
-All sequence related queries to Ensembl are available through the `getSequence()` wrapper function. `getBM()` can also be used directly to retrieve sequences but this can get complicated so using getSequence is recommended.
+All sequence related queries to Ensembl are available through the `getSequence()` wrapper function. `getBM()` can also be used directly to retrieve sequences but this can get complicated so using `getSequence()` is provided as a general purpose function suitable for most situtations.
 
 Sequences can be retrieved using the `getSequence()` function either starting from chromosomal coordinates or identifiers.  
 The chromosome name can be specified using the *chromosome* argument.  The *start* and *end* arguments are used to specify *start* and *end* positions on the chromosome. 
@@ -427,7 +427,6 @@ The type of sequence returned can be specified by the *seqType* argument which t
 * *transcript_flank* gives the flanking region of the transcript exculding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute
 * *gene_flank* gives the flanking region of the gene excluding the UTRs, this must be accompanied with a given value for the upstream or downstream attribute
 
-In MySQL mode the `getSequence()` function is more limited and the sequence that is returned is the 5' to 3'+ strand of the genomic sequence, given a chromosome, as start and an end position.
 
 This task requires us to retrieve 100bp upstream promoter sequences from a set of EntrezGene identifiers.  The *type* argument in `getSequence()` can be thought of as the filter in this query and uses the same input names given by `listFilters()`. In our query we use `entrezgene_id` for the type argument.  Next we have to specify which type of sequences we want to retrieve, here we are interested in the sequences of the promoter region, starting right next to the coding start of the gene.  Setting the *seqType* to `coding_gene_flank` will give us what we need.  The *upstream* argument is used to specify how many bp of upstream sequence we want to retrieve, here we'll retrieve a rather short sequence of 100bp.  Putting this all together in `getSequence()` gives:
 
@@ -441,10 +440,12 @@ getSequence(id = entrez,
             mart=ensembl) 
 ``` 
 
+One further thing to note is that, although we are searching for genes based on their NCBI Gene IDs, Ensembl BioMart doesn't allow some ID types (including NCBI IDs) to be returned directly.  To try and accommodate this `r Biocpkg("biomaRt")` attempts to map the query IDs to Ensembl Gene IDs internally before finding the sequence information.  If no such mapping exists (or at least isn't found in Ensembl) then no sequence will be returned for the affected IDs.
+
 
 ## Retrieve all 5' UTR sequences of all genes that are located on chromosome 3 between the positions 185,514,033 and 185,535,839
 
-As described in the provious task getSequence can also use chromosomal coordinates to retrieve sequences of all genes that lie in the given region. We also have to specify which type of identifier we want to retrieve together with the sequences, here we choose for entrezgene identifiers.
+As described in the previous task `getSequence()` can also use chromosomal coordinates to retrieve sequences of all genes that lie in the given region. We also have to specify which type of identifier we want to retrieve together with the sequences. Here we choose the NCBI Gene ID^[These were historically called "Entrezgene IDs", hence the name given to the `type` argument.]
 
 ```{r task8, echo=TRUE,eval=TRUE}
 utr5 = getSequence(chromosome=3, start=185514033, end=185535839,
