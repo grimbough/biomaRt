@@ -592,7 +592,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
             
             ## create a unique name for this chunk & see if it has been run before
             chunk_hash <- digest::digest(paste(martHost(mart), fullXmlQuery), algo = "md5", serialize = FALSE)
-            tf <- file.path(tempdir(), paste0("biomaRt_", chunk_hash, ".rds"))
+            tf <- file.path(tempdir(), paste0("biomaRt_tmp_", chunk_hash, ".rds"))
             if(!file.exists(tf)) {
                 postRes <- .submitQueryXML(host = paste0(martHost(mart), sep),
                                        query = fullXmlQuery,
