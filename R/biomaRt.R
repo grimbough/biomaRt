@@ -225,8 +225,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
         stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
     
     if(is.na(marts$path[mindex]) || is.na(marts$vschema[mindex]) || 
-       is.na(marts$host[mindex]) || is.na(marts$port[mindex]) || 
-       is.na(marts$path[mindex])) 
+       is.na(marts$host[mindex]) || is.na(marts$port[mindex])) 
         stop("The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed.")
     
     if(marts$path[mindex]=="") marts$path[mindex]="/biomart/martservice" #temporary to catch bugs in registry
