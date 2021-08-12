@@ -19,6 +19,20 @@ test_that("useEnsembl() error handling is OK", {
   
 })
 
+test_that("host argument overrides others", {
+  
+  skip_if_not_installed('mockery')
+  
+  useMart_mock <- function(...) {
+    list(...) 
+  }
+  mockery::stub(useEnsembl, ".useMart", useMart_mock, depth = 1)
+  
+  mart <- useEnsembl(biomart = 'genes', dataset = 'test', host = 'www.test.com')
+  expect_true(grepl('www.test.com', mart$host))
+  
+})
+
 test_that("Ensembl URLs are constructed correctly", {
   
   ## no arguments ##

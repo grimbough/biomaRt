@@ -192,8 +192,12 @@ useEnsembl <- function(biomart, dataset, host,
   }
   
   ## create the host URL & turn off redirection if a mirror is specified
-  host <- .constructEnsemblURL(version = version, GRCh = GRCh, mirror = mirror)
-  ensemblRedirect <- is.null(mirror)
+  if(missing(host)) {
+    host <- .constructEnsemblURL(version = version, GRCh = GRCh, mirror = mirror)
+    ensemblRedirect <- is.null(mirror)
+  } else {
+    ensemblRedirect <- FALSE
+  }
   
   ## choose the port based on whether we use https or not
   port <- ifelse(grepl(pattern = "https://", x = host), 
