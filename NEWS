@@ -7,6 +7,8 @@ BUG FIXES
     all queries from working if the main www.ensembl.org site was unavailable.
     o Fix bug introduced in getSequence() where asking for flanking sequences
     resulted in an invalid query.
+    o The argument 'host' is no longer ignored in useEnsembl() (Thanks to forum
+    user "A" - https://support.bioconductor.org/p/9139019/)
 
 CHANGES IN VERSION 2.48.0
 -------------------------
