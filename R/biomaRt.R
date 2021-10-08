@@ -77,7 +77,7 @@ bmRequest <- function(request, httr_config, verbose = FALSE){
 #BioMart databases are present                        #
 #######################################################
 
-listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
+listMarts <- function( mart = NULL, host="https://www.ensembl.org", path="/biomart/martservice", 
                        port, includeHosts = FALSE, archive = FALSE, httr_config, verbose = FALSE){
     
     if(missing(port)) {
@@ -95,11 +95,11 @@ listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/marts
 
 .listMarts <- function( mart = NULL, host="www.ensembl.org", path="/biomart/martservice", 
                        port=80, includeHosts = FALSE, archive = FALSE, verbose = FALSE, 
-                       httr_config, ensemblRedirect = NULL){
+                       httr_config, ensemblRedirect = NULL, warn = TRUE){
 
     request = NULL
     if(is.null(mart)){
-        host <- .cleanHostURL(host)
+        host <- .cleanHostURL(host, warn = warn)
         if(archive) {
             stop("The archive = TRUE argument is now defunct.\n", 
                  "Use listEnsemblArchives() to find the URL to directly query an Ensembl archive.")
@@ -183,7 +183,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
                      archive = FALSE, version, verbose = FALSE) {
     
     if(missing(port)) {
-        port <- ifelse(grepl("https", host), yes = 443, no = 80)
+        port <- ifelse(grepl("https", host)[1], yes = 443, no = 80)
     }
     
     mart <- .useMart(biomart, dataset, host = host, path = path, port = port, 
@@ -191,7 +191,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
                      httr_config = list(httr::config()), ensemblRedirect = TRUE)
 }
 
-.useMart <- function(biomart, dataset, host = "www.ensembl.org", path = "/biomart/martservice", port = 80, 
+.useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "/biomart/martservice", port = 443, 
                     archive = FALSE, ensemblRedirect = NULL, version, httr_config, verbose = FALSE){
     
     if(missing(biomart) && missing(version)) 
@@ -209,8 +209,9 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
     reqHost = host
     host <- .cleanHostURL(host)
     
-    marts <- listMarts(host=host, path=path, port=port, includeHosts = TRUE,
-                       httr_config = httr_config, archive = archive)
+    marts <- .listMarts(host=host, path=path, port=port, includeHosts = TRUE,
+                       httr_config = httr_config, archive = archive,
+                       ensemblRedirect = ensemblRedirect, warn = FALSE)
     mindex = NA
     if(!missing(biomart)){ 
         mindex=match(biomart,marts$biomart)
@@ -233,7 +234,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
     if(!missing(version)) biomart = marts$biomart[mindex]
     biomart = sub(" ","%20",biomart, fixed = TRUE, useBytes = TRUE)
     
-    ## adding option to force use of specificed host with ensembl
+    ## adding option to force use of specified host with ensembl
     redirect <- ifelse(!ensemblRedirect && grepl(x = host, pattern = "ensembl.org"), 
                        "?redirect=no",
                        "")
@@ -255,7 +256,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
     if(length(grep("archive",martHost(mart)) > 0)){
         
         ## hack to work around redirection of most recent mirror URL
-        archives <- listEnsemblArchives()
+        archives <- .listEnsemblArchives()
         current_release <- archives[archives$current_release == "*", 'url']
         if(grepl(martHost(mart), pattern = current_release)) {
             martHost(mart) <- stringr::str_replace(martHost(mart), pattern = current_release, "https://www.ensembl.org")

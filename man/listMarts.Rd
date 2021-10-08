@@ -5,7 +5,7 @@
 biomaRt can connect.  By default the Ensembl BioMart databases are displayed.
 To establish a connection use the \link{useMart} function.}
 
-\usage{listMarts(mart = NULL, host="www.ensembl.org", path="/biomart/martservice",
+\usage{listMarts(mart = NULL, host="https://www.ensembl.org", path="/biomart/martservice",
 port, includeHosts = FALSE, archive = FALSE, httr_config, verbose = FALSE)}
 
 \arguments{

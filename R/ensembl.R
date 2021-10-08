@@ -31,7 +31,14 @@
 
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
-listEnsemblArchives <- function(https = FALSE) {
+listEnsemblArchives <- function(https) {
+    
+  if(!missing(https)) {
+    warning("Ensembl will soon enforce the use of https.\n",
+    "As such the 'https' argument will be deprecated in the next release.")
+  }
+  https <- TRUE
+    
   .listEnsemblArchives(https = https, httr_config = list())
 }
 
@@ -75,7 +82,7 @@ listEnsembl <- function(mart = NULL, version = NULL,
                         GRCh = NULL, mirror = NULL, verbose = FALSE){
   
   host <- .constructEnsemblURL(mirror = mirror, version = version, GRCh = GRCh)
-  port <- ifelse(grepl("https", host), yes = 443, no = 80)
+  port <- ifelse(grepl("https", host)[1], yes = 443, no = 80)
   ensemblRedirect <- is.null(mirror)
   
   httr_config <- .getEnsemblSSL()

@@ -148,22 +148,37 @@
 #' include the "http://" and maybe a trailing "/" and this messes up our
 #' paste the complete URL strategy and produces something invalid.  
 #' This function tidies that up to catch common variants.
-.cleanHostURL <- function(host) {
+.cleanHostURL <- function(host, warn = TRUE) {
     
-    ## strip trailing slash
-    host <- gsub(pattern = "/$", replacement = "", x = host)
+    parsed_url <- httr::parse_url(host)
     
     ## just supplying 'ensembl.org' is no longer handled correctly
-    ## stick 'www' infront if we see this
-    if( grepl(pattern = "^ensembl\\.org$", x = host) ) {
-        host = "www.ensembl.org"
+    ## stick 'www' in front if we see this
+    if( parsed_url$path == "ensembl.org" ) {
+        parsed_url$path = "www.ensembl.org"
     }
     
     ## only prepend http if needed 
-    if(!grepl(pattern = "^http://|^https://", x = host)) {
-        host <- paste0("http://", host)
+    if(is.null(parsed_url$scheme)) {
+        parsed_url$scheme <- "http"
+        parsed_url$hostname <- parsed_url$path
+        parsed_url$path <- ""
     }
     
+    ## warn about Ensembl HTTPS here - later we'll force the change
+    if(grepl("ensembl", parsed_url$hostname) && 
+       parsed_url$scheme != "https" &&
+       warn == TRUE) {
+        warning(
+            "Ensembl will soon enforce the use of https.\n",
+            "Ensure the 'host' argument includes \"https://\"",  
+            call. = FALSE)
+    }
+    
+    host <- httr::build_url(parsed_url)
+    
+    ## strip trailing slash
+    host <- gsub(pattern = "/$", replacement = "", x = host)
     return(host)
 }
 
