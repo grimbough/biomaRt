@@ -67,24 +67,7 @@ getBM(attributes = c("external_gene_id", "wbps_transcript_id", "transcript_bioty
 
 ### Version 12
 
-The Phytozome BioMart can be accessed with the following settings. *Note that we use the `https` address.  Queries to Phytozome will fail without specifying this.*
-
-```{r, phytozome-1, echo = TRUE, eval = TRUE}
-listMarts(host = "https://phytozome.jgi.doe.gov")
-phytozome <- useMart(biomart = "phytozome_mart", 
-                host = "https://phytozome.jgi.doe.gov")
-listDatasets(phytozome)
-phytozome <- useDataset(mart = phytozome, dataset = "phytozome")
-```
-
-Once this is set up the usual `r Biocpkg("biomaRt")` functions can be used to interogate the database options and run queries.
-
-```{r, pytozome-2}
-getBM(attributes = c("organism_name", "gene_name1"), 
-      filters = "gene_name_filter", 
-      values = "82092", 
-      mart = phytozome)
-```
+The Phytozome 12 BioMart was [retired](https://jgi.doe.gov/more-intuitive-phytozome-interface/) in August 2021 and can not longer be accessed.
 
 ### Version 13
 
@@ -94,6 +77,15 @@ Version 13 of Phyotozome can be found at https://phytozome-next.jgi.doe.gov/ and
 phytozome_v13 <- useMart(biomart = "phytozome_mart", 
                 dataset = "phytozome", 
                 host = "https://phytozome-next.jgi.doe.gov")
+```
+
+Once this is set up the usual `r Biocpkg("biomaRt")` functions can be used to interrogate the database options and run queries.
+
+```{r, pytozome-2}
+getBM(attributes = c("organism_name", "gene_name1"), 
+      filters = "gene_name_filter", 
+      values = "82092", 
+      mart = phytozome)
 ```
 
 # Session Info
