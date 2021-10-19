@@ -256,7 +256,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
     if(length(grep("archive",martHost(mart)) > 0)){
         
         ## hack to work around redirection of most recent mirror URL
-        archives <- .listEnsemblArchives()
+        archives <- .listEnsemblArchives(httr_config = httr_config)
         current_release <- archives[archives$current_release == "*", 'url']
         if(grepl(martHost(mart), pattern = current_release)) {
             martHost(mart) <- stringr::str_replace(martHost(mart), pattern = current_release, "https://www.ensembl.org")
