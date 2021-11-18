@@ -135,7 +135,7 @@ listEnsembl <- function(mart = NULL, version = NULL,
   }
   
   if(!is.null(version)) {
-    archives <- listEnsemblArchives(https = FALSE)
+    archives <- .listEnsemblArchives(https = TRUE, httr_config = list())
     idx <- match(version, archives[,'version'], nomatch = NA)
     if(is.na(idx)) {
       stop("Specified Ensembl version is not available.\n",
