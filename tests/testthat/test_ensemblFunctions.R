@@ -1,3 +1,5 @@
+library(biomaRt) 
+
 ## example Mart object
 ex_mart <- Mart(biomart = "ensembl", 
                 dataset = "hsapiens_gene_ensembl",
@@ -36,8 +38,8 @@ test_that("host argument overrides others", {
 test_that("Ensembl URLs are constructed correctly", {
   
   ## no arguments ##
-  expect_equal(.constructEnsemblURL(),
-               "https://www.ensembl.org")
+  expect_silent(.constructEnsemblURL()) |>
+    expect_equal("https://www.ensembl.org")
   
   ## mirror ##
   expect_warning(.constructEnsemblURL(mirror = "INVALID_MIRROR"), 
@@ -56,8 +58,8 @@ test_that("Ensembl URLs are constructed correctly", {
     expect_equal("https://www.ensembl.org")
   
   ## version ##
-  expect_equal(.constructEnsemblURL(version = "100"), 
-               "https://apr2020.archive.ensembl.org")
+  expect_silent(.constructEnsemblURL(version = "100")) |>
+               expect_equal("https://apr2020.archive.ensembl.org")
   
   expect_error(.constructEnsemblURL(version = "00"), 
                regexp = "Specified Ensembl version is not available")
