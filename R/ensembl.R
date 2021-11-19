@@ -121,14 +121,14 @@ listEnsembl <- function(mart = NULL, version = NULL,
   
   host <- NULL
   
-  if(!is.null(mirror) & (!is.null(version) | !is.null(GRCh))){
+  if(!is.null(mirror) && (!is.null(version) || !is.null(GRCh))){
     warning("version or GRCh arguments cannot be used together with the mirror argument.\n", 
             "We will ignore the mirror argument and connect to the main Ensembl site.",
             call. = FALSE) 
     mirror <- NULL
   }
   
-  if(!is.null(version) & !is.null(GRCh)) {
+  if(!is.null(version) && !is.null(GRCh)) {
     stop("version or GRCh arguments cannot be used together.\n", 
          "Please specify only the 'version' or 'GRCh' argument.",
          call. = FALSE) 

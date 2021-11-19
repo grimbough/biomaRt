@@ -84,6 +84,10 @@ listMarts <- function( mart = NULL, host="https://www.ensembl.org", path="/bioma
         port <- ifelse(grepl("https", host), yes = 443, no = 80)
     }
     
+    if(grepl(pattern = "^https://.*ensembl.org", x = host) && missing(httr_config)) {
+      httr_config <- .getEnsemblSSL()
+    }
+  
     if(missing(httr_config)) {
         httr_config <- httr::config()
     }
