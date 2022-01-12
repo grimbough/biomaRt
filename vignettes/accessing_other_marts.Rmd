@@ -85,7 +85,7 @@ Once this is set up the usual `r Biocpkg("biomaRt")` functions can be used to in
 getBM(attributes = c("organism_name", "gene_name1"), 
       filters = "gene_name_filter", 
       values = "82092", 
-      mart = phytozome)
+      mart = phytozome_v13)
 ```
 
 # Session Info
