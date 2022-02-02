@@ -55,21 +55,8 @@ jobs:
         run: |
           echo "options(BioC_mirror = 'https://ftp.gwdg.de/pub/misc/bioconductor')" >> ${HOME}/.Rprofile
 
-      - uses: r-lib/actions/setup-pandoc@master
-
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-        shell: Rscript {0}
-
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v1
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ matrix.config.os }}-r-${{ matrix.config.r }}-1-
+      - name: Install pandoc
+        uses: r-lib/actions/setup-pandoc@master
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
@@ -78,6 +65,7 @@ jobs:
         
       - name: R CMD check
         uses: r-lib/actions/check-r-package@v2
+        with:
           args: 'c("--no-manual", "--no-vignettes")'
           check-dir: '"check"'
           
