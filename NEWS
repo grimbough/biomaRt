@@ -5,6 +5,8 @@ BUG FIXES
 
     o Stop reporting message about the use of https when using useEnsembl()
     with a 'version' argument.
+    o Use virtualSchemaName provided by a Mart, rather than simply "default".
+    This caused issues with the Ensembl Plants Mart.
 
 CHANGES IN VERSION 2.50.0
 -------------------------
