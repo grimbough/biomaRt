@@ -667,7 +667,9 @@ getLDS <- function(attributes, filters = "", values = "", mart,
                        "\nPlease use the function 'listFilters' to get valid filter names"))
     }
     
-    xmlQuery = paste("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = 'default' uniqueRows = '",as.numeric(uniqueRows),"' count = '0' datasetConfigVersion = '0.6' header='",as.numeric(bmHeader),"' formatter = 'TSV' requestid= 'biomaRt'> <Dataset name = '",martDataset(mart),"'>",sep="")
+    xmlQuery = sprintf("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query virtualSchemaName = '%s' uniqueRows = '%s' count = '0' datasetConfigVersion = '0.6' header='%s' formatter = 'TSV' requestid= 'biomaRt'> <Dataset name = '%s'>",
+                       martVSchema(mart) ,as.numeric(uniqueRows), as.numeric(bmHeader), martDataset(mart))
+    
     attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
 
     ## ignore the chunk size here
@@ -681,7 +683,7 @@ getLDS <- function(attributes, filters = "", values = "", mart,
     linkedFilterXML <- .generateFilterXML(filters = filtersL, values = valuesL, 
     									  mart = mart, maxChunkSize = Inf)
         
-    xmlQuery = paste(xmlQuery, linkedAttributeXML, linkedFilterXML,"</Dataset></Query>",sep="")
+    xmlQuery = paste0(xmlQuery, linkedAttributeXML, linkedFilterXML,"</Dataset></Query>")
     
     if(verbose){
         message(xmlQuery)
