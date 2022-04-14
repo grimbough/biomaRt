@@ -166,7 +166,7 @@ listEnsembl <- function(mart = NULL, version = NULL,
   }
   
   if(is.null(host)) {
-    host = "https://www.ensembl.org"
+    host <- "https://www.ensembl.org"
   }
   
   return(host)
@@ -182,10 +182,10 @@ useEnsembl <- function(biomart, dataset, host,
          "the function listEnsembl()")
   }
 
-  if(tolower(biomart) == "ensembl" | tolower(biomart) == "genes") {
+  if(tolower(biomart) == "ensembl" || tolower(biomart) == "genes") {
     biomart = "ENSEMBL_MART_ENSEMBL"
   }
-  if(tolower(biomart) == "snp" | tolower(biomart) == "snps"){
+  if(tolower(biomart) == "snp" || tolower(biomart) == "snps"){
     biomart = "ENSEMBL_MART_SNP"
   }
   if(tolower(biomart) == "regulation"){
