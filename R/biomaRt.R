@@ -322,26 +322,31 @@ listDatasets <- function(mart, verbose = FALSE) {
 ## Check version of BioMart service
 bmVersion <- function(mart, verbose=FALSE){
     
-    ## we choose a separator based on whether 'redirect=no' is present
-    sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
-    
-    request = paste0(martHost(mart), sep, "type=version", "&requestid=biomaRt&mart=", martBM(mart))
-    httr_config <- martHTTRConfig(mart)
-    
-    BioMartVersion = bmRequest(request = request, httr_config = httr_config, verbose = verbose)
-    bmv = ""
-    if(BioMartVersion == "\n" | BioMartVersion == ""){
-        bmv = NA
-        if(verbose) warning(paste("BioMart version is not available from BioMart server:",request,sep="\n"))
-    }
-    else{
-        con = textConnection(BioMartVersion)
-        bmVersionParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
-        close(con)
-        if(verbose) print(bmVersionParsed)
+    ## save some time and a HTTP request if this is Ensembl
+    if(grepl(pattern = "ensembl.org", x = martHost(mart), fixed = TRUE)) {
+        bmv <- "0.7"
+    } else {
+        ## we choose a separator based on whether 'redirect=no' is present
+        sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
         
-        if(dim(bmVersionParsed)[2] >= 1){
-            bmv=bmVersionParsed[1,1]
+        request = paste0(martHost(mart), sep, "type=version", "&requestid=biomaRt&mart=", martBM(mart))
+        httr_config <- martHTTRConfig(mart)
+        
+        BioMartVersion = bmRequest(request = request, httr_config = httr_config, verbose = verbose)
+        bmv = ""
+        if(BioMartVersion == "\n" || BioMartVersion == ""){
+            bmv = NA
+            if(verbose) warning(paste("BioMart version is not available from BioMart server:",request,sep="\n"))
+        }
+        else{
+            con = textConnection(BioMartVersion)
+            bmVersionParsed = read.table(con, sep="\t", header=FALSE, quote = "", comment.char = "", as.is=TRUE)
+            close(con)
+            if(verbose) print(bmVersionParsed)
+            
+            if(dim(bmVersionParsed)[2] >= 1){
+                bmv=bmVersionParsed[1,1]
+            }
         }
     }
     return(bmv)
