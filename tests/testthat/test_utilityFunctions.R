@@ -108,6 +108,10 @@ test_that("http error codes are presented nicely", {
     expect_true(grepl(.createErrorMessage(error_code = 509, host = "www.ensembl.org")[2],
                       pattern = 'Consider trying one of the Ensembl mirrors'))
     
+    ## testing an un-seen error code
+    expect_true(grepl(.createErrorMessage(error_code = 999, host = "www.ensembl.org")[2],
+                      pattern = 'Consider trying one of the Ensembl mirrors'))
+    
 })
 
 

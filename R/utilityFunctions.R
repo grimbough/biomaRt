@@ -189,6 +189,9 @@
     err_msg <- 'biomaRt has encountered an unexpected server error.'
   } else if ( error_code == 509) {
     err_msg <- 'biomaRt has exceeded the bandwidth allowance with this server.'
+  } else {
+    err_msg <- paste0('biomaRt has encountered an unknown server error. HTTP error code: ', error_code,
+                      '\nPlease report this on the Bioconductor support site at https://support.bioconductor.org/')
   }
   
   if( grepl("ensembl", x = host) ) {

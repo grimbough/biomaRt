@@ -2,13 +2,6 @@ library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
-#ensembl_hsapiens <- useEnsembl("ENSEMBL_MART_ENSEMBL", 
-#                dataset="hsapiens_gene_ensembl",
-#                mirror = "www")
-#ensembl_rnorvegicus <- useEnsembl("ENSEMBL_MART_ENSEMBL", 
-#                       dataset="rnorvegicus_gene_ensembl",
-#                       mirror = "www")
-
 plants <- Mart(biomart = "plants_mart",
               dataset = "athaliana_eg_gene",
               host = "https://plants.ensembl.org")
@@ -33,12 +26,3 @@ test_that("We get an error with different Marts on the same host", {
                  regexp = 'Both datasets must be located in the same Mart')
 })
 
-
-# test_that("Find human/rat homologs", { 
-#     
-#     expect_is(x <- getLDS(attributes="ensembl_gene_id", mart=ensembl_hsapiens, 
-#                           filters = "ensembl_gene_id", values = "ENSG00000084453",
-#                           attributesL="ensembl_gene_id", martL=ensembl_rnorvegicus),
-#               "data.frame")
-#     expect_true("ENSRNOG00000047493" %in% x[,2])
-# })
