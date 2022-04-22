@@ -78,17 +78,47 @@ listEnsemblArchives <- function(https) {
   return(dframe)
 }
 
-listEnsembl <- function(mart = NULL, version = NULL, 
-                        GRCh = NULL, mirror = NULL, verbose = FALSE){
-  
-  host <- .constructEnsemblURL(mirror = mirror, version = version, GRCh = GRCh)
-  port <- ifelse(grepl("https", host)[1], yes = 443, no = 80)
-  ensemblRedirect <- is.null(mirror)
-  
-  httr_config <- .getEnsemblSSL()
-  
-  marts <- .listMarts(mart = mart, host = host, verbose = verbose, httr_config = httr_config,
-                      port = port, ensemblRedirect = ensemblRedirect)
+.listEnsembl <- function(mart = NULL, version = NULL, GRCh = NULL, 
+                         mirror = NULL, verbose = FALSE) {
+    
+    ## determine if a cached version exists and if it's less than one week old
+    cache <- .biomartCacheLocation()
+    bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+    use_cached_version <- FALSE
+    if(.checkInCache(bfc, hash = "ensembl-marts")) {
+        cache_entry <- bfcquery(x = bfc, query = "ensembl-marts")
+        if(Sys.time() - as.POSIXct(cache_entry$create_time) < 7) {
+            use_cached_version <- TRUE
+        } else {
+            bfcremove(cache_entry$rid)
+        }
+    }
+    
+    if(use_cached_version) {
+        marts <- .readFromCache(bfc, "ensembl-marts")
+    } else {
+        host <- .constructEnsemblURL(mirror = mirror, version = version, GRCh = GRCh)
+        port <- ifelse(grepl("https", host)[1], yes = 443, no = 80)
+        ensemblRedirect <- is.null(mirror)
+        
+        httr_config <- .getEnsemblSSL()
+        
+        marts <- .listMarts(mart = mart, host = host, verbose = verbose, httr_config = httr_config,
+                            port = port, ensemblRedirect = ensemblRedirect)
+        
+        .addToCache(bfc, marts, hash = "ensembl-marts")
+    }
+    
+    return(marts)
+    
+}
+    
+
+listEnsembl <- function(mart = NULL, version = NULL, GRCh = NULL, 
+                        mirror = NULL, verbose = FALSE) {
+    
+  marts <- .listEnsembl(mart = mart, version = version, GRCh = GRCh,
+                        mirror = mirror, verbose = verbose)
   
   sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
   if(length(sel) > 0){ 
@@ -182,21 +212,16 @@ useEnsembl <- function(biomart, dataset, host,
          "the function listEnsembl()")
   }
 
-  if(tolower(biomart) == "ensembl" || tolower(biomart) == "genes") {
-    biomart = "ENSEMBL_MART_ENSEMBL"
-  }
-  if(tolower(biomart) == "snp" || tolower(biomart) == "snps"){
-    biomart = "ENSEMBL_MART_SNP"
-  }
-  if(tolower(biomart) == "regulation"){
-    biomart = "ENSEMBL_MART_FUNCGEN"
-  }
-  if(tolower(biomart) == "vega"){
-    biomart = "ENSEMBL_MART_VEGA"
-  }
-  if(tolower(biomart) == "mouse_strains"){
-    biomart = "ENSEMBL_MART_MOUSE"
-  }
+  biomart <- switch (tolower(biomart),
+      "ensembl" = "ENSEMBL_MART_ENSEMBL",
+      "genes"   = "ENSEMBL_MART_ENSEMBL",
+      "snp"     = "ENSEMBL_MART_SNP",
+      "snps"    = "ENSEMBL_MART_SNP",
+      "regulation" = "ENSEMBL_MART_FUNCGEN",
+      "mouse_strains" = "ENSEMBL_MART_MOUSE",
+      "vega"          = "ENSEMBL_MART_VEGA",
+      biomart
+  )
   
   ## create the host URL & turn off redirection if a mirror is specified
   if(missing(host)) {
@@ -213,15 +238,48 @@ useEnsembl <- function(biomart, dataset, host,
   ## test https connection and store required settings
   httr_config <- .getEnsemblSSL()
   
-  ens <- .useMart(biomart = biomart, 
-                  dataset = dataset, 
-                  host = host, 
-                  verbose = verbose,
-                  port = port,
-                  ensemblRedirect = ensemblRedirect,
-                  httr_config = httr_config)	   
-  return(ens)
+  marts <- .listEnsembl(version = verson, GRCh = GRCh, mirror = mirror)
+  
+  mindex = NA
+  if(!missing(biomart)){ 
+      mindex=match(biomart,marts$biomart)
+  }
+  if(is.na(mindex))
+      stop("Incorrect BioMart name, use the listMarts function to see which BioMart databases are available")
+  
+  ## adding option to force use of specified host with ensembl
+  redirect <- ifelse(!ensemblRedirect && grepl(x = host, pattern = "ensembl.org"), 
+                     "?redirect=no",
+                     "")
+  
+  mart <- Mart( 
+      biomart = biomart,
+      vschema = "default", 
+      host = paste0(host, ":", 
+                    port,
+                    "/biomart/martservice",
+                    redirect),
+      httr_config = httr_config
+  )
+  
+  if(grepl("archive", martHost(mart))) {
+      
+      ## hack to work around redirection of most recent mirror URL
+      archives <- .listEnsemblArchives(https = TRUE, httr_config = httr_config)
+      current_release <- archives[archives$current_release == "*", 'url']
+      if(grepl(martHost(mart), pattern = current_release)) {
+          martHost(mart) <- stringr::str_replace(martHost(mart), pattern = current_release, "https://www.ensembl.org")
+          martHost(mart) <- stringr::str_replace(martHost(mart), pattern = ":80/", ":443/")
+      }
+  }
+  
+  if(!missing(dataset)){
+      mart = useDataset(mart = mart, dataset=dataset, verbose = verbose)
+  }
+  return(mart)
+  
 }
+
 
 ##############################################
 
