@@ -29,6 +29,16 @@ useEnsemblGenomes(biomart, dataset)
   use, for debugging}
 }
 
+\details{
+The \code{mirror} argument can be considered as a "preferred choice" when 
+connecting to Ensembl.  If the argument is provided then connectivity to that
+mirror will be tested.  If it responds positively then the requested mirror
+will be used.  If the response is a failure each of the remaining mirrors will
+be selected at random and tested until a working server is found.  Once 
+identified that Ensembl server will be associated with the returned \code{Mart}
+object and will be used for all queries.
+}
+
 \author{Steffen Durinck & Mike Smith} 
 
 \examples{
