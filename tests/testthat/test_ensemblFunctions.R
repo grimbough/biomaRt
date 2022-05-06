@@ -1,4 +1,5 @@
 library(biomaRt) 
+library(webmockr)
 
 ## example Mart object
 ex_mart <- Mart(biomart = "ensembl", 
@@ -21,18 +22,34 @@ test_that("useEnsembl() error handling is OK", {
   
 })
 
-test_that("host argument overrides others", {
-  
-  skip_if_not_installed('mockery')
-  
-  useMart_mock <- function(...) {
-    list(...) 
-  }
-  mockery::stub(useEnsembl, ".useMart", useMart_mock, depth = 1)
-  
-  mart <- useEnsembl(biomart = 'genes', dataset = 'test', host = 'www.test.com')
-  expect_true(grepl('www.test.com', mart$host))
-  
+
+test_that("Ensembl mirror selection works", {
+    
+    httr_mock()
+    
+    ## failure when all mirrors are down
+    m_www    <- stub_request("POST", uri_regex = "https://www.ensembl.org/biomart/martservice?redirect=no") |> 
+        to_return(status = 500)
+    m_uswest <- stub_request("POST", uri_regex = "https://uswest.ensembl.org/biomart/martservice?redirect=no") |> 
+        to_return(status = 500)
+    m_useast <- stub_request("POST", uri_regex = "https://useast.ensembl.org/biomart/martservice?redirect=no") |> 
+        to_return(status = 500)
+    m_asia   <- stub_request("POST", uri_regex = "https://asia.ensembl.org/biomart/martservice?redirect=no") |> 
+        to_return(status = 500)
+    
+    expect_error(.chooseEnsemblMirror(mirror = NULL), regexp = "Unable to query any Ensembl site") 
+    
+    ## now set www to working and check we end up on that mirror
+    remove_request_stub(m_www)
+    m_www    <- stub_request("POST", uri_regex = "https://www.ensembl.org/biomart/martservice?redirect=no") |> 
+        to_return(status = 200)
+    
+    expect_message(.chooseEnsemblMirror(mirror = "uswest"), regexp = "unresponsive") |>
+        expect_equal("www")
+    
+    ## clean up mocking
+    stub_registry_clear()
+    httr_mock(on = FALSE)
 })
 
 test_that("Ensembl URLs are constructed correctly", {

@@ -29,6 +29,12 @@
 
 }
 
+.currentEnsemblVersion <- function() {
+    archives <- listEnsemblArchives()
+    current <- archives[archives$current_release == "*", ]
+    return(current)
+}
+
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
 listEnsemblArchives <- function(https) {
@@ -81,12 +87,18 @@ listEnsemblArchives <- function(https) {
 .listEnsembl <- function(mart = NULL, version = NULL, GRCh = NULL, 
                          mirror = NULL, verbose = FALSE) {
     
+    if(is.null(version)) {
+        version_num <- .currentEnsemblVersion()["version"]
+    } else {
+        version_num <- version
+    }
+    
     ## determine if a cached version exists and if it's less than one week old
     cache <- .biomartCacheLocation()
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     use_cached_version <- FALSE
-    if(.checkInCache(bfc, hash = "ensembl-marts")) {
-        cache_entry <- bfcquery(x = bfc, query = "ensembl-marts")
+    if(.checkInCache(bfc, hash = paste0("ensembl-marts-", version_num))) {
+        cache_entry <- bfcquery(x = bfc, query = paste0("ensembl-marts-", version_num))
         if(Sys.time() - as.POSIXct(cache_entry$create_time) < 7) {
             use_cached_version <- TRUE
         } else {
@@ -95,7 +107,7 @@ listEnsemblArchives <- function(https) {
     }
     
     if(use_cached_version) {
-        marts <- .readFromCache(bfc, "ensembl-marts")
+        marts <- .readFromCache(bfc, paste0("ensembl-marts-", version_num))
     } else {
         host <- .constructEnsemblURL(mirror = mirror, version = version, GRCh = GRCh)
         port <- ifelse(grepl("https", host)[1], yes = 443, no = 80)
@@ -106,7 +118,7 @@ listEnsemblArchives <- function(https) {
         marts <- .listMarts(mart = mart, host = host, verbose = verbose, httr_config = httr_config,
                             port = port, ensemblRedirect = ensemblRedirect)
         
-        .addToCache(bfc, marts, hash = "ensembl-marts")
+        .addToCache(bfc, marts, hash = paste0("ensembl-marts-", version_num))
     }
     
     return(marts)
@@ -225,6 +237,9 @@ useEnsembl <- function(biomart, dataset, host,
   
   ## create the host URL & turn off redirection if a mirror is specified
   if(missing(host)) {
+    if(is.null(version) && is.null(GRCh)) {  
+        mirror <- .chooseEnsemblMirror(mirror = mirror)
+    }
     host <- .constructEnsemblURL(version = version, GRCh = GRCh, mirror = mirror)
     ensemblRedirect <- is.null(mirror)
   } else {
@@ -238,7 +253,7 @@ useEnsembl <- function(biomart, dataset, host,
   ## test https connection and store required settings
   httr_config <- .getEnsemblSSL()
   
-  marts <- .listEnsembl(version = verson, GRCh = GRCh, mirror = mirror)
+  marts <- .listEnsembl(version = version, GRCh = GRCh, mirror = mirror)
   
   mindex = NA
   if(!missing(biomart)){ 
@@ -335,4 +350,65 @@ useEnsemblGenomes <- function(biomart, dataset) {
                  httr_config = httr_config)	  
   
   return(ens)
+}
+
+
+#' This function submits a small test query to identify a working Ensembl mirror.
+#' If no mirror argument is provided it will use "www" as its first choice.  
+#' If the selected mirror returns a success (http 200) response it will be used
+#' Otherwise another mirror is selected at random and used instead.
+#' If all mirrors fail it will return an error
+.chooseEnsemblMirror <- function(mirror) {
+    
+    mirrors <- c("www", "asia", "uswest", "useast")
+    
+    httr_config <- do.call(c, .getEnsemblSSL())
+    example_query <- '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Query>
+<Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >
+	<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
+		<Filter name = "ensembl_gene_id" value = "ENSG00000000003"/>
+		<Attribute name = "ensembl_gene_id" />
+	</Dataset>
+</Query>'
+    
+    ## create Ensembl URL and stop any redirection to a mirror
+    host <- .constructEnsemblURL(mirror = mirror)
+    host <- paste0(host, "/biomart/martservice?redirect=no")
+    mirror <- str_match(host, pattern = "://([a-z]{3,6})\\.")[1,2]
+    
+    result <- tryCatch(httr::POST(url = host,
+                                  body = list('query' = example_query),
+                                  config = httr_config,
+                                  content_type("text/plain"), 
+                                  timeout(10)),
+                       error = function(c) { "timeout" } )
+    
+    tryAgain <- any(result == "timeout") || httr::status_code(result) == 500
+    
+    if(tryAgain) { ## try an alternative mirror if ensembl returns 500
+        remaining_mirrors <- setdiff(mirrors, mirror)
+        while((length(remaining_mirrors) > 0) && (tryAgain)) {
+            mirror <- sample(remaining_mirrors, size = 1)
+            message("Ensembl site unresponsive, trying ", mirror, " mirror")
+            host <- str_replace(host, 
+                                pattern = "://([a-z]{3,6})\\.", 
+                                replacement = paste0("://", mirror, "."))
+            result <- tryCatch(httr::POST(url = host,
+                                          body = list('query' = example_query),
+                                          config = httr_config,
+                                          content_type("text/plain"), 
+                                          timeout(10)),
+                               error = function(c) { "timeout" } )
+            tryAgain <- any(result == "timeout") || httr::status_code(result) == 500
+            if(tryAgain) {
+                remaining_mirrors <- setdiff(remaining_mirrors, mirror)
+            }
+        }
+    }
+    if(tryAgain) {
+        stop("Unable to query any Ensembl site")
+    }
+    
+    return(mirror)
 }

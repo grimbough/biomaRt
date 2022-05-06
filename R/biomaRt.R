@@ -41,28 +41,12 @@ martCheck = function(mart, biomart = NULL){
 bmRequest <- function(request, httr_config, verbose = FALSE){
     if(verbose) 
         message("Attempting web service request:\n", request)
-
-    result <- tryCatch(httr::GET(request, config = httr_config, 
-                                 content_type("text/plain"), timeout(10)),
-                       error = function(c) { "timeout" } )
     
-    tryAgain <- any(result == "timeout") || httr::status_code(result) == 500
-    
-    if(tryAgain) { ## try an alternative mirror if ensembl returns 500
-        if(grepl("ensembl", request)) {
-        mirrors <- c("www", "uswest", "useast", "asia")
-        subdomain <- stringr::str_match(request, "://([a-z]{3,5})\\.")[1,2]
-        mirror_option <- sample(mirrors[!mirrors %in% subdomain], size = 1)
-        message("Ensembl site unresponsive, trying ", mirror_option, " mirror")
-        request2 <- str_replace(request, pattern = "://([a-z]{3,5})\\.", 
-                                replacement = paste0("://", mirror_option, "."))
-        result <- httr::GET(request2, config = httr_config, content_type("text/plain"))
-        } else  { ## this isn't ensembl run the query again so we can get the error 
-            result <- httr::GET(request, config = httr_config, content_type("text/plain"))
-        }
-    }
-    
+    result <- httr::GET(request, config = httr_config, 
+                        content_type("text/plain"),
+                        timeout(10))
     stop_for_status(result)
+
     result2 <- content(result, encoding = "UTF-8")
     if(is.na(result2)) {
         result2 <- content(result, encoding = "Latin1")
