@@ -201,9 +201,6 @@
   return(err_msg)
 }
 
-#' ensembl redirection doesn't seem to be working properly as of 12-12-2017
-#' This is a wrapper function to catch POSTS that are redirected and fail
-#' The new host is captured from the header and used in a re-submission
 .submitQueryXML <- function(host, query, httr_config) {
     res <- httr::POST(url = host,
                       body = list('query' = query),

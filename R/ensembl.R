@@ -235,10 +235,13 @@ useEnsembl <- function(biomart, dataset, host,
       biomart
   )
   
+  ## test https connection and store required settings
+  httr_config <- .getEnsemblSSL()
+  
   ## create the host URL & turn off redirection if a mirror is specified
   if(missing(host)) {
     if(is.null(version) && is.null(GRCh)) {  
-        mirror <- .chooseEnsemblMirror(mirror = mirror)
+        mirror <- .chooseEnsemblMirror(mirror = mirror, httr_config = httr_config)
     }
     host <- .constructEnsemblURL(version = version, GRCh = GRCh, mirror = mirror)
     ensemblRedirect <- is.null(mirror)
@@ -249,9 +252,6 @@ useEnsembl <- function(biomart, dataset, host,
   ## choose the port based on whether we use https or not
   port <- ifelse(grepl(pattern = "https://", x = host), 
                  yes = 443, no = 80)
-  
-  ## test https connection and store required settings
-  httr_config <- .getEnsemblSSL()
   
   marts <- .listEnsembl(version = version, GRCh = GRCh, mirror = mirror)
   
@@ -358,11 +358,13 @@ useEnsemblGenomes <- function(biomart, dataset) {
 #' If the selected mirror returns a success (http 200) response it will be used
 #' Otherwise another mirror is selected at random and used instead.
 #' If all mirrors fail it will return an error
-.chooseEnsemblMirror <- function(mirror) {
+.chooseEnsemblMirror <- function(mirror, httr_config) {
     
     mirrors <- c("www", "asia", "uswest", "useast")
     
-    httr_config <- do.call(c, .getEnsemblSSL())
+    if(missing(httr_config)) {
+        httr_config <- do.call(c, .getEnsemblSSL())
+    }
     example_query <- '<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Query>
 <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >
