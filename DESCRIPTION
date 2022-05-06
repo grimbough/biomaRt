@@ -13,7 +13,7 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
 Depends: methods
 Imports: utils, XML (>= 3.99-0.7), AnnotationDbi, progress, stringr, httr,
         digest, BiocFileCache, rappdirs, xml2
-Suggests: BiocStyle, knitr, rmarkdown, testthat, mockery
+Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, webmockr
 VignetteBuilder: knitr
 biocViews: Annotation
 Description: In recent years a wealth of biological data has become available
@@ -41,4 +41,3 @@ Collate: biomaRtClasses.R
          ensembl_wrappers.R
          ensembl_ssl_settings.R
          utilityFunctions.R
-
