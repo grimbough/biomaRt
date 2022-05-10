@@ -253,7 +253,11 @@ useEnsembl <- function(biomart, dataset, host,
   port <- ifelse(grepl(pattern = "https://", x = host), 
                  yes = 443, no = 80)
   
-  marts <- .listEnsembl(version = version, GRCh = GRCh, mirror = mirror)
+  if(grepl(x = host, pattern = "www|uswest|useast|asia")) {
+    marts <- .listEnsembl(version = version, GRCh = GRCh, mirror = mirror)
+  } else {
+    marts <- .listMarts(host = host, port = port, httr_config = httr_config, ensemblRedirect = FALSE)
+  }
   
   mindex = NA
   if(!missing(biomart)){ 
@@ -365,6 +369,10 @@ useEnsemblGenomes <- function(biomart, dataset) {
     if(missing(httr_config)) {
         httr_config <- do.call(c, .getEnsemblSSL())
     }
+    if(is.list(httr_config)) {
+        httr_config <- do.call(c, httr_config)
+    }
+    
     example_query <- '<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Query>
 <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >
