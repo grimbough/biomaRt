@@ -102,7 +102,7 @@ listEnsemblArchives <- function(https) {
         if(Sys.time() - as.POSIXct(cache_entry$create_time) < 7) {
             use_cached_version <- TRUE
         } else {
-            bfcremove(cache_entry$rid)
+            bfcremove(bfc, cache_entry$rid)
         }
     }
     

@@ -134,7 +134,7 @@ listMarts <- function( mart = NULL, host="https://www.ensembl.org", path="/bioma
     index = 1
     
     # if(host != "www.biomart.org" || archive){
-        for(i in seq(len=xmlSize(registry))){
+        for(i in seq(length.out=xmlSize(registry))){
             if(xmlName(registry[[i]])=="MartURLLocation"){  
                 if(xmlGetAttr(registry[[i]],"visible") == 1){
                     if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = as.character(xmlGetAttr(registry[[i]],"name"))
