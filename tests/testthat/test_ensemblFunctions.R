@@ -26,6 +26,7 @@ test_that("useEnsembl() error handling is OK", {
 test_that("Ensembl mirror selection works", {
     
     httr_mock()
+    on.exit(httr_mock(on = FALSE))
     
     ## failure when all mirrors are down
     m_www    <- stub_request("POST", uri_regex = "https://www.ensembl.org/biomart/martservice?redirect=no") |> 
@@ -41,7 +42,10 @@ test_that("Ensembl mirror selection works", {
     
     ## now set www to working and check we end up on that mirror
     remove_request_stub(m_www)
-    m_www    <- stub_request("POST", uri_regex = "https://www.ensembl.org/biomart/martservice?redirect=no") |> 
+    m_www <- stub_request("POST", uri = "https://www.ensembl.org/biomart/martservice?redirect=no") |> 
+        wi_th(
+          headers = list('Accept' = 'application/json, text/xml, application/xml, */*', 'Content-Type' = 'text/plain')
+          ) |>
         to_return(status = 200)
     
     expect_message(.chooseEnsemblMirror(mirror = "uswest"), regexp = "unresponsive") |>
@@ -49,7 +53,7 @@ test_that("Ensembl mirror selection works", {
     
     ## clean up mocking
     stub_registry_clear()
-    httr_mock(on = FALSE)
+    
 })
 
 test_that("Ensembl URLs are constructed correctly", {
