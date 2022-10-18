@@ -24,7 +24,6 @@ test_that("Error when archive = TRUE", {
 
 test_that("Error when old URL is used", {
     
-    expect_error(listMarts(host="www.biomart.org"), 
-                 class = "http_404")
+    expect_error(listMarts(host="www.biomart.org"))
     
 })
