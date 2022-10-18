@@ -238,8 +238,17 @@ useEnsembl <- function(biomart, dataset, host,
   ## test https connection and store required settings
   httr_config <- .getEnsemblSSL()
   
+  ## a crude check to ensure the sub-domain is included.  Otherwise queries will fail
+  no_subdomain <- grepl(x = host, pattern = "http[s]?://ensembl", fixed = FALSE)
+  
   ## create the host URL & turn off redirection if a mirror is specified
-  if(missing(host)) {
+  if(missing(host) || no_subdomain ) {
+    
+    if(no_subdomain) {
+      warning("You cannot use the host 'ensembl.org'.\n",
+              "Please provide a subdomain e.g. www.ensembl.org or use one of the 'mirror', 'version', 'GRCh' arguments")
+    }
+    
     if(is.null(version) && is.null(GRCh)) {  
         mirror <- .chooseEnsemblMirror(mirror = mirror, httr_config = httr_config)
     }

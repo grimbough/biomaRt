@@ -20,6 +20,9 @@ test_that("useEnsembl() error handling is OK", {
   
   expect_error(useEnsembl(), regexp = "You must provide the argument")
   
+  expect_warning(useEnsembl(biomart = "genes", host = "https://ensembl.org"), 
+                 regexp = "You cannot use the host")
+  
 })
 
 
