@@ -28,7 +28,7 @@ jobs:
       - name: Install system libraries
         if: ${{ runner.os == 'Linux'  }}
         run: |
-          sudo apt-get install libcurl4-openssl-dev
+          sudo apt-get update && sudo apt-get install libcurl4-openssl-dev
           
       - name: Install Mac system libraries
         if: ${{ matrix.config.os == 'macOS-11' }}
@@ -41,7 +41,7 @@ jobs:
           git config --global user.email "ghau@example.com"
           git config --global user.name "GitHub Actions User"
         
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup R and Bioconductor
         uses: grimbough/bioc-actions/setup-bioc@v1
@@ -76,7 +76,7 @@ jobs:
 
       ## upload the Rcheck folder if the workflow fails
       - name: Upload output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: ${{ matrix.os }}-bioc-${{ matrix.bioc-version}}
