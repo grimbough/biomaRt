@@ -50,7 +50,7 @@ jobs:
           bioc-mirror: https://ftp.gwdg.de/pub/misc/bioconductor
           
       - name: Install pandoc
-        uses: r-lib/actions/setup-pandoc@master
+        uses: r-lib/actions/setup-pandoc@v2
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
