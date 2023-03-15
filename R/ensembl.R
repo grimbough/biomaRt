@@ -99,7 +99,7 @@ listEnsemblArchives <- function(https) {
     use_cached_version <- FALSE
     if(.checkInCache(bfc, hash = paste0("ensembl-marts-", version_num))) {
         cache_entry <- bfcquery(x = bfc, query = paste0("ensembl-marts-", version_num))
-        if(Sys.time() - as.POSIXct(cache_entry$create_time) < 7) {
+        if( (nrow(cache_entry) == 1) && (as.Date(Sys.time()) - as.Date(cache_entry$create_time) < 7) ) {
             use_cached_version <- TRUE
         } else {
             bfcremove(bfc, cache_entry$rid)
