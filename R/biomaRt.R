@@ -471,7 +471,7 @@ filterOptions <- function(filter, mart){
 filterType <- function(filter, mart){
     if(missing(filter)) 
         stop("No filter given. Please specify the filter for which you want to retrieve the filter type")
-    if(class(filter)!="character")
+    if(!is.character(filter))
         stop("Filter argument should be of class character")
     martCheck(mart)
     type="unknown"
@@ -507,7 +507,7 @@ getBM <- function(attributes, filters = "", values = "", mart, curl = NULL,
         values = filters
         filters = names(filters)
     }
-    if(class(uniqueRows) != "logical")
+    if(!is.logical(uniqueRows))
         stop("Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE")
     
     ## determine if we should use the results cache
@@ -733,7 +733,7 @@ getBMlist <- function(attributes, filters = "", values = "", mart, list.names = 
 ####################
 
 exportFASTA <- function( sequences, file ) {
-    if( missing( sequences ) || class( sequences ) != "data.frame"){
+    if( missing( sequences ) || !is.data.frame( sequences )) {
         stop("No data.frame given to write FASTA.  The data.frame should be the output of the getSequence function.");
     }
     if( missing(file)){
