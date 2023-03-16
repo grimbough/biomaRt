@@ -1,3 +1,11 @@
+CHANGES IN VERSION 2.56.0
+-------------------------
+
+BUG FIXES
+
+    o Fix problem when multiple cache entries with the same ID could
+    be created, resulting in .listEnsembl() failing.
+
 CHANGES IN VERSION 2.52.0
 -------------------------
 
