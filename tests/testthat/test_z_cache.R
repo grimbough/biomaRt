@@ -1,3 +1,5 @@
+library(biomaRt)
+
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
@@ -43,7 +45,8 @@ test_that("We find cache for previous query", {
     expect_identical(result, .readFromCache(bfc, hash = hash))
 })
 
-## add an invalid file
+## add an invalid file.  We are only expecting .rds files, and this is a 
+## text file
 tf <- tempfile()
 writeLines(LETTERS, con = tf)
 BiocFileCache::bfcadd(bfc, rname = "invalid-file", fpath = tf)
@@ -52,6 +55,13 @@ prev_count <- BiocFileCache::bfccount(bfc)
 test_that("invalid cache entry detected", {
   expect_false(.checkValidCache(bfc, hash = "invalid-file"))
   expect_equal(BiocFileCache::bfccount(bfc), prev_count - 1)
+})
+
+
+## check we can't write multiple entries with the same hash
+test_that("we can't create multiple entries with the same hash", {
+  expect_true(.addToCache(bfc = bfc, result = 1:100, hash = "testing"))
+  expect_false(.addToCache(bfc = bfc, result = 1:100, hash = "testing"))
 })
 
 

@@ -34,10 +34,25 @@
 #' BiocFileCache::BiocFileCache()
 #' @param hash unique hash representing a query.
 .addToCache <- function(bfc, result, hash) {
-    tf <- tempfile()
-    saveRDS(result, file = tf)
-    bfcadd(bfc, rname = hash, fpath = tf, action = "copy")
+  
+  if(!dir.exists(.biomartCacheLocation()))
+    dir.create(.biomartCacheLocation())
+  
+  ## write our file to the biomart cache location directly
+  tf <- tempfile(tmpdir = biomaRt:::.biomartCacheLocation())
+  saveRDS(result, file = tf)
+  
+  ## check once more that there isn't an entry with this hash
+  ## if its free add our new file
+  ## if there's a clash don't add anything and tidy up
+  if(!.checkInCache(bfc, hash = hash)) {
+    bfcadd(bfc, rname = hash, fpath = tf, action = "asis")
+    res <- TRUE
+  } else {
     file.remove(tf)
+    res <- FALSE
+  }
+  return(invisible(res))
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to 
