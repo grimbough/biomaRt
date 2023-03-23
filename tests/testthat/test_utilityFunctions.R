@@ -82,18 +82,40 @@ test_that("URL formatting works", {
 })
 
 test_that("TSV and HTML result tables match", {
-    host <- "https://www.ensembl.org:443/biomart/martservice?redirect=no"
-    query <- "<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query>
-            <Query virtualSchemaName='default' uniqueRows='1' count='0' datasetConfigVersion='0.6' header='1' requestid='biomaRt' formatter='TSV'>
-            <Dataset name = 'hsapiens_gene_ensembl'><Attribute name = 'ensembl_gene_id'/>
-            <Attribute name = 'hgnc_symbol'/>
-            <Filter name = \"ensembl_gene_id\" value = \"ENSG00000100036\" />
-            </Dataset></Query>"
-    expect_silent(res_tsv <- biomaRt:::.submitQueryXML(host, query, httr_config = httr_config))
-    expect_silent(res_html <- biomaRt:::.fetchHTMLresults(host, query, httr_config = httr_config))
-    expect_identical(res_html,
-                     read.table(textConnection(res_tsv), sep = "\t", header = TRUE, 
-                                check.names = FALSE, stringsAsFactors = FALSE))
+  
+  skip_if_not_installed("mockery")
+  mockery::stub(where = .fetchHTMLresults, 
+                what = ".submitQueryXML",
+                how = '<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title></title>
+  <link rel="stylesheet" type="text/css" href="/martview/martview.css" />
+</head>
+<body>
+
+<table>
+<tr>
+  <th>Gene stable ID</th>
+  <th>HGNC symbol</th>
+</tr>
+<tr>
+  <td><a href="http://www.ensembl.org/homo_sapiens/Gene/Summary?db=core;g=ENSG00000100036" target="_blank">ENSG00000100036</a></td>
+  <td><a href="https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:17058" target="_blank">SLC35E4</a></td>
+</tr>
+
+</table>
+</body>
+</html>')
+  
+  expect_silent(res_html <- .fetchHTMLresults(host, query, httr_config = httr_config))
+  
+  expect_identical(res_html, 
+                  data.frame("Gene stable ID" = "ENSG00000100036", 
+                             "HGNC symbol" = "SLC35E4",
+                             check.names = FALSE)
+                  )
 })
 
 
