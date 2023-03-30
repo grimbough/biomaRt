@@ -6,6 +6,7 @@ BUG FIXES
     o Fix problem when multiple cache entries with the same ID could
     be created.  (Thanks to Hervé Pagès & Henrik Bengtsson for independent 
     reports of this issue.)
+    o bmRequest() will now respect the setting in options("timeout")
 
 CHANGES IN VERSION 2.52.0
 -------------------------
