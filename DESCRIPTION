@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.55.3
+Version: 2.55.4
 Title: Interface to BioMart databases (i.e. Ensembl)
 License: Artistic-2.0
 Description: In recent years a wealth of biological data has become available
