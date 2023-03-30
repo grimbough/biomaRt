@@ -44,7 +44,7 @@ bmRequest <- function(request, httr_config, verbose = FALSE){
     
     result <- httr::GET(request, config = httr_config, 
                         content_type("text/plain"),
-                        timeout(10))
+                        timeout(options("timeout")$timeout))
     stop_for_status(result)
 
     result2 <- content(result, encoding = "UTF-8")
