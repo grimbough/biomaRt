@@ -39,7 +39,7 @@
     dir.create(.biomartCacheLocation())
   
   ## write our file to the biomart cache location directly
-  tf <- tempfile(tmpdir = biomaRt:::.biomartCacheLocation())
+  tf <- tempfile(tmpdir = .biomartCacheLocation())
   saveRDS(result, file = tf)
   
   ## check once more that there isn't an entry with this hash

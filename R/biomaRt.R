@@ -17,7 +17,7 @@
 ##############################################################
 
 martCheck = function(mart, biomart = NULL){
-    if( missing( mart ) || class( mart ) != 'Mart'){
+    if( missing(mart) || !inherits(mart,"Mart") ) {
         stop("You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information.")
     }
     if(!is.null(biomart)){
@@ -400,7 +400,7 @@ checkDataset <- function(dataset, mart) {
 
 ## Select a BioMart dataset             
 useDataset <- function(dataset, mart, verbose = FALSE){
-    if(missing(mart) || class(mart)!="Mart") 
+    if( missing(mart) || !inherits(mart,"Mart") )
         stop("No valid Mart object given, specify a Mart object with the attribute mart")
     
     if(missing(dataset)) {
