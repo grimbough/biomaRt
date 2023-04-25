@@ -27,7 +27,7 @@ getGene <- function( id, type, mart){
     return(table)
 }
 
-.checkSequenceArgs <- function(seqType, type, id, chromosome) {
+.checkSequenceArgs <- function(seqType, type, id, chromosome, upstream, downstream) {
     
     validSeqTypes <- c("cdna","peptide","3utr","5utr", "gene_exon", "transcript_exon",
                     "transcript_exon_intron", "gene_exon_intron","coding","coding_transcript_flank",
@@ -47,9 +47,17 @@ getGene <- function( id, type, mart){
     
     ## must use one and only one of 'id' and 'chromosome'
     if(missing(id) && missing(chromosome))
-        stop("You must provide either the 'id' or 'chromosome' argument.")
+        stop("You must provide either the 'id' or 'chromosome' argument.",
+             call. = FALSE)
     if(!missing(chromosome) && !missing(id))
-        stop("You must provide only one of the 'id' and 'chromosome' arguments.")
+        stop("You must provide only one of the 'id' and 'chromosome' arguments.",
+             call. = FALSE)
+    
+    if(grepl(pattern = "flank", x = seqType) && 
+       (missing(upstream) && missing(downstream))) {
+      stop("You must provide either the 'upstream' or 'downstream' ",
+           "argument when requesting flanking sequences.", call. = FALSE)
+    }
     
 }
 
@@ -151,7 +159,7 @@ getSequence <- function(chromosome, start, end, id, type, seqType,
     
     martCheck(mart,c("ensembl","ENSEMBL_MART_ENSEMBL"))
     
-    .checkSequenceArgs(seqType, type, chromosome, id)
+    .checkSequenceArgs(seqType, type, chromosome, id, upstream, downstream)
 
     if(!missing(chromosome)){
         sequence <- .getSequenceFromCoords(chromosome, start, end, type, seqType, 
