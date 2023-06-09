@@ -92,7 +92,7 @@ ensembl <- useEnsembl(biomart = "ensembl",
                    mirror = "useast")
 ```
 
-Values for the mirror argument are: `useast`, `uswest`, `asia`, and `www`.
+Values for the mirror argument are: `useast`, `asia`, and `www`.
 
 ## Using archived versions of Ensembl
 

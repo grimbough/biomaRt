@@ -24,7 +24,7 @@ useEnsemblGenomes(biomart, dataset)
 \item{host}{Host to connect to.  Only needs to be specified if different from www.ensembl.org}
 \item{version}{Ensembl version to connect to when wanting to connect to an archived Ensembl version}
 \item{GRCh}{GRCh version to connect to if not the current GRCh38, currently this can only be 37}
-\item{mirror}{Specify an Ensembl mirror to connect to.  The valid options here are 'www', 'uswest', 'useast', 'asia'.  If no mirror is specified the primary site at www.ensembl.org will be used.  Mirrors are not available for the Ensembl Genomes databases.}
+\item{mirror}{Specify an Ensembl mirror to connect to.  The valid options here are 'www', 'useast', 'asia'.  If no mirror is specified the primary site at www.ensembl.org will be used.  Mirrors are not available for the Ensembl Genomes databases.}
 \item{verbose}{Give detailed output of what the method is doing while in
   use, for debugging}
 }
@@ -47,7 +47,7 @@ if(interactive()){
 mart <- useEnsembl("ensembl")
 
 ## using the US West mirror
-us_mart <- useEnsembl(biomart = "ensembl", mirror = "uswest")
+us_mart <- useEnsembl(biomart = "ensembl", mirror = "useast")
 }
 }
 \keyword{methods}

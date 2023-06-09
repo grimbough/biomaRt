@@ -3,7 +3,7 @@
 .getArchiveList <- function(https = TRUE, httr_config = list()) {
   
   url_worked <- FALSE
-  mirrors <- c("www", "asia", "uswest", "useast")
+  mirrors <- c("www", "asia", "useast")
   protocol <- ifelse(https, "https://", "http://" )
   
   while(!url_worked) {
@@ -197,8 +197,8 @@ listEnsembl <- function(mart = NULL, version = NULL, GRCh = NULL,
   }
   
   if(!is.null(mirror)){
-    if(!(mirror %in% c("www", "uswest", "useast", "asia"))) {
-      warning("Invalid mirror. Select a mirror from [www, uswest, useast, asia].\n",
+    if(!(mirror %in% c("www", "useast", "asia"))) {
+      warning("Invalid mirror. Select a mirror from [www, useast, asia].\n",
               "Default when no mirror is specified is to use ",
               "www.ensembl.org which may be automatically redirected." )
       host <- "https://www.ensembl.org"
@@ -266,7 +266,7 @@ useEnsembl <- function(biomart, dataset, host,
   port <- ifelse(grepl(pattern = "https://", x = host), 
                  yes = 443, no = 80)
   
-  if(grepl(x = host, pattern = "www|uswest|useast|asia")) {
+  if(grepl(x = host, pattern = "www|useast|asia")) {
     marts <- .listEnsembl(version = version, GRCh = GRCh, mirror = mirror)
   } else {
     marts <- .listMarts(host = host, port = port, httr_config = httr_config, ensemblRedirect = FALSE)
@@ -377,7 +377,7 @@ useEnsemblGenomes <- function(biomart, dataset) {
 #' If all mirrors fail it will return an error
 .chooseEnsemblMirror <- function(mirror, httr_config) {
     
-    mirrors <- c("www", "asia", "uswest", "useast")
+    mirrors <- c("www", "asia", "useast")
     
     if(missing(httr_config)) {
         httr_config <- do.call(c, .getEnsemblSSL())

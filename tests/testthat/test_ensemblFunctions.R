@@ -34,8 +34,6 @@ test_that("Ensembl mirror selection works", {
     ## failure when all mirrors are down
     m_www    <- stub_request("POST", uri_regex = "https://www.ensembl.org/biomart/martservice?redirect=no") |> 
         to_return(status = 500)
-    m_uswest <- stub_request("POST", uri_regex = "https://uswest.ensembl.org/biomart/martservice?redirect=no") |> 
-        to_return(status = 500)
     m_useast <- stub_request("POST", uri_regex = "https://useast.ensembl.org/biomart/martservice?redirect=no") |> 
         to_return(status = 500)
     m_asia   <- stub_request("POST", uri_regex = "https://asia.ensembl.org/biomart/martservice?redirect=no") |> 
@@ -51,7 +49,7 @@ test_that("Ensembl mirror selection works", {
           ) |>
         to_return(status = 200)
     
-    expect_message(.chooseEnsemblMirror(mirror = "uswest"), regexp = "unresponsive") |>
+    expect_message(.chooseEnsemblMirror(mirror = "useast"), regexp = "unresponsive") |>
         expect_equal("www")
     
     ## clean up mocking
@@ -70,8 +68,8 @@ test_that("Ensembl URLs are constructed correctly", {
                  regexp = "Invalid mirror\\. Select a mirror") %>%
     expect_equal("https://www.ensembl.org")
   
-  expect_equal(.constructEnsemblURL(mirror = "uswest"), 
-               "https://uswest.ensembl.org")
+  expect_equal(.constructEnsemblURL(mirror = "useast"), 
+               "https://useast.ensembl.org")
   
   ## GRCh ##
   expect_equal(.constructEnsemblURL(GRCh = 37), 
@@ -96,7 +94,7 @@ test_that("Ensembl URLs are constructed correctly", {
                  regexp = "version or GRCh arguments cannot be used together with the mirror argument") %>%
     expect_equal("https://apr2020.archive.ensembl.org")
   
-  expect_warning(.constructEnsemblURL(mirror = "uswest", GRCh = 37), 
+  expect_warning(.constructEnsemblURL(mirror = "useast", GRCh = 37), 
                  regexp = "version or GRCh arguments cannot be used together with the mirror argument") %>%
     expect_equal("https://grch37.ensembl.org")
 })

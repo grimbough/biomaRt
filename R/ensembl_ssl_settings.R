@@ -1,6 +1,6 @@
 .test_ensembl <- function() {
   httr::GET("https://www.ensembl.org/index.html", timeout(5), set_cookies(redirect_mirror = "no"))
-  httr::GET("https://uswest.ensembl.org/index.html", timeout(5), set_cookies(redirect_mirror = "no"))
+  httr::GET("https://useast.ensembl.org/index.html", timeout(5), set_cookies(redirect_mirror = "no"))
 }
 
 .checkEnsemblSSL <- function() {
