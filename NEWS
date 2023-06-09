@@ -1,11 +1,13 @@
 CHANGES IN VERSION 2.58.0
 -------------------------
 
-MINOR CHANGES
+USER VISIBLE CHANGES
 
   o getSequence() will now provide a more informative error message if 
   requesting a flanking sequence and not provided with an upstream or downstream
   range.
+  o Remove references to the uswest mirror, which has now been retired 
+  (https://www.ensembl.info/2023/01/13/retirement-of-ensembl-us-west-aws-mirror/)
 
 CHANGES IN VERSION 2.56.0
 -------------------------
