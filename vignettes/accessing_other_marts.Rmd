@@ -1,7 +1,7 @@
 ---
 title: "Using a BioMart other than Ensembl"
 author: "Steffen Durinck, Wolfgang Huber, Mike Smith"
-package: "`r pkg_ver('biomaRt')`"
+package: "`r BiocStyle::pkg_ver('biomaRt')`"
 output: 
   BiocStyle::html_document:
     md_extensions: "-autolink_bare_uris"
@@ -21,11 +21,11 @@ options(width=100)
 
 # Introduction
 
-In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
+In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r BiocStyle::Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r BiocStyle::Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
 
 # Using a BioMart other than Ensembl
 
-There are a small number of non-Ensembl databases that offer a BioMart interface to their data. The `r Biocpkg("biomaRt")` package can be used to access these in a very similar fashion to Ensembl.  The majority of `r Biocpkg("biomaRt")` functions will work in the same manner, but the construction of the initial Mart object requires slightly more setup.  In this section we demonstrate the setting requires to query [Wormbase ParaSite](https://parasite.wormbase.org/index.html) and [Phytozome](https://phytozome.jgi.doe.gov/pz/portal.html).  First we need to load `r Biocpkg("biomaRt")`.
+There are a small number of non-Ensembl databases that offer a BioMart interface to their data. The `r BiocStyle::Biocpkg("biomaRt")` package can be used to access these in a very similar fashion to Ensembl.  The majority of `r BiocStyle::Biocpkg("biomaRt")` functions will work in the same manner, but the construction of the initial Mart object requires slightly more setup.  In this section we demonstrate the setting requires to query [Wormbase ParaSite](https://parasite.wormbase.org/index.html) and [Phytozome](https://phytozome.jgi.doe.gov/pz/portal.html).  First we need to load `r BiocStyle::Biocpkg("biomaRt")`.
 
 ```{r}
 library(biomaRt)
@@ -40,7 +40,7 @@ if(grepl(try(httr::GET('https://parasite.wormbase.org'), silent = TRUE)[1],
 
 ## Wormbase
 
-To demonstrate the use of the `r Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.  In this example, we use the `listMarts()` function to find the name of the available marts, given the URL of Wormbase.  We use this to connect to Wormbase BioMart using the `useMart()` function.^[Note that we use the `https` address and must provide the port as `443`.  Queries to WormBase will fail without these options.]
+To demonstrate the use of the `r BiocStyle::Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.  In this example, we use the `listMarts()` function to find the name of the available marts, given the URL of Wormbase.  We use this to connect to Wormbase BioMart using the `useMart()` function.^[Note that we use the `https` address and must provide the port as `443`.  Queries to WormBase will fail without these options.]
 
 ```{r wormbase, echo=TRUE, eval=TRUE}
 listMarts(host = "parasite.wormbase.org")
@@ -79,7 +79,7 @@ phytozome_v13 <- useMart(biomart = "phytozome_mart",
                 host = "https://phytozome-next.jgi.doe.gov")
 ```
 
-Once this is set up the usual `r Biocpkg("biomaRt")` functions can be used to interrogate the database options and run queries.
+Once this is set up the usual `r BiocStyle::Biocpkg("biomaRt")` functions can be used to interrogate the database options and run queries.
 
 ```{r, pytozome-2}
 getBM(attributes = c("organism_name", "gene_name1"), 

@@ -1,7 +1,7 @@
 ---
 title: "Accessing Ensembl annotation with biomaRt"
 author: "Mike L. Smith, Steffen Durinck, Wolfgang Huber"
-package: "`r pkg_ver('biomaRt')`"
+package: "`r BiocStyle::pkg_ver('biomaRt')`"
 output: 
   BiocStyle::html_document:
     md_extensions: "-autolink_bare_uris"
@@ -22,18 +22,18 @@ options(width=100)
 
 # Introduction
 
-Accessing the data available in Ensembl is by far most frequent use of the `r Biocpkg("biomaRt")` package.  With that in mind `r Biocpkg("biomaRt")` provides a number of functions that are tailored to work specifically with the BioMart instances provided by Ensembl.  This vignette details this Ensembl specific functionality and provides a number of example usecases that can be used as the basis for specifying your own queries.
+Accessing the data available in Ensembl is by far most frequent use of the `r BiocStyle::Biocpkg("biomaRt")` package.  With that in mind `r BiocStyle::Biocpkg("biomaRt")` provides a number of functions that are tailored to work specifically with the BioMart instances provided by Ensembl.  This vignette details this Ensembl specific functionality and provides a number of example usecases that can be used as the basis for specifying your own queries.
 
 # Selecting an Ensembl BioMart database and dataset
 
-Every analysis with `r Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  The commands below will connect us to Ensembl's most recent version of the Human Genes BioMart.
+Every analysis with `r BiocStyle::Biocpkg("biomaRt")` starts with selecting a BioMart database to use.  The commands below will connect us to Ensembl's most recent version of the Human Genes BioMart.
 
 ```{r useEnsembl}
 library(biomaRt)
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
-If this your first time using `r Biocpkg("biomaRt")` , you might wonder how to find the two arguments we supplied to the `useEnsembl()` command.  This is a two step process, but once you know the setting you need you can use the version shown above as a single command.  These initial steps are outlined below.
+If this your first time using `r BiocStyle::Biocpkg("biomaRt")` , you might wonder how to find the two arguments we supplied to the `useEnsembl()` command.  This is a two step process, but once you know the setting you need you can use the version shown above as a single command.  These initial steps are outlined below.
 
 ## Step1: Identifying the database you need
 
@@ -64,7 +64,7 @@ datasets <- listDatasets(ensembl)
 head(datasets)
 ```
 
-The `listDatasets()` function will return every available option, however this can be unwieldy when the list of results is long, involving much scrolling to find the entry you are interested in.  `r Biocpkg("biomaRt")` also provides the functions `searchDatasets()` which will try to find any entries matching a specific term or pattern.  For example, if we want to find the details of any datasets in our `ensembl` mart that contain the term '*hsapiens*' we could do the following:
+The `listDatasets()` function will return every available option, however this can be unwieldy when the list of results is long, involving much scrolling to find the entry you are interested in.  `r BiocStyle::Biocpkg("biomaRt")` also provides the functions `searchDatasets()` which will try to find any entries matching a specific term or pattern.  For example, if we want to find the details of any datasets in our `ensembl` mart that contain the term '*hsapiens*' we could do the following:
 
 ```{r searchDatasets, echo = TRUE, eval = TRUE}
 searchDatasets(mart = ensembl, pattern = "hsapiens")
@@ -96,9 +96,9 @@ Values for the mirror argument are: `useast`, `asia`, and `www`.
 
 ## Using archived versions of Ensembl
 
-It is possible to query archived versions of Ensembl through `r Biocpkg("biomaRt")`, so you can maintain consistent annotation throughout the duration of a project.
+It is possible to query archived versions of Ensembl through `r BiocStyle::Biocpkg("biomaRt")`, so you can maintain consistent annotation throughout the duration of a project.
 
-`r Biocpkg("biomaRt")` provides the function `listEnsemblArchives()` to view the available Ensembl archives.  This function takes no arguments, and produces a table containing the name and version number of the available archives, the date they were first released, and the URL where they can be accessed.
+`r BiocStyle::Biocpkg("biomaRt")` provides the function `listEnsemblArchives()` to view the available Ensembl archives.  This function takes no arguments, and produces a table containing the name and version number of the available archives, the date they were first released, and the URL where they can be accessed.
 
 ```{r archiveMarts, echo = TRUE, eval = TRUE}
 listEnsemblArchives()
@@ -163,7 +163,7 @@ attributes = listAttributes(ensembl)
 attributes[1:5,]
 ```
 
-The `getBM()` function is the primary query function in `r Biocpkg("biomaRt")`.  It has four main arguments:
+The `getBM()` function is the primary query function in `r BiocStyle::Biocpkg("biomaRt")`.  It has four main arguments:
 
 * `attributes`:  is a vector of attributes that one wants to retrieve (= the output of the query).
 * `filters`:  is a vector of filters that one wil use as input to the query.
@@ -172,7 +172,7 @@ The `getBM()` function is the primary query function in `r Biocpkg("biomaRt")`. 
 
 *Note: for some frequently used queries to Ensembl, wrapper functions are available: `getGene()` and `getSequence()`.  These functions call the `getBM()` function with hard coded filter and attribute names.*
 
-Now that we selected a BioMart database and dataset, and know about attributes, filters, and the values for filters; we can build a `r Biocpkg("biomaRt")` query.  Let's make an easy query for the following problem:  We have a list of Affymetrix identifiers from the u133plus2 platform and we want to retrieve the corresponding EntrezGene identifiers using the Ensembl mappings.
+Now that we selected a BioMart database and dataset, and know about attributes, filters, and the values for filters; we can build a `r BiocStyle::Biocpkg("biomaRt")` query.  Let's make an easy query for the following problem:  We have a list of Affymetrix identifiers from the u133plus2 platform and we want to retrieve the corresponding EntrezGene identifiers using the Ensembl mappings.
 
 The u133plus2 platform will be the filter for this query and as values for this filter we use our list of Affymetrix identifiers.  As output (attributes) for the query we want to retrieve the EntrezGene and u133plus2 identifiers so we get a mapping of these two identifiers as a result.  The exact names that we will have to use to specify the attributes and filters can be retrieved with the `listAttributes()` and `listFilters()` function respectively.  Let's now run the query:
 
@@ -187,7 +187,7 @@ getBM(attributes = c('affy_hg_u133_plus_2', 'entrezgene_id'),
 
 ## Searching for filters and attributes
 
-The functions `listAttributes()` and `listFilters()` will return every available option for their respective types, which can produce a very long output where it is hard to find the value you are interested in.  `r Biocpkg("biomaRt")` also provides the functions `searchAttributes()` and `searchFilters()` which will try to find any entries matching a specific term or pattern, in a similar fashion to `searchDatasets()` seen previously.  You can use these functions to find available attributes and filters that you may be interested in.  The example below returns the details for all attributes that contain the pattern '*hgnc*'.
+The functions `listAttributes()` and `listFilters()` will return every available option for their respective types, which can produce a very long output where it is hard to find the value you are interested in.  `r BiocStyle::Biocpkg("biomaRt")` also provides the functions `searchAttributes()` and `searchFilters()` which will try to find any entries matching a specific term or pattern, in a similar fashion to `searchDatasets()` seen previously.  You can use these functions to find available attributes and filters that you may be interested in.  The example below returns the details for all attributes that contain the pattern '*hgnc*'.
 
 ```{r searchAttributes, echo = TRUE, eval = TRUE}
 searchAttributes(mart = ensembl, pattern = "hgnc")
@@ -228,7 +228,7 @@ searchFilterOptions(mart = ensembl, filter = "phenotype_description",
 
 ### filterType
 
-Boolean filters need a value TRUE or FALSE in `r Biocpkg("biomaRt")`.  Setting the value TRUE will include all information that fulfil the filter requirement.  Setting FALSE will exclude the information that fulfills the filter requirement and will return all values that don't fulfil the filter. For most of the filters, their name indicates if the type is a boolean or not and they will usually start with "with".  However this is not a rule and to make sure you got the type right you can use the function `filterType()` to investigate the type of the filter you want to use.
+Boolean filters need a value TRUE or FALSE in `r BiocStyle::Biocpkg("biomaRt")`.  Setting the value TRUE will include all information that fulfil the filter requirement.  Setting FALSE will exclude the information that fulfills the filter requirement and will return all values that don't fulfil the filter. For most of the filters, their name indicates if the type is a boolean or not and they will usually start with "with".  However this is not a rule and to make sure you got the type right you can use the function `filterType()` to investigate the type of the filter you want to use.
 
 ```{r filterType}
 filterType("with_affy_hg_u133_plus_2", ensembl)
@@ -291,11 +291,11 @@ select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
 ``` 
 
 So why would we want to do this when we already have functions like `getBM()`?  For two reasons: 1) for people who are familiar
-with select and it's helper methods, they can now proceed to use `r Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
+with select and it's helper methods, they can now proceed to use `r BiocStyle::Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r BiocStyle::Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
 
 # Result Caching
 
-To save time and computing resources `r Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
+To save time and computing resources `r BiocStyle::Biocpkg("biomaRt")` will attempt to identify when you are re-running a query you have executed before.  Each time a new query is run, the results will be saved to a cache on your computer. If a query is identified as having been run previously, rather than submitting the query to the server, the results will be loaded from the cache.
 
 You can get some information on the size and location of the cache using the function `biomartCacheInfo()`:
 
@@ -305,7 +305,7 @@ biomartCacheInfo()
 
 The cache can be deleted using the command `biomartCacheClear()`.  This will remove all cached files.
 
-The default location for the cache is specifc to your computer and operating system.  If you want to use a specific location you can set this via the `BIOMART_CACHE` environment variable.  You can either set this outside of R, or within R via a call to `Sys.setenv(BIOMART_CACHE = "</where/i/store/my/cache>")`.  The code below gives an example where we change the location to a temporary file^[This would not be a sensible choice on your machine, but is convenient on the Bioconductor server.] and then confirm that the location has changed.
+The default location for the cache is specific to your computer and operating system.  If you want to use a specific location you can set this via the `BIOMART_CACHE` environment variable.  You can either set this outside of R, or within R via a call to `Sys.setenv(BIOMART_CACHE = "</where/i/store/my/cache>")`.  The code below gives an example where we change the location to a temporary file^[This would not be a sensible choice on your machine, but is convenient on the Bioconductor server.] and then confirm that the location has changed.
 
 ```{r cache-location, echo=1:2}
 Sys.setenv(BIOMART_CACHE = tempdir())
@@ -316,16 +316,16 @@ Sys.unsetenv("BIOMART_CACHE")
 
 # biomaRt helper functions
 
-This section describes a set of `r Biocpkg("biomaRt")` helper functions that can be used to export FASTA format sequences, retrieve values for certain filters and exploring the available filters and attributes in a more systematic manner. 
+This section describes a set of `r BiocStyle::Biocpkg("biomaRt")` helper functions that can be used to export FASTA format sequences, retrieve values for certain filters and exploring the available filters and attributes in a more systematic manner. 
 
 ## exportFASTA
 
-The data.frames obtained by the `getSequence()` function can be exported to FASTA files using the `exportFASTA()` function.  One has to specify the data.frame to export and the filename using the file argument.
+The data.frames obtained by the `getSequence()` function can be exported to FASTA files using the `exportFASTA()` function.  One has to specify the data.frame to export and the file name using the file argument.
 
 
 # Examples of biomaRt queries
 
-In the sections below a variety of example queries are described.  Every example is written as a task, and we have to come up with a `r Biocpkg("biomaRt")` solution to the problem.
+In the sections below a variety of example queries are described.  Every example is written as a task, and we have to come up with a `r BiocStyle::Biocpkg("biomaRt")` solution to the problem.
 
 ##  Annotate a set of Affymetrix identifiers with HUGO symbol and chromosomal locations of corresponding genes
 
@@ -440,7 +440,7 @@ getSequence(id = entrez,
             mart=ensembl) 
 ``` 
 
-One further thing to note is that, although we are searching for genes based on their NCBI Gene IDs, Ensembl BioMart doesn't allow some ID types (including NCBI IDs) to be returned directly.  To try and accommodate this `r Biocpkg("biomaRt")` attempts to map the query IDs to Ensembl Gene IDs internally before finding the sequence information.  If no such mapping exists (or at least isn't found in Ensembl) then no sequence will be returned for the affected IDs.
+One further thing to note is that, although we are searching for genes based on their NCBI Gene IDs, Ensembl BioMart doesn't allow some ID types (including NCBI IDs) to be returned directly.  To try and accommodate this `r BiocStyle::Biocpkg("biomaRt")` attempts to map the query IDs to Ensembl Gene IDs internally before finding the sequence information.  If no such mapping exists (or at least isn't found in Ensembl) then no sequence will be returned for the affected IDs.
 
 
 ## Retrieve all 5' UTR sequences of all genes that are located on chromosome 3 between the positions 185,514,033 and 185,535,839
@@ -514,13 +514,13 @@ getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 It is not uncommon to encounter connection problems when trying to access online resources such as the Ensembl BioMart. 
 In this section we list error messages that have been reported by users, along with suggested code to fix the problem.  If a suggested solution doesn't work, or you have a new error not listed here, please reported it on the [Bioconductor Support Site](https://support.bioconductor.org/). 
 
-## `r Biocpkg("biomaRt")` specific solutions
+## `r BiocStyle::Biocpkg("biomaRt")` specific solutions
 
-If you are using `r Biocpkg("biomaRt")` directly make sure you are using `useEnsembl()` to create the **Mart** object, rather than `useMart()`.  `useEnsembl()` is aware of some specific connection details required to connect to Ensembl, and using it may fix any connection problems without requiring you to do anything further.
+If you are using `r BiocStyle::Biocpkg("biomaRt")` directly make sure you are using `useEnsembl()` to create the **Mart** object, rather than `useMart()`.  `useEnsembl()` is aware of some specific connection details required to connect to Ensembl, and using it may fix any connection problems without requiring you to do anything further.
 
 ## Global connection settings 
 
-If you are unable to modify the `r Biocpkg("biomaRt")` code (for example if you are using another package that calls `r Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session, but the settings will not persist between R sessions.
+If you are unable to modify the `r BiocStyle::Biocpkg("biomaRt")` code (for example if you are using another package that calls `r Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session, but the settings will not persist between R sessions.
 
 ### Error: "SSL certificate problem"
 
