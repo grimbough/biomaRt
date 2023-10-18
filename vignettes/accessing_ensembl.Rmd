@@ -520,7 +520,7 @@ If you are using `r BiocStyle::Biocpkg("biomaRt")` directly make sure you are us
 
 ## Global connection settings 
 
-If you are unable to modify the `r BiocStyle::Biocpkg("biomaRt")` code (for example if you are using another package that calls `r Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session, but the settings will not persist between R sessions.
+If you are unable to modify the `r BiocStyle::Biocpkg("biomaRt")` code (for example if you are using another package that calls `r BiocStyle::Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session, but the settings will not persist between R sessions.
 
 ### Error: "SSL certificate problem"
 
