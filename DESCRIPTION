@@ -24,9 +24,9 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
             email = "grimbough@gmail.com",
             comment = c(ORCID = "0000-0002-7800-3848")))
 Depends: methods
-Imports: utils, XML (>= 3.99-0.7), AnnotationDbi, progress, stringr, httr,
+Imports: utils, XML (>= 3.99-0.7), AnnotationDbi, progress, stringr, httr, httr2,
         digest, BiocFileCache, rappdirs, xml2
-Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, webmockr
+Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, webmockr, httptest2
 URL: https://github.com/grimbough/biomaRt
 BugReports: https://github.com/grimbough/biomaRt/issues
 VignetteBuilder: knitr

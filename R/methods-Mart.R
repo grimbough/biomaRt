@@ -62,12 +62,12 @@ setReplaceMethod("martHost","Mart",function(obj,value){
 setGeneric("martVSchema",def=function(obj,...)standardGeneric("martVSchema"))
 setMethod("martVSchema",signature("Mart"), function(obj) obj@vschema)
 
-setGeneric("martHTTRConfig", def = function(obj) standardGeneric("martHTTRConfig"))
-setMethod("martHTTRConfig", signature("Mart"), 
+setGeneric("martHTTPConfig", def = function(obj) standardGeneric("martHTTPConfig"))
+setMethod("martHTTPConfig", signature("Mart"), 
           function(obj) {
-            config <- do.call(c, obj@httr_config)
+            config <- do.call(c, obj@http_config)
             if(is.null(config)) {
-              config <- httr::config()
+              config <- list()
             }
             return(config)
           }

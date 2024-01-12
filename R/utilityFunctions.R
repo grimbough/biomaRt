@@ -201,26 +201,31 @@
   return(err_msg)
 }
 
-.submitQueryXML <- function(host, query, httr_config) {
-    res <- httr::POST(url = host,
-                      body = list('query' = query),
-                      config = httr_config,
-                      timeout(300))
+.submitQueryXML <- function(host, query, http_config) {
+    
+    req <- httr2::request(host) |>
+      req_body_form(query = query) |>
+      req_timeout(max(getOption("timeout", default = 300), 300)) |>
+      req_options(!!!http_config)
+    
+    res <- httr2::req_perform(req)
 
-    if( httr::http_error(res) ) {
+    if( httr2::resp_is_error(res) ) {
         err_msg <- .createErrorMessage( error_code = status_code(res), host = host )
         stop(err_msg, call. = FALSE)
     }
     
     ## content() prints a message about encoding not being supplied 
     ## for ensembl.org - no default, so we suppress it
-    return( suppressMessages(content(res)) )
+    #return( suppressMessages(content(res)) )
+    
+    return(resp_body_string(res))
 }
 
 #' if parsing of TSV results fails, try this
-.fetchHTMLresults <- function(host, query, httr_config) {
+.fetchHTMLresults <- function(host, query, http_config) {
     query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
-    html_res <- .submitQueryXML(host, query, httr_config)
+    html_res <- .submitQueryXML(host, query, http_config)
     XML::readHTMLTable(html_res, stringsAsFactors = FALSE)[[1]]
 }
 
@@ -248,7 +253,7 @@
                          if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
                            .fetchHTMLresults(host = paste0(martHost(mart), hostURLsep), 
                                              query = fullXmlQuery, 
-                                             httr_config = martHTTRConfig(mart))
+                                             http_config = martHTTPConfig(mart))
                          else
                            stop(e)
                        }
