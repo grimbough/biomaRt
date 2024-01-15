@@ -16,7 +16,6 @@ editor_options:
 
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE, out.width = "100%")
-httr::set_config(httr::config(ssl_verifypeer = FALSE))
 options(width=100)
 ```
 
@@ -39,7 +38,7 @@ If this your first time using `r BiocStyle::Biocpkg("biomaRt")` , you might wond
 
 The first step is to find the names of the BioMart services Ensembl is currently providing.  We can do this using the function `listEnsembl()`, which will display all available Ensembl BioMart web services.  The first column gives us the name we should provide to the `biomart` argument in `useEnsembl()`, and the second gives a more comprehensive title for the dataset along with the Ensembl version.
 
-```{r, listEnsembl}
+```{r listEnsembl}
 listEnsembl()
 ```
 
@@ -49,7 +48,7 @@ The `useEnsembl()` function can now be used to connect to the desired BioMart da
 ensembl <- useEnsembl(biomart = "genes")
 ```
 
-If we print the current `ensembl` object, we can see that the `r ensembl@biomart` database ^[this is how Ensembl name the database on their server] has been selected, but that no dataset has been chosen.
+If we print the current `ensembl` object, we can see that the `ENSEMBL_MART_ENSEMBL` database ^[this is how Ensembl name the database on their server] has been selected, but that no dataset has been chosen.
 
 ```{r ensembl2}
 ensembl
@@ -57,7 +56,7 @@ ensembl
 
 ## Step 2: Choosing a dataset
 
-BioMart databases can contain several datasets. For example, within the Ensembl genes mart every species is a different dataset.  In the next step we look at which datasets are available in the selected BioMart by using the function `listDatasets()`. *Note: here we use the function `head()` to display only the first 5 entries as the complete list has `r nrow(listDatasets(ensembl))` entries.*
+BioMart databases can contain several datasets. For example, within the Ensembl genes mart every species is a different dataset.  In the next step we look at which datasets are available in the selected BioMart by using the function `listDatasets()`. *Note: here we use the function `head()` to display only the first 5 entries as the complete list has many entries.*
 
 ```{r listDatasets}
 datasets <- listDatasets(ensembl)
@@ -108,14 +107,14 @@ Alternatively, one can use the <http://www.ensembl.org> website to find an archi
 
 *You will notice that there is an archive URL even for the current release of Ensembl.  It can be useful to use this if you wish to ensure that script you write now will return exactly the same results in the future.  Using `www.ensembl.org` will always access the current release, and so the data retrieved may change over time as new releases come out.*
 
-Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 95. 
+Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 110. 
 
 
 ```{r archiveMarts3, echo = TRUE, eval = TRUE}
-listEnsembl(version = 95)
-ensembl95 <- useEnsembl(biomart = 'genes', 
+listEnsembl(version = 110)
+ensembl_110 <- useEnsembl(biomart = 'genes', 
                        dataset = 'hsapiens_gene_ensembl',
-                       version = 95)
+                       version = 110)
 ```
 
 
