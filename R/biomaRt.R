@@ -70,11 +70,11 @@ listMarts <- function( mart = NULL, host="https://www.ensembl.org", path="/bioma
     }
     
     if(grepl(pattern = "^https://.*ensembl.org", x = host) && missing(http_config)) {
-      http_config <- .getEnsemblSSL()
+        http_config <- .getEnsemblSSL()
     }
   
     if(missing(http_config)) {
-        http_config <- httr::config()
+        http_config <- list()
     }
     
     .listMarts(mart = mart, host = host, path = path, port = port, includeHosts = includeHosts,
@@ -177,7 +177,7 @@ useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "
     
     mart <- .useMart(biomart, dataset, host = host, path = path, port = port, 
                      archive = archive, version = version, verbose = verbose, 
-                     http_config = list(httr::config()), ensemblRedirect = TRUE)
+                     http_config = list(), ensemblRedirect = TRUE)
 }
 
 .useMart <- function(biomart, dataset, host = "https://www.ensembl.org", path = "/biomart/martservice", port = 443, 

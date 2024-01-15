@@ -150,11 +150,11 @@
 #' This function tidies that up to catch common variants.
 .cleanHostURL <- function(host, warn = TRUE) {
     
-    parsed_url <- httr::parse_url(host)
+    parsed_url <- httr2::url_parse(host)
     
     ## just supplying 'ensembl.org' is no longer handled correctly
     ## stick 'www' in front if we see this
-    if( parsed_url$path == "ensembl.org" ) {
+    if( !is.null(parsed_url$path) && parsed_url$path == "ensembl.org" ) {
         parsed_url$path = "www.ensembl.org"
     }
     
@@ -175,7 +175,7 @@
             call. = FALSE)
     }
     
-    host <- httr::build_url(parsed_url)
+    host <- httr2::url_build(parsed_url)
     
     ## strip trailing slash
     host <- gsub(pattern = "/$", replacement = "", x = host)
@@ -211,7 +211,7 @@
     res <- httr2::req_perform(req)
 
     if( httr2::resp_is_error(res) ) {
-        err_msg <- .createErrorMessage( error_code = status_code(res), host = host )
+        err_msg <- .createErrorMessage( error_code = resp_status(res), host = host )
         stop(err_msg, call. = FALSE)
     }
     

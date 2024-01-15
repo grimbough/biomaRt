@@ -16,13 +16,16 @@
     mirrors <- mirrors[-1]
 
     url <- paste0(protocol, mirror_option, ".ensembl.org/info/website/archives/index.html?redirect=no")
-  
-    html <- GET(url, config = http_config)
+    
+    html <- request(url) |> 
+      req_timeout(10) |>
+      req_options(!!!http_config) |>
+      req_perform()
   
     ## this is TRUE if there's an HTTP error or we get the Ensembl error page
-    if(identical(status_code(html), 200L) && 
-       !grepl("The Ensembl web service you requested is temporarily unavailable", content(html))) {
-      return( content(html) )
+    if(identical(resp_status(html), 200L) && 
+       !grepl("The Ensembl web service you requested is temporarily unavailable", resp_body_string(html))) {
+      return( resp_body_string(html) )
     }
       
   } 
