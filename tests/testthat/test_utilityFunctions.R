@@ -2,7 +2,7 @@ cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 bfc <- BiocFileCache::BiocFileCache(biomartCacheInfo(), ask = FALSE)
 
-httr_config <- do.call(c, biomaRt:::.getEnsemblSSL())
+http_config <- do.call(c, biomaRt:::.getEnsemblSSL())
 
 ensembl <- Mart(biomart = "ensembl", 
                dataset = "hsapiens_gene_ensembl",
@@ -118,7 +118,7 @@ test_that("TSV and HTML result tables match", {
 </body>
 </html>')
   
-  expect_silent(res_html <- .fetchHTMLresults(host, query, httr_config = httr_config))
+  expect_silent(res_html <- .fetchHTMLresults(host, query, http_config = http_config))
   
   expect_identical(res_html, 
                   data.frame("Gene stable ID" = "ENSG00000100036", 
