@@ -77,3 +77,5 @@ test_that("Cache can be cleared", {
     expect_silent( biomartCacheClear() )
     expect_false( file.exists( cache_file) )
 })
+
+Sys.unsetenv("BIOMART_CACHE")

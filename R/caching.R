@@ -140,3 +140,24 @@ biomartCacheInfo <- function() {
     return(invisible(cache))
 }
 
+#' Determine if a cached version exists and if it's less than one week old.
+#' 
+#' @param bfc BiocFileCache object created by BiocFileCache()
+#' @param cacheEntry The name of entry in the cache.
+#' @param numDays The number of days an entry should be considered valid. Entries
+#' older than this will be deleted.
+#' @keywords Internal
+.useCache <- function(bfc, cacheEntry, numDays = 7L) {
+  
+  use_cached_version <- FALSE
+  if(.checkInCache(bfc, hash = cacheEntry)) {
+    cache_entry <- bfcquery(x = bfc, query = cacheEntry)
+    if( (nrow(cache_entry) == 1) && (as.Date(Sys.time()) - as.Date(cache_entry$create_time) < numDays) ) {
+      use_cached_version <- TRUE
+    } else {
+      bfcremove(bfc, cache_entry$rid)
+    }
+  }
+  return(use_cached_version)
+}
+

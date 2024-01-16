@@ -1,5 +1,37 @@
 ## location of Ensembl specific functions
 
+.getEnsemblSSL <- function() {
+  
+  cache <- .biomartCacheLocation()
+  bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+  if(.checkInCache(bfc, hash = "ensembl-ssl-settings-httr2")) {
+    ensembl_config <- .readFromCache(bfc, "ensembl-ssl-settings-httr2")
+  } else {
+    ensembl_config <- .checkEnsemblSSL()
+    .addToCache(bfc, ensembl_config, hash = "ensembl-ssl-settings-httr2")
+  }
+  return(ensembl_config)
+}
+
+.checkArchiveList <- function(https = TRUE, http_config = list()) {
+  ## determine if a cached version exists and if it's less than one week old
+  cache <- .biomartCacheLocation()
+  bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+  cache_entry <- "ensembl-archive-html"
+  use_cached_version <- .useCache(bfc = bfc,
+                                  cacheEntry = cache_entry,
+                                  numDays = 7L)
+  
+  if(use_cached_version) {
+    archive_html <- .readFromCache(bfc, cache_entry)
+  } else {
+    archive_html <- .getArchiveList(https = https, http_config = http_config)
+    .addToCache(bfc, archive_html, hash = cache_entry)
+  }
+  
+  return(archive_html)
+}
+
 .getArchiveList <- function(https = TRUE, http_config = list()) {
   
   url_worked <- FALSE
@@ -20,6 +52,7 @@
     html_request <- request(url) |> 
       req_timeout(10) |>
       req_options(!!!http_config) |>
+      req_retry(max_tries = 3) |>
       req_error(is_error = \(resp) FALSE)
     
     html <- req_perform(html_request)
@@ -55,7 +88,7 @@ listEnsemblArchives <- function(https) {
 
 .listEnsemblArchives <- function(https = TRUE, http_config) {
   
-  html <- .getArchiveList(https, http_config)
+  html <- .checkArchiveList(https, http_config)
   html <- htmlParse( html )
   
   archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
@@ -101,15 +134,9 @@ listEnsemblArchives <- function(https) {
     ## determine if a cached version exists and if it's less than one week old
     cache <- .biomartCacheLocation()
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-    use_cached_version <- FALSE
-    if(.checkInCache(bfc, hash = paste0("ensembl-marts-", version_num))) {
-        cache_entry <- bfcquery(x = bfc, query = paste0("ensembl-marts-", version_num))
-        if( (nrow(cache_entry) == 1) && (as.Date(Sys.time()) - as.Date(cache_entry$create_time) < 7) ) {
-            use_cached_version <- TRUE
-        } else {
-            bfcremove(bfc, cache_entry$rid)
-        }
-    }
+    use_cached_version <- .useCache(bfc = bfc,
+                                    cacheEntry = paste0("ensembl-marts-", version_num),
+                                    numDays = 7L)
     
     if(use_cached_version) {
         marts <- .readFromCache(bfc, paste0("ensembl-marts-", version_num))
