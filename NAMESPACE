@@ -6,7 +6,7 @@ importFrom(AnnotationDbi, keys, columns, keytypes, select)
 importFrom(progress, progress_bar)
 importFrom(stringr, str_extract_all, str_match, str_replace)
 importFrom(httr2, request, req_perform, req_timeout, req_options, req_body_form,
-           req_error,
+           req_error, req_retry,
            resp_status, resp_body_string, resp_is_error,
            url_parse, url_build)
 importFrom(digest, digest)
