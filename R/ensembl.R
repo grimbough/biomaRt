@@ -17,10 +17,12 @@
 
     url <- paste0(protocol, mirror_option, ".ensembl.org/info/website/archives/index.html?redirect=no")
     
-    html <- request(url) |> 
+    html_request <- request(url) |> 
       req_timeout(10) |>
       req_options(!!!http_config) |>
-      req_perform()
+      req_error(is_error = \(resp) FALSE)
+    
+    html <- req_perform(html_request)
   
     ## this is TRUE if there's an HTTP error or we get the Ensembl error page
     if(identical(resp_status(html), 200L) && 
