@@ -496,7 +496,7 @@ The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 Bi
 
 The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
 
-```{r getLDS, cache = TRUE}
+```{r getLDS}
 human <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
 mouse <- useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
