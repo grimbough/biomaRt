@@ -31,12 +31,12 @@ There are a small number of non-Ensembl databases that offer a BioMart interface
 library(biomaRt)
 ```
 
-```{r test-wormbase-ssl, echo = FALSE}
-if(grepl(try(httr::GET('https://parasite.wormbase.org'), silent = TRUE)[1], 
-         pattern = "sslv3 alert handshake")) {
-    httr::set_config(httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))  
-}
-```
+# ```{r test-wormbase-ssl, echo = FALSE}
+# if(grepl(try(httr::GET('https://parasite.wormbase.org'), silent = TRUE)[1], 
+#          pattern = "sslv3 alert handshake")) {
+#     httr::set_config(httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))  
+# }
+# ```
 
 ## Wormbase
 

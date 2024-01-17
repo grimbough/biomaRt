@@ -519,7 +519,7 @@ If you are using `r BiocStyle::Biocpkg("biomaRt")` directly make sure you are us
 
 ## Global connection settings 
 
-If you are unable to modify the `r BiocStyle::Biocpkg("biomaRt")` code (for example if you are using another package that calls `r BiocStyle::Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session, but the settings will not persist between R sessions.
+If you are unable to modify the `r BiocStyle::Biocpkg("biomaRt")` code (for example if you are using another package that calls `r BiocStyle::Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session.  The settings will then be saved to the `r BiocStyle::Biocpkg("biomaRt")` cache and will be used from then on when you try to connect to the Ensembl BioMart.
 
 ### Error: "SSL certificate problem"
 
@@ -533,7 +533,7 @@ SSL certificate problem: unable to get local issuer certificate
 **Fix**
 
 ```{r, ssl-verifypeer, eval = FALSE}
-httr::set_config(httr::config(ssl_verifypeer = FALSE))
+setEnsemblSSL(list(ssl_verifypeer = FALSE))
 ```
 
 ### Error: "sslv3 alert handshake failure"
@@ -550,7 +550,7 @@ error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure
 If you're running Ubuntu 20.04 or newer the following command should fix the issue.
 
 ```{r, ssl-cipher-list, eval = FALSE}
-httr::set_config(httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))
+setEnsemblSSL(list(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))
 ```
 
 If you encounter this error on Fedora 33, the code above doesn't seem to work.  At the moment, the only workaround we have discovered is to change the security settings at the system level.  Please see more information at [fedoraproject.org](https://fedoraproject.org/wiki/Changes/StrongCryptoSettings2) and trouble shooting discussion at [GitHub](https://github.com/grimbough/biomaRt/issues/42).  This change can be applied by running the following command in a terminal outside of R, but please consider whether this is something you want to change.  You could also consider alerting Ensembl to this issue.

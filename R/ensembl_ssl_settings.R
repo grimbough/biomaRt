@@ -52,3 +52,25 @@
   }
   return(ensembl_config)
 }
+
+setEnsemblSSL <- function(settings) {
+  
+  stopifnot(is.list(settings))
+  
+  cache <- .biomartCacheLocation()
+  bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
+  
+  existing_config <- .getEnsemblSSL()
+  updated_config <- existing_config
+  
+  if(length(settings) == 0L) {
+    updated_config <- list()
+  } else {
+    for(i in seq_along(settings)) {
+      updated_config[[ names(settings)[i] ]] <- settings[[i]]
+    }
+  }
+  
+  .addToCache(bfc, updated_config, hash = "ensembl-ssl-settings-httr2", update = TRUE)
+  return(invisible(TRUE))
+}

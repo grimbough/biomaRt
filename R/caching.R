@@ -33,7 +33,7 @@
 #' @param bfc Object of class BiocFileCache, created by a call to 
 #' BiocFileCache::BiocFileCache()
 #' @param hash unique hash representing a query.
-.addToCache <- function(bfc, result, hash) {
+.addToCache <- function(bfc, result, hash, update = FALSE) {
   
   if(!dir.exists(.biomartCacheLocation()))
     dir.create(.biomartCacheLocation())
@@ -49,8 +49,18 @@
     bfcadd(bfc, rname = hash, fpath = tf, action = "asis")
     res <- TRUE
   } else {
-    file.remove(tf)
-    res <- FALSE
+    if(!update) {
+      file.remove(tf)
+      res <- FALSE
+    } else {
+      existing_record <- bfcquery(bfc, query = hash, field = "rname", exact = TRUE)
+      bfcupdate(bfc, rids = existing_record$rid, 
+                rpath = tf,
+                ask = FALSE)
+      ## deleted the old file
+      file.remove(existing_record$rpath)
+      res <- TRUE
+    }
   }
   return(invisible(res))
 }

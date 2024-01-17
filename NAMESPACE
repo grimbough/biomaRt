@@ -10,7 +10,8 @@ importFrom(httr2, request, req_perform, req_timeout, req_options, req_body_form,
            resp_status, resp_body_string, resp_is_error,
            url_parse, url_build)
 importFrom(digest, digest)
-importFrom(BiocFileCache, bfcnew, bfcadd, bfcquery, bfcinfo, removebfc, bfcremove)
+importFrom(BiocFileCache, bfcnew, bfcadd, bfcquery, bfcinfo, removebfc, 
+           bfcremove, bfcupdate)
 importFrom(rappdirs, user_cache_dir)
 importFrom(xml2, read_html)
 
@@ -29,6 +30,8 @@ export(useEnsembl, listEnsembl)
 export(useEnsemblGenomes, listEnsemblGenomes)
 
 export(listEnsemblArchives)
+
+export(setEnsemblSSL)
 
 exportClasses(Mart)
 
