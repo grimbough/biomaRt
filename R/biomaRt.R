@@ -128,37 +128,23 @@ listMarts <- function( mart = NULL, host="https://www.ensembl.org", path="/bioma
                  call. = FALSE)
         }
     }
-    registry = xmlTreeParse(registry, asText=TRUE)
-    registry = registry$doc$children[[1]]
+
+    registry_xml2 <- xml2::read_xml(registry)
+    registry_xml2 <- xml2::xml_children(registry_xml2)
     
-    marts = list(biomart = NULL, version = NULL, host = NULL, path = NULL, database = NULL)
-    index = 1
+    ## create a table with the registry information
+    marts <- do.call('rbind', lapply(registry_xml2, FUN = xml2::xml_attrs))
+    marts <- as.data.frame( marts[marts[,"visible"] == "1",] )
+    ## rename some columns
+    names(marts)[names(marts) == "name"] <- "biomart"
+    names(marts)[names(marts) == "displayName"] <- "version"
+    names(marts)[names(marts) == "serverVirtualSchema"] <- "vschema"
     
-    # if(host != "www.biomart.org" || archive){
-        for(i in seq(length.out=xmlSize(registry))){
-            if(xmlName(registry[[i]])=="MartURLLocation"){  
-                if(xmlGetAttr(registry[[i]],"visible") == 1){
-                    if(!is.null(xmlGetAttr(registry[[i]],"name"))) marts$biomart[index] = as.character(xmlGetAttr(registry[[i]],"name"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"database"))) marts$database[index] = as.character(xmlGetAttr(registry[[i]],"database"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"displayName"))) marts$version[index] = as.character(xmlGetAttr(registry[[i]],"displayName"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"host"))) marts$host[index] = as.character(xmlGetAttr(registry[[i]],"host"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"path"))) marts$path[index] = as.character(xmlGetAttr(registry[[i]],"path"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"port"))) marts$port[index] = as.character(xmlGetAttr(registry[[i]],"port"))
-                    if(!is.null(xmlGetAttr(registry[[i]],"serverVirtualSchema"))){
-                        marts$vschema[index] =  as.character(xmlGetAttr(registry[[i]],"serverVirtualSchema"))
-                    }
-                    index=index+1
-                }
-            }
-        }
     if(includeHosts){
-        return(marts)
+        return(as.list(marts))
     }
     else{
-        ret = data.frame(biomart = as.character(marts$biomart),
-                         version = as.character(marts$version), 
-                         stringsAsFactors=FALSE)
-        return(ret)
+        return(marts[,c("biomart", "version")])
     } 
 }
 

@@ -89,13 +89,13 @@ listEnsemblArchives <- function(https) {
 .listEnsemblArchives <- function(https = TRUE, http_config) {
   
   html <- .checkArchiveList(https, http_config)
-  html <- htmlParse( html )
+  html <- xml2::read_html(html)
   
-  archive_box <- getNodeSet(html, path = "//div[@class='plain-box float-right archive-box']")[[1]]
-  
-  archive_box_string <- toString.XMLNode(archive_box)
-  
-  archives <- strsplit(archive_box_string, split = "<li>")[[1]][-1]
+  archive_box <- as.character(
+    xml2::xml_find_first(x = html, xpath = "//div[contains(@class,'archive-box')]")
+  )
+
+  archives <- strsplit(archive_box, split = "<li>")[[1]][-1]
   
   extracted <- str_extract_all(string = archives, 
                                pattern = "Ensembl [A-Za-z0-9 ]{2,6}|http[s]?://.*ensembl\\.org|[A-Z][a-z]{2} [0-9]{4}")

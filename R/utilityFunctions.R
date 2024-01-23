@@ -226,7 +226,19 @@
 .fetchHTMLresults <- function(host, query, http_config) {
     query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
     html_res <- .submitQueryXML(host, query, http_config)
-    XML::readHTMLTable(html_res, stringsAsFactors = FALSE)[[1]]
+
+    html <- xml2::read_html(html_res)
+    table <- xml2::xml_find_first(html, ".//table")
+    rows <- xml2::xml_find_all(table, ".//tr")
+    cells <- lapply(rows, xml2::xml_find_all, ".//td|.//th")
+    
+    list_of_cells <- lapply(cells, FUN = xml2::xml_text)
+    colnames <- list_of_cells[[1]]
+    out <- as.data.frame(do.call(rbind, list_of_cells), row.names = NULL)
+    out <- out[-1,]
+    colnames(out) <- colnames
+    rownames(out) <- NULL
+    return(out)
 }
 
 #' @param postRes Character vector of length 1 returned by server.  We expect
