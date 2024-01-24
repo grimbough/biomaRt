@@ -8,7 +8,7 @@
     ## swap for the archive version so we can check when it is outdated
     host <- martHost(mart)
     if(grepl("(www|useast|asia)\\.ensembl\\.org", host)) {
-        archives <- .listEnsemblArchives(httr_config = martHTTRConfig(mart))
+        archives <- .listEnsemblArchives(http_config = martHTTPConfig(mart))
         host <- archives[which(archives$current_release == "*"), "url"]
     }
     
@@ -33,7 +33,7 @@
 #' @param bfc Object of class BiocFileCache, created by a call to 
 #' BiocFileCache::BiocFileCache()
 #' @param hash unique hash representing a query.
-.addToCache <- function(bfc, result, hash) {
+.addToCache <- function(bfc, result, hash, update = FALSE) {
   
   if(!dir.exists(.biomartCacheLocation()))
     dir.create(.biomartCacheLocation())
@@ -49,8 +49,18 @@
     bfcadd(bfc, rname = hash, fpath = tf, action = "asis")
     res <- TRUE
   } else {
-    file.remove(tf)
-    res <- FALSE
+    if(!update) {
+      file.remove(tf)
+      res <- FALSE
+    } else {
+      existing_record <- bfcquery(bfc, query = hash, field = "rname", exact = TRUE)
+      bfcupdate(bfc, rids = existing_record$rid, 
+                rpath = tf,
+                ask = FALSE)
+      ## deleted the old file
+      file.remove(existing_record$rpath)
+      res <- TRUE
+    }
   }
   return(invisible(res))
 }
@@ -138,5 +148,26 @@ biomartCacheInfo <- function() {
                 "- Total size: ", format(size_obj, units = "auto"))
     }
     return(invisible(cache))
+}
+
+#' Determine if a cached version exists and if it's less than one week old.
+#' 
+#' @param bfc BiocFileCache object created by BiocFileCache()
+#' @param cacheEntry The name of entry in the cache.
+#' @param numDays The number of days an entry should be considered valid. Entries
+#' older than this will be deleted.
+#' @keywords Internal
+.useCache <- function(bfc, cacheEntry, numDays = 7L) {
+  
+  use_cached_version <- FALSE
+  if(.checkInCache(bfc, hash = cacheEntry)) {
+    cache_entry <- bfcquery(x = bfc, query = cacheEntry)
+    if( (nrow(cache_entry) == 1) && (as.Date(Sys.time()) - as.Date(cache_entry$create_time) < numDays) ) {
+      use_cached_version <- TRUE
+    } else {
+      bfcremove(bfc, cache_entry$rid)
+    }
+  }
+  return(use_cached_version)
 }
 

@@ -6,7 +6,7 @@ biomaRt can connect.  By default the Ensembl BioMart databases are displayed.
 To establish a connection use the \link{useMart} function.}
 
 \usage{listMarts(mart = NULL, host="https://www.ensembl.org", path="/biomart/martservice",
-port, includeHosts = FALSE, archive = FALSE, httr_config, verbose = FALSE)}
+port, includeHosts = FALSE, archive = FALSE, http_config, verbose = FALSE)}
 
 \arguments{
 \item{mart}{mart object created with the \code{\link{useMart}} function.  
@@ -22,7 +22,7 @@ to \code{TRUE} will produce an error.
 A better alternative is to specify the url of the archived 
 BioMart you want to access.  For Ensembl you can view the list of archives 
 using \code{\link{listEnsemblArchives}}}
-\item{httr_config}{Some hosts require specific HTTP settings to be used when 
+\item{http_config}{Some hosts require specific HTTP settings to be used when 
 connecting. This argument takes the output of \code{\link[httr]{config}} and
 will be used when connecting to \code{host}.  Can be ignored if you experience
 no problems accessing \code{host}.}

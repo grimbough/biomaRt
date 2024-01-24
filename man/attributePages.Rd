@@ -14,7 +14,7 @@
 
 if(interactive()){
 mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-attributeSummary(mart)
+attributePages(mart)
 }
 }
 \keyword{methods}

@@ -150,11 +150,11 @@
 #' This function tidies that up to catch common variants.
 .cleanHostURL <- function(host, warn = TRUE) {
     
-    parsed_url <- httr::parse_url(host)
+    parsed_url <- httr2::url_parse(host)
     
     ## just supplying 'ensembl.org' is no longer handled correctly
     ## stick 'www' in front if we see this
-    if( parsed_url$path == "ensembl.org" ) {
+    if( !is.null(parsed_url$path) && parsed_url$path == "ensembl.org" ) {
         parsed_url$path = "www.ensembl.org"
     }
     
@@ -175,7 +175,7 @@
             call. = FALSE)
     }
     
-    host <- httr::build_url(parsed_url)
+    host <- httr2::url_build(parsed_url)
     
     ## strip trailing slash
     host <- gsub(pattern = "/$", replacement = "", x = host)
@@ -201,27 +201,44 @@
   return(err_msg)
 }
 
-.submitQueryXML <- function(host, query, httr_config) {
-    res <- httr::POST(url = host,
-                      body = list('query' = query),
-                      config = httr_config,
-                      timeout(300))
+.submitQueryXML <- function(host, query, http_config) {
+    
+    req <- httr2::request(host) |>
+      req_body_form(query = query) |>
+      req_timeout(max(getOption("timeout", default = 300), 300)) |>
+      req_options(!!!http_config)
+    
+    res <- httr2::req_perform(req)
 
-    if( httr::http_error(res) ) {
-        err_msg <- .createErrorMessage( error_code = status_code(res), host = host )
+    if( httr2::resp_is_error(res) ) {
+        err_msg <- .createErrorMessage( error_code = resp_status(res), host = host )
         stop(err_msg, call. = FALSE)
     }
     
     ## content() prints a message about encoding not being supplied 
     ## for ensembl.org - no default, so we suppress it
-    return( suppressMessages(content(res)) )
+    #return( suppressMessages(content(res)) )
+    
+    return(resp_body_string(res))
 }
 
 #' if parsing of TSV results fails, try this
-.fetchHTMLresults <- function(host, query, httr_config) {
+.fetchHTMLresults <- function(host, query, http_config) {
     query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
-    html_res <- .submitQueryXML(host, query, httr_config)
-    XML::readHTMLTable(html_res, stringsAsFactors = FALSE)[[1]]
+    html_res <- .submitQueryXML(host, query, http_config)
+
+    html <- xml2::read_html(html_res)
+    table <- xml2::xml_find_first(html, ".//table")
+    rows <- xml2::xml_find_all(table, ".//tr")
+    cells <- lapply(rows, xml2::xml_find_all, ".//td|.//th")
+    
+    list_of_cells <- lapply(cells, FUN = xml2::xml_text)
+    colnames <- list_of_cells[[1]]
+    out <- as.data.frame(do.call(rbind, list_of_cells), row.names = NULL)
+    out <- out[-1,]
+    colnames(out) <- colnames
+    rownames(out) <- NULL
+    return(out)
 }
 
 #' @param postRes Character vector of length 1 returned by server.  We expect
@@ -248,7 +265,7 @@
                          if(grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements"))
                            .fetchHTMLresults(host = paste0(martHost(mart), hostURLsep), 
                                              query = fullXmlQuery, 
-                                             httr_config = martHTTRConfig(mart))
+                                             http_config = martHTTPConfig(mart))
                          else
                            stop(e)
                        }

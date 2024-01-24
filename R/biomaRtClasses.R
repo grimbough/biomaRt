@@ -6,11 +6,11 @@ Mart <- setClass("Mart",
                         dataset = "character",
                         filters = "data.frame",
                         attributes = "data.frame",
-                        httr_config = "list"
+                        http_config = "list"
                         ),
          prototype(dataset = "",
                    vschema="default",
                    version = "",
-                   httr_config = list(httr::config())
+                   http_config = list()
                    )
          )

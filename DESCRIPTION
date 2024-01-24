@@ -1,5 +1,9 @@
 Package: biomaRt
+<<<<<<< HEAD
 Version: 2.59.0
+=======
+Version: 2.59.1
+>>>>>>> httr2
 Title: Interface to BioMart databases (i.e. Ensembl)
 License: Artistic-2.0
 Description: In recent years a wealth of biological data has become available
@@ -24,9 +28,9 @@ Authors@R: c(person("Steffen", "Durinck", role = c("aut"),
             email = "grimbough@gmail.com",
             comment = c(ORCID = "0000-0002-7800-3848")))
 Depends: methods
-Imports: utils, XML (>= 3.99-0.7), AnnotationDbi, progress, stringr, httr,
+Imports: utils, AnnotationDbi, progress, stringr, httr2,
         digest, BiocFileCache, rappdirs, xml2
-Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, webmockr
+Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, httptest2
 URL: https://github.com/grimbough/biomaRt
 BugReports: https://github.com/grimbough/biomaRt/issues
 VignetteBuilder: knitr
@@ -34,7 +38,7 @@ biocViews: Annotation
 LazyLoad: yes
 NeedsCompilation: no
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.0
 Collate: biomaRtClasses.R
          methods-Mart.R
          biomaRt.R

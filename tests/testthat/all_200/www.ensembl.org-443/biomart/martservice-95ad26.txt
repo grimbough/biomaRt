@@ -1,0 +1,428 @@
+ 
+TableSet	clumpus_gene_ensembl	Lumpfish genes (fCycLum1.pri)	1	fCycLum1.pri	200	50000	default	2023-10-11 11:39:01
+ 
+TableSet	ssrongchang_gene_ensembl	Pig - Rongchang genes (Rongchang_pig_v1)	1	Rongchang_pig_v1	200	50000	default	2023-10-11 11:48:03
+ 
+TableSet	ssjinhua_gene_ensembl	Pig - Jinhua genes (Jinhua_pig_v1)	1	Jinhua_pig_v1	200	50000	default	2023-10-11 11:46:45
+ 
+TableSet	vpacos_gene_ensembl	Alpaca genes (vicPac1)	1	vicPac1	200	50000	default	2023-10-11 11:09:42
+ 
+TableSet	pformosa_gene_ensembl	Amazon molly genes (Poecilia_formosa-5.1.2)	1	Poecilia_formosa-5.1.2	200	50000	default	2023-10-11 11:10:00
+ 
+TableSet	spunctatus_gene_ensembl	Tuatara genes (ASM311381v1)	1	ASM311381v1	200	50000	default	2023-10-11 12:02:34
+ 
+TableSet	csyrichta_gene_ensembl	Tarsier genes (Tarsius_syrichta-2.0.1)	1	Tarsius_syrichta-2.0.1	200	50000	default	2023-10-11 12:00:07
+ 
+TableSet	bihybrid_gene_ensembl	Hybrid - Bos Indicus genes (UOA_Brahman_1)	1	UOA_Brahman_1	200	50000	default	2023-10-11 11:36:17
+ 
+TableSet	sharrisii_gene_ensembl	Tasmanian devil genes (mSarHar1.11)	1	mSarHar1.11	200	50000	default	2023-10-11 12:00:32
+ 
+TableSet	kmarmoratus_gene_ensembl	Mangrove rivulus genes (ASM164957v1)	1	ASM164957v1	200	50000	default	2023-10-11 11:40:17
+ 
+TableSet	sshampshire_gene_ensembl	Pig - Hampshire genes (Hampshire_pig_v1)	1	Hampshire_pig_v1	200	50000	default	2023-10-11 11:46:32
+ 
+TableSet	strutta_gene_ensembl	Brown trout genes (fSalTru1.1)	1	fSalTru1.1	200	50000	default	2023-10-11 11:16:39
+ 
+TableSet	aocellaris_gene_ensembl	Clown anemonefish genes (AmpOce1.0)	1	AmpOce1.0	200	50000	default	2023-10-11 11:20:07
+ 
+TableSet	easinus_gene_ensembl	Donkey genes (ASM1607732v2)	1	ASM1607732v2	200	50000	default	2023-10-11 11:26:00
+ 
+TableSet	etelfairi_gene_ensembl	Lesser hedgehog tenrec genes (TENREC)	1	TENREC	200	50000	default	2023-10-11 11:38:32
+ 
+TableSet	ptroglodytes_gene_ensembl	Chimpanzee genes (Pan_tro_3.0)	1	Pan_tro_3.0	200	50000	default	2023-10-11 11:18:39
+ 
+TableSet	cgobio_gene_ensembl	Channel bull blenny genes (fCotGob3.1)	1	fCotGob3.1	200	50000	default	2023-10-11 11:17:59
+ 
+TableSet	choffmanni_gene_ensembl	Sloth genes (choHof1)	1	choHof1	200	50000	default	2023-10-11 11:57:37
+ 
+TableSet	cjaponica_gene_ensembl	Japanese quail genes (Coturnix_japonica_2.0)	1	Coturnix_japonica_2.0	200	50000	default	2023-10-11 11:37:00
+ 
+TableSet	mmurinus_gene_ensembl	Mouse Lemur genes (Mmur_3.0)	1	Mmur_3.0	200	50000	default	2023-10-11 11:42:04
+ 
+TableSet	loculatus_gene_ensembl	Spotted gar genes (LepOcu1)	1	LepOcu1	200	50000	default	2023-10-11 11:58:45
+ 
+TableSet	nscutatus_gene_ensembl	Mainland tiger snake genes (TS10Xv2-PRI)	1	TS10Xv2-PRI	200	50000	default	2023-10-11 11:39:53
+ 
+TableSet	scanaria_gene_ensembl	Common canary genes (SCA1)	1	SCA1	200	50000	default	2023-10-11 11:21:18
+ 
+TableSet	cporosus_gene_ensembl	Australian saltwater crocodile genes (CroPor_comp1)	1	CroPor_comp1	200	50000	default	2023-10-11 11:13:12
+ 
+TableSet	pnyererei_gene_ensembl	Makobe Island cichlid genes (PunNye1.0)	1	PunNye1.0	200	50000	default	2023-10-11 11:40:02
+ 
+TableSet	ocuniculus_gene_ensembl	Rabbit genes (OryCun2.0)	1	OryCun2.0	200	50000	default	2023-10-11 11:51:16
+ 
+TableSet	oarambouillet_gene_ensembl	Sheep genes (ARS-UI_Ramb_v2.0)	1	ARS-UI_Ramb_v2.0	200	50000	default	2023-10-11 11:55:43
+ 
+TableSet	vursinus_gene_ensembl	Common wombat genes (bare-nosed_wombat_genome_assembly)	1	bare-nosed_wombat_genome_assembly	200	50000	default	2023-10-11 11:22:18
+ 
+TableSet	sformosus_gene_ensembl	Asian bonytongue genes (fSclFor1.1)	1	fSclFor1.1	200	50000	default	2023-10-11 11:11:22
+ 
+TableSet	xmaculatus_gene_ensembl	Platyfish genes (X_maculatus-5.0-male)	1	X_maculatus-5.0-male	200	50000	default	2023-10-11 11:50:22
+ 
+TableSet	bsplendens_gene_ensembl	Siamese fighting fish genes (fBetSpl5.2)	1	fBetSpl5.2	200	50000	default	2023-10-11 11:57:09
+ 
+TableSet	pkingsleyae_gene_ensembl	Paramormyrops kingsleyae genes (PKINGS_0.1)	1	PKINGS_0.1	200	50000	default	2023-10-11 11:45:25
+ 
+TableSet	rbieti_gene_ensembl	Black snub-nosed monkey genes (ASM169854v1)	1	ASM169854v1	200	50000	default	2023-10-11 11:14:30
+ 
+TableSet	bgrunniens_gene_ensembl	Domestic yak genes (LU_Bosgru_v3.0)	1	LU_Bosgru_v3.0	200	50000	default	2023-10-11 11:24:53
+ 
+TableSet	clfamiliaris_gene_ensembl	Dog genes (ROS_Cfam_1.0)	1	ROS_Cfam_1.0	200	50000	default	2023-10-11 11:24:38
+ 
+TableSet	lbergylta_gene_ensembl	Ballan wrasse genes (BallGen_V1)	1	BallGen_V1	200	50000	default	2023-10-11 11:13:26
+ 
+TableSet	ttruncatus_gene_ensembl	Dolphin genes (turTru1)	1	turTru1	200	50000	default	2023-10-11 11:24:43
+ 
+TableSet	mgallopavo_gene_ensembl	Turkey genes (Turkey_5.1)	1	Turkey_5.1	200	50000	default	2023-10-11 12:03:07
+ 
+TableSet	sbboliviensis_gene_ensembl	Bolivian squirrel monkey genes (SaiBol1.0)	1	SaiBol1.0	200	50000	default	2023-10-11 11:14:58
+ 
+TableSet	cpbellii_gene_ensembl	Painted turtle genes (Chrysemys_picta_bellii-3.0.3)	1	Chrysemys_picta_bellii-3.0.3	200	50000	default	2023-10-11 11:44:59
+ 
+TableSet	sscrofa_gene_ensembl	Pig genes (Sscrofa11.1)	1	Sscrofa11.1	200	50000	default	2023-10-11 11:45:39
+ 
+TableSet	cjacchus_gene_ensembl	White-tufted-ear marmoset genes (mCalJac1.pat.X)	1	mCalJac1.pat.X	200	50000	default	2023-10-11 12:04:21
+ 
+TableSet	mpahari_gene_ensembl	Shrew mouse genes (PAHARI_EIJ_v1.1)	1	PAHARI_EIJ_v1.1	200	50000	default	2023-10-11 11:56:50
+ 
+TableSet	cdromedarius_gene_ensembl	Arabian camel genes (CamDro2)	1	CamDro2	200	50000	default	2023-10-11 11:10:41
+ 
+TableSet	sslargewhite_gene_ensembl	Pig - Largewhite genes (Large_White_v1)	1	Large_White_v1	200	50000	default	2023-10-11 11:47:13
+ 
+TableSet	spartitus_gene_ensembl	Bicolor damselfish genes (Stegastes_partitus-1.0.2)	1	Stegastes_partitus-1.0.2	200	50000	default	2023-10-11 11:14:14
+ 
+TableSet	acitrinellus_gene_ensembl	Midas cichlid genes (Midas_v5)	1	Midas_v5	200	50000	default	2023-10-11 11:40:56
+ 
+TableSet	chyarkandensis_gene_ensembl	Yarkand deer genes (CEY_v1)	1	CEY_v1	200	50000	default	2023-10-11 12:04:42
+ 
+TableSet	scaustralis_gene_ensembl	African ostrich genes (ASM69896v1)	1	ASM69896v1	200	50000	default	2023-10-11 11:09:16
+ 
+TableSet	catys_gene_ensembl	Sooty mangabey genes (Caty_1.0)	1	Caty_1.0	200	50000	default	2023-10-11 11:57:53
+ 
+TableSet	mmulatta_gene_ensembl	Macaque genes (Mmul_10)	1	Mmul_10	200	50000	default	2023-10-11 11:39:43
+ 
+TableSet	okisutch_gene_ensembl	Coho salmon genes (Okis_V2)	1	Okis_V2	200	50000	default	2023-10-11 11:21:01
+ 
+TableSet	psinensis_gene_ensembl	Chinese softshell turtle genes (PelSin_1.0)	1	PelSin_1.0	200	50000	default	2023-10-11 11:19:09
+ 
+TableSet	sstibetan_gene_ensembl	Pig - Tibetan genes (Tibetan_Pig_v2)	1	Tibetan_Pig_v2	200	50000	default	2023-10-11 11:48:18
+ 
+TableSet	anancymaae_gene_ensembl	Ma's night monkey genes (Anan_2.0)	1	Anan_2.0	200	50000	default	2023-10-11 11:39:23
+ 
+TableSet	saraneus_gene_ensembl	Shrew genes (sorAra1)	1	sorAra1	200	50000	default	2023-10-11 11:56:23
+ 
+TableSet	applatyrhynchos_gene_ensembl	Duck genes (CAU_duck1.0)	1	CAU_duck1.0	200	50000	default	2023-10-11 11:27:05
+ 
+TableSet	mnemestrina_gene_ensembl	Pig-tailed macaque genes (Mnem_1.0)	1	Mnem_1.0	200	50000	default	2023-10-11 11:49:14
+ 
+TableSet	cintestinalis_gene_ensembl	C.intestinalis genes (KH)	1	KH	200	50000	default	2023-10-11 11:17:04
+ 
+TableSet	tnigroviridis_gene_ensembl	Tetraodon genes (TETRAODON 8.0)	1	TETRAODON 8.0	200	50000	default	2023-10-11 12:00:44
+ 
+TableSet	nbrichardi_gene_ensembl	Lyretail cichlid genes (NeoBri1.0)	1	NeoBri1.0	200	50000	default	2023-10-11 11:39:10
+ 
+TableSet	nvison_gene_ensembl	American mink genes (NNQGG.v01)	1	NNQGG.v01	200	50000	default	2023-10-11 11:10:28
+ 
+TableSet	omelastigma_gene_ensembl	Indian medaka genes (Om_v0.7.RACA)	1	Om_v0.7.RACA	200	50000	default	2023-10-11 11:36:41
+ 
+TableSet	gmorhua_gene_ensembl	Atlantic cod genes (gadMor3.0)	1	gadMor3.0	200	50000	default	2023-10-11 11:11:35
+ 
+TableSet	acalliptera_gene_ensembl	Eastern happy genes (fAstCal1.2)	1	fAstCal1.2	200	50000	default	2023-10-11 11:27:37
+ 
+TableSet	hgfemale_gene_ensembl	Naked mole-rat female genes (Naked_mole-rat_maternal)	1	Naked_mole-rat_maternal	200	50000	default	2023-10-11 11:42:47
+ 
+TableSet	hcomes_gene_ensembl	Tiger tail seahorse genes (H_comes_QL1_v1)	1	H_comes_QL1_v1	200	50000	default	2023-10-11 12:01:18
+ 
+TableSet	pcatodon_gene_ensembl	Sperm whale genes (ASM283717v2)	1	ASM283717v2	200	50000	default	2023-10-11 11:58:07
+ 
+TableSet	bbbison_gene_ensembl	American bison genes (Bison_UMD1.0)	1	Bison_UMD1.0	200	50000	default	2023-10-11 11:10:09
+ 
+TableSet	uparryii_gene_ensembl	Arctic ground squirrel genes (ASM342692v1)	1	ASM342692v1	200	50000	default	2023-10-11 11:10:48
+ 
+TableSet	olatipes_gene_ensembl	Japanese medaka HdrR genes (ASM223467v1)	1	ASM223467v1	200	50000	default	2023-10-11 11:36:51
+ 
+TableSet	cldingo_gene_ensembl	Dingo genes (ASM325472v1)	1	ASM325472v1	200	50000	default	2023-10-11 11:24:24
+ 
+TableSet	itridecemlineatus_gene_ensembl	Squirrel genes (SpeTri2.0)	1	SpeTri2.0	200	50000	default	2023-10-11 11:58:55
+ 
+TableSet	mauratus_gene_ensembl	Golden Hamster genes (MesAur1.0)	1	MesAur1.0	200	50000	default	2023-10-11 11:30:13
+ 
+TableSet	lleishanense_gene_ensembl	Leishan spiny toad genes (ASM966780v1)	1	ASM966780v1	200	50000	default	2023-10-11 11:38:09
+ 
+TableSet	bmutus_gene_ensembl	Wild yak genes (BosGru_v2.0)	1	BosGru_v2.0	200	50000	default	2023-10-11 12:04:32
+ 
+TableSet	amexicanus_gene_ensembl	Mexican tetra genes (Astyanax_mexicanus-2.0)	1	Astyanax_mexicanus-2.0	200	50000	default	2023-10-11 11:40:41
+ 
+TableSet	cimitator_gene_ensembl	Panamanian white-faced capuchin genes (Cebus_imitator-1.0)	1	Cebus_imitator-1.0	200	50000	default	2023-10-11 11:45:11
+ 
+TableSet	vvulpes_gene_ensembl	Red fox genes (VulVul2.2)	1	VulVul2.2	200	50000	default	2023-10-11 11:53:42
+ 
+TableSet	pmuralis_gene_ensembl	Common wall lizard genes (PodMur_1.0)	1	PodMur_1.0	200	50000	default	2023-10-11 11:22:08
+ 
+TableSet	tctriunguis_gene_ensembl	Three-toed box turtle genes (T_m_triunguis-2.0)	1	T_m_triunguis-2.0	200	50000	default	2023-10-11 12:00:56
+ 
+TableSet	slucioperca_gene_ensembl	Pike-perch genes (SLUC_FBN_1)	1	SLUC_FBN_1	200	50000	default	2023-10-11 11:49:42
+ 
+TableSet	mmmarmota_gene_ensembl	Alpine marmot genes (marMar2.1)	1	marMar2.1	200	50000	default	2023-10-11 11:09:51
+ 
+TableSet	cvariegatus_gene_ensembl	Sheepshead minnow genes (C_variegatus-1.0)	1	C_variegatus-1.0	200	50000	default	2023-10-11 11:56:16
+ 
+TableSet	elucius_gene_ensembl	Northern pike genes (Eluc_v4)	1	Eluc_v4	200	50000	default	2023-10-11 11:43:53
+ 
+TableSet	mspretus_gene_ensembl	Algerian mouse genes (SPRET_EiJ_v1)	1	SPRET_EiJ_v1	200	50000	default	2023-10-11 11:09:38
+ 
+TableSet	umaritimus_gene_ensembl	Polar bear genes (UrsMar_1.0)	1	UrsMar_1.0	200	50000	default	2023-10-11 11:50:47
+ 
+TableSet	dleucas_gene_ensembl	Beluga whale genes (ASM228892v3)	1	ASM228892v3	200	50000	default	2023-10-11 11:13:55
+ 
+TableSet	uamericanus_gene_ensembl	American black bear genes (ASM334442v1)	1	ASM334442v1	200	50000	default	2023-10-11 11:10:20
+ 
+TableSet	ssbamei_gene_ensembl	Pig - Bamei genes (Bamei_pig_v1)	1	Bamei_pig_v1	200	50000	default	2023-10-11 11:45:59
+ 
+TableSet	oaries_gene_ensembl	Sheep (texel) genes (Oar_v3.1)	1	Oar_v3.1	200	50000	default	2023-10-11 11:55:52
+ 
+TableSet	ecalabaricus_gene_ensembl	Reedfish genes (fErpCal1.1)	1	fErpCal1.1	200	50000	default	2023-10-11 11:54:07
+ 
+TableSet	mcaroli_gene_ensembl	Ryukyu mouse genes (CAROLI_EIJ_v1.1)	1	CAROLI_EIJ_v1.1	200	50000	default	2023-10-11 11:54:32
+ 
+TableSet	platipinna_gene_ensembl	Sailfin molly genes (P_latipinna-1.0)	1	P_latipinna-1.0	200	50000	default	2023-10-11 11:54:49
+ 
+TableSet	aplatyrhynchos_gene_ensembl	Mallard genes (ASM874695v1)	1	ASM874695v1	200	50000	default	2023-10-11 11:40:08
+ 
+TableSet	mlucifugus_gene_ensembl	Microbat genes (Myoluc2.0)	1	Myoluc2.0	200	50000	default	2023-10-11 11:40:47
+ 
+TableSet	pmarinus_gene_ensembl	Lamprey genes (Pmarinus_7.0)	1	Pmarinus_7.0	200	50000	default	2023-10-11 11:37:43
+ 
+TableSet	nfurzeri_gene_ensembl	Turquoise killifish genes (Nfu_20140520)	1	Nfu_20140520	200	50000	default	2023-10-11 12:03:23
+ 
+TableSet	preticulata_gene_ensembl	Guppy genes (Guppy_female_1.0_MT)	1	Guppy_female_1.0_MT	200	50000	default	2023-10-11 11:32:52
+ 
+TableSet	mfascicularis_gene_ensembl	Crab-eating macaque genes (Macaca_fascicularis_6.0)	1	Macaca_fascicularis_6.0	200	50000	default	2023-10-11 11:23:36
+ 
+TableSet	nnaja_gene_ensembl	Indian cobra genes (Nana_v5)	1	Nana_v5	200	50000	default	2023-10-11 11:36:30
+ 
+TableSet	pvampyrus_gene_ensembl	Megabat genes (pteVam1)	1	pteVam1	200	50000	default	2023-10-11 11:40:31
+ 
+TableSet	odegus_gene_ensembl	Degu genes (OctDeg1.0)	1	OctDeg1.0	200	50000	default	2023-10-11 11:23:47
+ 
+TableSet	falbicollis_gene_ensembl	Collared flycatcher genes (FicAlb1.5)	1	FicAlb1.5	200	50000	default	2023-10-11 11:21:10
+ 
+TableSet	rnorvegicus_gene_ensembl	Rat genes (mRatBN7.2)	1	mRatBN7.2	200	50000	default	2023-10-11 11:53:27
+ 
+TableSet	bmusculus_gene_ensembl	Blue whale genes (mBalMus1.v2)	1	mBalMus1.v2	200	50000	default	2023-10-11 11:14:37
+ 
+TableSet	eeuropaeus_gene_ensembl	Hedgehog genes (eriEur1)	1	eriEur1	200	50000	default	2023-10-11 11:33:08
+ 
+TableSet	acarolinensis_gene_ensembl	Green anole genes (AnoCar2.0v2)	1	AnoCar2.0v2	200	50000	default	2023-10-11 11:32:27
+ 
+TableSet	ipunctatus_gene_ensembl	Channel catfish genes (IpCoco_1.2)	1	IpCoco_1.2	200	50000	default	2023-10-11 11:18:09
+ 
+TableSet	acchrysaetos_gene_ensembl	Golden eagle genes (bAquChr1.2)	1	bAquChr1.2	200	50000	default	2023-10-11 11:30:23
+ 
+TableSet	eelectricus_gene_ensembl	Electric eel genes (Ee_SOAP_WITH_SSPACE)	1	Ee_SOAP_WITH_SSPACE	200	50000	default	2023-10-11 11:27:53
+ 
+TableSet	oprinceps_gene_ensembl	Pika genes (OchPri2.0-Ens)	1	OchPri2.0-Ens	200	50000	default	2023-10-11 11:49:22
+ 
+TableSet	omykiss_gene_ensembl	Rainbow trout genes (USDA_OmykA_1.1)	1	USDA_OmykA_1.1	200	50000	default	2023-10-11 11:53:08
+ 
+TableSet	pcapensis_gene_ensembl	Hyrax genes (proCap1)	1	proCap1	200	50000	default	2023-10-11 11:36:23
+ 
+TableSet	dlabrax_gene_ensembl	European seabass genes (dlabrax2021)	1	dlabrax2021	200	50000	default	2023-10-11 11:28:51
+ 
+TableSet	saurata_gene_ensembl	Gilthead seabream genes (fSpaAur1.1)	1	fSpaAur1.1	200	50000	default	2023-10-11 11:29:52
+ 
+TableSet	mochrogaster_gene_ensembl	Prairie vole genes (MicOch1.0)	1	MicOch1.0	200	50000	default	2023-10-11 11:51:02
+ 
+TableSet	neugenii_gene_ensembl	Wallaby genes (Meug_1.0)	1	Meug_1.0	200	50000	default	2023-10-11 12:03:57
+ 
+TableSet	chircus_gene_ensembl	Goat genes (ARS1)	1	ARS1	200	50000	default	2023-10-11 11:30:03
+ 
+TableSet	ppardus_gene_ensembl	Leopard genes (PanPar1.0)	1	PanPar1.0	200	50000	default	2023-10-11 11:38:18
+ 
+TableSet	cabingdonii_gene_ensembl	Abingdon island giant tortoise genes (ASM359739v1)	1	ASM359739v1	200	50000	default	2023-10-11 11:09:06
+ 
+TableSet	cporcellus_gene_ensembl	Guinea Pig genes (Cavpor3.0)	1	Cavpor3.0	200	50000	default	2023-10-11 11:32:37
+ 
+TableSet	dnovemcinctus_gene_ensembl	Armadillo genes (Dasnov3.0)	1	Dasnov3.0	200	50000	default	2023-10-11 11:11:05
+ 
+TableSet	ptextilis_gene_ensembl	Eastern brown snake genes (EBS10Xv2-PRI)	1	EBS10Xv2-PRI	200	50000	default	2023-10-11 11:27:15
+ 
+TableSet	pmajor_gene_ensembl	Great Tit genes (Parus_major1.1)	1	Parus_major1.1	200	50000	default	2023-10-11 11:31:45
+ 
+TableSet	gfortis_gene_ensembl	Medium ground-finch genes (GeoFor_1.0)	1	GeoFor_1.0	200	50000	default	2023-10-11 11:40:25
+ 
+TableSet	eburgeri_gene_ensembl	Hagfish genes (Eburgeri_3.2)	1	Eburgeri_3.2	200	50000	default	2023-10-11 11:32:58
+ 
+TableSet	trubripes_gene_ensembl	Fugu genes (fTakRub1.2)	1	fTakRub1.2	200	50000	default	2023-10-11 11:29:12
+ 
+TableSet	cmilii_gene_ensembl	Elephant shark genes (Callorhinchus_milii-6.1.3)	1	Callorhinchus_milii-6.1.3	200	50000	default	2023-10-11 11:28:23
+ 
+TableSet	mdomestica_gene_ensembl	Opossum genes (ASM229v1)	1	ASM229v1	200	50000	default	2023-10-11 11:44:36
+ 
+TableSet	fheteroclitus_gene_ensembl	Mummichog genes (Fundulus_heteroclitus-3.0.2)	1	Fundulus_heteroclitus-3.0.2	200	50000	default	2023-10-11 11:42:14
+ 
+TableSet	sspietrain_gene_ensembl	Pig - Pietrain genes (Pietrain_pig_v1)	1	Pietrain_pig_v1	200	50000	default	2023-10-11 11:47:44
+ 
+TableSet	pabelii_gene_ensembl	Sumatran orangutan genes (Susie_PABv2)	1	Susie_PABv2	200	50000	default	2023-10-11 11:59:55
+ 
+TableSet	pcoquereli_gene_ensembl	Coquerel's sifaka genes (Pcoq_1.0)	1	Pcoq_1.0	200	50000	default	2023-10-11 11:22:32
+ 
+TableSet	lcrocea_gene_ensembl	Large yellow croaker genes (L_crocea_2.0)	1	L_crocea_2.0	200	50000	default	2023-10-11 11:38:00
+ 
+TableSet	ptaltaica_gene_ensembl	Tiger genes (PanTig1.0)	1	PanTig1.0	200	50000	default	2023-10-11 12:01:07
+ 
+TableSet	apercula_gene_ensembl	Orange clownfish genes (Nemo_v1)	1	Nemo_v1	200	50000	default	2023-10-11 11:44:49
+ 
+TableSet	ssusmarc_gene_ensembl	Pig USMARC genes (USMARCv1.0)	1	USMARCv1.0	200	50000	default	2023-10-11 11:48:55
+ 
+TableSet	hsapiens_gene_ensembl	Human genes (GRCh38.p14)	1	GRCh38.p14	200	50000	default	2023-10-11 11:36:04
+ 
+TableSet	mspicilegus_gene_ensembl	Steppe mouse genes (MUSP714)	1	MUSP714	200	50000	default	2023-10-11 11:59:20
+ 
+TableSet	mleucophaeus_gene_ensembl	Drill genes (Mleu.le_1.0)	1	Mleu.le_1.0	200	50000	default	2023-10-11 11:26:18
+ 
+TableSet	xtropicalis_gene_ensembl	Tropical clawed frog genes (UCB_Xtro_10.0)	1	UCB_Xtro_10.0	200	50000	default	2023-10-11 12:02:25
+ 
+TableSet	smaximus_gene_ensembl	Turbot genes (ASM1334776v1)	1	ASM1334776v1	200	50000	default	2023-10-11 12:02:54
+ 
+TableSet	oniloticus_gene_ensembl	Nile tilapia genes (O_niloticus_UMD_NMBU)	1	O_niloticus_UMD_NMBU	200	50000	default	2023-10-11 11:43:20
+ 
+TableSet	mmusculus_gene_ensembl	Mouse genes (GRCm39)	1	GRCm39	200	50000	default	2023-10-11 11:41:46
+ 
+TableSet	cgchok1gshd_gene_ensembl	Chinese hamster CHOK1GS genes (CHOK1GS_HDv1)	1	CHOK1GS_HDv1	200	50000	default	2023-10-11 11:18:49
+ 
+TableSet	ssalar_gene_ensembl	Atlantic salmon genes (Ssal_v3.1)	1	Ssal_v3.1	200	50000	default	2023-10-11 11:13:00
+ 
+TableSet	dmelanogaster_gene_ensembl	Drosophila melanogaster (Fruit fly) genes (BDGP6.46)	1	BDGP6.46	200	50000	default	2023-10-11 11:26:55
+ 
+TableSet	mzebra_gene_ensembl	Zebra mbuna genes (M_zebra_UMD2a)	1	M_zebra_UMD2a	200	50000	default	2023-10-11 12:05:16
+ 
+TableSet	gevgoodei_gene_ensembl	Goodes thornscrub tortoise genes (rGopEvg1_v1.p)	1	rGopEvg1_v1.p	200	50000	default	2023-10-11 11:31:18
+ 
+TableSet	hhucho_gene_ensembl	Huchen genes (ASM331708v1)	1	ASM331708v1	200	50000	default	2023-10-11 11:34:58
+ 
+TableSet	ggallus_gene_ensembl	Chicken genes (bGalGal1.mat.broiler.GRCg7b)	1	bGalGal1.mat.broiler.GRCg7b	200	50000	default	2023-10-11 11:18:20
+ 
+TableSet	drerio_gene_ensembl	Zebrafish genes (GRCz11)	1	GRCz11	200	50000	default	2023-10-11 12:05:29
+ 
+TableSet	mmoschiferus_gene_ensembl	Siberian musk deer genes (MosMos_v2_BIUU_UCD)	1	MosMos_v2_BIUU_UCD	200	50000	default	2023-10-11 11:57:32
+ 
+TableSet	marmatus_gene_ensembl	Zig-zag eel genes (fMasArm1.2)	1	fMasArm1.2	200	50000	default	2023-10-11 12:05:44
+ 
+TableSet	tguttata_gene_ensembl	Zebra finch genes (bTaeGut1_v1.p)	1	bTaeGut1_v1.p	200	50000	default	2023-10-11 12:05:04
+ 
+TableSet	cwagneri_gene_ensembl	Chacoan peccary genes (CatWag_v2_BIUU_UCD)	1	CatWag_v2_BIUU_UCD	200	50000	default	2023-10-11 11:17:45
+ 
+TableSet	ssmeishan_gene_ensembl	Pig - Meishan genes (Meishan_pig_v1)	1	Meishan_pig_v1	200	50000	default	2023-10-11 11:47:27
+ 
+TableSet	csavignyi_gene_ensembl	C.savignyi genes (CSAV 2.0)	1	CSAV 2.0	200	50000	default	2023-10-11 11:17:10
+ 
+TableSet	ppaniscus_gene_ensembl	Bonobo genes (panpan1.1)	1	panpan1.1	200	50000	default	2023-10-11 11:15:13
+ 
+TableSet	gaculeatus_gene_ensembl	Stickleback genes (BROAD S1)	1	BROAD S1	200	50000	default	2023-10-11 11:59:30
+ 
+TableSet	celegans_gene_ensembl	Caenorhabditis elegans (Nematode, N2) genes (WBcel235)	1	WBcel235	200	50000	default	2023-10-11 11:17:20
+ 
+TableSet	csemilaevis_gene_ensembl	Tongue sole genes (Cse_v1.0)	1	Cse_v1.0	200	50000	default	2023-10-11 12:01:47
+ 
+TableSet	sswuzhishan_gene_ensembl	Pig - Wuzhishan genes (minipig_v1.0)	1	minipig_v1.0	200	50000	default	2023-10-11 11:48:39
+ 
+TableSet	ngalili_gene_ensembl	Upper Galilee mountains blind mole rat genes (S.galili_v1.0)	1	S.galili_v1.0	200	50000	default	2023-10-11 12:03:33
+ 
+TableSet	ojavanicus_gene_ensembl	Javanese ricefish genes (OJAV_1.1)	1	OJAV_1.1	200	50000	default	2023-10-11 11:37:12
+ 
+TableSet	svulgaris_gene_ensembl	Eurasian red squirrel genes (mSciVul1.1)	1	mSciVul1.1	200	50000	default	2023-10-11 11:28:31
+ 
+TableSet	cccarpio_gene_ensembl	Common carp genes (Cypcar_WagV4.0)	1	Cypcar_WagV4.0	200	50000	default	2023-10-11 11:21:58
+ 
+TableSet	nleucogenys_gene_ensembl	Gibbon genes (Nleu_3.0)	1	Nleu_3.0	200	50000	default	2023-10-11 11:29:37
+ 
+TableSet	dordii_gene_ensembl	Kangaroo rat genes (Dord_2.0)	1	Dord_2.0	200	50000	default	2023-10-11 11:37:27
+ 
+TableSet	scerevisiae_gene_ensembl	Saccharomyces cerevisiae genes (R64-1-1)	1	R64-1-1	200	50000	default	2023-10-11 11:54:36
+ 
+TableSet	csabaeus_gene_ensembl	Vervet-AGM genes (ChlSab1.1)	1	ChlSab1.1	200	50000	default	2023-10-11 12:03:50
+ 
+TableSet	atestudineus_gene_ensembl	Climbing perch genes (fAnaTes1.2)	1	fAnaTes1.2	200	50000	default	2023-10-11 11:19:56
+ 
+TableSet	mmurdjan_gene_ensembl	Pinecone soldierfish genes (fMyrMur1.1)	1	fMyrMur1.1	200	50000	default	2023-10-11 11:50:00
+ 
+TableSet	lchalumnae_gene_ensembl	Coelacanth genes (LatCha1)	1	LatCha1	200	50000	default	2023-10-11 11:20:16
+ 
+TableSet	psimus_gene_ensembl	Greater bamboo lemur genes (Prosim_1.0)	1	Prosim_1.0	200	50000	default	2023-10-11 11:32:09
+ 
+TableSet	oanatinus_gene_ensembl	Platypus genes (mOrnAna1.p.v1)	1	mOrnAna1.p.v1	200	50000	default	2023-10-11 11:50:36
+ 
+TableSet	clanigera_gene_ensembl	Long-tailed chinchilla genes (ChiLan1.0)	1	ChiLan1.0	200	50000	default	2023-10-11 11:38:50
+ 
+TableSet	xcouchianus_gene_ensembl	Monterrey platyfish genes (Xiphophorus_couchianus-4.0.1)	1	Xiphophorus_couchianus-4.0.1	200	50000	default	2023-10-11 11:41:05
+ 
+TableSet	lafricana_gene_ensembl	Elephant genes (Loxafr3.0)	1	Loxafr3.0	200	50000	default	2023-10-11 11:28:01
+ 
+TableSet	tbelangeri_gene_ensembl	Tree Shrew genes (tupBel1)	1	tupBel1	200	50000	default	2023-10-11 12:01:54
+ 
+TableSet	pleo_gene_ensembl	Lion genes (PanLeo1.0)	1	PanLeo1.0	200	50000	default	2023-10-11 11:38:43
+ 
+TableSet	pnattereri_gene_ensembl	Red-bellied piranha genes (Pygocentrus_nattereri-1.0.2)	1	Pygocentrus_nattereri-1.0.2	200	50000	default	2023-10-11 11:53:55
+ 
+TableSet	ssberkshire_gene_ensembl	Pig - Berkshire genes (Berkshire_pig_v1)	1	Berkshire_pig_v1	200	50000	default	2023-10-11 11:46:18
+ 
+TableSet	sslandrace_gene_ensembl	Pig - Landrace genes (Landrace_pig_v1)	1	Landrace_pig_v1	200	50000	default	2023-10-11 11:46:58
+ 
+TableSet	sldorsalis_gene_ensembl	Yellowtail amberjack genes (Sedor1)	1	Sedor1	200	50000	default	2023-10-11 12:04:55
+ 
+TableSet	sdumerili_gene_ensembl	Greater amberjack genes (Sdu_1.0)	1	Sdu_1.0	200	50000	default	2023-10-11 11:31:55
+ 
+TableSet	pcinereus_gene_ensembl	Koala genes (phaCin_unsw_v4.1)	1	phaCin_unsw_v4.1	200	50000	default	2023-10-11 11:37:38
+ 
+TableSet	otshawytscha_gene_ensembl	Chinook salmon genes (Otsh_v1.0)	1	Otsh_v1.0	200	50000	default	2023-10-11 11:19:40
+ 
+TableSet	abrachyrhynchus_gene_ensembl	Pink-footed goose genes (ASM259213v1)	1	ASM259213v1	200	50000	default	2023-10-11 11:50:09
+ 
+TableSet	ggorilla_gene_ensembl	Gorilla genes (gorGor4)	1	gorGor4	200	50000	default	2023-10-11 11:31:37
+ 
+TableSet	lcalcarifer_gene_ensembl	Barramundi perch genes (ASB_HGAPassembly_v1)	1	ASB_HGAPassembly_v1	200	50000	default	2023-10-11 11:13:47
+ 
+TableSet	amelanoleuca_gene_ensembl	Giant panda genes (ASM200744v2)	1	ASM200744v2	200	50000	default	2023-10-11 11:29:23
+ 
+TableSet	hburtoni_gene_ensembl	Burton's mouthbrooder genes (AstBur1.0)	1	AstBur1.0	200	50000	default	2023-10-11 11:16:52
+ 
+TableSet	jjaculus_gene_ensembl	Lesser Egyptian jerboa genes (JacJac1.0)	1	JacJac1.0	200	50000	default	2023-10-11 11:38:26
+ 
+TableSet	mmonoceros_gene_ensembl	Narwhal genes (NGI_Narwhal_1)	1	NGI_Narwhal_1	200	50000	default	2023-10-11 11:42:59
+ 
+TableSet	panubis_gene_ensembl	Olive baboon genes (Panubis1.0)	1	Panubis1.0	200	50000	default	2023-10-11 11:44:11
+ 
+TableSet	mpfuro_gene_ensembl	Ferret genes (MusPutFur1.0)	1	MusPutFur1.0	200	50000	default	2023-10-11 11:29:00
+ 
+TableSet	dclupeoides_gene_ensembl	Denticle herring genes (fDenClu1.1)	1	fDenClu1.1	200	50000	default	2023-10-11 11:24:13
+ 
+TableSet	charengus_gene_ensembl	Atlantic herring genes (Ch_v2.0.2)	1	Ch_v2.0.2	200	50000	default	2023-10-11 11:11:53
+ 
+TableSet	psinus_gene_ensembl	Vaquita genes (mPhoSin1.pri)	1	mPhoSin1.pri	200	50000	default	2023-10-11 12:03:42
+ 
+TableSet	pmbairdii_gene_ensembl	Northern American deer mouse genes (HU_Pman_2.1)	1	HU_Pman_2.1	200	50000	default	2023-10-11 11:43:30
+ 
+TableSet	osinensis_gene_ensembl	Chinese medaka genes (ASM858656v1)	1	ASM858656v1	200	50000	default	2023-10-11 11:19:02
+ 
+TableSet	smerianae_gene_ensembl	Argentine black and white tegu genes (HLtupMer3)	1	HLtupMer3	200	50000	default	2023-10-11 11:10:58
+ 
+TableSet	ecaballus_gene_ensembl	Horse genes (EquCab3.0)	1	EquCab3.0	200	50000	default	2023-10-11 11:34:37
+ 
+TableSet	apolyacanthus_gene_ensembl	Spiny chromis genes (ASM210954v1)	1	ASM210954v1	200	50000	default	2023-10-11 11:58:32
+ 
+TableSet	shabroptila_gene_ensembl	Kakapo genes (bStrHab1_v1.p)	1	bStrHab1_v1.p	200	50000	default	2023-10-11 11:37:20
+ 
+TableSet	ogarnettii_gene_ensembl	Bushbaby genes (OtoGar3)	1	OtoGar3	200	50000	default	2023-10-11 11:16:59
+ 
+TableSet	rroxellana_gene_ensembl	Golden snub-nosed monkey genes (Rrox_v1)	1	Rrox_v1	200	50000	default	2023-10-11 11:30:39
+ 
+TableSet	btaurus_gene_ensembl	Cow genes (ARS-UCD1.3)	1	ARS-UCD1.3	200	50000	default	2023-10-11 11:23:09
+ 
+TableSet	llaticaudata_gene_ensembl	Blue-ringed sea krait genes (latLat_1.0)	1	latLat_1.0	200	50000	default	2023-10-11 11:14:45
+ 
+TableSet	fcatus_gene_ensembl	Cat genes (Felis_catus_9.0)	1	Felis_catus_9.0	200	50000	default	2023-10-11 11:17:35
+ 
+TableSet	cauratus_gene_ensembl	Goldfish genes (ASM336829v1)	1	ASM336829v1	200	50000	default	2023-10-11 11:31:10
+ 
+TableSet	rferrumequinum_gene_ensembl	Greater horseshoe bat genes (mRhiFer1_v1.p)	1	mRhiFer1_v1.p	200	50000	default	2023-10-11 11:32:17

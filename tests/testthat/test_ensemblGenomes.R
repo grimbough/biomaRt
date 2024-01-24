@@ -7,7 +7,7 @@ test_that("Error handling works", {
   
     mockery::stub(useEnsemblGenomes,
          'listEnsemblGenomes',
-         function(includeHosts) {
+         function(includeHosts, host) {
              data.frame(
                biomart = c("protists_mart", "fungi_mart"),
                version = c("Ensembl Protists Genes 48", "Ensembl Fungi Genes 48")

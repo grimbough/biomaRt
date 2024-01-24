@@ -1,3 +1,18 @@
+CHANGES IN VERSION 2.60.0
+-------------------------
+
+USER VISIBLE CHANGES
+
+  o listEnsemblGenomes() and useEnsemblGenomes() now have a host argument, 
+  allowing you to select an Ensembl Genomes archive site. (Thanks to Hervé Pagès 
+  @hpages for the suggestion: https://github.com/grimbough/biomaRt/issues/93)
+  
+INTERNAL CHANGES
+
+  o Removed dependency on XML package and switched all functionality to xml2
+  o Swiched from httr to httr2 package for submitting queries to BioMart 
+  servers.
+
 CHANGES IN VERSION 2.58.0
 -------------------------
 

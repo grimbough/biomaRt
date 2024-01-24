@@ -2,12 +2,15 @@ library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
-test_that("useMart can connect to ensembl", {
-  ## Skip on linux.  SSL problems are addressed in useEnsembl()
-  testthat::skip_on_os("linux")
-  ensembl <- useMart(biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl')
-  expect_is(ensembl, "Mart")
-})
+with_mock_dir("all_200", {
+  test_that("useMart returns a Mart object", {
+    ## Skip on linux.  SSL problems are addressed in useEnsembl()
+    #testthat::skip_on_os("linux")
+    ensembl <- useMart(biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl')
+    expect_is(ensembl, "Mart")
+  })
+},
+simplify = TRUE)
 
 test_that("show() reports missing dataset", {
         expect_output(object = show( Mart(biomart = "ensembl") ), 
