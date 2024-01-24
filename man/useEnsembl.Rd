@@ -15,13 +15,13 @@ on the selected Mart object.}
 \usage{
 useEnsembl(biomart, dataset, host, version = NULL, 
             GRCh = NULL, mirror = NULL, verbose = FALSE)
-useEnsemblGenomes(biomart, dataset)
+useEnsemblGenomes(biomart, dataset, host = NULL)
 }
 
 \arguments{
 \item{biomart}{BioMart database name you want to connect to. Possible database names can be retrieved with the function \code{\link{listEnsembl}}}
 \item{dataset}{Dataset you want to use.  To see the different datasets available within a biomaRt you can e.g. do:  mart = useEnsembl('genes'), followed by listDatasets(mart).}
-\item{host}{Host to connect to.  Only needs to be specified if different from www.ensembl.org}
+\item{host}{Host to connect to.  Only needs to be specified if different from www.ensembl.org.  For \code{useEnsemblGenomes} this argument can be used to specify an archive site.}
 \item{version}{Ensembl version to connect to when wanting to connect to an archived Ensembl version}
 \item{GRCh}{GRCh version to connect to if not the current GRCh38, currently this can only be 37}
 \item{mirror}{Specify an Ensembl mirror to connect to.  The valid options here are 'www', 'useast', 'asia'.  If no mirror is specified the primary site at www.ensembl.org will be used.  Mirrors are not available for the Ensembl Genomes databases.}
@@ -48,6 +48,15 @@ mart <- useEnsembl("ensembl")
 
 ## using the US West mirror
 us_mart <- useEnsembl(biomart = "ensembl", mirror = "useast")
+
+## using the arabidopsis thaliana genes dataset in Ensembl Plants
+plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
+                                 dataset = "athaliana_eg_gene")
+                                 
+## using the cucumis melo genes dataset in the Ensembl Plants 56 archive
+plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
+                                 dataset = "cmelo_eg_gene",
+                                 host = "https://eg56-plants.ensembl.org/")
 }
 }
 \keyword{methods}

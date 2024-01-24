@@ -347,12 +347,17 @@ useEnsembl <- function(biomart, dataset, host,
 
 ##############################################
 
-listEnsemblGenomes <- function(includeHosts = FALSE){
+listEnsemblGenomes <- function(includeHosts = FALSE, host = NULL){
   
-  hosts <- c("https://protists.ensembl.org/",
-             "https://fungi.ensembl.org/",
-             "https://metazoa.ensembl.org/",
-             "https://plants.ensembl.org/")
+  ## use the default websites unless an alternative is provided
+  if(is.null(host)) {
+    hosts <- c("https://protists.ensembl.org/",
+               "https://fungi.ensembl.org/",
+               "https://metazoa.ensembl.org/",
+               "https://plants.ensembl.org/")
+  } else {
+    hosts <- host
+  }
   
   http_config <- .getEnsemblSSL()
   
@@ -369,7 +374,7 @@ listEnsemblGenomes <- function(includeHosts = FALSE){
   return(marts)
 }
 
-useEnsemblGenomes <- function(biomart, dataset) {
+useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
   
   if(missing(biomart)) {
     stop("You must provide the argument 'biomart'\n",
@@ -377,7 +382,7 @@ useEnsemblGenomes <- function(biomart, dataset) {
          "the function listEnsemblGenomes()")
   }
   
-  marts <- listEnsemblGenomes(includeHosts = TRUE)
+  marts <- listEnsemblGenomes(includeHosts = TRUE, host = host)
   if(!biomart %in% marts$biomart) {
     stop(biomart, " is not in the list of available Marts'\n",
          "Available Ensembl Genomes Marts can be viewed with ",
