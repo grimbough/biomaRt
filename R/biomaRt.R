@@ -115,7 +115,7 @@ listMarts <- function( mart = NULL, host="https://www.ensembl.org", path="/bioma
     if(!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
         
         if(grepl(x = registry, pattern = "status.ensembl.org")) {
-            stop("Your query has been redirected to http://status.ensembl.org ",
+            stop("Your query has been redirected to https://status.ensembl.org ",
                  "indicating this Ensembl service is currently unavailable.",
                  "\nLook at ?useEnsembl for details on how to try a mirror site.",
                  call. = FALSE)
