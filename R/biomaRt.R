@@ -47,9 +47,9 @@ bmRequest <- function(request, httr_config, verbose = FALSE){
                         timeout(getOption("timeout", default = 60)))
     stop_for_status(result)
 
-    result2 <- content(result, encoding = "UTF-8")
+    result2 <- content(result, encoding = "UTF-8", as = "text")
     if(is.na(result2)) {
-        result2 <- content(result, encoding = "Latin1")
+        result2 <- content(result, encoding = "Latin1", as = "text")
     }
     return(result2)
 }
