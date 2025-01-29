@@ -514,13 +514,13 @@ getBM <- function(attributes, filters = "", values = "", mart,
     
         ## force the query to return the 'descriptive text' header names with the result
         ## we use these later to match and order attribute/column names    
-        xmlQuery = paste0("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query  virtualSchemaName = '",
+        xmlQuery = paste0('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query virtualSchemaName = "',
                           martVSchema(mart),
-                          "' uniqueRows = '",
+                          '" uniqueRows="',
                           as.numeric(uniqueRows),
-                          "' count='0' datasetConfigVersion='0.6' header='1'",
-                          " formatter='TSV' requestid='biomaRt'> <Dataset name = '",
-                          martDataset(mart),"'>")
+                          '" count="0" datasetConfigVersion="0.6" header="1"',
+                          ' formatter="TSV" requestid="biomaRt"><Dataset name="',
+                          martDataset(mart),'">')
         
         #checking the Attributes
         invalid = !(attributes %in% listAttributes(mart, what="name"))
@@ -529,7 +529,7 @@ getBM <- function(attributes, filters = "", values = "", mart,
                        "\nPlease use the function 'listAttributes' to get valid attribute names"))
         
         #attribute are ok lets add them to the query
-        attributeXML = paste0("<Attribute name = '", attributes, "'/>", collapse="")
+        attributeXML = paste0('<Attribute name = "', attributes, '"/>', collapse="")
         
         #checking the filters
         if(filters[1] != "" && checkFilters){
@@ -642,10 +642,10 @@ getLDS <- function(attributes, filters = "", values = "", mart,
                        "\nPlease use the function 'listFilters' to get valid filter names"))
     }
     
-    xmlQuery = sprintf("<?xml version='1.0' encoding='UTF-8'?><!DOCTYPE Query><Query virtualSchemaName = '%s' uniqueRows = '%s' count = '0' datasetConfigVersion = '0.6' header='%s' formatter = 'TSV' requestid= 'biomaRt'> <Dataset name = '%s'>",
+    xmlQuery = sprintf('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query virtualSchemaName = "%s" uniqueRows = "%s" count = "0" datasetConfigVersion = "0.6" header="%s" formatter = "TSV" requestid="biomaRt"> <Dataset name = "%s">',
                        martVSchema(mart) ,as.numeric(uniqueRows), as.numeric(bmHeader), martDataset(mart))
     
-    attributeXML = paste("<Attribute name = '", attributes, "'/>", collapse="", sep="")
+    attributeXML = paste0('<Attribute name = "', attributes, '"/>', collapse="")
 
     ## ignore the chunk size here
     filterXML <- .generateFilterXML(filters = filters, values = values, 
@@ -653,8 +653,8 @@ getLDS <- function(attributes, filters = "", values = "", mart,
     
     xmlQuery = paste0(xmlQuery, attributeXML, filterXML,"</Dataset>")
 
-    xmlQuery = paste0(xmlQuery, "<Dataset name = '",martDataset(martL),"' >")
-    linkedAttributeXML =  paste("<Attribute name = '", attributesL, "'/>", collapse="", sep="")  
+    xmlQuery = paste0(xmlQuery, '<Dataset name = "',martDataset(martL),'" >')
+    linkedAttributeXML =  paste0('<Attribute name = "', attributesL, '"/>', collapse="")  
     linkedFilterXML <- .generateFilterXML(filters = filtersL, values = valuesL, 
     									  mart = mart, maxChunkSize = Inf)
         
