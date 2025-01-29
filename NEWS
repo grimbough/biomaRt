@@ -1,3 +1,12 @@
+CHANGES IN VERSION 2.64.0
+-------------------------
+
+BUG FIXES
+
+  o Version 1.10 of {httr2} changed how URLs are parsed, and this broke 
+  some biomaRt functionality.  This has been patched.
+  (Backported to biomaRt 2.62.1)
+
 CHANGES IN VERSION 2.62.0
 -------------------------
 
