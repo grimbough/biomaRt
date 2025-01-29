@@ -149,13 +149,17 @@
 #' paste the complete URL strategy and produces something invalid.  
 #' This function tidies that up to catch common variants.
 .cleanHostURL <- function(host, warn = TRUE) {
+  
+    if(!grepl('^http[s]?://', x = host)) {
+      host <- paste0('http://', host)
+    }
     
     parsed_url <- httr2::url_parse(host)
     
     ## just supplying 'ensembl.org' is no longer handled correctly
     ## stick 'www' in front if we see this
-    if( !is.null(parsed_url$path) && parsed_url$path == "ensembl.org" ) {
-        parsed_url$path = "www.ensembl.org"
+    if( parsed_url$hostname == "ensembl.org" ) {
+        parsed_url$hostname = "www.ensembl.org"
     }
     
     ## only prepend http if needed 
