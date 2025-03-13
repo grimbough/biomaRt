@@ -1,5 +1,5 @@
 Package: biomaRt
-Version: 2.63.1
+Version: 2.63.2
 Title: Interface to BioMart databases (i.e. Ensembl)
 License: Artistic-2.0
 Description: In recent years a wealth of biological data has become available
@@ -27,8 +27,8 @@ Depends: methods
 Imports: utils, AnnotationDbi, progress, stringr, httr2,
         digest, BiocFileCache, rappdirs, xml2, curl
 Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, httptest2
-URL: https://github.com/grimbough/biomaRt
-BugReports: https://github.com/grimbough/biomaRt/issues
+URL: https://github.com/Huber-group-EMBL/biomaRt
+BugReports: https://github.com/Huber-group-EMBL/biomaRt/issues
 VignetteBuilder: knitr
 biocViews: Annotation
 LazyLoad: yes
