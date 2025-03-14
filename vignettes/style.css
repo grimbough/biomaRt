@@ -3,3 +3,9 @@ pre code {
   word-wrap: normal;
   white-space: pre;
 }
+
+.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}

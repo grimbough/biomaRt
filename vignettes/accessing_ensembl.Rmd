@@ -14,6 +14,21 @@ editor_options:
   chunk_output_type: console
 ---
 
+
+```{css, echo =FALSE}
+pre code {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+
+.main-container {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+```
+
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE, out.width = "100%")
 options(width=100)
@@ -462,14 +477,14 @@ To get an overview of other valid identifier types we refer to the `listFilters(
 
 
 ```{r task9, echo=TRUE, eval=TRUE}
-protein = getSequence(id=c(100, 5728),
+protein = getSequence(id=c(27112, 653067),
                       type="entrezgene_id",
                       seqType="peptide", 
                       mart=ensembl)
 protein
 ``` 
 
-##  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148420
+##  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148400
 
 For this example we'll first have to connect to a different BioMart database, namely snp.  
 ```{r task10, echo=TRUE, eval=TRUE}
@@ -485,25 +500,45 @@ the BioMart webservice interprets this as return everything from the given chrom
 ```{r task10b}
 getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'), 
       filters = c('chr_name','start','end'), 
-      values = list(8, 148350, 148420), 
+      values = list(8, 148350, 148400), 
       mart = snpmart)
 ``` 
 
 
 ##  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of its homolog in mouse. 
 
-The `getLDS()` (Get Linked Dataset) function provides functionality to link 2 BioMart datasets which each other and construct a query over the two datasets.  In Ensembl, linking two datasets translates to retrieving homology data across species.
+This is a multi-step process involving several **biomaRt** functions.  First we'll query the human gene dataset with the `TP53` gene symbol, and return the chromosomal location.  Note we also retrieve the Ensembl Gene ID, as this will be required in the next step.
 
-The usage of getLDS is very similar to `getBM()`.  The linked dataset is provided by a separate `Mart` object and one has to specify filters and attributes for the linked dataset.  Filters can either be applied to both datasets or to one of the datasets.  Use the listFilters and listAttributes functions on both `Mart` objects to find the filters and attributes for each dataset (species in Ensembl).  The attributes and filters of the linked dataset can be specified with the attributesL and filtersL arguments.   Entering all this information into `getLDS()` gives:
+```{r homologs-1}
+human <- useEnsembl('ensembl', dataset = 'hsapiens_gene_ensembl')
 
-```{r getLDS}
-human <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
+BRCA2_human <- getBM(mart = human, 
+                          filters = 'hgnc_symbol', 
+                          value = 'BRCA2', 
+                          attributes = c('ensembl_gene_id', 'chromosome_name', 'start_position'))
+BRCA2_human
+```
+
+Next we can use the `getHomologs()` function to find homologous genes between two species.  For this we need to provide the ensembl IDs for the genes we're interest in, which is why we included this in the output retrieved before.  `getHomologs()` can actually take the English names for the organisms you're interested in, and will
+attempt to find the correct BioMart dataset ^[We get a warning for the term 'mouse' as there are multiple strains in BioMart.  In this case **biomaRt** selects the reference strain.]  Our returned table contains the paired Ensembl IDs between the two organisms.
+
+```{r homolog-2}
+homologs <- getHomologs(ensembl_gene_ids = BRCA2_human$ensembl_gene_id, 
+                        species_from = 'human', 
+                        species_to = 'mouse')
+homologs
+```
+
+Finally we can use the mouse Ensembl gene IDs found by `getHomologs()` to query the mouse gene dataset and get the details we require.
+
+```{r homologs-3}
 mouse <- useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl")
-getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
-       filters = "hgnc_symbol", values = "TP53",
-       mart = human,
-       attributesL = c("refseq_mrna","chromosome_name","start_position"), 
-       martL = mouse)
+BRCA2_mouse <- getBM(mart = mouse,
+      filters = "ensembl_gene_id",
+      values = homologs$mmusculus_homolog_ensembl_gene,
+      attributes = c("refseq_mrna","chromosome_name","start_position")
+)
+BRCA2_mouse
 ```
 
 
