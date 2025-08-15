@@ -1,46 +1,64 @@
 Package: biomaRt
-Version: 2.65.0
 Title: Interface to BioMart databases (i.e. Ensembl)
+Version: 2.65.0
+Authors@R: c(
+    person("Steffen", "Durinck", , "biomartdev@gmail.com", role = "aut"),
+    person("Wolfgang", "Huber", role = "aut"),
+    person("Sean", "Davis", , "sdavis2@mail.nih.gov", role = "ctb"),
+    person("Francois", "Pepin", role = "ctb"),
+    person("Vince S", "Buffalo", role = "ctb"),
+    person("Mike", "Smith", , "grimbough@gmail.com", role = c("ctb", "cre"),
+           comment = c(ORCID = "0000-0002-7800-3848"))
+  )
+Description: In recent years a wealth of biological data has become
+    available in public data repositories. Easy access to these valuable
+    data resources and firm integration with data analysis is needed for
+    comprehensive bioinformatics data analysis.  biomaRt provides an
+    interface to a growing collection of databases implementing the
+    BioMart software suite (<http://www.biomart.org>). The package enables
+    retrieval of large amounts of data in a uniform way without the need
+    to know the underlying database schemas or write complex SQL queries.
+    The most prominent examples of BioMart databases are maintain by
+    Ensembl, which provides biomaRt users direct access to a diverse set
+    of data and enables a wide range of powerful online queries from gene
+    annotation to database mining.
 License: Artistic-2.0
-Description: In recent years a wealth of biological data has become available
-        in public data repositories. Easy access to these valuable data 
-        resources and firm integration with data analysis is needed for
-        comprehensive bioinformatics data analysis.  biomaRt provides an
-        interface to a growing collection of databases implementing the
-        BioMart software suite (<http://www.biomart.org>). The package enables
-        retrieval of large amounts of data in a uniform way without the need to
-        know the underlying database schemas or write complex SQL queries. 
-        The most prominent examples of BioMart databases are maintain by Ensembl, which
-        provides biomaRt users direct access to a diverse set of data and enables
-        a wide range of powerful online queries from gene annotation to 
-        database mining.
-Authors@R: c(person("Steffen", "Durinck", role = c("aut"), 
-            email = "biomartdev@gmail.com"), 
-        person("Wolfgang", "Huber", role="aut"),
-        person("Sean", "Davis", role="ctb", email = "sdavis2@mail.nih.gov"),
-        person("Francois", "Pepin", role="ctb"),
-        person(given = "Vince S", family = "Buffalo", role="ctb"),
-        person("Mike", "Smith", role=c("ctb", "cre"), 
-            email = "grimbough@gmail.com",
-            comment = c(ORCID = "0000-0002-7800-3848")))
-Depends: methods
-Imports: utils, AnnotationDbi, progress, stringr, httr2,
-        digest, BiocFileCache, rappdirs, xml2, curl
-Suggests: BiocStyle, knitr, mockery, rmarkdown, testthat, httptest2
 URL: https://github.com/Huber-group-EMBL/biomaRt
 BugReports: https://github.com/Huber-group-EMBL/biomaRt/issues
-VignetteBuilder: knitr
+Depends: 
+    methods
+Imports: 
+    AnnotationDbi,
+    BiocFileCache,
+    curl,
+    digest,
+    httr2,
+    progress,
+    rappdirs,
+    stringr,
+    utils,
+    xml2
+Suggests: 
+    BiocStyle,
+    httptest2,
+    knitr,
+    mockery,
+    rmarkdown,
+    testthat
+VignetteBuilder: 
+    knitr
 biocViews: Annotation
+Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: no
-Encoding: UTF-8
 RoxygenNote: 7.3.0
-Collate: biomaRtClasses.R
-         methods-Mart.R
-         biomaRt.R
-         caching.R
-         ensembl.R
-         ensembl_wrappers.R
-         ensembl_ssl_settings.R
-         utilityFunctions.R
-         non-biomart-utils.R
+Collate: 
+    'biomaRtClasses.R'
+    'methods-Mart.R'
+    'biomaRt.R'
+    'caching.R'
+    'ensembl.R'
+    'ensembl_wrappers.R'
+    'ensembl_ssl_settings.R'
+    'utilityFunctions.R'
+    'non-biomart-utils.R'
