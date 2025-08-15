@@ -2,15 +2,15 @@
 title: "Accessing Ensembl annotation with biomaRt"
 author: "Mike L. Smith, Steffen Durinck, Wolfgang Huber"
 package: "`r BiocStyle::pkg_ver('biomaRt')`"
-output: 
+output:
   BiocStyle::html_document:
     md_extensions: "-autolink_bare_uris"
     css: style.css
 vignette: >
   %\VignetteIndexEntry{Accessing Ensembl annotation with biomaRt}
-  %\VignetteEncoding{UTF-8}  
+  %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -30,8 +30,13 @@ pre code {
 ```
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE, out.width = "100%")
-options(width=100)
+knitr::opts_chunk$set(
+  error = TRUE,
+  cache = FALSE,
+  eval = TRUE,
+  out.width = "100%"
+)
+options(width = 100)
 ```
 
 # Introduction
@@ -101,9 +106,11 @@ ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 To improve performance Ensembl provides several mirrors of their site distributed around the globe.  When you use the default settings for `useEnsembl()` your queries will be directed to your closest mirror geographically.  In theory this should give you the best performance, however this is not always the case in practice.  For example, if the nearest mirror is experiencing many queries from other users it may perform poorly for you.  You can use the `mirror` argument to `useEnsembl()` to explicitly request a specific mirror.
 
 ```{r, mirrors, eval = FALSE}
-ensembl <- useEnsembl(biomart = "ensembl", 
-                   dataset = "hsapiens_gene_ensembl", 
-                   mirror = "useast")
+ensembl <- useEnsembl(
+  biomart = "ensembl",
+  dataset = "hsapiens_gene_ensembl",
+  mirror = "useast"
+)
 ```
 
 Values for the mirror argument are: `useast`, `asia`, and `www`.
@@ -118,18 +125,20 @@ It is possible to query archived versions of Ensembl through `r BiocStyle::Biocp
 listEnsemblArchives()
 ```
 
-Alternatively, one can use the <http://www.ensembl.org> website to find an archived version.  From the main page scroll down the bottom of the page, click on 'view in Archive' and select the archive you need.  
+Alternatively, one can use the <http://www.ensembl.org> website to find an archived version.  From the main page scroll down the bottom of the page, click on 'view in Archive' and select the archive you need.
 
 *You will notice that there is an archive URL even for the current release of Ensembl.  It can be useful to use this if you wish to ensure that script you write now will return exactly the same results in the future.  Using `www.ensembl.org` will always access the current release, and so the data retrieved may change over time as new releases come out.*
 
-Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 110. 
+Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 110.
 
 
 ```{r archiveMarts3, echo = TRUE, eval = TRUE}
 listEnsembl(version = 110)
-ensembl_110 <- useEnsembl(biomart = 'genes', 
-                       dataset = 'hsapiens_gene_ensembl',
-                       version = 110)
+ensembl_110 <- useEnsembl(
+  biomart = 'genes',
+  dataset = 'hsapiens_gene_ensembl',
+  version = 110
+)
 ```
 
 
@@ -153,8 +162,10 @@ searchDatasets(ensembl_plants, pattern = "Arabidopsis")
 We can then use this information to create our `Mart` object that will access the correct database and dataset.
 
 ```{r}
-ensembl_arabidopsis <- useEnsemblGenomes(biomart = "plants_mart", 
-                                         dataset = "athaliana_eg_gene")
+ensembl_arabidopsis <- useEnsemblGenomes(
+  biomart = "plants_mart",
+  dataset = "athaliana_eg_gene"
+)
 ```
 
 # How to build a biomaRt query
@@ -167,14 +178,14 @@ The `getBM()` function has three arguments that need to be introduced: *filters*
 
 ```{r filters}
 filters = listFilters(ensembl)
-filters[1:5,]
-``` 
+filters[1:5, ]
+```
 
 *Attributes* define the data we are interested in retrieving.  For example, maybe we want to retrieve the gene symbols or chromosomal coordinates.  The `listAttributes()` function displays all available attributes in the selected dataset.
 
 ```{r attributes}
 attributes = listAttributes(ensembl)
-attributes[1:5,]
+attributes[1:5, ]
 ```
 
 The `getBM()` function is the primary query function in `r BiocStyle::Biocpkg("biomaRt")`.  It has four main arguments:
@@ -192,12 +203,14 @@ The u133plus2 platform will be the filter for this query and as values for this 
 
 
 ```{r getBM1, echo=TRUE, eval=TRUE}
-affyids <- c("202763_at","209310_s_at","207500_at")
-getBM(attributes = c('affy_hg_u133_plus_2', 'entrezgene_id'),
-      filters = 'affy_hg_u133_plus_2',
-      values = affyids, 
-      mart = ensembl)
-```  
+affyids <- c("202763_at", "209310_s_at", "207500_at")
+getBM(
+  attributes = c('affy_hg_u133_plus_2', 'entrezgene_id'),
+  filters = 'affy_hg_u133_plus_2',
+  values = affyids,
+  mart = ensembl
+)
+```
 
 ## Searching for filters and attributes
 
@@ -232,10 +245,12 @@ listFilterOptions(mart = ensembl, filter = "chromosome_name")
 It is also possible to search the list of available values via `searchFilterOptions()`.  In the two examples below, the first returns all chromosome names starting with "*GL*", while the second will find any phenotype descriptions that contain the string "*Crohn*".
 
 ```{r listFilterOptions, results = TRUE}
-searchFilterOptions(mart = ensembl, filter = "chromosome_name", 
-                    pattern = "^GL")
-searchFilterOptions(mart = ensembl, filter = "phenotype_description", 
-                    pattern = "Crohn")
+searchFilterOptions(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
+searchFilterOptions(
+  mart = ensembl,
+  filter = "phenotype_description",
+  pattern = "Crohn"
+)
 ```
 
 ## Finding out more information on filters
@@ -250,7 +265,7 @@ filterType("with_affy_hg_u133_plus_2", ensembl)
 
 ## Attribute Pages
 
-For large BioMart databases such as Ensembl, the number of attributes displayed by the `listAttributes()` function can be very large. 
+For large BioMart databases such as Ensembl, the number of attributes displayed by the `listAttributes()` function can be very large.
 In BioMart databases, attributes are put together in pages, such as sequences, features, homologs for Ensembl.
 An overview of the attributes pages present in the respective BioMart dataset can be obtained with the `attributePages()` function.
 
@@ -263,46 +278,50 @@ pages
 To show us a smaller list of attributes which belong to a specific page, we can now specify this in the `listAttributes()` function.^[The set of attributes is still quite long, so we use `head()` to show only the first few items here.]
 
 ```{r listAttributes}
-head(listAttributes(ensembl, page="feature_page"))
+head(listAttributes(ensembl, page = "feature_page"))
 ```
 
 We now get a short list of attributes related to the region where the genes are located.
 
 ## Using `select()`
 
-In order to provide a more consistent interface to all annotations in Bioconductor the `select()`, `columns()`, `keytypes()` and `keys()` have been implemented to wrap some of the existing functionality above.  These methods can be called in the same manner that they are used in other parts of the project except that instead of taking a `AnnotationDb` derived class they take instead a `Mart` derived class as their 1st argument.  Otherwise usage should be essentially the same.  You still use `columns()` to discover things that can be extracted from a `Mart`, and `keytypes()` to discover which things can be used as keys with `select()`.  
+In order to provide a more consistent interface to all annotations in Bioconductor the `select()`, `columns()`, `keytypes()` and `keys()` have been implemented to wrap some of the existing functionality above.  These methods can be called in the same manner that they are used in other parts of the project except that instead of taking a `AnnotationDb` derived class they take instead a `Mart` derived class as their 1st argument.  Otherwise usage should be essentially the same.  You still use `columns()` to discover things that can be extracted from a `Mart`, and `keytypes()` to discover which things can be used as keys with `select()`.
 
 ```{r columnsAndKeyTypes}
-mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart='ensembl')
+mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart = 'ensembl')
 head(keytypes(mart), n = 3)
 head(columns(mart), n = 3)
-``` 
+```
 
 And you still can use `keys()` to extract potential keys, for a
-particular key type.  
+particular key type.
 
 ```{r keys1}
-k = keys(mart, keytype="chromosome_name")
-head(k, n=3)
-``` 
+k = keys(mart, keytype = "chromosome_name")
+head(k, n = 3)
+```
 
 When using `keys()`, you can even take advantage of the extra
 arguments that are available for others keys methods.
 
 ```{r keys2}
-k = keys(mart, keytype="chromosome_name", pattern="LRG")
-head(k, n=3)
-``` 
+k = keys(mart, keytype = "chromosome_name", pattern = "LRG")
+head(k, n = 3)
+```
 
 Unfortunately the `keys()` method will not work with all key types because they are not all supported.
 
 But you can still use `select()` here to extract columns of data that match a particular set of keys (this is basically a wrapper for `getBM()`).
 
 ```{r select}
-affy=c("202763_at","209310_s_at","207500_at")
-select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
-  keytype='affy_hg_u133_plus_2')
-``` 
+affy = c("202763_at", "209310_s_at", "207500_at")
+select(
+  mart,
+  keys = affy,
+  columns = c('affy_hg_u133_plus_2', 'entrezgene_id'),
+  keytype = 'affy_hg_u133_plus_2'
+)
+```
 
 So why would we want to do this when we already have functions like `getBM()`?  For two reasons: 1) for people who are familiar
 with select and it's helper methods, they can now proceed to use `r BiocStyle::Biocpkg("biomaRt")` making the same kinds of calls that are already familiar to them and 2) because the select method is implemented in many places elsewhere, the fact that these methods are shared allows for more convenient programmatic access of all these resources.  An example of a package that takes advantage of this is the `r BiocStyle::Biocpkg("OrganismDbi")` package. Where several packages can be accessed as if they were one resource.
@@ -330,7 +349,7 @@ Sys.unsetenv("BIOMART_CACHE")
 
 # biomaRt helper functions
 
-This section describes a set of `r BiocStyle::Biocpkg("biomaRt")` helper functions that can be used to export FASTA format sequences, retrieve values for certain filters and exploring the available filters and attributes in a more systematic manner. 
+This section describes a set of `r BiocStyle::Biocpkg("biomaRt")` helper functions that can be used to export FASTA format sequences, retrieve values for certain filters and exploring the available filters and attributes in a more systematic manner.
 
 ## exportFASTA
 
@@ -343,16 +362,24 @@ In the sections below a variety of example queries are described.  Every example
 
 ##  Annotate a set of Affymetrix identifiers with HUGO symbol and chromosomal locations of corresponding genes
 
-We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The `listAttributes()` and the `listFilters()` functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc_symbol, chromsome_name, start_position, end_position, band and affy_hg_u133_plus_2 (as we want these in the output to provide a mapping with our original Affymetrix input identifiers.  There is one filter in this query which is the affy_hg_u133_plus_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the `getBM()` and performing the query gives: 
+We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The `listAttributes()` and the `listFilters()` functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc_symbol, chromsome_name, start_position, end_position, band and affy_hg_u133_plus_2 (as we want these in the output to provide a mapping with our original Affymetrix input identifiers.  There is one filter in this query which is the affy_hg_u133_plus_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the `getBM()` and performing the query gives:
 
 ```{r task1, echo=TRUE,eval=TRUE}
-affyids=c("202763_at","209310_s_at","207500_at")
-getBM(attributes = c('affy_hg_u133_plus_2', 'hgnc_symbol', 'chromosome_name',
-                   'start_position', 'end_position', 'band'),
-      filters = 'affy_hg_u133_plus_2', 
-      values = affyids, 
-      mart = ensembl)
-``` 
+affyids = c("202763_at", "209310_s_at", "207500_at")
+getBM(
+  attributes = c(
+    'affy_hg_u133_plus_2',
+    'hgnc_symbol',
+    'chromosome_name',
+    'start_position',
+    'end_position',
+    'band'
+  ),
+  filters = 'affy_hg_u133_plus_2',
+  values = affyids,
+  mart = ensembl
+)
+```
 
 
 ## Annotate a set of EntrezGene identifiers with GO annotation
@@ -361,24 +388,29 @@ In this task we start out with a list of EntrezGene identiers and we want to ret
 
 
 ```{r task2, echo=TRUE,eval=TRUE}
-entrez=c("673","837")
-goids = getBM(attributes = c('entrezgene_id', 'go_id'), 
-              filters = 'entrezgene_id', 
-              values = entrez, 
-              mart = ensembl)
+entrez = c("673", "837")
+goids = getBM(
+  attributes = c('entrezgene_id', 'go_id'),
+  filters = 'entrezgene_id',
+  values = entrez,
+  mart = ensembl
+)
 head(goids)
 ```
 
-## Retrieve all HUGO gene symbols of genes that are located on chromosomes 17,20 or Y, and are associated with specific GO terms 
+## Retrieve all HUGO gene symbols of genes that are located on chromosomes 17,20 or Y, and are associated with specific GO terms
 
 The GO terms we are interested in are: **GO:0051330**, **GO:0000080**, **GO:0000114**, **GO:0000082**.  The key to performing this query is to understand that the `getBM()` function enables you to use more than one filter at the same time.  In order to do this, the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
 
 ```{r task3, echo=TRUE,eval=TRUE}
- go=c("GO:0051330","GO:0000080","GO:0000114","GO:0000082")
- chrom=c(17,20,"Y")
- getBM(attributes= "hgnc_symbol",
-        filters=c("go","chromosome_name"),
-        values=list(go, chrom), mart=ensembl)
+go = c("GO:0051330", "GO:0000080", "GO:0000114", "GO:0000082")
+chrom = c(17, 20, "Y")
+getBM(
+  attributes = "hgnc_symbol",
+  filters = c("go", "chromosome_name"),
+  values = list(go, chrom),
+  mart = ensembl
+)
 ```
 
 
@@ -387,11 +419,13 @@ The GO terms we are interested in are: **GO:0051330**, **GO:0000080**, **GO:0000
 In this example we want to annotate the following two RefSeq identifiers: **NM_005359** and **NM_000546** with INTERPRO protein domain identifiers and a description of the protein domains.
 
 ```{r task4, echo=TRUE,eval=TRUE}
-refseqids = c("NM_005359","NM_000546")
-ipro = getBM(attributes=c("refseq_mrna","interpro","interpro_description"), 
-             filters="refseq_mrna",
-             values=refseqids, 
-             mart=ensembl)
+refseqids = c("NM_005359", "NM_000546")
+ipro = getBM(
+  attributes = c("refseq_mrna", "interpro", "interpro_description"),
+  filters = "refseq_mrna",
+  values = refseqids,
+  mart = ensembl
+)
 ipro
 ```
 
@@ -400,37 +434,41 @@ ipro
 In this example we will again use multiple filters: *chromosome_name*, *start*, and *end* as we filter on these three conditions. Note that when a chromosome name, a start position and an end position are jointly used as filters, the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions.
 
 ```{r task5, eval = TRUE}
-getBM(attributes = c('affy_hg_u133_plus_2','ensembl_gene_id'), 
-      filters = c('chromosome_name','start','end'),
-      values = list(16,1100000,1250000), 
-      mart = ensembl)
+getBM(
+  attributes = c('affy_hg_u133_plus_2', 'ensembl_gene_id'),
+  filters = c('chromosome_name', 'start', 'end'),
+  values = list(16, 1100000, 1250000),
+  mart = ensembl
+)
 ```
 
- 
+
 ## Retrieve all EntrezGene identifiers and HUGO gene symbols of genes which have a "MAP kinase activity" GO term associated with it.
 
 The GO identifier for MAP kinase activity is **GO:0004707**.  In our query we will use *go_id* as our filter, and *entrezgene_id* and *hgnc_symbol* as attributes.  Here's the query:
 
 ```{r task6, echo=TRUE, eval = TRUE}
-getBM(attributes = c('entrezgene_id','hgnc_symbol'), 
-      filters = 'go', 
-      values = 'GO:0004707', 
-      mart = ensembl)
+getBM(
+  attributes = c('entrezgene_id', 'hgnc_symbol'),
+  filters = 'go',
+  values = 'GO:0004707',
+  mart = ensembl
+)
 ```
 
 
 ##  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences
- 
+
 All sequence related queries to Ensembl are available through the `getSequence()` wrapper function. `getBM()` can also be used directly to retrieve sequences but this can get complicated so using `getSequence()` is provided as a general purpose function suitable for most situtations.
 
-Sequences can be retrieved using the `getSequence()` function either starting from chromosomal coordinates or identifiers.  
-The chromosome name can be specified using the *chromosome* argument.  The *start* and *end* arguments are used to specify *start* and *end* positions on the chromosome. 
+Sequences can be retrieved using the `getSequence()` function either starting from chromosomal coordinates or identifiers.
+The chromosome name can be specified using the *chromosome* argument.  The *start* and *end* arguments are used to specify *start* and *end* positions on the chromosome.
 The type of sequence returned can be specified by the *seqType* argument which takes the following values:
 
 * *cdna*
 * *peptide* for protein sequences
-* *3utr* for 3' UTR sequences 
-* *5utr* for 5' UTR sequences 
+* *3utr* for 3' UTR sequences
+* *5utr* for 5' UTR sequences
 * *gene_exon* for exon sequences only
 * *transcript_exon* for transcript specific exonic sequences only
 * *transcript_exon_intron* gives the full unspliced transcript, that is exons + introns
@@ -446,13 +484,15 @@ This task requires us to retrieve 100bp upstream promoter sequences from a set o
 
 
 ```{r task7, eval=TRUE}
-entrez=c("673","7157","837")
-getSequence(id = entrez, 
-            type="entrezgene_id",
-            seqType="coding_gene_flank",
-            upstream=100, 
-            mart=ensembl) 
-``` 
+entrez = c("673", "7157", "837")
+getSequence(
+  id = entrez,
+  type = "entrezgene_id",
+  seqType = "coding_gene_flank",
+  upstream = 100,
+  mart = ensembl
+)
+```
 
 One further thing to note is that, although we are searching for genes based on their NCBI Gene IDs, Ensembl BioMart doesn't allow some ID types (including NCBI IDs) to be returned directly.  To try and accommodate this `r BiocStyle::Biocpkg("biomaRt")` attempts to map the query IDs to Ensembl Gene IDs internally before finding the sequence information.  If no such mapping exists (or at least isn't found in Ensembl) then no sequence will be returned for the affected IDs.
 
@@ -462,12 +502,16 @@ One further thing to note is that, although we are searching for genes based on 
 As described in the previous task `getSequence()` can also use chromosomal coordinates to retrieve sequences of all genes that lie in the given region. We also have to specify which type of identifier we want to retrieve together with the sequences. Here we choose the NCBI Gene ID^[These were historically called "Entrezgene IDs", hence the name given to the `type` argument.]
 
 ```{r task8, echo=TRUE,eval=TRUE}
-utr5 = getSequence(chromosome=3, start=185514033, end=185535839,
-                   type="entrezgene_id",
-                   seqType="5utr", 
-                   mart=ensembl)
+utr5 = getSequence(
+  chromosome = 3,
+  start = 185514033,
+  end = 185535839,
+  type = "entrezgene_id",
+  seqType = "5utr",
+  mart = ensembl
+)
 utr5
-``` 
+```
 
 
 ##  Retrieve protein sequences for a given list of EntrezGene identifiers
@@ -477,45 +521,51 @@ To get an overview of other valid identifier types we refer to the `listFilters(
 
 
 ```{r task9, echo=TRUE, eval=TRUE}
-protein = getSequence(id=c(27112, 653067),
-                      type="entrezgene_id",
-                      seqType="peptide", 
-                      mart=ensembl)
+protein = getSequence(
+  id = c(27112, 653067),
+  type = "entrezgene_id",
+  seqType = "peptide",
+  mart = ensembl
+)
 protein
-``` 
+```
 
 ##  Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148400
 
-For this example we'll first have to connect to a different BioMart database, namely snp.  
+For this example we'll first have to connect to a different BioMart database, namely snp.
 ```{r task10, echo=TRUE, eval=TRUE}
-snpmart = useEnsembl(biomart = "snp", dataset="hsapiens_snp")
-``` 
+snpmart = useEnsembl(biomart = "snp", dataset = "hsapiens_snp")
+```
 
-The `listAttributes()` and `listFilters()` functions give us an overview of the available attributes and filters.  
-From these we need: *refsnp_id*, *allele*, *chrom_start* and *chrom_strand* as attributes; and as filters we'll use: *chrom_start*, *chrom_end* and *chr_name*.  
-^[Note that when a chromosome name, a start position and an end position are jointly used as filters, 
+The `listAttributes()` and `listFilters()` functions give us an overview of the available attributes and filters.
+From these we need: *refsnp_id*, *allele*, *chrom_start* and *chrom_strand* as attributes; and as filters we'll use: *chrom_start*, *chrom_end* and *chr_name*.
+^[Note that when a chromosome name, a start position and an end position are jointly used as filters,
 the BioMart webservice interprets this as return everything from the given chromosome between the given start and end positions.] Putting our selected attributes and filters into `getBM()` gives:
 
 
 ```{r task10b}
-getBM(attributes = c('refsnp_id','allele','chrom_start','chrom_strand'), 
-      filters = c('chr_name','start','end'), 
-      values = list(8, 148350, 148400), 
-      mart = snpmart)
-``` 
+getBM(
+  attributes = c('refsnp_id', 'allele', 'chrom_start', 'chrom_strand'),
+  filters = c('chr_name', 'start', 'end'),
+  values = list(8, 148350, 148400),
+  mart = snpmart
+)
+```
 
 
-##  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of its homolog in mouse. 
+##  Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of its homolog in mouse.
 
 This is a multi-step process involving several **biomaRt** functions.  First we'll query the human gene dataset with the `TP53` gene symbol, and return the chromosomal location.  Note we also retrieve the Ensembl Gene ID, as this will be required in the next step.
 
 ```{r homologs-1}
 human <- useEnsembl('ensembl', dataset = 'hsapiens_gene_ensembl')
 
-BRCA2_human <- getBM(mart = human, 
-                          filters = 'hgnc_symbol', 
-                          value = 'BRCA2', 
-                          attributes = c('ensembl_gene_id', 'chromosome_name', 'start_position'))
+BRCA2_human <- getBM(
+  mart = human,
+  filters = 'hgnc_symbol',
+  value = 'BRCA2',
+  attributes = c('ensembl_gene_id', 'chromosome_name', 'start_position')
+)
 BRCA2_human
 ```
 
@@ -523,9 +573,11 @@ Next we can use the `getHomologs()` function to find homologous genes between tw
 attempt to find the correct BioMart dataset ^[We get a warning for the term 'mouse' as there are multiple strains in BioMart.  In this case **biomaRt** selects the reference strain.]  Our returned table contains the paired Ensembl IDs between the two organisms.
 
 ```{r homolog-2}
-homologs <- getHomologs(ensembl_gene_ids = BRCA2_human$ensembl_gene_id, 
-                        species_from = 'human', 
-                        species_to = 'mouse')
+homologs <- getHomologs(
+  ensembl_gene_ids = BRCA2_human$ensembl_gene_id,
+  species_from = 'human',
+  species_to = 'mouse'
+)
 homologs
 ```
 
@@ -533,10 +585,11 @@ Finally we can use the mouse Ensembl gene IDs found by `getHomologs()` to query 
 
 ```{r homologs-3}
 mouse <- useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl")
-BRCA2_mouse <- getBM(mart = mouse,
-      filters = "ensembl_gene_id",
-      values = homologs$mmusculus_homolog_ensembl_gene,
-      attributes = c("refseq_mrna","chromosome_name","start_position")
+BRCA2_mouse <- getBM(
+  mart = mouse,
+  filters = "ensembl_gene_id",
+  values = homologs$mmusculus_homolog_ensembl_gene,
+  attributes = c("refseq_mrna", "chromosome_name", "start_position")
 )
 BRCA2_mouse
 ```
@@ -545,14 +598,14 @@ BRCA2_mouse
 
 # Connection troubleshooting
 
-It is not uncommon to encounter connection problems when trying to access online resources such as the Ensembl BioMart. 
-In this section we list error messages that have been reported by users, along with suggested code to fix the problem.  If a suggested solution doesn't work, or you have a new error not listed here, please reported it on the [Bioconductor Support Site](https://support.bioconductor.org/). 
+It is not uncommon to encounter connection problems when trying to access online resources such as the Ensembl BioMart.
+In this section we list error messages that have been reported by users, along with suggested code to fix the problem.  If a suggested solution doesn't work, or you have a new error not listed here, please reported it on the [Bioconductor Support Site](https://support.bioconductor.org/).
 
 ## `r BiocStyle::Biocpkg("biomaRt")` specific solutions
 
 If you are using `r BiocStyle::Biocpkg("biomaRt")` directly make sure you are using `useEnsembl()` to create the **Mart** object, rather than `useMart()`.  `useEnsembl()` is aware of some specific connection details required to connect to Ensembl, and using it may fix any connection problems without requiring you to do anything further.
 
-## Global connection settings 
+## Global connection settings
 
 If you are unable to modify the `r BiocStyle::Biocpkg("biomaRt")` code (for example if you are using another package that calls `r BiocStyle::Biocpkg("biomaRt")` as part of one if its functions) it's still possible to modify the connection settings for your R session. Below are some reported error messages and code that has been known to resolve them.  You will need to execute this code only once in an R session.  The settings will then be saved to the `r BiocStyle::Biocpkg("biomaRt")` cache and will be used from then on when you try to connect to the Ensembl BioMart.
 
@@ -576,7 +629,7 @@ setEnsemblSSL(list(ssl_verifypeer = FALSE))
 **Error message**
 
 ```
-Error in curl::curl_fetch_memory(url, handle = handle) : 
+Error in curl::curl_fetch_memory(url, handle = handle) :
 error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure
 ```
 
