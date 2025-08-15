@@ -99,7 +99,7 @@ findGenomeName <- function(input) {
       )
       pickReferenceStrain_msg(input)
     } else {
-      stop('Unable to match the search term to a genome')
+      stop("Unable to match the search term to a genome")
     }
   }
   return(res)
@@ -145,9 +145,9 @@ listFilesInEnsemblFTP <- function(species, release, dir) {
   files <- listFilesInEnsemblFTP(
     species = species,
     release = release,
-    dir = 'tsv'
+    dir = "tsv"
   )
-  res <- any(grepl('entrez.tsv.gz$', files))
+  res <- any(grepl("entrez.tsv.gz$", files))
   return(res)
 }
 

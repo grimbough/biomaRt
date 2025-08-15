@@ -1,9 +1,9 @@
 ###############################
 #                             #
-#Ensembl specific functions   #
+# Ensembl specific functions   #
 ###############################
 
-checkWrapperArgs = function(id, type, mart) {
+checkWrapperArgs <- function(id, type, mart) {
   if (missing(type)) {
     stop(
       "Specify the type of identifier you are using, see ?getGene for details. Valid values for the type argument can be found with the listFilters function."
@@ -27,14 +27,16 @@ checkWrapperArgs = function(id, type, mart) {
 getGene <- function(id, type, mart) {
   martCheck(mart, "ensembl")
   checkWrapperArgs(id, type, mart)
-  symbolAttrib = switch(
-    strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],
+  symbolAttrib <- switch(strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],
     hsapiens = "hgnc_symbol",
     mmusculus = "mgi_symbol",
     "external_gene_id"
   )
-  typeAttrib = switch(type, affy_hg_u133a_2 = "affy_hg_u133a_v2", type)
-  attrib = c(
+  typeAttrib <- switch(type,
+    affy_hg_u133a_2 = "affy_hg_u133a_v2",
+    type
+  )
+  attrib <- c(
     typeAttrib,
     symbolAttrib,
     "description",
@@ -45,7 +47,7 @@ getGene <- function(id, type, mart) {
     "end_position",
     "ensembl_gene_id"
   )
-  table = getBM(attributes = attrib, filters = type, values = id, mart = mart)
+  table <- getBM(attributes = attrib, filters = type, values = id, mart = mart)
   return(table)
 }
 
@@ -76,7 +78,7 @@ getGene <- function(id, type, mart) {
     stop(
       "Please specify the type of sequence that needs to be retrieved when using biomaRt in web service mode\n.",
       "Valid options are: ",
-      paste(validSeqTypes, collapse = ', '),
+      paste(validSeqTypes, collapse = ", "),
       call. = FALSE
     )
   }
@@ -133,8 +135,8 @@ getGene <- function(id, type, mart) {
     stop("You must specify both a start and end position.")
   }
 
-  start = as.integer(start)
-  end = as.integer(end)
+  start <- as.integer(start)
+  end <- as.integer(end)
 
   if (!missing(upstream) && !missing(downstream)) {
     stop(

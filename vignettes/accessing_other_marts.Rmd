@@ -34,7 +34,7 @@ library(biomaRt)
 ```{r test-wormbase-ssl, echo = FALSE, eval = FALSE}
 if (
   grepl(
-    try(httr::GET('https://parasite.wormbase.org'), silent = TRUE)[1],
+    try(httr::GET("https://parasite.wormbase.org"), silent = TRUE)[1],
     pattern = "sslv3 alert handshake"
   )
 ) {
@@ -72,7 +72,6 @@ getBM(
   values = c("unc-26", "his-33"),
   mart = wormbase
 )
-
 ```
 
 ## Phytozome

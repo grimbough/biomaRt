@@ -5,20 +5,20 @@
   ## get all available attributes and
   ## filter only for the ones we've actually asked for
   att <- listAttributes(mart, what = c("name", "description"))
-  att <- att[which(att[, 'name'] %in% attributes), ]
+  att <- att[which(att[, "name"] %in% attributes), ]
   if (
-    length(which(duplicated(att[, 'description']))) >
+    length(which(duplicated(att[, "description"]))) >
       length(which(duplicated(att)))
   ) {
     warning(
       "Cannot unambiguously match attribute names
-                Ignoring bmHeader argument and using biomart 
+                Ignoring bmHeader argument and using biomart
                 description field"
     )
     return(result)
   }
 
-  resultNames = colnames(result)
+  resultNames <- colnames(result)
   ## match the returned column names with the attribute names
   matches <- match(resultNames, att[, 2], NA)
   if (any(is.na(matches))) {
@@ -32,7 +32,7 @@
   ## if we want to use the attribute names we specified, do this,
   ## otherwise we use the header returned with the query
   if (!bmHeader) {
-    colnames(result) = att[matches, 1]
+    colnames(result) <- att[matches, 1]
   }
   ## now put things in the order we actually asked for the attributes in
   result <- result[, match(att[matches, 1], attributes), drop = FALSE]
@@ -88,7 +88,7 @@
       if (
         filter %in%
           listFilters(mart, what = "name") &&
-          grepl('boolean', filterType(filter = filter, mart = mart))
+          grepl("boolean", filterType(filter = filter, mart = mart))
       ) {
         if (!is.logical(values[[filter]])) {
           stop(
@@ -171,8 +171,8 @@
 #' paste the complete URL strategy and produces something invalid.
 #' This function tidies that up to catch common variants.
 .cleanHostURL <- function(host, warn = TRUE) {
-  if (!grepl('^http[s]?://', x = host)) {
-    host <- paste0('http://', host)
+  if (!grepl("^http[s]?://", x = host)) {
+    host <- paste0("http://", host)
   }
 
   parsed_url <- httr2::url_parse(host)
@@ -180,7 +180,7 @@
   ## just supplying 'ensembl.org' is no longer handled correctly
   ## stick 'www' in front if we see this
   if (parsed_url$hostname == "ensembl.org") {
-    parsed_url$hostname = "www.ensembl.org"
+    parsed_url$hostname <- "www.ensembl.org"
   }
 
   ## only prepend http if needed
@@ -213,21 +213,21 @@
 .createErrorMessage <- function(error_code, host = "") {
   ## if we encounter internal server error, suggest using a mirror
   if (error_code == 500) {
-    err_msg <- 'biomaRt has encountered an unexpected server error.'
+    err_msg <- "biomaRt has encountered an unexpected server error."
   } else if (error_code == 509) {
-    err_msg <- 'biomaRt has exceeded the bandwidth allowance with this server.'
+    err_msg <- "biomaRt has exceeded the bandwidth allowance with this server."
   } else {
     err_msg <- paste0(
-      'biomaRt has encountered an unknown server error. HTTP error code: ',
+      "biomaRt has encountered an unknown server error. HTTP error code: ",
       error_code,
-      '\nPlease report this on the Bioconductor support site at https://support.bioconductor.org/'
+      "\nPlease report this on the Bioconductor support site at https://support.bioconductor.org/"
     )
   }
 
   if (grepl("ensembl", x = host)) {
     err_msg <- c(
       err_msg,
-      '\nConsider trying one of the Ensembl mirrors (for more details look at ?useEnsembl)'
+      "\nConsider trying one of the Ensembl mirrors (for more details look at ?useEnsembl)"
     )
   }
 
@@ -249,14 +249,14 @@
 
   ## content() prints a message about encoding not being supplied
   ## for ensembl.org - no default, so we suppress it
-  #return( suppressMessages(content(res)) )
+  # return( suppressMessages(content(res)) )
 
   return(resp_body_string(res))
 }
 
 #' if parsing of TSV results fails, try this
 .fetchHTMLresults <- function(host, query, http_config) {
-  query = gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
+  query <- gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
   html_res <- .submitQueryXML(host, query, http_config)
 
   html <- xml2::read_html(html_res)
@@ -353,7 +353,7 @@
   if (any(rowIdx)) {
     return(data[rowIdx, ])
   } else {
-    message('No matching datasets found')
+    message("No matching datasets found")
     return(NULL)
   }
 }
@@ -364,7 +364,7 @@ searchDatasets <- function(mart, pattern) {
     stop("Argument 'mart' must be specified")
   }
   if (missing(pattern)) {
-    pattern = ".*"
+    pattern <- ".*"
   }
 
   datasets <- listDatasets(mart)
@@ -383,7 +383,7 @@ searchAttributes <- function(mart, pattern) {
     stop("Argument 'mart' must be specified")
   }
   if (missing(pattern)) {
-    pattern = ".*"
+    pattern <- ".*"
   }
 
   attributes <- listAttributes(mart)
@@ -401,7 +401,7 @@ searchFilters <- function(mart, pattern) {
     stop("Argument 'mart' must be specified")
   }
   if (missing(pattern)) {
-    pattern = ".*"
+    pattern <- ".*"
   }
 
   filters <- listFilters(mart)
@@ -425,7 +425,7 @@ searchFilterOptions <- function(mart, filter, pattern) {
     stop("Argument 'filter' must be specified")
   }
   if (missing(pattern)) {
-    pattern = ".*"
+    pattern <- ".*"
   }
 
   ## first get all filters & their options, then reduce to what's requested
@@ -440,7 +440,7 @@ searchFilterOptions <- function(mart, filter, pattern) {
   res <- grep(x = options, pattern = pattern, ignore.case = TRUE, value = TRUE)
 
   if (length(res) == 0) {
-    message('No matching values found')
+    message("No matching values found")
   } else {
     res
   }

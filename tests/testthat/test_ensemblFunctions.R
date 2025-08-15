@@ -112,7 +112,7 @@ test_that("Ensembl URLs are constructed correctly", {
 })
 
 test_that("sequence correct code is used to get sequence based on ID type", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
 
   m <- mockery::mock(
     data.frame(hgnc_symbol = "STAT1", ensembl_gene_id = "ENSG00000115415"),
@@ -150,7 +150,7 @@ test_that("sequence correct code is used to get sequence based on ID type", {
 })
 
 test_that("correct settings are applied for getSequence using coordinates.", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
 
   m <- mockery::mock(TRUE, cycle = TRUE)
   mockery::stub(.getSequenceFromCoords, "getBM", m)
@@ -188,7 +188,7 @@ test_that("correct settings are applied for getSequence using coordinates.", {
 })
 
 test_that("getSequence deploys correct sub-function", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
 
   mockery::stub(getSequence, ".getSequenceFromCoords", TRUE)
   mockery::stub(getSequence, ".getSequenceFromId", FALSE)

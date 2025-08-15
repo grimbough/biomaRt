@@ -42,7 +42,7 @@ test_that("Renaming columns - synthetic data", {
     .setResultColNames(
       result = bad_result,
       mart = ensembl,
-      attributes = c('chromosome_name', 'ensembl_gene_id')
+      attributes = c("chromosome_name", "ensembl_gene_id")
     ),
     "Problems assigning column names"
   )
@@ -51,7 +51,7 @@ test_that("Renaming columns - synthetic data", {
     colnames(.setResultColNames(
       result = good_result,
       mart = ensembl,
-      attributes = c('chromosome_name', 'ensembl_gene_id')
+      attributes = c("chromosome_name", "ensembl_gene_id")
     )),
     c("chromosome_name", "ensembl_gene_id")
   )
@@ -60,7 +60,7 @@ test_that("Renaming columns - synthetic data", {
     colnames(.setResultColNames(
       result = good_result,
       mart = ensembl,
-      attributes = c('ensembl_gene_id', 'chromosome_name')
+      attributes = c("ensembl_gene_id", "chromosome_name")
     )),
     c("ensembl_gene_id", "chromosome_name")
   )
@@ -103,21 +103,21 @@ test_that("Results processing works", {
 
 test_that("URL formatting works", {
   ## adding http if needed
-  host <- 'www.myurl.org'
+  host <- "www.myurl.org"
   expect_equal(
     object = .cleanHostURL(host = host),
     expected = "http://www.myurl.org"
   )
 
   ## stripping trailing slash
-  host <- 'http://www.myurl.org/'
+  host <- "http://www.myurl.org/"
   expect_equal(
     object = .cleanHostURL(host = host),
     expected = "http://www.myurl.org"
   )
 
   ## leave https already there
-  host <- 'https://www.myurl.org'
+  host <- "https://www.myurl.org"
   expect_equal(
     object = .cleanHostURL(host = host),
     expected = "https://www.myurl.org"
@@ -125,7 +125,7 @@ test_that("URL formatting works", {
 
   ## add 'www' to ensembl.org
   ## We expect a warning about using http
-  host <- 'ensembl.org'
+  host <- "ensembl.org"
   expect_warning(object = .cleanHostURL(host = host)) |>
     expect_equal(expected = "http://www.ensembl.org")
 })
@@ -186,26 +186,26 @@ test_that("TSV and HTML result tables match", {
 test_that("http error codes are presented nicely", {
   expect_true(grepl(
     .createErrorMessage(error_code = 500, host = "test.com"),
-    pattern = 'biomaRt has encountered an unexpected server error'
+    pattern = "biomaRt has encountered an unexpected server error"
   ))
   expect_true(grepl(
     .createErrorMessage(error_code = 509, host = "test.com"),
-    pattern = 'biomaRt has exceeded the bandwidth allowance with this server'
+    pattern = "biomaRt has exceeded the bandwidth allowance with this server"
   ))
 
   expect_true(grepl(
     .createErrorMessage(error_code = 500, host = "www.ensembl.org")[2],
-    pattern = 'Consider trying one of the Ensembl mirrors'
+    pattern = "Consider trying one of the Ensembl mirrors"
   ))
   expect_true(grepl(
     .createErrorMessage(error_code = 509, host = "www.ensembl.org")[2],
-    pattern = 'Consider trying one of the Ensembl mirrors'
+    pattern = "Consider trying one of the Ensembl mirrors"
   ))
 
   ## testing an un-seen error code
   expect_true(grepl(
     .createErrorMessage(error_code = 999, host = "www.ensembl.org")[2],
-    pattern = 'Consider trying one of the Ensembl mirrors'
+    pattern = "Consider trying one of the Ensembl mirrors"
   ))
 })
 
@@ -234,12 +234,12 @@ test_that("defunct functions show errors", {
 })
 
 test_that("attribute and filter tables are parsed correctly", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
 
   mockery::stub(
     .getAttrFilt,
-    'bmRequest',
-    'ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n',
+    "bmRequest",
+    "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n",
   )
   expect_is(
     .getAttrFilt(mart = ensembl, verbose = TRUE, type = "attributes"),
@@ -248,7 +248,7 @@ test_that("attribute and filter tables are parsed correctly", {
 
   mockery::stub(
     .getAttributes,
-    '.getAttrFilt',
+    ".getAttrFilt",
     read.table(
       text = "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\n",
       sep = "\t",
@@ -262,7 +262,7 @@ test_that("attribute and filter tables are parsed correctly", {
 
   mockery::stub(
     .getFilters,
-    '.getAttrFilt',
+    ".getAttrFilt",
     read.table(
       text = "chromosome_name\tChromosome/scaffold name\t[]\t\tfilters\ttext\t=\tbnatans_eg_gene__gene__main\tname_1059\n\n",
       sep = "\t",

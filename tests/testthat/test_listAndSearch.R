@@ -2,7 +2,7 @@ library(biomaRt)
 cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
-#ensembl <- useEnsembl("ensembl", mirror = "www")
+# ensembl <- useEnsembl("ensembl", mirror = "www")
 ensembl <- Mart(biomart = "ensembl")
 
 example_datasets <- data.frame(
@@ -33,24 +33,24 @@ test_that("Fail with no mart argument", {
 })
 
 test_that("'Long' table of results for no search term", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
   mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
 
-  expect_is(x <- searchDatasets(ensembl), class = 'data.frame')
+  expect_is(x <- searchDatasets(ensembl), class = "data.frame")
   expect_equal(nrow(x), 5)
   expect_identical(example_datasets, x)
 })
 
 test_that("Return complete table of results for no search term", {
-  expect_is(x <- searchAttributes(ensembl_with_dataset), class = 'data.frame')
+  expect_is(x <- searchAttributes(ensembl_with_dataset), class = "data.frame")
   expect_identical(x, martAttributes(ensembl_with_dataset))
 
-  expect_is(x <- searchFilters(ensembl_with_dataset), class = 'data.frame')
+  expect_is(x <- searchFilters(ensembl_with_dataset), class = "data.frame")
   expect_identical(x, martFilters(ensembl_with_dataset))
 })
 
 test_that("Message when nothing found", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
 
   mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
   expect_message(searchDatasets(ensembl, pattern = "foobaa"), "No matching") %>%
@@ -71,21 +71,21 @@ test_that("Message when nothing found", {
 
 
 test_that("'Sensible' table of results for specific search term", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
 
   mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
-  expect_is(x <- searchDatasets(ensembl, pattern = "B_"), class = 'data.frame')
+  expect_is(x <- searchDatasets(ensembl, pattern = "B_"), class = "data.frame")
   expect_equal(nrow(x), 1) ## only one dataset should be found
 
   expect_is(
     x <- searchAttributes(ensembl_with_dataset, pattern = "Attr(A|B)"),
-    class = 'data.frame'
+    class = "data.frame"
   )
   expect_equal(nrow(x), 2)
 
   expect_is(
     x <- searchFilters(ensembl_with_dataset, pattern = "Filt_Z"),
-    class = 'data.frame'
+    class = "data.frame"
   )
   expect_equal(nrow(x), 1)
 })

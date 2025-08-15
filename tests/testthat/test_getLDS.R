@@ -28,7 +28,7 @@ test_that("Error with separate hosts", {
       attributesL = "ensembl_gene_id",
       martL = plants
     ),
-    regexp = 'Both datasets must be located on the same host'
+    regexp = "Both datasets must be located on the same host"
   )
 })
 
@@ -40,6 +40,6 @@ test_that("We get an error with different Marts on the same host", {
       attributesL = "ensembl_gene_id",
       martL = mouse_strains
     ),
-    regexp = 'Both datasets must be located in the same Mart'
+    regexp = "Both datasets must be located in the same Mart"
   )
 })

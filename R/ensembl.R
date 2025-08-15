@@ -203,25 +203,25 @@ listEnsembl <- function(
     verbose = verbose
   )
 
-  sel = which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
+  sel <- which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
   if (length(sel) > 0) {
-    marts$biomart[sel] = "genes"
+    marts$biomart[sel] <- "genes"
   }
-  sel = which(marts$biomart == "ENSEMBL_MART_SNP")
+  sel <- which(marts$biomart == "ENSEMBL_MART_SNP")
   if (length(sel) > 0) {
-    marts$biomart[sel] = "snps"
+    marts$biomart[sel] <- "snps"
   }
-  sel = which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
+  sel <- which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
   if (length(sel) > 0) {
-    marts$biomart[sel] = "regulation"
+    marts$biomart[sel] <- "regulation"
   }
-  sel = which(marts$biomart == "ENSEMBL_MART_VEGA")
+  sel <- which(marts$biomart == "ENSEMBL_MART_VEGA")
   if (length(sel) > 0) {
-    marts$biomart[sel] = "vega"
+    marts$biomart[sel] <- "vega"
   }
-  sel = which(marts$biomart == "ENSEMBL_MART_MOUSE")
+  sel <- which(marts$biomart == "ENSEMBL_MART_MOUSE")
   if (length(sel) > 0) {
-    marts$biomart[sel] = "mouse_strains"
+    marts$biomart[sel] <- "mouse_strains"
   }
   return(marts)
 }
@@ -252,7 +252,7 @@ listEnsembl <- function(
 
   if (!is.null(version)) {
     archives <- .listEnsemblArchives(https = TRUE, http_config = list())
-    idx <- match(version, archives[, 'version'], nomatch = NA)
+    idx <- match(version, archives[, "version"], nomatch = NA)
     if (is.na(idx)) {
       stop(
         "Specified Ensembl version is not available.\n",
@@ -260,7 +260,7 @@ listEnsembl <- function(
         call. = FALSE
       )
     }
-    host <- archives[idx, 'url']
+    host <- archives[idx, "url"]
   }
 
   if (!is.null(GRCh)) {
@@ -311,8 +311,7 @@ useEnsembl <- function(
     )
   }
 
-  biomart <- switch(
-    tolower(biomart),
+  biomart <- switch(tolower(biomart),
     "ensembl" = "ENSEMBL_MART_ENSEMBL",
     "genes" = "ENSEMBL_MART_ENSEMBL",
     "snp" = "ENSEMBL_MART_SNP",
@@ -373,9 +372,9 @@ useEnsembl <- function(
     )
   }
 
-  mindex = NA
+  mindex <- NA
   if (!missing(biomart)) {
-    mindex = match(biomart, marts$biomart)
+    mindex <- match(biomart, marts$biomart)
   }
   if (is.na(mindex)) {
     stop(
@@ -400,7 +399,7 @@ useEnsembl <- function(
   if (grepl("archive", martHost(mart))) {
     ## hack to work around redirection of most recent mirror URL
     archives <- .listEnsemblArchives(https = TRUE, http_config = http_config)
-    current_release <- archives[archives$current_release == "*", 'url']
+    current_release <- archives[archives$current_release == "*", "url"]
     if (grepl(martHost(mart), pattern = current_release)) {
       martHost(mart) <- stringr::str_replace(
         martHost(mart),
@@ -416,7 +415,7 @@ useEnsembl <- function(
   }
 
   if (!missing(dataset)) {
-    mart = useDataset(mart = mart, dataset = dataset, verbose = verbose)
+    mart <- useDataset(mart = mart, dataset = dataset, verbose = verbose)
   }
   return(mart)
 }

@@ -135,8 +135,8 @@ Whichever method you use to find the URL of the archive you wish to query, copy 
 ```{r archiveMarts3, echo = TRUE, eval = TRUE}
 listEnsembl(version = 110)
 ensembl_110 <- useEnsembl(
-  biomart = 'genes',
-  dataset = 'hsapiens_gene_ensembl',
+  biomart = "genes",
+  dataset = "hsapiens_gene_ensembl",
   version = 110
 )
 ```
@@ -177,14 +177,14 @@ The `getBM()` function has three arguments that need to be introduced: *filters*
 *Filters* and *values* are used to define restrictions on the query.  For example, if you want to restrict the output to all genes located on the human X chromosome then the filter *chromosome_name* can be used with *value* 'X'. The `listFilters()` function shows you all available filters in the selected dataset.
 
 ```{r filters}
-filters = listFilters(ensembl)
+filters <- listFilters(ensembl)
 filters[1:5, ]
 ```
 
 *Attributes* define the data we are interested in retrieving.  For example, maybe we want to retrieve the gene symbols or chromosomal coordinates.  The `listAttributes()` function displays all available attributes in the selected dataset.
 
 ```{r attributes}
-attributes = listAttributes(ensembl)
+attributes <- listAttributes(ensembl)
 attributes[1:5, ]
 ```
 
@@ -205,8 +205,8 @@ The u133plus2 platform will be the filter for this query and as values for this 
 ```{r getBM1, echo=TRUE, eval=TRUE}
 affyids <- c("202763_at", "209310_s_at", "207500_at")
 getBM(
-  attributes = c('affy_hg_u133_plus_2', 'entrezgene_id'),
-  filters = 'affy_hg_u133_plus_2',
+  attributes = c("affy_hg_u133_plus_2", "entrezgene_id"),
+  filters = "affy_hg_u133_plus_2",
   values = affyids,
   mart = ensembl
 )
@@ -233,7 +233,7 @@ From this we can compare *ENST00000577249.1* with the examples given in the desc
 Many filters have a predefined list of values that are known to be in the dataset they are associated with.  A common example would be the names of chromosomes when searching a dataset at Ensembl.  In this online interface to BioMart these available options are displayed as a list as shown in Figure \@ref(fig:filtervalues).
 
 ```{r filtervalues, fig.cap='The options available to the Chromosome/Scaffold field are limited to a pretermined list based on the values in this dataset.', echo = FALSE}
-knitr::include_graphics('filtervalues.png')
+knitr::include_graphics("filtervalues.png")
 ```
 
 You can list this in an R session with the function `listFilterOptions()`, passing it a `Mart` object and the name of the filter.  For example, to list the possible chromosome names you could run the following:
@@ -271,7 +271,7 @@ An overview of the attributes pages present in the respective BioMart dataset ca
 
 
 ```{r attributePages}
-pages = attributePages(ensembl)
+pages <- attributePages(ensembl)
 pages
 ```
 
@@ -288,7 +288,7 @@ We now get a short list of attributes related to the region where the genes are 
 In order to provide a more consistent interface to all annotations in Bioconductor the `select()`, `columns()`, `keytypes()` and `keys()` have been implemented to wrap some of the existing functionality above.  These methods can be called in the same manner that they are used in other parts of the project except that instead of taking a `AnnotationDb` derived class they take instead a `Mart` derived class as their 1st argument.  Otherwise usage should be essentially the same.  You still use `columns()` to discover things that can be extracted from a `Mart`, and `keytypes()` to discover which things can be used as keys with `select()`.
 
 ```{r columnsAndKeyTypes}
-mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart = 'ensembl')
+mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart = "ensembl")
 head(keytypes(mart), n = 3)
 head(columns(mart), n = 3)
 ```
@@ -297,7 +297,7 @@ And you still can use `keys()` to extract potential keys, for a
 particular key type.
 
 ```{r keys1}
-k = keys(mart, keytype = "chromosome_name")
+k <- keys(mart, keytype = "chromosome_name")
 head(k, n = 3)
 ```
 
@@ -305,7 +305,7 @@ When using `keys()`, you can even take advantage of the extra
 arguments that are available for others keys methods.
 
 ```{r keys2}
-k = keys(mart, keytype = "chromosome_name", pattern = "LRG")
+k <- keys(mart, keytype = "chromosome_name", pattern = "LRG")
 head(k, n = 3)
 ```
 
@@ -314,12 +314,12 @@ Unfortunately the `keys()` method will not work with all key types because they 
 But you can still use `select()` here to extract columns of data that match a particular set of keys (this is basically a wrapper for `getBM()`).
 
 ```{r select}
-affy = c("202763_at", "209310_s_at", "207500_at")
+affy <- c("202763_at", "209310_s_at", "207500_at")
 select(
   mart,
   keys = affy,
-  columns = c('affy_hg_u133_plus_2', 'entrezgene_id'),
-  keytype = 'affy_hg_u133_plus_2'
+  columns = c("affy_hg_u133_plus_2", "entrezgene_id"),
+  keytype = "affy_hg_u133_plus_2"
 )
 ```
 
@@ -365,17 +365,17 @@ In the sections below a variety of example queries are described.  Every example
 We have a list of Affymetrix hgu133plus2 identifiers and we would like to retrieve the HUGO gene symbols, chromosome names, start and end positions and the bands of the corresponding genes.  The `listAttributes()` and the `listFilters()` functions give us an overview of the available attributes and filters and we look in those lists to find the corresponding attribute and filter names we need.  For this query we'll need the following attributes: hgnc_symbol, chromsome_name, start_position, end_position, band and affy_hg_u133_plus_2 (as we want these in the output to provide a mapping with our original Affymetrix input identifiers.  There is one filter in this query which is the affy_hg_u133_plus_2 filter as we use a list of Affymetrix identifiers as input.  Putting this all together in the `getBM()` and performing the query gives:
 
 ```{r task1, echo=TRUE,eval=TRUE}
-affyids = c("202763_at", "209310_s_at", "207500_at")
+affyids <- c("202763_at", "209310_s_at", "207500_at")
 getBM(
   attributes = c(
-    'affy_hg_u133_plus_2',
-    'hgnc_symbol',
-    'chromosome_name',
-    'start_position',
-    'end_position',
-    'band'
+    "affy_hg_u133_plus_2",
+    "hgnc_symbol",
+    "chromosome_name",
+    "start_position",
+    "end_position",
+    "band"
   ),
-  filters = 'affy_hg_u133_plus_2',
+  filters = "affy_hg_u133_plus_2",
   values = affyids,
   mart = ensembl
 )
@@ -388,10 +388,10 @@ In this task we start out with a list of EntrezGene identiers and we want to ret
 
 
 ```{r task2, echo=TRUE,eval=TRUE}
-entrez = c("673", "837")
-goids = getBM(
-  attributes = c('entrezgene_id', 'go_id'),
-  filters = 'entrezgene_id',
+entrez <- c("673", "837")
+goids <- getBM(
+  attributes = c("entrezgene_id", "go_id"),
+  filters = "entrezgene_id",
   values = entrez,
   mart = ensembl
 )
@@ -403,8 +403,8 @@ head(goids)
 The GO terms we are interested in are: **GO:0051330**, **GO:0000080**, **GO:0000114**, **GO:0000082**.  The key to performing this query is to understand that the `getBM()` function enables you to use more than one filter at the same time.  In order to do this, the filter argument should be a vector with the filter names.  The values should be a list, where the first element of the list corresponds to the first filter and the second list element to the second filter and so on.  The elements of this list are vectors containing the possible values for the corresponding filters.
 
 ```{r task3, echo=TRUE,eval=TRUE}
-go = c("GO:0051330", "GO:0000080", "GO:0000114", "GO:0000082")
-chrom = c(17, 20, "Y")
+go <- c("GO:0051330", "GO:0000080", "GO:0000114", "GO:0000082")
+chrom <- c(17, 20, "Y")
 getBM(
   attributes = "hgnc_symbol",
   filters = c("go", "chromosome_name"),
@@ -419,8 +419,8 @@ getBM(
 In this example we want to annotate the following two RefSeq identifiers: **NM_005359** and **NM_000546** with INTERPRO protein domain identifiers and a description of the protein domains.
 
 ```{r task4, echo=TRUE,eval=TRUE}
-refseqids = c("NM_005359", "NM_000546")
-ipro = getBM(
+refseqids <- c("NM_005359", "NM_000546")
+ipro <- getBM(
   attributes = c("refseq_mrna", "interpro", "interpro_description"),
   filters = "refseq_mrna",
   values = refseqids,
@@ -435,8 +435,8 @@ In this example we will again use multiple filters: *chromosome_name*, *start*, 
 
 ```{r task5, eval = TRUE}
 getBM(
-  attributes = c('affy_hg_u133_plus_2', 'ensembl_gene_id'),
-  filters = c('chromosome_name', 'start', 'end'),
+  attributes = c("affy_hg_u133_plus_2", "ensembl_gene_id"),
+  filters = c("chromosome_name", "start", "end"),
   values = list(16, 1100000, 1250000),
   mart = ensembl
 )
@@ -449,9 +449,9 @@ The GO identifier for MAP kinase activity is **GO:0004707**.  In our query we wi
 
 ```{r task6, echo=TRUE, eval = TRUE}
 getBM(
-  attributes = c('entrezgene_id', 'hgnc_symbol'),
-  filters = 'go',
-  values = 'GO:0004707',
+  attributes = c("entrezgene_id", "hgnc_symbol"),
+  filters = "go",
+  values = "GO:0004707",
   mart = ensembl
 )
 ```
@@ -484,7 +484,7 @@ This task requires us to retrieve 100bp upstream promoter sequences from a set o
 
 
 ```{r task7, eval=TRUE}
-entrez = c("673", "7157", "837")
+entrez <- c("673", "7157", "837")
 getSequence(
   id = entrez,
   type = "entrezgene_id",
@@ -502,7 +502,7 @@ One further thing to note is that, although we are searching for genes based on 
 As described in the previous task `getSequence()` can also use chromosomal coordinates to retrieve sequences of all genes that lie in the given region. We also have to specify which type of identifier we want to retrieve together with the sequences. Here we choose the NCBI Gene ID^[These were historically called "Entrezgene IDs", hence the name given to the `type` argument.]
 
 ```{r task8, echo=TRUE,eval=TRUE}
-utr5 = getSequence(
+utr5 <- getSequence(
   chromosome = 3,
   start = 185514033,
   end = 185535839,
@@ -521,7 +521,7 @@ To get an overview of other valid identifier types we refer to the `listFilters(
 
 
 ```{r task9, echo=TRUE, eval=TRUE}
-protein = getSequence(
+protein <- getSequence(
   id = c(27112, 653067),
   type = "entrezgene_id",
   seqType = "peptide",
@@ -534,7 +534,7 @@ protein
 
 For this example we'll first have to connect to a different BioMart database, namely snp.
 ```{r task10, echo=TRUE, eval=TRUE}
-snpmart = useEnsembl(biomart = "snp", dataset = "hsapiens_snp")
+snpmart <- useEnsembl(biomart = "snp", dataset = "hsapiens_snp")
 ```
 
 The `listAttributes()` and `listFilters()` functions give us an overview of the available attributes and filters.
@@ -545,8 +545,8 @@ the BioMart webservice interprets this as return everything from the given chrom
 
 ```{r task10b}
 getBM(
-  attributes = c('refsnp_id', 'allele', 'chrom_start', 'chrom_strand'),
-  filters = c('chr_name', 'start', 'end'),
+  attributes = c("refsnp_id", "allele", "chrom_start", "chrom_strand"),
+  filters = c("chr_name", "start", "end"),
   values = list(8, 148350, 148400),
   mart = snpmart
 )
@@ -558,13 +558,13 @@ getBM(
 This is a multi-step process involving several **biomaRt** functions.  First we'll query the human gene dataset with the `TP53` gene symbol, and return the chromosomal location.  Note we also retrieve the Ensembl Gene ID, as this will be required in the next step.
 
 ```{r homologs-1}
-human <- useEnsembl('ensembl', dataset = 'hsapiens_gene_ensembl')
+human <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
 
 BRCA2_human <- getBM(
   mart = human,
-  filters = 'hgnc_symbol',
-  value = 'BRCA2',
-  attributes = c('ensembl_gene_id', 'chromosome_name', 'start_position')
+  filters = "hgnc_symbol",
+  value = "BRCA2",
+  attributes = c("ensembl_gene_id", "chromosome_name", "start_position")
 )
 BRCA2_human
 ```
@@ -575,8 +575,8 @@ attempt to find the correct BioMart dataset ^[We get a warning for the term 'mou
 ```{r homolog-2}
 homologs <- getHomologs(
   ensembl_gene_ids = BRCA2_human$ensembl_gene_id,
-  species_from = 'human',
-  species_to = 'mouse'
+  species_from = "human",
+  species_to = "mouse"
 )
 homologs
 ```
