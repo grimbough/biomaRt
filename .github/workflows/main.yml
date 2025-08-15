@@ -16,9 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { os: windows-2022, bioc-version: 'devel'}
+        - { os: windows-latest, bioc-version: 'devel'}
         - { os: macOS-latest, bioc-version: 'devel'}
-        - { os: ubuntu-22.04, bioc-version: 'devel'}
+        - { os: ubuntu-latest, bioc-version: 'devel'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -29,18 +29,18 @@ jobs:
         if: ${{ runner.os == 'Linux'  }}
         run: |
           sudo apt-get update && sudo apt-get install libcurl4-openssl-dev
-          
+
       - name: Install Mac system libraries
         if: ${{ matrix.config.os == 'macOS-latest' }}
         run: |
           brew install openssl
-    
+
       - name: Configure git
-        run: | 
+        run: |
           git config --global core.autocrlf false
           git config --global user.email "ghau@example.com"
           git config --global user.name "GitHub Actions User"
-        
+
       - uses: actions/checkout@v3
 
       - name: Setup R and Bioconductor
@@ -48,7 +48,7 @@ jobs:
         with:
           bioc-version: ${{ matrix.config.bioc-version }}
           bioc-mirror: https://ftp.gwdg.de/pub/misc/bioconductor
-          
+
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
@@ -56,19 +56,19 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: rcmdcheck
-        
+
       - name: Bioc - Build, Install, Check
         id: build-install-check
         uses: grimbough/bioc-actions/build-install-check@v1
-        
+
       - name: Run BiocCheck
         uses: grimbough/bioc-actions/run-BiocCheck@v1
         with:
           error-on: 'never'
-          arguments: '--no-check-bioc-help' 
-          
+          arguments: '--no-check-bioc-help'
+
       - name: Test coverage
-        if: ${{ matrix.config.os == 'ubuntu-22.04' }}
+        if: ${{ matrix.config.os == 'ubuntu-latest' }}
         run: |
           install.packages('covr')
           covr::codecov()
