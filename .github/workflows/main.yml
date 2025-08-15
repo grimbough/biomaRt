@@ -25,16 +25,6 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Install system libraries
-        if: ${{ runner.os == 'Linux'  }}
-        run: |
-          sudo apt-get update && sudo apt-get install libcurl4-openssl-dev
-
-      - name: Install Mac system libraries
-        if: ${{ matrix.config.os == 'macOS-latest' }}
-        run: |
-          brew install openssl
-
       - name: Configure git
         run: |
           git config --global core.autocrlf false
