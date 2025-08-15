@@ -1,5 +1,5 @@
 test_that("Error handling works", {
-  skip_if_not_installed('mockery')
+  skip_if_not_installed("mockery")
 
   expect_error(
     useEnsemblGenomes(),
@@ -8,7 +8,7 @@ test_that("Error handling works", {
 
   mockery::stub(
     useEnsemblGenomes,
-    'listEnsemblGenomes',
+    "listEnsemblGenomes",
     function(includeHosts, host) {
       data.frame(
         biomart = c("protists_mart", "fungi_mart"),

@@ -1,31 +1,31 @@
 ##########################
-#biomaRt source code     #
+# biomaRt source code     #
 ##########################
 #                        #
-#Licence: Artistic       #
-#Author: Steffen Durinck #
+# Licence: Artistic       #
+# Author: Steffen Durinck #
 ##########################
 
 ##############################################################
-#martCheck                                                   #
+# martCheck                                                   #
 #                                                            #
-#This function checks if there is a valid Mart object,       #
-#if a dataset is selected and                                #
-#if the correct BioMart database has been selected (optional)#
+# This function checks if there is a valid Mart object,       #
+# if a dataset is selected and                                #
+# if the correct BioMart database has been selected (optional)#
 ##############################################################
 
-martCheck = function(mart, biomart = NULL) {
+martCheck <- function(mart, biomart = NULL) {
   if (missing(mart) || !inherits(mart, "Mart")) {
     stop(
       "You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information."
     )
   }
   if (!is.null(biomart)) {
-    martcheck = martBM(mart)
-    bmok = FALSE
+    martcheck <- martBM(mart)
+    bmok <- FALSE
     for (k in seq_along(biomart)) {
       if (martcheck[1] == biomart[k]) {
-        bmok = TRUE
+        bmok <- TRUE
       }
     }
     if (!bmok) {
@@ -64,10 +64,10 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 }
 
 #######################################################
-#listMarts:                                           #
-#list all available BioMart databases by default      #
-#listMarts will check the central service to see which#
-#BioMart databases are present                        #
+# listMarts:                                           #
+# list all available BioMart databases by default      #
+# listMarts will check the central service to see which#
+# BioMart databases are present                        #
 #######################################################
 
 listMarts <- function(
@@ -120,7 +120,7 @@ listMarts <- function(
   ensemblRedirect = NULL,
   warn = TRUE
 ) {
-  request = NULL
+  request <- NULL
   if (is.null(mart)) {
     host <- .cleanHostURL(host, warn = warn)
     if (archive) {
@@ -137,11 +137,11 @@ listMarts <- function(
         "?type=registry&requestid=biomaRt"
       )
     }
-    if (is(http_config, 'list')) {
+    if (is(http_config, "list")) {
       http_config <- do.call(c, http_config)
     }
-  } else if (is(mart, 'Mart')) {
-    request = paste0(martHost(mart), "?type=registry&requestid=biomaRt")
+  } else if (is(mart, "Mart")) {
+    request <- paste0(martHost(mart), "?type=registry&requestid=biomaRt")
     http_config <- martHTTPConfig(mart)
   } else {
     stop(
@@ -155,7 +155,7 @@ listMarts <- function(
     request <- paste0(request, "&redirect=no")
   }
 
-  registry = bmRequest(
+  registry <- bmRequest(
     request = request,
     http_config = http_config,
     verbose = verbose
@@ -172,9 +172,9 @@ listMarts <- function(
       )
     } else {
       stop(
-        'Unexpected format to the list of available marts.\n',
-        'Please check the following URL manually, ',
-        'and try ?listMarts for advice.\n',
+        "Unexpected format to the list of available marts.\n",
+        "Please check the following URL manually, ",
+        "and try ?listMarts for advice.\n",
         request,
         call. = FALSE
       )
@@ -185,7 +185,7 @@ listMarts <- function(
   registry_xml2 <- xml2::xml_children(registry_xml2)
 
   ## create a table with the registry information
-  marts <- do.call('rbind', lapply(registry_xml2, FUN = xml2::xml_attrs))
+  marts <- do.call("rbind", lapply(registry_xml2, FUN = xml2::xml_attrs))
   marts <- as.data.frame(marts[marts[, "visible"] == "1", , drop = FALSE])
   ## rename some columns
   names(marts)[names(marts) == "name"] <- "biomart"
@@ -260,10 +260,10 @@ useMart <- function(
   }
 
   if (biomart == "ensembl" & grepl(x = host, pattern = "ensembl.org")) {
-    biomart = "ENSEMBL_MART_ENSEMBL"
+    biomart <- "ENSEMBL_MART_ENSEMBL"
   }
 
-  reqHost = host
+  reqHost <- host
   host <- .cleanHostURL(host)
 
   marts <- .listMarts(
@@ -276,15 +276,15 @@ useMart <- function(
     ensemblRedirect = ensemblRedirect,
     warn = FALSE
   )
-  mindex = NA
+  mindex <- NA
   if (!missing(biomart)) {
-    mindex = match(biomart, marts$biomart)
+    mindex <- match(biomart, marts$biomart)
   }
   if (!missing(version)) {
-    mindex = match(version, marts$version)
+    mindex <- match(version, marts$version)
   }
   if (is.na(mindex) || archive) {
-    mindex = match(biomart, marts$database)
+    mindex <- match(biomart, marts$database)
   }
   if (is.na(mindex)) {
     stop(
@@ -304,13 +304,13 @@ useMart <- function(
   }
 
   if (marts$path[mindex] == "") {
-    marts$path[mindex] = "/biomart/martservice"
-  } #temporary to catch bugs in registry
+    marts$path[mindex] <- "/biomart/martservice"
+  } # temporary to catch bugs in registry
 
   if (!missing(version)) {
-    biomart = marts$biomart[mindex]
+    biomart <- marts$biomart[mindex]
   }
-  biomart = sub(" ", "%20", biomart, fixed = TRUE, useBytes = TRUE)
+  biomart <- sub(" ", "%20", biomart, fixed = TRUE, useBytes = TRUE)
 
   ## adding option to force use of specified host with ensembl
   redirect <- ifelse(
@@ -336,7 +336,7 @@ useMart <- function(
       https = TRUE,
       http_config = http_config
     )
-    current_release <- archives[archives$current_release == "*", 'url']
+    current_release <- archives[archives$current_release == "*", "url"]
     if (grepl(martHost(mart), pattern = current_release)) {
       martHost(mart) <- stringr::str_replace(
         martHost(mart),
@@ -351,7 +351,7 @@ useMart <- function(
     }
   }
 
-  BioMartVersion = bmVersion(mart, verbose = verbose)
+  BioMartVersion <- bmVersion(mart, verbose = verbose)
 
   if (verbose) {
     writeLines(paste(
@@ -372,7 +372,7 @@ useMart <- function(
     writeLines(paste("Mart host:", martHost(mart), sep = " "))
   }
   if (!missing(dataset)) {
-    mart = useDataset(mart = mart, dataset = dataset, verbose = verbose)
+    mart <- useDataset(mart = mart, dataset = dataset, verbose = verbose)
   }
   return(mart)
 }
@@ -382,7 +382,7 @@ listDatasets <- function(mart, verbose = FALSE) {
 }
 
 .listDatasets <- function(mart, verbose = FALSE, sort = FALSE) {
-  if (missing(mart) || !is(mart, 'Mart')) {
+  if (missing(mart) || !is(mart, "Mart")) {
     stop("No Mart object given or object not of class 'Mart'")
   }
 
@@ -390,7 +390,7 @@ listDatasets <- function(mart, verbose = FALSE) {
   ## should always be '?' now
   sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
 
-  request = paste0(
+  request <- paste0(
     martHost(mart),
     sep,
     "type=datasets&requestid=biomaRt&mart=",
@@ -398,13 +398,13 @@ listDatasets <- function(mart, verbose = FALSE) {
   )
   http_config <- martHTTPConfig(mart)
 
-  bmResult = bmRequest(
+  bmResult <- bmRequest(
     request = request,
     http_config = http_config,
     verbose = verbose
   )
-  con = textConnection(bmResult)
-  txt = scan(
+  con <- textConnection(bmResult)
+  txt <- scan(
     con,
     sep = "\t",
     blank.lines.skip = TRUE,
@@ -415,9 +415,9 @@ listDatasets <- function(mart, verbose = FALSE) {
   close(con)
 
   ## select visible ("1") table sets
-  i = intersect(which(txt == "TableSet"), which(txt == "1") - 3L)
+  i <- intersect(which(txt == "TableSet"), which(txt == "1") - 3L)
 
-  res = data.frame(
+  res <- data.frame(
     dataset = I(txt[i + 1L]),
     description = I(txt[i + 2L]),
     version = I(txt[i + 4L])
@@ -441,7 +441,7 @@ bmVersion <- function(mart, verbose = FALSE) {
     ## we choose a separator based on whether 'redirect=no' is present
     sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
 
-    request = paste0(
+    request <- paste0(
       martHost(mart),
       sep,
       "type=version",
@@ -450,14 +450,14 @@ bmVersion <- function(mart, verbose = FALSE) {
     )
     http_config <- martHTTPConfig(mart)
 
-    BioMartVersion = bmRequest(
+    BioMartVersion <- bmRequest(
       request = request,
       http_config = http_config,
       verbose = verbose
     )
-    bmv = ""
+    bmv <- ""
     if (BioMartVersion == "\n" || BioMartVersion == "") {
-      bmv = NA
+      bmv <- NA
       if (verbose) {
         warning(paste(
           "BioMart version is not available from BioMart server:",
@@ -466,8 +466,8 @@ bmVersion <- function(mart, verbose = FALSE) {
         ))
       }
     } else {
-      con = textConnection(BioMartVersion)
-      bmVersionParsed = read.table(
+      con <- textConnection(BioMartVersion)
+      bmVersionParsed <- read.table(
         con,
         sep = "\t",
         header = FALSE,
@@ -481,7 +481,7 @@ bmVersion <- function(mart, verbose = FALSE) {
       }
 
       if (dim(bmVersionParsed)[2] >= 1) {
-        bmv = bmVersionParsed[1, 1]
+        bmv <- bmVersionParsed[1, 1]
       }
     }
   }
@@ -639,12 +639,12 @@ listAttributes <- function(
       " is not valid, please use the correct page name using the attributePages function"
     )
   }
-  attrib = NULL
+  attrib <- NULL
   if (!missing(page)) {
-    sel = which(martAttributes(mart)[, "page"] == page)
-    attrib = martAttributes(mart)[sel, what]
+    sel <- which(martAttributes(mart)[, "page"] == page)
+    attrib <- martAttributes(mart)[sel, what]
   } else {
-    attrib = martAttributes(mart)[, what]
+    attrib <- martAttributes(mart)[, what]
   }
   return(attrib)
 }
@@ -652,15 +652,15 @@ listAttributes <- function(
 ## attributePages
 attributePages <- function(mart) {
   martCheck(mart)
-  pages = unique(martAttributes(mart)[, "page"])
+  pages <- unique(martAttributes(mart)[, "page"])
   return(pages)
 }
 
 ## listFilters
 listFilters <- function(mart, what = c("name", "description")) {
   martCheck(mart)
-  filters = martFilters(mart)
-  badwhat = !(what %in% colnames(filters))
+  filters <- martFilters(mart)
+  badwhat <- !(what %in% colnames(filters))
   if (any(badwhat)) {
     stop(sprintf(
       "The function argument 'what' contains %s: %s\nValid are: %s\n",
@@ -694,17 +694,17 @@ filterType <- function(filter, mart) {
     stop("Filter argument should be of class character")
   }
   martCheck(mart)
-  type = "unknown"
-  sel = which(listFilters(mart, what = "name") == filter)
+  type <- "unknown"
+  sel <- which(listFilters(mart, what = "name") == filter)
   if (is.null(sel)) {
     stop(paste("Invalid filter", filter, sep = ": "))
   }
-  type = listFilters(mart, what = "type")[sel]
+  type <- listFilters(mart, what = "type")[sel]
   return(type)
 }
 
 ##########################################
-#getBM: generic BioMart query function   #
+# getBM: generic BioMart query function   #
 ##########################################
 
 getBM <- function(
@@ -740,8 +740,8 @@ getBM <- function(
     stop("Values argument contains no data.")
   }
   if (is.list(filters)) {
-    values = filters
-    filters = names(filters)
+    values <- filters
+    filters <- names(filters)
   }
   if (!is.logical(uniqueRows)) {
     stop(
@@ -764,7 +764,7 @@ getBM <- function(
   } else {
     ## force the query to return the 'descriptive text' header names with the result
     ## we use these later to match and order attribute/column names
-    xmlQuery = paste0(
+    xmlQuery <- paste0(
       '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query virtualSchemaName = "',
       martVSchema(mart),
       '" uniqueRows="',
@@ -775,8 +775,8 @@ getBM <- function(
       '">'
     )
 
-    #checking the Attributes
-    invalid = !(attributes %in% listAttributes(mart, what = "name"))
+    # checking the Attributes
+    invalid <- !(attributes %in% listAttributes(mart, what = "name"))
     if (any(invalid)) {
       stop(paste(
         "Invalid attribute(s):",
@@ -785,17 +785,17 @@ getBM <- function(
       ))
     }
 
-    #attribute are ok lets add them to the query
-    attributeXML = paste0(
+    # attribute are ok lets add them to the query
+    attributeXML <- paste0(
       '<Attribute name = "',
       attributes,
       '"/>',
       collapse = ""
     )
 
-    #checking the filters
+    # checking the filters
     if (filters[1] != "" && checkFilters) {
-      invalid = !(filters %in% listFilters(mart, what = "name"))
+      invalid <- !(filters %in% listFilters(mart, what = "name"))
       if (any(invalid)) {
         stop(paste(
           "Invalid filters(s):",
@@ -882,7 +882,7 @@ getBM <- function(
       )
     }
     ## collate results
-    result <- do.call('rbind', resultList)
+    result <- do.call("rbind", resultList)
 
     if (useCache) {
       .addToCache(bfc = bfc, result = result, hash = hash)
@@ -899,7 +899,7 @@ getBM <- function(
 }
 
 ###################################
-#getLDS: Multiple dataset linking #
+# getLDS: Multiple dataset linking #
 ###################################
 
 getLDS <- function(
@@ -919,20 +919,20 @@ getLDS <- function(
   martCheck(martL)
 
   if (martHost(mart) != martHost(martL)) {
-    stop('Both datasets must be located on the same host.')
+    stop("Both datasets must be located on the same host.")
   }
 
   if (martBM(mart) != martBM(martL)) {
     stop(
-      'Both datasets must be located in the same Mart.\n',
-      'You are trying to combine datasets in ',
+      "Both datasets must be located in the same Mart.\n",
+      "You are trying to combine datasets in ",
       martBM(mart),
-      ' and ',
+      " and ",
       martBM(martL)
     )
   }
 
-  invalid = !(attributes %in% listAttributes(mart, what = "name"))
+  invalid <- !(attributes %in% listAttributes(mart, what = "name"))
   if (any(invalid)) {
     stop(paste(
       "Invalid attribute(s):",
@@ -941,7 +941,7 @@ getLDS <- function(
     ))
   }
 
-  invalid = !(attributesL %in% listAttributes(martL, what = "name"))
+  invalid <- !(attributesL %in% listAttributes(martL, what = "name"))
   if (any(invalid)) {
     stop(paste(
       "Invalid attribute(s):",
@@ -951,7 +951,7 @@ getLDS <- function(
   }
 
   if (filters[1] != "") {
-    invalid = !(filters %in% listFilters(mart, what = "name"))
+    invalid <- !(filters %in% listFilters(mart, what = "name"))
     if (any(invalid)) {
       stop(paste(
         "Invalid filters(s):",
@@ -961,7 +961,7 @@ getLDS <- function(
     }
   }
   if (filtersL[1] != "") {
-    invalid = !(filtersL %in% listFilters(martL, what = "name"))
+    invalid <- !(filtersL %in% listFilters(martL, what = "name"))
     if (any(invalid)) {
       stop(paste(
         "Invalid filters(s):",
@@ -971,7 +971,7 @@ getLDS <- function(
     }
   }
 
-  xmlQuery = sprintf(
+  xmlQuery <- sprintf(
     '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query virtualSchemaName = "%s" uniqueRows = "%s" count = "0" datasetConfigVersion = "0.6" header="%s" formatter = "TSV" requestid="biomaRt"> <Dataset name = "%s">',
     martVSchema(mart),
     as.numeric(uniqueRows),
@@ -979,7 +979,7 @@ getLDS <- function(
     martDataset(mart)
   )
 
-  attributeXML = paste0(
+  attributeXML <- paste0(
     '<Attribute name = "',
     attributes,
     '"/>',
@@ -994,10 +994,10 @@ getLDS <- function(
     maxChunkSize = Inf
   )
 
-  xmlQuery = paste0(xmlQuery, attributeXML, filterXML, "</Dataset>")
+  xmlQuery <- paste0(xmlQuery, attributeXML, filterXML, "</Dataset>")
 
-  xmlQuery = paste0(xmlQuery, '<Dataset name = "', martDataset(martL), '" >')
-  linkedAttributeXML = paste0(
+  xmlQuery <- paste0(xmlQuery, '<Dataset name = "', martDataset(martL), '" >')
+  linkedAttributeXML <- paste0(
     '<Attribute name = "',
     attributesL,
     '"/>',
@@ -1010,7 +1010,7 @@ getLDS <- function(
     maxChunkSize = Inf
   )
 
-  xmlQuery = paste0(
+  xmlQuery <- paste0(
     xmlQuery,
     linkedAttributeXML,
     linkedFilterXML,
@@ -1035,8 +1035,8 @@ getLDS <- function(
   }
 
   if (postRes != "") {
-    con = textConnection(postRes)
-    result = read.table(
+    con <- textConnection(postRes)
+    result <- read.table(
       con,
       sep = "\t",
       header = bmHeader,
@@ -1048,7 +1048,7 @@ getLDS <- function(
     close(con)
 
     if (nrow(result) > 0 && all(is.na(result[, ncol(result)]))) {
-      result = result[, -ncol(result), drop = FALSE]
+      result <- result[, -ncol(result), drop = FALSE]
     }
 
     res_attributes <- c(attributes, attributesL)
@@ -1064,18 +1064,18 @@ getLDS <- function(
       )
     }
     if (!bmHeader) {
-      #assumes order of results same as order of attibutes in input
-      colnames(result) = res_attributes
+      # assumes order of results same as order of attibutes in input
+      colnames(result) <- res_attributes
     }
   } else {
     warning("getLDS returns NULL.")
-    result = NULL
+    result <- NULL
   }
   return(result)
 }
 
 ####################
-#export FASTA      #
+# export FASTA      #
 ####################
 
 exportFASTA <- function(sequences, file) {
@@ -1120,9 +1120,9 @@ exportFASTA <- function(sequences, file) {
 }
 
 ###################
-#Nature Protocol
+# Nature Protocol
 ###################
 
 NP2009code <- function() {
-  edit(file = system.file('scripts', 'Integration-NP.R', package = 'biomaRt'))
+  edit(file = system.file("scripts", "Integration-NP.R", package = "biomaRt"))
 }

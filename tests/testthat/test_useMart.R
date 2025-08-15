@@ -7,10 +7,10 @@ with_mock_dir(
   {
     test_that("useMart returns a Mart object", {
       ## Skip on linux.  SSL problems are addressed in useEnsembl()
-      #testthat::skip_on_os("linux")
+      # testthat::skip_on_os("linux")
       ensembl <- useMart(
-        biomart = 'ENSEMBL_MART_ENSEMBL',
-        dataset = 'hsapiens_gene_ensembl'
+        biomart = "ENSEMBL_MART_ENSEMBL",
+        dataset = "hsapiens_gene_ensembl"
       )
       expect_is(ensembl, "Mart")
     })

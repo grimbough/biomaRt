@@ -1,4 +1,4 @@
-ensembl = Mart(
+ensembl <- Mart(
   biomart = "ensembl",
   dataset = "hsapiens_gene_ensembl",
   attributes = data.frame(

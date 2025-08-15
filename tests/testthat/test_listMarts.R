@@ -3,7 +3,7 @@ cache <- file.path(tempdir(), "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
 ###############################
-context('listMarts()')
+context("listMarts()")
 ###############################
 
 with_mock_dir(
