@@ -1,4 +1,5 @@
 #' @exportClass Mart
+#' @importFrom methods prototype representation setClass
 Mart <- setClass(
   "Mart",
   representation(

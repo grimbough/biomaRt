@@ -44,6 +44,7 @@ martCheck <- function(mart, biomart = NULL) {
 }
 
 
+#' @importFrom httr2 req_options req_perform req_timeout resp_body_string
 bmRequest <- function(request, http_config, verbose = FALSE) {
   if (verbose) {
     message("Attempting web service request:\n", request)
@@ -151,6 +152,7 @@ listMarts <- function(
   )
 }
 
+#' @importFrom methods is
 .listMarts <- function(
   mart = NULL,
   host = "www.ensembl.org",
@@ -499,6 +501,7 @@ listDatasets <- function(mart, verbose = FALSE) {
   .listDatasets(mart = mart, verbose = verbose, sort = TRUE)
 }
 
+#' @importFrom methods is
 .listDatasets <- function(mart, verbose = FALSE, sort = FALSE) {
   if (missing(mart) || !is(mart, "Mart")) {
     stop("No Mart object given or object not of class 'Mart'")
@@ -551,6 +554,7 @@ listDatasets <- function(mart, verbose = FALSE) {
 }
 
 ## Check version of BioMart service
+#' @importFrom utils read.table
 bmVersion <- function(mart, verbose = FALSE) {
   ## save some time and a HTTP request if this is Ensembl
   if (grepl(pattern = "ensembl.org", x = martHost(mart), fixed = TRUE)) {
@@ -607,6 +611,7 @@ bmVersion <- function(mart, verbose = FALSE) {
 }
 
 
+#' @importFrom utils read.table
 .getAttrFilt <- function(mart, verbose, type) {
   ## we choose a separator based on whether 'redirect=no' is present
   sep <- ifelse(grepl(x = mart@host, pattern = ".+\\?.+"), "&", "?")
@@ -1027,6 +1032,7 @@ filterType <- function(filter, mart) {
 #'         mart       = mart)
 #'   }
 #'
+#' @importFrom progress progress_bar
 #' @export
 getBM <- function(
   attributes,
@@ -1263,6 +1269,8 @@ getBM <- function(
 #' }
 #'
 #' @export
+#' @importFrom methods is
+#' @importFrom utils head read.table
 getLDS <- function(
   attributes,
   filters = "",
@@ -1525,6 +1533,7 @@ exportFASTA <- function(sequences, file) {
 #' }
 #'
 #' @export
+#' @importFrom utils edit
 NP2009code <- function() {
   edit(file = system.file("scripts", "Integration-NP.R", package = "biomaRt"))
 }

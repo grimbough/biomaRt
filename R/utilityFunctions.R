@@ -237,6 +237,7 @@
   return(err_msg)
 }
 
+#' @importFrom httr2 req_body_form req_options req_timeout resp_body_string resp_status
 .submitQueryXML <- function(host, query, http_config) {
   req <- httr2::request(host) |>
     req_body_form(query = query) |>
@@ -279,6 +280,8 @@
 #' including column headers.
 #'
 #' @noRd
+#' @importFrom methods is
+#' @importFrom utils read.table
 .processResults <- function(
   postRes,
   mart,
