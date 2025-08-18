@@ -5,16 +5,15 @@
 #'
 #'
 #' The following functions are defunct and no longer work; use the replacement
-#' indicated below: \itemize{
+#' indicated below:
 #'
-#' \itemfilterOptions: \code{\link{listFilterOptions}} \itemlistFilterValues:
-#' \code{\link{listFilterOptions}} \itemsearchFilterValues:
-#' \code{\link{searchFilterOptions}}
-#'
+#' \itemize{
+#' \item{filterOptions: \code{\link{listFilterOptions}}}
+#' \item{listFilterValues: \code{\link{listFilterOptions}}}
+#' \item{searchFilterValues: \code{\link{searchFilterOptions}}}
 #' }
 #'
-#' @aliases biomaRt-deprecated filterOptions listFilterValues
-#' searchFilterValues getBMlist
+#' @name biomaRt-deprecated
 NULL
 
 

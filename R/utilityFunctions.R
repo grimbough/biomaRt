@@ -446,6 +446,7 @@ searchFilterOptions <- function(mart, filter, pattern) {
   }
 }
 
+#' @rdname biomaRt-deprecated
 searchFilterValues <- function(mart, filter, pattern) {
   .Defunct(
     new = "listFilterOptions",
@@ -499,6 +500,7 @@ listFilterOptions <- function(mart, filter) {
   searchFilterOptions(mart = mart, filter = filter)
 }
 
+#' @rdname biomaRt-deprecated
 listFilterValues <- function(mart, filter) {
   .Defunct(
     new = "listFilterOptions",
