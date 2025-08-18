@@ -168,11 +168,11 @@
   return(filterXML_list)
 }
 
-#' it seems like pretty common practice for users to copy and paste the host
-#' name from a browser if they're not accessing Ensembl.  Typically this will
-#' include the "http://" and maybe a trailing "/" and this messes up our
-#' paste the complete URL strategy and produces something invalid.
-#' This function tidies that up to catch common variants.
+## it seems like pretty common practice for users to copy and paste the host
+## name from a browser if they're not accessing Ensembl.  Typically this will
+## include the "http://" and maybe a trailing "/" and this messes up our
+## paste the complete URL strategy and produces something invalid.
+## This function tidies that up to catch common variants.
 .cleanHostURL <- function(host, warn = TRUE) {
   if (!grepl("^http[s]?://", x = host)) {
     host <- paste0("http://", host)
@@ -255,7 +255,7 @@
    return(resp_body_string(res))
 }
 
-#' if parsing of TSV results fails, try this
+## if parsing of TSV results fails, try this
 .fetchHTMLresults <- function(host, query, http_config) {
   query <- gsub(x = query, pattern = "TSV", replacement = "HTML", fixed = TRUE)
   html_res <- .submitQueryXML(host, query, http_config)
@@ -277,6 +277,8 @@
 #' @param postRes Character vector of length 1 returned by server.  We expect
 #' this to be a tab delimited string that comprises the whole table of results
 #' including column headers.
+#'
+#' @noRd
 .processResults <- function(
   postRes,
   mart,
@@ -337,9 +339,9 @@
 ## searching Attributes, Filters, and Datasets
 ##############################################
 
-#' given a data.frame, searches every column for
-#' the value in 'pattern'
-#' returns index of rows containing a match
+## given a data.frame, searches every column for
+## the value in 'pattern'
+## returns index of rows containing a match
 .searchInternal <- function(pattern, data) {
   colIdx <- vapply(
     data,
