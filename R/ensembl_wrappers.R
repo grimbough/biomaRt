@@ -59,6 +59,7 @@ checkWrapperArgs <- function(id, type, mart) {
 #' show(g)
 #' }
 #'
+#' @export
 getGene <- function(id, type, mart) {
   martCheck(mart, "ensembl")
   checkWrapperArgs(id, type, mart)
@@ -344,7 +345,7 @@ getGene <- function(id, type, mart) {
 #' show(seq)
 #'
 #' }
-#'
+#' @export
 getSequence <- function(
   chromosome,
   start,

@@ -1,3 +1,4 @@
+#' @exportClass Mart
 Mart <- setClass(
   "Mart",
   representation(

@@ -112,6 +112,7 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' listMarts()
 #' }
 #'
+#' @export
 listMarts <- function(
   mart = NULL,
   host = "https://www.ensembl.org",
@@ -286,6 +287,7 @@ listMarts <- function(
 #'     mart=useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
 #' }
 #'
+#' @export
 useMart <- function(
   biomart,
   dataset,
@@ -492,7 +494,7 @@ useMart <- function(
 #'     searchDatasets(mart = ensembl, pattern = "(R|r)at")
 #' }
 #'
-#'
+#' @export
 listDatasets <- function(mart, verbose = FALSE) {
   .listDatasets(mart = mart, verbose = verbose, sort = TRUE)
 }
@@ -730,6 +732,7 @@ checkDataset <- function(dataset, mart) {
 #' mart=useDataset("hsapiens_gene_ensembl", mart = mart)
 #' }
 #'
+#' @export
 useDataset <- function(dataset, mart, verbose = FALSE) {
   if (missing(mart) || !inherits(mart, "Mart")) {
     stop(
@@ -803,7 +806,7 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
 #'     searchAttributes(mart = ensembl, 'entrez|hgnc')
 #' }
 #'
-#'
+#' @export
 listAttributes <- function(
   mart,
   page,
@@ -848,6 +851,7 @@ listAttributes <- function(
 #' attributePages(mart)
 #' }
 #'
+#' @export
 attributePages <- function(mart) {
   martCheck(mart)
   pages <- unique(martAttributes(mart)[, "page"])
@@ -895,7 +899,7 @@ attributePages <- function(mart) {
 #'     searchFilters(mart = ensembl, 'entrez|hgnc')
 #' }
 #'
-#'
+#' @export
 listFilters <- function(mart, what = c("name", "description")) {
   martCheck(mart)
   filters <- martFilters(mart)
@@ -912,6 +916,8 @@ listFilters <- function(mart, what = c("name", "description")) {
 }
 
 #' @rdname biomaRt-deprecated
+#'
+#' @export
 filterOptions <- function(filter, mart) {
   .Defunct(
     new = "listFilterOptions",
@@ -942,6 +948,7 @@ filterOptions <- function(filter, mart) {
 #' filterType("chromosome_name", mart)
 #' }
 #'
+#' @export
 filterType <- function(filter, mart) {
   if (missing(filter)) {
     stop(
@@ -1020,6 +1027,7 @@ filterType <- function(filter, mart) {
 #'         mart       = mart)
 #'   }
 #'
+#' @export
 getBM <- function(
   attributes,
   filters = "",
@@ -1254,6 +1262,7 @@ getBM <- function(
 #'     attributesL = c("chromosome_name","start_position"), martL = mouse)
 #' }
 #'
+#' @export
 getLDS <- function(
   attributes,
   filters = "",
@@ -1451,6 +1460,7 @@ getLDS <- function(
 #'
 #' }
 #'
+#' @export
 exportFASTA <- function(sequences, file) {
   if (missing(sequences) || !is.data.frame(sequences)) {
     stop(
@@ -1514,6 +1524,7 @@ exportFASTA <- function(sequences, file) {
 #' NP2009code()
 #' }
 #'
+#' @export
 NP2009code <- function() {
   edit(file = system.file("scripts", "Integration-NP.R", package = "biomaRt"))
 }

@@ -166,6 +166,7 @@
 #' @keywords IO
 #'
 #' @name biomartCache
+#' @export
 biomartCacheClear <- function() {
   cache <- .biomartCacheLocation()
   bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
@@ -173,6 +174,7 @@ biomartCacheClear <- function() {
 }
 
 #' @rdname biomartCache
+#' @export
 biomartCacheInfo <- function() {
   cache <- .biomartCacheLocation()
 
