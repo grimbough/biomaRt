@@ -50,6 +50,7 @@
 #' @param bfc Object of class BiocFileCache, created by a call to
 #' BiocFileCache::BiocFileCache()
 #' @param hash unique hash representing a query.
+#' @importFrom BiocFileCache bfcadd bfcquery bfcupdate
 #' @noRd
 .addToCache <- function(bfc, result, hash, update = FALSE) {
   if (!dir.exists(.biomartCacheLocation())) {
@@ -88,6 +89,7 @@
 #' BiocFileCache::BiocFileCache()
 #' @param hash unique hash representing a query.
 #' @noRd
+#' @importFrom BiocFileCache bfcquery
 .readFromCache <- function(bfc, hash) {
   cache_hits <- bfcquery(bfc, hash, field = "rname")
   if (nrow(cache_hits) > 1) {
@@ -110,6 +112,7 @@
 #' exists in the file cache, otherwise returns FALSE.
 #' @keywords Internal
 #' @noRd
+#' @importFrom BiocFileCache bfcquery
 .checkInCache <- function(bfc, hash, verbose = FALSE) {
   res <- bfcquery(bfc, query = hash, field = "rname")
   as.logical(nrow(res))
@@ -123,7 +126,7 @@
 #' Returns TRUE if the cache entry is valid, FALSE otherwise.
 #' In the case of an invalid file the cache entry and file are
 #' deleted.
-#' @importFrom BiocFileCache bfcremove
+#' @importFrom BiocFileCache bfcquery bfcremove
 #' @keywords Internal
 #' @noRd
 .checkValidCache <- function(bfc, hash) {
@@ -166,6 +169,7 @@
 #' @keywords IO
 #'
 #' @name biomartCache
+#' @importFrom BiocFileCache removebfc
 #' @export
 biomartCacheClear <- function() {
   cache <- .biomartCacheLocation()
@@ -174,6 +178,7 @@ biomartCacheClear <- function() {
 }
 
 #' @rdname biomartCache
+#' @importFrom BiocFileCache bfcinfo
 #' @export
 biomartCacheInfo <- function() {
   cache <- .biomartCacheLocation()
@@ -209,6 +214,7 @@ biomartCacheInfo <- function() {
 #' older than this will be deleted.
 #' @keywords Internal
 #' @noRd
+#' @importFrom BiocFileCache bfcquery bfcremove
 .useCache <- function(bfc, cacheEntry, numDays = 7L) {
   use_cached_version <- FALSE
   if (.checkInCache(bfc, hash = cacheEntry)) {

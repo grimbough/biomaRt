@@ -1,3 +1,4 @@
+#' @importFrom httr2 req_options req_perform req_timeout req_user_agent request
 .test_ensembl <- function(config = list()) {
   main <- request("https://www.ensembl.org/index.html?redirect=no") |>
     req_timeout(5) |>
@@ -14,6 +15,7 @@
   useast |> req_perform()
 }
 
+#' @importFrom methods is
 .checkEnsemblSSL <- function() {
   ensembl_config <- list()
   test <- try(.test_ensembl(config = ensembl_config), silent = TRUE)

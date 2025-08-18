@@ -7,6 +7,7 @@
 #' @author Steffen Durinck
 #' @keywords methods
 #' @rdname Mart-class
+#' @importFrom methods setMethod signature
 #' @export
 setMethod("show", signature(object = "Mart"), function(object) {
   dbase <- ifelse(
@@ -25,61 +26,85 @@ setMethod("show", signature(object = "Mart"), function(object) {
   cat(res)
 })
 
+#' @importFrom methods setGeneric
 setGeneric("martBM", function(obj, ...) standardGeneric("martBM"))
+#' @importFrom methods setMethod signature
 setMethod("martBM", signature("Mart"), function(obj) obj@biomart)
+#' @importFrom methods setGeneric
 setGeneric("martBM<-", function(obj, value) standardGeneric("martBM<-"))
+#' @importFrom methods setReplaceMethod
 setReplaceMethod("martBM", "Mart", function(obj, value) {
   obj@biomart <- value
   obj
 })
 
 
+#' @importFrom methods setGeneric
 setGeneric("martAttributes", function(obj, ...) {
   standardGeneric("martAttributes")
 })
+#' @importFrom methods setMethod signature
 setMethod("martAttributes", signature("Mart"), function(obj) obj@attributes)
+#' @importFrom methods setGeneric
 setGeneric("martAttributes<-", function(obj, value) {
   standardGeneric("martAttributes<-")
 })
+#' @importFrom methods setReplaceMethod
 setReplaceMethod("martAttributes", "Mart", function(obj, value) {
   obj@attributes <- value
   obj
 })
 
 
+#' @importFrom methods setGeneric
 setGeneric("martFilters", function(obj, ...) standardGeneric("martFilters"))
+#' @importFrom methods setMethod signature
 setMethod("martFilters", signature("Mart"), function(obj) obj@filters)
+#' @importFrom methods setGeneric
 setGeneric("martFilters<-", function(obj, value) {
   standardGeneric("martFilters<-")
 })
+#' @importFrom methods setReplaceMethod
 setReplaceMethod("martFilters", "Mart", function(obj, value) {
   obj@filters <- value
   obj
 })
 
 
+#' @importFrom methods setGeneric
 setGeneric("martDataset", function(obj, ...) standardGeneric("martDataset"))
+#' @importFrom methods setMethod signature
 setMethod("martDataset", signature("Mart"), function(obj) obj@dataset)
+#' @importFrom methods setGeneric
 setGeneric("martDataset<-", function(obj, value) {
   standardGeneric("martDataset<-")
 })
+#' @importFrom methods setReplaceMethod
 setReplaceMethod("martDataset", "Mart", function(obj, value) {
   obj@dataset <- value
   obj
 })
 
+#' @importFrom methods setGeneric
 setGeneric("martHost", function(obj, ...) standardGeneric("martHost"))
+#' @importFrom methods setMethod signature
 setMethod("martHost", signature("Mart"), function(obj) obj@host)
+#' @importFrom methods setGeneric
 setGeneric("martHost<-", function(obj, value) standardGeneric("martHost<-"))
+#' @importFrom methods setReplaceMethod
 setReplaceMethod("martHost", "Mart", function(obj, value) {
   obj@host <- value
   obj
 })
 
+#' @importFrom methods setGeneric
 setGeneric("martVSchema", function(obj, ...) standardGeneric("martVSchema"))
+#' @importFrom methods setMethod signature
 setMethod("martVSchema", signature("Mart"), function(obj) obj@vschema)
 
+#' @importFrom methods setGeneric
 setGeneric("martHTTPConfig", function(obj) standardGeneric("martHTTPConfig"))
+#' @importFrom methods setMethod signature
 setMethod("martHTTPConfig", signature("Mart"), function(obj) {
   config <- do.call(c, obj@http_config)
   if (is.null(config)) {
@@ -169,6 +194,7 @@ setMethod("martHTTPConfig", signature("Mart"), function(obj) {
 
 #' @rdname select-methods
 #' @export
+#' @importFrom methods setMethod
 setMethod("keys", "Mart", function(x, keytype, ...) {
   # nolint next: undesirable_operator_linter.
   AnnotationDbi:::smartKeys(x = x, keytype = keytype, ..., FUN = .keys)
@@ -179,9 +205,11 @@ setMethod("keys", "Mart", function(x, keytype, ...) {
 
 #' @rdname select-methods
 #' @export
+#' @importFrom methods setMethod
 setMethod("keytypes", "Mart", function(x) listFilters(mart = x, what = "name"))
 #' @rdname select-methods
 #' @export
+#' @importFrom methods setMethod
 setMethod("columns", "Mart", function(x) {
   listAttributes(mart = x, what = "name")
 })
@@ -189,6 +217,7 @@ setMethod("columns", "Mart", function(x) {
 ## Arg checking is similar (but more limited) to what is done for getBM
 #' @rdname select-methods
 #' @export
+#' @importFrom methods setMethod
 setMethod("select", "Mart", function(x, keys, columns, keytype, ...) {
   if (missing(columns)) {
     stop("Argument 'columns' must be specified.")

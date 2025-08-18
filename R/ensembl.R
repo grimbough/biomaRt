@@ -21,6 +21,7 @@
   return(archive_html)
 }
 
+#' @importFrom httr2 req_error req_options req_perform req_retry req_timeout request resp_body_string resp_status
 .getArchiveList <- function(https = TRUE, http_config = list()) {
   url_worked <- FALSE
   mirrors <- c("www", "asia", "useast")
@@ -100,6 +101,7 @@ listEnsemblArchives <- function(https) {
   .listEnsemblArchives(https = https, http_config = list())
 }
 
+#' @importFrom stringr str_extract_all str_match
 .listEnsemblArchives <- function(https = TRUE, http_config) {
   html <- .checkArchiveList(https, http_config)
   html <- xml2::read_html(html)
@@ -612,6 +614,8 @@ useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
 ## If the selected mirror returns a success (http 200) response it will be used
 ## Otherwise another mirror is selected at random and used instead.
 ## If all mirrors fail it will return an error
+#' @importFrom httr2 req_body_form req_options req_timeout
+#' @importFrom stringr str_match str_replace
 .chooseEnsemblMirror <- function(mirror, http_config) {
   mirrors <- c("www", "asia", "useast")
 

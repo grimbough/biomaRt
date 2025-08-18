@@ -27,6 +27,7 @@ createNameToAliasMap <- function() {
   return(aliases)
 }
 
+#' @importFrom httr2 req_perform resp_body_json
 pickReferenceStrain <- function(genomes_to_choose_from) {
   url <- "https://rest.ensembl.org/info/species?"
 
@@ -151,6 +152,7 @@ listFilesInEnsemblFTP <- function(species, release, dir) {
   return(res)
 }
 
+#' @importFrom utils head tail
 .shrinkDatasetName <- function(input) {
   parts <- stringr::str_split_fixed(input, pattern = "_", n = Inf)[1, ]
   short <- paste(stringr::str_sub(head(parts, -1), 1, 1), collapse = "")
