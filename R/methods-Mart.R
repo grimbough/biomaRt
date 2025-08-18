@@ -163,6 +163,7 @@ setMethod("martHTTPConfig", signature("Mart"), function(obj) {
 #'     keytype='affy_hg_u133_plus_2')
 #'   }
 #'
+#' @importMethodsFrom AnnotationDbi keys keytypes columns select
 #' @name select-methods
 
 #' @rdname select-methods
