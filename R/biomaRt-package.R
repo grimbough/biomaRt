@@ -1,35 +1,30 @@
-
-
 #' Deprecated and defunct functions in package \sQuote{biomaRt}
-#' 
+#'
 #' These functions have been removed from biomaRt and replaced with
 #' alternatives.
-#' 
-#' 
+#'
+#'
 #' The following functions are defunct and no longer work; use the replacement
 #' indicated below: \itemize{
-#' 
+#'
 #' \itemfilterOptions: \code{\link{listFilterOptions}} \itemlistFilterValues:
 #' \code{\link{listFilterOptions}} \itemsearchFilterValues:
 #' \code{\link{searchFilterOptions}}
-#' 
+#'
 #' }
-#' 
+#'
 #' @aliases biomaRt-deprecated filterOptions listFilterValues
 #' searchFilterValues getBMlist
 NULL
 
 
-
-
-
 #' biomaRt result caching
-#' 
+#'
 #' biomaRt makes use of a results cache to speedup execution of queries that
 #' have been run before. These functions provide details on the status of this
 #' cache, and allow it to be deleted.
-#' 
-#' 
+#'
+#'
 #' @aliases biomartCacheInfo biomartCacheClear
 #' @return These functions do not return anything and are called for their side
 #' effects.  \code{biomartCacheInfo()} prints the location of the cache, along
@@ -40,14 +35,11 @@ NULL
 NULL
 
 
-
-
-
 #' Class Mart
-#' 
+#'
 #' Represents a Mart class, containing connections to different BioMarts
-#' 
-#' 
+#'
+#'
 #' @aliases Mart-class show,Mart-method
 #' @section Methods: \describe{\code{show} Print summary of the object}
 #' @author Steffen Durinck
@@ -55,11 +47,8 @@ NULL
 NULL
 
 
-
-
-
 #' Retrieve information from the BioMart databases
-#' 
+#'
 #' \code{select}, \code{columns} and \code{keys} are used together to extract
 #' data from a \code{Mart} object.  These functions work much the same as the
 #' classic biomaRt functions such as \code{getBM} etc. and are provide here to
@@ -68,22 +57,22 @@ NULL
 #' where you can use these methods include (but are not limited to):
 #' \code{ChipDb}, \code{OrgDb} \code{GODb}, \code{InparanoidDb} and
 #' \code{ReactomeDb}.
-#' 
+#'
 #' \code{columns} shows which kinds of data can be returned from the
 #' \code{Mart} object.
-#' 
+#'
 #' \code{keytypes} allows the user to discover which keytypes can be passed in
 #' to \code{select} or \code{keys} as the \code{keytype} argument.
-#' 
+#'
 #' \code{keys} returns keys from the \code{Mart} of the type specified by it's
 #' \code{keytype} argument.
-#' 
+#'
 #' \code{select} is meant to be used with these other methods and has arguments
 #' that take the kinds of values that these other methods return.
 #' \code{select} will retrieve the results as a data.frame based on parameters
 #' for selected \code{keys} and \code{columns} and \code{keytype} arguments.
-#' 
-#' 
+#'
+#'
 #' @aliases select-methods keys,Mart-method columns,Mart-method
 #' keytypes,Mart-method select,Mart-method keys columns keytypes select
 #' @param x the \code{Mart} object. The dataset of the \code{Mart} object must
@@ -109,7 +98,7 @@ NULL
 #' @author Marc Carlson
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()) {
 #'   ## 1st create a Mart object and specify the dataset
 #'   mart <- useEnsembl(dataset="hsapiens_gene_ensembl",
@@ -130,8 +119,5 @@ NULL
 #'   select(mart, keys=affy, columns=c('affy_hg_u133_plus_2','entrezgene_id'),
 #'     keytype='affy_hg_u133_plus_2')
 #'   }
-#' 
+#'
 NULL
-
-
-

@@ -71,13 +71,12 @@
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
 
-
 #' Lists the available archived versions of Ensembl
-#' 
+#'
 #' Returns a table containing the available archived versions of Ensembl, along
 #' with the dates they were created and the URL used to access them.
-#' 
-#' 
+#'
+#'
 #' @param https Deprecated argument.  Ensembl are enforcing https use from late
 #' 2021 and this argument will be removed at this time as it no longer serves a
 #' purpose.  Originally - "Logical value of length 1.  Determines whether https
@@ -85,9 +84,9 @@
 #' @author Mike Smith
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' listEnsemblArchives()
-#' 
+#'
 #' @export listEnsemblArchives
 listEnsemblArchives <- function(https) {
   if (!missing(https)) {
@@ -200,14 +199,12 @@ listEnsemblArchives <- function(https) {
 }
 
 
-
-
 #' lists the available BioMart databases hosted by Ensembl
-#' 
+#'
 #' This function returns a list of BioMart databases hosted by Ensembl.  To
 #' establish a connection use the \code{\link{useEnsembl}} function.
-#' 
-#' 
+#'
+#'
 #' @aliases listEnsembl listEnsemblGenomes
 #' @param mart mart object created with the useEnsembl function.  This is
 #' optional, as you usually use \code{\link{listMarts}} to see which marts
@@ -228,17 +225,17 @@ listEnsemblArchives <- function(https) {
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
 #' listEnsembl()
-#' 
+#'
 #' ## list the default Ensembl Genomes marts
 #' listEnsemblGenomes()
-#' 
+#'
 #' ## list only the marts available in the Ensmbl Plans 56 archive
 #' listEnsemblGenomes(host = "https://eg56-plants.ensembl.org/")
 #' }
-#' 
+#'
 listEnsembl <- function(
   mart = NULL,
   version = NULL,
@@ -346,9 +343,8 @@ listEnsembl <- function(
 }
 
 
-
 #' Connects to the selected BioMart database and dataset hosted by Ensembl
-#' 
+#'
 #' A first step in using the biomaRt package is to select a BioMart database
 #' and dataset to use.  The \code{useEnsembl} function enables one to connect
 #' to a specified BioMart database and dataset hosted by Ensembl without having
@@ -357,7 +353,7 @@ listEnsembl <- function(
 #' functions.  To know which datasets are available within a BioMart database,
 #' first select the BioMart database using \code{useEnsembl} and then use the
 #' \code{\link{listDatasets}} function on the selected Mart object.
-#' 
+#'
 #' The \code{mirror} argument can be considered as a "preferred choice" when
 #' connecting to Ensembl.  If the argument is provided then connectivity to
 #' that mirror will be tested.  If it responds positively then the requested
@@ -365,7 +361,7 @@ listEnsembl <- function(
 #' mirrors will be selected at random and tested until a working server is
 #' found.  Once identified that Ensembl server will be associated with the
 #' returned \code{Mart} object and will be used for all queries.
-#' 
+#'
 #' @aliases useEnsembl useEnsemblGenomes
 #' @param biomart BioMart database name you want to connect to. Possible
 #' database names can be retrieved with the function \code{\link{listEnsembl}}
@@ -388,24 +384,24 @@ listEnsembl <- function(
 #' @author Steffen Durinck & Mike Smith
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
-#' 
+#'
 #' mart <- useEnsembl("ensembl")
-#' 
+#'
 #' ## using the US West mirror
 #' us_mart <- useEnsembl(biomart = "ensembl", mirror = "useast")
-#' 
+#'
 #' ## using the arabidopsis thaliana genes dataset in Ensembl Plants
 #' plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
 #'                                  dataset = "athaliana_eg_gene")
-#'                                  
+#'
 #' ## using the cucumis melo genes dataset in the Ensembl Plants 56 archive
 #' plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
 #'                                  dataset = "cmelo_eg_gene",
 #'                                  host = "https://eg56-plants.ensembl.org/")
 #' }
-#' 
+#'
 useEnsembl <- function(
   biomart,
   dataset,

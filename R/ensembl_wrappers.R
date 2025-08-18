@@ -24,15 +24,14 @@ checkWrapperArgs <- function(id, type, mart) {
 }
 
 
-
 #' Retrieves gene annotation information given a vector of identifiers
-#' 
+#'
 #' This function retrieves gene annotations from Ensembl given a vector of
 #' identifiers.  Annotation includes chromsome name, band, start position, end
 #' position, gene description and gene symbol.  A wide variety of identifiers
 #' is available in Ensembl, these can be found with the listFilters function.
-#' 
-#' 
+#'
+#'
 #' @param id vector of gene identifiers one wants to annotate
 #' @param type type of identifier, possible values can be obtained by the
 #' listFilters function.  Examples are entrezgene_id, hgnc_symbol (for hugo
@@ -43,23 +42,23 @@ checkWrapperArgs <- function(id, type, mart) {
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
-#' 
-#' 
+#'
+#'
 #' if(interactive()){
-#' 
+#'
 #' mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-#' 
+#'
 #' #example using affy id
-#' 
+#'
 #' g = getGene( id = "1939_at", type = "affy_hg_u95av2", mart = mart)
 #' show(g)
-#' 
+#'
 #' #example using Entrez Gene id
-#' 
+#'
 #' g = getGene( id = "100", type = "entrezgene_id", mart = mart)
 #' show(g)
 #' }
-#' 
+#'
 getGene <- function(id, type, mart) {
   martCheck(mart, "ensembl")
   checkWrapperArgs(id, type, mart)
@@ -279,14 +278,13 @@ getGene <- function(id, type, mart) {
 }
 
 
-
 #' Retrieves sequences
-#' 
+#'
 #' This function retrieves sequences given the chomosome, start and end
 #' position or a list of identifiers. Using getSequence in web service mode
 #' (default) generates 5' to 3' sequences of the requested type on the correct
 #' strand.
-#' 
+#'
 #' The type of sequence returned can be specified by the seqType argument which
 #' takes the following values: \itemize{ \item'cdna': for nucleotide sequences
 #' \item'peptide': for protein sequences \item'3utr': for 3' UTR sequences
@@ -303,7 +301,7 @@ getGene <- function(id, type, mart) {
 #' value for the upstream or downstream attribute \item'gene_flank': gives the
 #' flanking region of the gene excluding the UTRs, this must be accompanied
 #' with a given value for the upstream or downstream attribute }
-#' 
+#'
 #' @param chromosome Chromosome name
 #' @param start start position of sequence on chromosome
 #' @param end end position of sequence on chromosome
@@ -328,25 +326,25 @@ getGene <- function(id, type, mart) {
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
 #' mart <- useEnsembl("ensembl", dataset="hsapiens_gene_ensembl")
-#' 
-#' seq = getSequence(id = "BRCA1", 
-#'                   type = "hgnc_symbol", 
-#'                   seqType = "peptide", 
+#'
+#' seq = getSequence(id = "BRCA1",
+#'                   type = "hgnc_symbol",
+#'                   seqType = "peptide",
 #'                   mart = mart)
 #' show(seq)
-#' 
-#' seq = getSequence(id="1939_at", 
-#'                   type="affy_hg_u95av2", 
+#'
+#' seq = getSequence(id="1939_at",
+#'                   type="affy_hg_u95av2",
 #'                   seqType="gene_flank",
-#'                   upstream = 20, 
+#'                   upstream = 20,
 #'                   mart = mart)
 #' show(seq)
-#' 
+#'
 #' }
-#' 
+#'
 getSequence <- function(
   chromosome,
   start,

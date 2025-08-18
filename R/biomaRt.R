@@ -69,14 +69,12 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 # BioMart databases are present                        #
 #######################################################
 
-
-
 #' lists the available BioMart databases
-#' 
+#'
 #' This function returns a list of BioMart databases to which biomaRt can
 #' connect.  By default the Ensembl BioMart databases are displayed. To
 #' establish a connection use the \link{useMart} function.
-#' 
+#'
 #' If you receive an error message saying 'Unexpected format to the list of
 #' available marts', this is often because there is a problem with the BioMart
 #' server you are trying to connect to, and something other than the list of
@@ -85,7 +83,7 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' starts with '\code{<MartRegistry>}' this is the correct listing and you
 #' should report the issue on the Bioconductor support site:
 #' https://support.bioconductor.org
-#' 
+#'
 #' @param mart mart object created with the \code{\link{useMart}} function.
 #' This is optional, as you usually use \code{\link{listMarts}} to see which
 #' marts there are to connect to.
@@ -109,11 +107,11 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
 #' listMarts()
 #' }
-#' 
+#'
 listMarts <- function(
   mart = NULL,
   host = "https://www.ensembl.org",
@@ -249,10 +247,8 @@ listMarts <- function(
 # #                           # #
 #################################
 
-
-
 #' Connects to the selected BioMart database and dataset
-#' 
+#'
 #' A first step in using the biomaRt package is to select a BioMart database
 #' and dataset to use.  The useMart function enables one to connect to a
 #' specified BioMart database and dataset within this database.  To know which
@@ -260,8 +256,8 @@ listMarts <- function(
 #' datasets are available within a BioMart database, first select the BioMart
 #' database using useMart and then use the listDatasets function on the
 #' selected BioMart, see listDatasets function.
-#' 
-#' 
+#'
+#'
 #' @param biomart BioMart database name you want to connect to. Possible
 #' database names can be retrieved with the functio listMarts
 #' @param dataset Dataset you want to use.  To see the different datasets
@@ -283,13 +279,13 @@ listMarts <- function(
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
-#' 
+#'
 #'     mart = useMart("ensembl")
 #'     mart=useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
 #' }
-#' 
+#'
 useMart <- function(
   biomart,
   dataset,
@@ -461,12 +457,11 @@ useMart <- function(
 }
 
 
-
 #' List or search the datasets available in the selected BioMart database
-#' 
+#'
 #' Lists or search the datasets available in the selected BioMart database
-#' 
-#' 
+#'
+#'
 #' @aliases listDatasets searchDatasets
 #' @param mart object of class Mart created with the useMart function
 #' @param verbose Give detailed output of what the method is doing, for
@@ -478,26 +473,26 @@ useMart <- function(
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #' @examples
-#' 
-#' 
+#'
+#'
 #' if(interactive()){
-#' 
+#'
 #'     ## list the available Ensembl marts and use Ensembl Genes
 #'     listEnsembl()
 #'     ensembl <- useEnsembl(biomart = "ensembl")
-#' 
+#'
 #'     ## list the available datasets in this Mart
 #'     listDatasets(mart = ensembl)
-#' 
+#'
 #'     ## the list of Ensembl datasets grows ever larger (101 as of Ensembl 93)
 #'     ## we can search for a term of interest to reduce the length e.g. 'sapiens'
 #'     searchDatasets(mart = ensembl, pattern = "sapiens")
-#'     
+#'
 #'     ## search for any dataset containing the word Rat or rat
 #'     searchDatasets(mart = ensembl, pattern = "(R|r)at")
 #' }
-#' 
-#' 
+#'
+#'
 listDatasets <- function(mart, verbose = FALSE) {
   .listDatasets(mart = mart, verbose = verbose, sort = TRUE)
 }
@@ -716,12 +711,11 @@ checkDataset <- function(dataset, mart) {
 
 ## Select a BioMart dataset
 
-
 #' Select a dataset to use and updates Mart object
-#' 
+#'
 #' This function selects a dataset and updates the Mart object
-#' 
-#' 
+#'
+#'
 #' @param dataset Dataset you want to use.  List of possible datasets can be
 #' retrieved using the function listDatasets
 #' @param mart Mart object created with the useMart function
@@ -730,12 +724,12 @@ checkDataset <- function(dataset, mart) {
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
 #' mart=useMart("ensembl")
 #' mart=useDataset("hsapiens_gene_ensembl", mart = mart)
 #' }
-#' 
+#'
 useDataset <- function(dataset, mart, verbose = FALSE) {
   if (missing(mart) || !inherits(mart, "Mart")) {
     stop(
@@ -769,16 +763,15 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
 
 ## listAttributes
 
-
 #' lists the attributes available in the selected dataset
-#' 
+#'
 #' Attributes are the outputs of a biomaRt query, they are the information we
 #' want to retrieve.  For example if we want to retrieve all EntrezGene
 #' identifiers of genes located on chromosome X, \code{entrezgene_id} will be
 #' the attribute we use in the query.  The \code{listAttributes} function lists
 #' the available attributes in the selected dataset.
-#' 
-#' 
+#'
+#'
 #' @aliases listAttributes searchAttributes
 #' @param mart object of class Mart created using the useMart function
 #' @param page Show only the attributes that belong to the specified attribute
@@ -791,26 +784,26 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #' @examples
-#' 
-#' 
+#'
+#'
 #' if(interactive()){
-#' 
+#'
 #'     ## list the available Ensembl marts and use Ensembl Genes
 #'     listEnsembl()
 #'     ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
-#' 
+#'
 #'     ## list the available datasets in this Mart
 #'     listAttributes(mart = ensembl)
-#' 
+#'
 #'     ## the list of attributes is very long and gets truncated by R
 #'     ## we can search for a term of interest to filter this e.g. 'start'
 #'     searchAttributes(mart = ensembl, pattern = "start")
-#'     
+#'
 #'     ## filter the attributes to give only entries containing 'entrez' or 'hgnc'
-#'     searchAttributes(mart = ensembl, 'entrez|hgnc') 
+#'     searchAttributes(mart = ensembl, 'entrez|hgnc')
 #' }
-#' 
-#' 
+#'
+#'
 listAttributes <- function(
   mart,
   page,
@@ -836,26 +829,25 @@ listAttributes <- function(
 
 ## attributePages
 
-
 #' Gives a summary of the attribute pages
-#' 
+#'
 #' Attributes in BioMart databases are grouped together in attribute pages.
 #' The attributePages function gives a summary of the attribute categories and
 #' groups present in the BioMart.  These page names can be used to display only
 #' a subset of the available attributes in the listAttributes function.
-#' 
-#' 
+#'
+#'
 #' @param mart object of class Mart, created with the useMart function.
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
-#' 
-#' 
+#'
+#'
 #' if(interactive()){
 #' mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
 #' attributePages(mart)
 #' }
-#' 
+#'
 attributePages <- function(mart) {
   martCheck(mart)
   pages <- unique(martAttributes(mart)[, "page"])
@@ -864,14 +856,13 @@ attributePages <- function(mart) {
 
 ## listFilters
 
-
 #' List or search the filters available in the selected dataset
-#' 
+#'
 #' Filters are what we use as inputs for a biomaRt query.  For example, if we
 #' want to retrieve all EntrezGene identifiers on chromosome X,
 #' \code{chromosome} will be the filter, with corresponding value X.
-#' 
-#' 
+#'
+#'
 #' @aliases listFilters searchFilters
 #' @param mart object of class \code{Mart} created using the
 #' \code{\link{useMart}} function
@@ -885,26 +876,26 @@ attributePages <- function(mart) {
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #' @examples
-#' 
-#' 
+#'
+#'
 #' if(interactive()){
-#' 
+#'
 #'     ## list the available Ensembl marts and use Ensembl Genes
 #'     listEnsembl()
 #'     ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
-#' 
+#'
 #'     ## list the available datasets in this Mart
 #'     listFilters(mart = ensembl)
-#' 
+#'
 #'     ## the list of filters is long and not easy to read
 #'     ## we can search for a term of interest to reduce this e.g. 'gene'
 #'     searchFilters(mart = ensembl, pattern = "gene")
-#'     
+#'
 #'     ## search the available filters to find entries containing 'entrez' or 'hgnc'
-#'     searchFilters(mart = ensembl, 'entrez|hgnc') 
+#'     searchFilters(mart = ensembl, 'entrez|hgnc')
 #' }
-#' 
-#' 
+#'
+#'
 listFilters <- function(mart, what = c("name", "description")) {
   martCheck(mart)
   filters <- martFilters(mart)
@@ -933,25 +924,24 @@ filterOptions <- function(filter, mart) {
 
 ## filterType
 
-
 #' Displays the filter type
-#' 
+#'
 #' Displays the type of the filer given a filter name.
-#' 
-#' 
+#'
+#'
 #' @param filter A valid filter name. Valid filters are given by the
 #' listFilters function
 #' @param mart object of class Mart, created using the useMart function
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
-#' 
-#' 
+#'
+#'
 #' if(interactive()){
 #' mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
 #' filterType("chromosome_name", mart)
 #' }
-#' 
+#'
 filterType <- function(filter, mart) {
   if (missing(filter)) {
     stop(
@@ -975,15 +965,13 @@ filterType <- function(filter, mart) {
 # getBM: generic BioMart query function   #
 ##########################################
 
-
-
 #' Retrieves information from the BioMart database
-#' 
+#'
 #' This function is the main biomaRt query function.  Given a set of filters
 #' and corresponding values, it retrieves the user specified attributes from
 #' the BioMart database one is connected to.
-#' 
-#' 
+#'
+#'
 #' @param attributes Attributes you want to retrieve.  A possible list of
 #' attributes can be retrieved using the function listAttributes.
 #' @param filters Filters (one or more) that should be used in the query.  A
@@ -1021,17 +1009,17 @@ filterType <- function(filter, mart) {
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
-#'   mart <- useEnsembl(biomart = "ensembl", 
+#'   mart <- useEnsembl(biomart = "ensembl",
 #'                      dataset = "hsapiens_gene_ensembl")
-#'                      
+#'
 #'   getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
 #'         filters    = "affy_hg_u95av2",
-#'         values     = c("1939_at","1503_at","1454_at"), 
+#'         values     = c("1939_at","1503_at","1454_at"),
 #'         mart       = mart)
 #'   }
-#' 
+#'
 getBM <- function(
   attributes,
   filters = "",
@@ -1226,15 +1214,13 @@ getBM <- function(
 # getLDS: Multiple dataset linking #
 ###################################
 
-
-
 #' Retrieves information from two linked datasets
-#' 
+#'
 #' This function is the main biomaRt query function that links 2 datasets and
 #' retrieves information from these linked BioMart datasets.  In Ensembl this
 #' translates to homology mapping.
-#' 
-#' 
+#'
+#'
 #' @param attributes Attributes you want to retrieve of primary dataset.  A
 #' possible list of attributes can be retrieved using the function
 #' listAttributes.
@@ -1259,15 +1245,15 @@ getBM <- function(
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
 #' human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-#' mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl") 
-#' getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"), 
-#'     filters = "hgnc_symbol", values = "TP53", mart = human, 
+#' mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+#' getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
+#'     filters = "hgnc_symbol", values = "TP53", mart = human,
 #'     attributesL = c("chromosome_name","start_position"), martL = mouse)
 #' }
-#' 
+#'
 getLDS <- function(
   attributes,
   filters = "",
@@ -1444,29 +1430,27 @@ getLDS <- function(
 # export FASTA      #
 ####################
 
-
-
 #' Exports getSequence results to FASTA format
-#' 
+#'
 #' Exports getSequence results to FASTA format
-#' 
-#' 
+#'
+#'
 #' @param sequences A data.frame that was the output of the getSequence
 #' function
 #' @param file File to which you want to write the data
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
-#' 
-#' 
+#'
+#'
 #' if(interactive()){
 #'     mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-#'     
+#'
 #'     #seq<-getSequence(chromosome=c(2,2),start=c(100000,30000),end=c(100300,30500),mart=mart)
 #'     #exportFASTA(seq,file="test.fasta")
-#'     
+#'
 #' }
-#' 
+#'
 exportFASTA <- function(sequences, file) {
   if (missing(sequences) || !is.data.frame(sequences)) {
     stop(
@@ -1512,26 +1496,24 @@ exportFASTA <- function(sequences, file) {
 # Nature Protocol
 ###################
 
-
-
 #' Display the analysis code from the 2009 Nature protocols paper
-#' 
+#'
 #' This function opens an editor displaying the analysis code of the Nature
 #' Protocols 2009 paper
-#' 
+#'
 #' The \code{\link{edit}} function uses \code{getOption("editor")} to select
 #' the editor. Use, for instance, \code{options(editor="emacs")} to set another
 #' editor.
-#' 
+#'
 #' @author Steffen Durinck, Wolfgang Huber
 #' @seealso \code{\link{edit}}
 #' @keywords methods
 #' @examples
-#' 
+#'
 #' if(interactive()){
 #' NP2009code()
 #' }
-#' 
+#'
 NP2009code <- function() {
   edit(file = system.file("scripts", "Integration-NP.R", package = "biomaRt"))
 }
