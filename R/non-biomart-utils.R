@@ -159,13 +159,12 @@ listFilesInEnsemblFTP <- function(species, release, dir) {
 }
 
 
-
 #' List homologous genes between two species.
-#' 
+#'
 #' This function simplifies the querying of the Ensembl BioMart if you're
 #' trying to return the homologs for one or more gene IDs between two species.
-#' 
-#' 
+#'
+#'
 #' @param ensembl_gene_ids Character vector.  This contains the Ensembl Gene
 #' IDs that you want to find the homologs for.
 #' @param species_from,species_to Character vectors of length 1.  These
