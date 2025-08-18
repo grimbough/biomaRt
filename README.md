@@ -1,19 +1,19 @@
 # biomaRt
 
-The package provides an R interface to datasets that provide access via the 
-BioMart software suite. 
+The package provides an R interface to datasets that provide access via the
+BioMart software suite.
 
 ## Current Status
 
-| Travis        | BioC           | Test Coverage |
+| GitHub Actions        | BioC           | Test Coverage |
 | ------------- |-------------| -----|
-| [![Build Status](https://travis-ci.org/grimbough/biomaRt.svg?branch=master)](https://travis-ci.org/grimbough/biomaRt) | [![BioC Status](https://bioconductor.org/shields/build/devel/bioc/biomaRt.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/biomaRt/) | [![Codecov](http://img.shields.io/codecov/c/github/grimbough/biomaRt.svg)](https://codecov.io/gh/grimbough/biomaRt) |
+| [![R-CMD-check](https://github.com/Huber-group-EMBL/biomaRt/actions/workflows/main.yml/badge.svg)](https://github.com/Huber-group-EMBL/biomaRt/actions/workflows/main.yml) | [![BioC Status](https://bioconductor.org/shields/build/devel/bioc/biomaRt.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/biomaRt/) | [![Codecov](http://img.shields.io/codecov/c/github/grimbough/biomaRt.svg)](https://codecov.io/gh/grimbough/biomaRt) |
 
 ## Contact
 
 For bug reports, please register an [issue](https://github.com/grimbough/biomaRt/issues) here on Github. For usage queries please post a question on the [Bioconductor Support Forum](https://support.bioconductor.org/p/new/post/?tag_val=biomaRt).
 
-## Funding 
+## Funding
 
 Funding for continued development and maintenance of this package is provided by the German Network for Bioinformatics Infrastructure
 
