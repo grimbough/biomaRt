@@ -274,10 +274,10 @@ listEnsembl <- function(
   return(marts)
 }
 
-#' creates an Ensembl URL based on the arguments provided to useEnsembl.
-#' If there are conflicting options, order of precedence is:
-#' GRCh, version, mirror
-#' Default return value is https://www.ensembl.org
+## creates an Ensembl URL based on the arguments provided to useEnsembl.
+## If there are conflicting options, order of precedence is:
+## GRCh, version, mirror
+## Default return value is https://www.ensembl.org
 .constructEnsemblURL <- function(mirror = NULL, version = NULL, GRCh = NULL) {
   host <- NULL
 
@@ -604,11 +604,11 @@ useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
 }
 
 
-#' This function submits a small test query to identify a working Ensembl mirror.
-#' If no mirror argument is provided it will use "www" as its first choice.
-#' If the selected mirror returns a success (http 200) response it will be used
-#' Otherwise another mirror is selected at random and used instead.
-#' If all mirrors fail it will return an error
+## This function submits a small test query to identify a working Ensembl mirror.
+## If no mirror argument is provided it will use "www" as its first choice.
+## If the selected mirror returns a success (http 200) response it will be used
+## Otherwise another mirror is selected at random and used instead.
+## If all mirrors fail it will return an error
 .chooseEnsemblMirror <- function(mirror, http_config) {
   mirrors <- c("www", "asia", "useast")
 

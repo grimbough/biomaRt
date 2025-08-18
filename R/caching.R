@@ -50,6 +50,7 @@
 #' @param bfc Object of class BiocFileCache, created by a call to
 #' BiocFileCache::BiocFileCache()
 #' @param hash unique hash representing a query.
+#' @noRd
 .addToCache <- function(bfc, result, hash, update = FALSE) {
   if (!dir.exists(.biomartCacheLocation())) {
     dir.create(.biomartCacheLocation())
@@ -86,6 +87,7 @@
 #' @param bfc Object of class BiocFileCache, created by a call to
 #' BiocFileCache::BiocFileCache()
 #' @param hash unique hash representing a query.
+#' @noRd
 .readFromCache <- function(bfc, hash) {
   cache_hits <- bfcquery(bfc, hash, field = "rname")
   if (nrow(cache_hits) > 1) {
@@ -107,6 +109,7 @@
 #' This function returns TRUE if a record with the requested hash already
 #' exists in the file cache, otherwise returns FALSE.
 #' @keywords Internal
+#' @noRd
 .checkInCache <- function(bfc, hash, verbose = FALSE) {
   res <- bfcquery(bfc, query = hash, field = "rname")
   as.logical(nrow(res))
@@ -122,6 +125,7 @@
 #' deleted.
 #' @importFrom BiocFileCache bfcremove
 #' @keywords Internal
+#' @noRd
 .checkValidCache <- function(bfc, hash) {
   res <- bfcquery(bfc, query = hash, field = "rname")
   if (nrow(res) == 0) {
@@ -202,6 +206,7 @@ biomartCacheInfo <- function() {
 #' @param numDays The number of days an entry should be considered valid. Entries
 #' older than this will be deleted.
 #' @keywords Internal
+#' @noRd
 .useCache <- function(bfc, cacheEntry, numDays = 7L) {
   use_cached_version <- FALSE
   if (.checkInCache(bfc, hash = cacheEntry)) {
