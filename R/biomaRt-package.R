@@ -16,18 +16,6 @@
 #' @name biomaRt-deprecated
 NULL
 
-#' Class Mart
-#'
-#' Represents a Mart class, containing connections to different BioMarts
-#'
-#'
-#' @aliases Mart-class show,Mart-method
-#' @section Methods: \describe{\code{show} Print summary of the object}
-#' @author Steffen Durinck
-#' @keywords methods
-NULL
-
-
 #' Retrieve information from the BioMart databases
 #'
 #' \code{select}, \code{columns} and \code{keys} are used together to extract

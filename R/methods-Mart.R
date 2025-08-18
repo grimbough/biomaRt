@@ -1,3 +1,12 @@
+#' Class Mart
+#'
+#' Represents a Mart class, containing connections to different BioMarts
+#'
+#' @aliases Mart-class show,Mart-method
+#' @section Methods: \describe{\code{show} Print summary of the object}
+#' @author Steffen Durinck
+#' @keywords methods
+#' @rdname Mart-class
 setMethod("show", signature(object = "Mart"), function(object) {
   dbase <- ifelse(
     nzchar(object@biomart),
@@ -28,9 +37,9 @@ setGeneric("martAttributes", function(obj, ...) {
   standardGeneric("martAttributes")
 })
 setMethod("martAttributes", signature("Mart"), function(obj) obj@attributes)
-setGeneric("martAttributes<-",
-  function(obj, value) standardGeneric("martAttributes<-")
-)
+setGeneric("martAttributes<-", function(obj, value) {
+  standardGeneric("martAttributes<-")
+})
 setReplaceMethod("martAttributes", "Mart", function(obj, value) {
   obj@attributes <- value
   obj
@@ -39,9 +48,9 @@ setReplaceMethod("martAttributes", "Mart", function(obj, value) {
 
 setGeneric("martFilters", function(obj, ...) standardGeneric("martFilters"))
 setMethod("martFilters", signature("Mart"), function(obj) obj@filters)
-setGeneric("martFilters<-",
-  function(obj, value) standardGeneric("martFilters<-")
-)
+setGeneric("martFilters<-", function(obj, value) {
+  standardGeneric("martFilters<-")
+})
 setReplaceMethod("martFilters", "Mart", function(obj, value) {
   obj@filters <- value
   obj
@@ -50,9 +59,9 @@ setReplaceMethod("martFilters", "Mart", function(obj, value) {
 
 setGeneric("martDataset", function(obj, ...) standardGeneric("martDataset"))
 setMethod("martDataset", signature("Mart"), function(obj) obj@dataset)
-setGeneric("martDataset<-",
-  function(obj, value) standardGeneric("martDataset<-")
-)
+setGeneric("martDataset<-", function(obj, value) {
+  standardGeneric("martDataset<-")
+})
 setReplaceMethod("martDataset", "Mart", function(obj, value) {
   obj@dataset <- value
   obj
