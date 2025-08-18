@@ -41,7 +41,6 @@ if(interactive()){
     searchDatasets(mart = ensembl, pattern = "(R|r)at")
 }
 
-
 }
 \author{
 Steffen Durinck, Mike Smith

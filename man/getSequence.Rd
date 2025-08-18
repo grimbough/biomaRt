@@ -94,7 +94,6 @@ seq = getSequence(id="1939_at",
 show(seq)
 
 }
-
 }
 \author{
 Steffen Durinck, Mike Smith
