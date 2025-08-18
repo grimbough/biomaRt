@@ -17,6 +17,7 @@ INTERNAL CHANGES
   o Static analysis via the lintr package is now performed on each push and PR.
   It should mostly be invisible to users but might result in slightly increased
   performance in some cases.
+  o This package now uses roxygen2 to generate documentation and `NAMESPACE`.
 
 CHANGES IN VERSION 2.64.0
 -------------------------
