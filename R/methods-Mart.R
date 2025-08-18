@@ -15,7 +15,7 @@ setMethod("show", signature(object = "Mart"), function(object) {
   cat(res)
 })
 
-setGeneric("martBM", def = function(obj, ...) standardGeneric("martBM"))
+setGeneric("martBM", function(obj, ...) standardGeneric("martBM"))
 setMethod("martBM", signature("Mart"), function(obj) obj@biomart)
 setGeneric("martBM<-", function(obj, value) standardGeneric("martBM<-"))
 setReplaceMethod("martBM", "Mart", function(obj, value) {
@@ -24,45 +24,41 @@ setReplaceMethod("martBM", "Mart", function(obj, value) {
 })
 
 
-setGeneric("martAttributes", def = function(obj, ...) {
+setGeneric("martAttributes", function(obj, ...) {
   standardGeneric("martAttributes")
 })
 setMethod("martAttributes", signature("Mart"), function(obj) obj@attributes)
-setGeneric("martAttributes<-", function(obj, value) {
-  standardGeneric("martAttributes<-")
-})
+setGeneric("martAttributes<-",
+  function(obj, value) standardGeneric("martAttributes<-")
+)
 setReplaceMethod("martAttributes", "Mart", function(obj, value) {
   obj@attributes <- value
   obj
 })
 
 
-setGeneric("martFilters", def = function(obj, ...) {
-  standardGeneric("martFilters")
-})
+setGeneric("martFilters", function(obj, ...) standardGeneric("martFilters"))
 setMethod("martFilters", signature("Mart"), function(obj) obj@filters)
-setGeneric("martFilters<-", function(obj, value) {
-  standardGeneric("martFilters<-")
-})
+setGeneric("martFilters<-",
+  function(obj, value) standardGeneric("martFilters<-")
+)
 setReplaceMethod("martFilters", "Mart", function(obj, value) {
   obj@filters <- value
   obj
 })
 
 
-setGeneric("martDataset", def = function(obj, ...) {
-  standardGeneric("martDataset")
-})
+setGeneric("martDataset", function(obj, ...) standardGeneric("martDataset"))
 setMethod("martDataset", signature("Mart"), function(obj) obj@dataset)
-setGeneric("martDataset<-", function(obj, value) {
-  standardGeneric("martDataset<-")
-})
+setGeneric("martDataset<-",
+  function(obj, value) standardGeneric("martDataset<-")
+)
 setReplaceMethod("martDataset", "Mart", function(obj, value) {
   obj@dataset <- value
   obj
 })
 
-setGeneric("martHost", def = function(obj, ...) standardGeneric("martHost"))
+setGeneric("martHost", function(obj, ...) standardGeneric("martHost"))
 setMethod("martHost", signature("Mart"), function(obj) obj@host)
 setGeneric("martHost<-", function(obj, value) standardGeneric("martHost<-"))
 setReplaceMethod("martHost", "Mart", function(obj, value) {
@@ -70,14 +66,10 @@ setReplaceMethod("martHost", "Mart", function(obj, value) {
   obj
 })
 
-setGeneric("martVSchema", def = function(obj, ...) {
-  standardGeneric("martVSchema")
-})
+setGeneric("martVSchema", function(obj, ...) standardGeneric("martVSchema"))
 setMethod("martVSchema", signature("Mart"), function(obj) obj@vschema)
 
-setGeneric("martHTTPConfig", def = function(obj) {
-  standardGeneric("martHTTPConfig")
-})
+setGeneric("martHTTPConfig", function(obj) standardGeneric("martHTTPConfig"))
 setMethod("martHTTPConfig", signature("Mart"), function(obj) {
   config <- do.call(c, obj@http_config)
   if (is.null(config)) {
