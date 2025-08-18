@@ -1,6 +1,6 @@
 Package: biomaRt
 Title: Interface to BioMart databases (i.e. Ensembl)
-Version: 2.65.0
+Version: 2.65.1
 Authors@R: c(
     person("Steffen", "Durinck", , "biomartdev@gmail.com", role = "aut"),
     person("Wolfgang", "Huber", role = "aut"),
@@ -25,9 +25,9 @@ Description: In recent years a wealth of biological data has become
 License: Artistic-2.0
 URL: https://github.com/Huber-group-EMBL/biomaRt
 BugReports: https://github.com/Huber-group-EMBL/biomaRt/issues
-Depends: 
+Depends:
     methods
-Imports: 
+Imports:
     AnnotationDbi,
     BiocFileCache,
     curl,
@@ -38,21 +38,21 @@ Imports:
     stringr,
     utils,
     xml2
-Suggests: 
+Suggests:
     BiocStyle,
     httptest2,
     knitr,
     mockery,
     rmarkdown,
     testthat
-VignetteBuilder: 
+VignetteBuilder:
     knitr
 biocViews: Annotation
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: no
 RoxygenNote: 7.3.0
-Collate: 
+Collate:
     'biomaRtClasses.R'
     'methods-Mart.R'
     'biomaRt.R'

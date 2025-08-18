@@ -1,9 +1,19 @@
+
+CHANGES IN VERSION 2.66.0
+-------------------------
+
+INTERNAL CHANGES
+
+  o Coding style throughout the package has been harmonized using the air tool.
+  Contributors using RStudio, Positron or VS Code should have their code styled
+  automatically on save.
+
 CHANGES IN VERSION 2.64.0
 -------------------------
 
 BUG FIXES
 
-  o Version 1.10 of {httr2} changed how URLs are parsed, and this broke 
+  o Version 1.10 of {httr2} changed how URLs are parsed, and this broke
   some biomaRt functionality.  This has been patched.
   (Backported to biomaRt 2.62.1)
 
@@ -13,31 +23,31 @@ CHANGES IN VERSION 2.62.0
 USER VISIBLE CHANGES
 
   o Several deprecated functions are now defunct.
-  
+
 BUG FIXES
 
   o Results returned from BioMart queries will be read using Latin-1 encounding
   if the default fails. Reported in https://support.bioconductor.org/p/9158844/
   (Backported to 2.60.1)
   o Fixed issue when only one dataset was listed in a Mart instance, causing
-  data.frame dimensions to be dropped.  This broke connectivity to 
+  data.frame dimensions to be dropped.  This broke connectivity to
   https://parasite.wormbase.org. (Backported to 2.60.1)
-  
+
 CHANGES IN VERSION 2.60.0
 -------------------------
 
 USER VISIBLE CHANGES
 
-  o listEnsemblGenomes() and useEnsemblGenomes() now have a host argument, 
-  allowing you to select an Ensembl Genomes archive site. (Thanks to Hervé Pagès 
+  o listEnsemblGenomes() and useEnsemblGenomes() now have a host argument,
+  allowing you to select an Ensembl Genomes archive site. (Thanks to Hervé Pagès
   @hpages for the suggestion: https://github.com/grimbough/biomaRt/issues/93)
   o The 'curl' argument to getBM() has been deprecated as it is no longer
   applicable and doesn't do anything.
-  
+
 INTERNAL CHANGES
 
   o Removed dependency on XML package and switched all functionality to xml2
-  o Swiched from httr to httr2 package for submitting queries to BioMart 
+  o Swiched from httr to httr2 package for submitting queries to BioMart
   servers.
 
 CHANGES IN VERSION 2.58.0
@@ -45,10 +55,10 @@ CHANGES IN VERSION 2.58.0
 
 USER VISIBLE CHANGES
 
-  o getSequence() will now provide a more informative error message if 
+  o getSequence() will now provide a more informative error message if
   requesting a flanking sequence and not provided with an upstream or downstream
   range.
-  o Remove references to the uswest mirror, which has now been retired 
+  o Remove references to the uswest mirror, which has now been retired
   (https://www.ensembl.info/2023/01/13/retirement-of-ensembl-us-west-aws-mirror/)
 
 CHANGES IN VERSION 2.56.0
@@ -57,7 +67,7 @@ CHANGES IN VERSION 2.56.0
 BUG FIXES
 
     o Fix problem when multiple cache entries with the same ID could
-    be created.  (Thanks to Hervé Pagès & Henrik Bengtsson for independent 
+    be created.  (Thanks to Hervé Pagès & Henrik Bengtsson for independent
     reports of this issue.)
     o bmRequest() will now respect the setting in options("timeout")
 
@@ -76,7 +86,7 @@ CHANGES IN VERSION 2.50.0
 
 MINOR CHANGES
 
-    o useMart() and listMarts() will warn users if using http to access 
+    o useMart() and listMarts() will warn users if using http to access
     Ensembl.  https will be enforced by Ensembl from late 2021.
 
 BUG FIXES
@@ -105,7 +115,7 @@ BUG FIXES
     sequences being returned from a query.
     o getBM() would fail if it found a cache entry, but the file was corrupted.
     Invalid entries are now detected and deleted if encountered.
-    
+
 CHANGES IN VERSION 2.46.0
 -------------------------
 
@@ -113,7 +123,7 @@ BUG FIXES
 
     o getLDS() now detects if trying to use datasets from different Marts
     and reports this to the user.
-    
+
 
 CHANGES IN VERSION 2.42.0
 -------------------------
@@ -121,16 +131,16 @@ CHANGES IN VERSION 2.42.0
 NEW FEATURES
 
     o The results of queries will now be cached, and if repeated queries
-    are detected the results are loaded from disk.  
-    
+    are detected the results are loaded from disk.
+
 MINOR CHANGES
 
-    o Ensembl users will be redirected to their closest mirror unless the 
+    o Ensembl users will be redirected to their closest mirror unless the
     host argument is explicitly provided.  In this case the defined value
     will be enforced.
     o Unused argument 'ssl.verifypeer' removed from listMarts() and useMarts().
     o RCurl removed from package dependecies.
-    
+
 BUG FIXES
 
     o Improvements made to selecting the correct port when using http
@@ -143,18 +153,18 @@ CHANGES IN VERSION 2.36.0
 
 BUG FIXES
 
-    o Patched problem returning the list of available datasets, if the 
+    o Patched problem returning the list of available datasets, if the
     description of one or more datasets included an apostrophe (introduced
     with new primate species in Ensembl).
     o Caught scenario where ensemblRedirect=FALSE was still being ignored.
-    o Changed query submission when redirection is detected to cope with 
+    o Changed query submission when redirection is detected to cope with
     apparently new behaviour of the Ensembl mirrors.
-    
+
 MINOR CHANGES
 
     o Increase query timeout limit to 5 minutes.
-    
-    
+
+
 CHANGES IN VERSION 2.34.0
 -------------------------
 
@@ -168,9 +178,9 @@ BUG FIXES
 
     o The Ensembl BioMart server doesn't always respond well if queries with
     more than 500 filter values are submitted.  If a query that exceed this is
-    detect biomaRt will now submit the query in batches and concatonate the 
+    detect biomaRt will now submit the query in batches and concatonate the
     result when completed.
-    
+
 MINOR CHANGES
 
     o You can now provide a host with 'http://' at the start, or a trailing
