@@ -54,6 +54,7 @@ LazyLoad: yes
 NeedsCompilation: no
 RoxygenNote: 7.3.2
 Collate:
+    'biomaRt-package.R'
     'biomaRtClasses.R'
     'methods-Mart.R'
     'biomaRt.R'
