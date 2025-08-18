@@ -87,7 +87,7 @@
 #'
 #' listEnsemblArchives()
 #'
-#' @export listEnsemblArchives
+#' @export
 listEnsemblArchives <- function(https) {
   if (!missing(https)) {
     warning(
@@ -236,6 +236,7 @@ listEnsemblArchives <- function(https) {
 #' listEnsemblGenomes(host = "https://eg56-plants.ensembl.org/")
 #' }
 #'
+#' @export
 listEnsembl <- function(
   mart = NULL,
   version = NULL,
@@ -402,6 +403,7 @@ listEnsembl <- function(
 #'                                  host = "https://eg56-plants.ensembl.org/")
 #' }
 #'
+#' @export
 useEnsembl <- function(
   biomart,
   dataset,
@@ -531,7 +533,7 @@ useEnsembl <- function(
 
 
 ##############################################
-
+#' @export
 listEnsemblGenomes <- function(includeHosts = FALSE, host = NULL) {
   ## use the default websites unless an alternative is provided
   if (is.null(host)) {
@@ -566,6 +568,7 @@ listEnsemblGenomes <- function(includeHosts = FALSE, host = NULL) {
   return(marts)
 }
 
+#' @export
 useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
   if (missing(biomart)) {
     stop(

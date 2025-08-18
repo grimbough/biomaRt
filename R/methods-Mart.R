@@ -7,6 +7,7 @@
 #' @author Steffen Durinck
 #' @keywords methods
 #' @rdname Mart-class
+#' @export
 setMethod("show", signature(object = "Mart"), function(object) {
   dbase <- ifelse(
     nzchar(object@biomart),
@@ -167,6 +168,7 @@ setMethod("martHTTPConfig", signature("Mart"), function(obj) {
 #' @name select-methods
 
 #' @rdname select-methods
+#' @export
 setMethod("keys", "Mart", function(x, keytype, ...) {
   # nolint next: undesirable_operator_linter.
   AnnotationDbi:::smartKeys(x = x, keytype = keytype, ..., FUN = .keys)
@@ -176,14 +178,17 @@ setMethod("keys", "Mart", function(x, keytype, ...) {
 }
 
 #' @rdname select-methods
+#' @export
 setMethod("keytypes", "Mart", function(x) listFilters(mart = x, what = "name"))
 #' @rdname select-methods
+#' @export
 setMethod("columns", "Mart", function(x) {
   listAttributes(mart = x, what = "name")
 })
 
 ## Arg checking is similar (but more limited) to what is done for getBM
 #' @rdname select-methods
+#' @export
 setMethod("select", "Mart", function(x, keys, columns, keytype, ...) {
   if (missing(columns)) {
     stop("Argument 'columns' must be specified.")

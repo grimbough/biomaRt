@@ -360,7 +360,7 @@
   }
 }
 
-
+#' @export
 searchDatasets <- function(mart, pattern) {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
@@ -379,7 +379,7 @@ searchDatasets <- function(mart, pattern) {
   }
 }
 
-
+#' @export
 searchAttributes <- function(mart, pattern) {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
@@ -398,6 +398,7 @@ searchAttributes <- function(mart, pattern) {
   }
 }
 
+#' @export
 searchFilters <- function(mart, pattern) {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
@@ -419,6 +420,7 @@ searchFilters <- function(mart, pattern) {
 
 ## Some filters have a predefined list of options that can be selected.
 ## This function lets us search those values, given a specified filter.
+#' @export
 searchFilterOptions <- function(mart, filter, pattern) {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
@@ -449,6 +451,8 @@ searchFilterOptions <- function(mart, filter, pattern) {
 }
 
 #' @rdname biomaRt-deprecated
+#'
+#' @export
 searchFilterValues <- function(mart, filter, pattern) {
   .Defunct(
     new = "listFilterOptions",
@@ -497,12 +501,14 @@ searchFilterValues <- function(mart, filter, pattern) {
 #'                        pattern = "crohn")
 #' }
 #'
-#'
+#' @export
 listFilterOptions <- function(mart, filter) {
   searchFilterOptions(mart = mart, filter = filter)
 }
 
 #' @rdname biomaRt-deprecated
+#'
+#' @export
 listFilterValues <- function(mart, filter) {
   .Defunct(
     new = "listFilterOptions",
