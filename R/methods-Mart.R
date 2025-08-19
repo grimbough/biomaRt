@@ -1,12 +1,12 @@
 setMethod("show", signature(object = "Mart"), function(object) {
   dbase <- ifelse(
-    nchar(object@biomart) != 0,
+    nzchar(object@biomart),
     yes = paste("  Using the", object@biomart, "BioMart database"),
     no = "  No database selected."
   )
 
   dset <- ifelse(
-    nchar(object@dataset) != 0,
+    nzchar(object@dataset),
     yes = paste("  Using the", object@dataset, "dataset"),
     no = "  No dataset selected."
   )
