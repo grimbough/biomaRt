@@ -22,7 +22,8 @@
     if (
       grepl(
         test[1], ## This address problems with Ubuntu 20.04 et al and the Ensembl https certificates
-        pattern = "sslv3 alert handshake failure"
+        pattern = "sslv3 alert handshake failure",
+        fixed = TRUE
       )
     ) {
       ensembl_config[["ssl_cipher_list"]] <- "DEFAULT@SECLEVEL=1"
@@ -36,7 +37,8 @@
     } else if (
       grepl(
         x = test[1], ## We end up here if the test timed out
-        pattern = "Timeout was reached"
+        pattern = "Timeout was reached",
+        fixed = TRUE
       )
     ) {
       ## Time out is unfortunate, but lets not inform the user since it might not be a problem.

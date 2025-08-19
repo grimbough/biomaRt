@@ -327,7 +327,7 @@ useMart <- function(
     http_config = http_config
   )
 
-  if (length(grep("archive", martHost(mart)) > 0)) {
+  if (any(grepl("archive", martHost(mart), fixed = TRUE))) {
     ## hack to work around redirection of most recent mirror URL
     archives <- .listEnsemblArchives(
       https = TRUE,
@@ -342,7 +342,7 @@ useMart <- function(
       )
       martHost(mart) <- stringr::str_replace(
         martHost(mart),
-        pattern = ":80/",
+        pattern = stringr::fixed(":80/"),
         ":443/"
       )
     }
@@ -357,7 +357,7 @@ useMart <- function(
       sep = " "
     ))
     writeLines(paste("Mart virtual schema:", martVSchema(mart), sep = " "))
-    if (length(grep(reqHost, martHost(mart))) == 0) {
+    if (!any(grepl(reqHost, martHost(mart), fixed = TRUE))) {
       writeLines(paste(
         "Requested host was redirected from ",
         reqHost,
