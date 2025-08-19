@@ -293,7 +293,7 @@
     )
   }
 
-  if (grepl(pattern = "^Query ERROR", x = postRes)) {
+  if (startsWith(postRes, "Query ERROR")) {
     stop(postRes)
   }
 

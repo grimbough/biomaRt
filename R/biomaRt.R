@@ -80,7 +80,7 @@ listMarts <- function(
   verbose = FALSE
 ) {
   if (missing(port)) {
-    port <- ifelse(grepl("https", host), yes = 443, no = 80)
+    port <- ifelse(startsWith(host, "https"), yes = 443, no = 80)
   }
 
   if (
@@ -215,7 +215,7 @@ useMart <- function(
   verbose = FALSE
 ) {
   if (missing(port)) {
-    port <- ifelse(grepl("https", host)[1], yes = 443, no = 80)
+    port <- ifelse(startsWith(host, "https")[1], yes = 443, no = 80)
   }
 
   mart <- .useMart(
@@ -1029,7 +1029,7 @@ getLDS <- function(
     http_config = martHTTPConfig(mart)
   )
 
-  if (length(grep("^Query ERROR", postRes)) > 0L) {
+  if (any(startsWith(postRes, "^Query ERROR"))) {
     stop(postRes)
   }
 
