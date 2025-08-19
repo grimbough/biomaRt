@@ -197,7 +197,7 @@
   if (
     grepl("ensembl", parsed_url$hostname, fixed = TRUE) &&
       parsed_url$scheme != "https" &&
-      warn == TRUE
+      warn
   ) {
     warning(
       "Ensembl will soon enforce the use of https.\n",
