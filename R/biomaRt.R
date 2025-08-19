@@ -218,7 +218,7 @@ useMart <- function(
     port <- ifelse(startsWith(host, "https")[1], yes = 443, no = 80)
   }
 
-  mart <- .useMart(
+  .useMart(
     biomart,
     dataset,
     host = host,

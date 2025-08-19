@@ -16,7 +16,6 @@
 
 .checkEnsemblSSL <- function() {
   ensembl_config <- list()
-  i <- 1
   test <- try(.test_ensembl(config = ensembl_config), silent = TRUE)
   while (is(test, "try-error")) {
     if (
