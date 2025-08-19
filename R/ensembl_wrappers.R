@@ -26,15 +26,13 @@ checkWrapperArgs <- function(id, type, mart) {
 getGene <- function(id, type, mart) {
   martCheck(mart, "ensembl")
   checkWrapperArgs(id, type, mart)
-  symbolAttrib <- switch(strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],
+  symbolAttrib <- switch(
+    strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],
     hsapiens = "hgnc_symbol",
     mmusculus = "mgi_symbol",
     "external_gene_id"
   )
-  typeAttrib <- switch(type,
-    affy_hg_u133a_2 = "affy_hg_u133a_v2",
-    type
-  )
+  typeAttrib <- switch(type, affy_hg_u133a_2 = "affy_hg_u133a_v2", type)
   attrib <- c(
     typeAttrib,
     symbolAttrib,
@@ -228,6 +226,7 @@ getGene <- function(id, type, mart) {
       by = "ensembl_gene_id",
       all.y = TRUE
     )
+    # nolint next: scalar_in_linter.
     sequence <- sequence[, !(names(sequence) %in% "ensembl_gene_id")]
   } else {
     sequence <- getBM(
