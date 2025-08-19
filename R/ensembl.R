@@ -53,7 +53,8 @@
       identical(resp_status(html), 200L) &&
         !grepl(
           "The Ensembl web service you requested is temporarily unavailable",
-          resp_body_string(html)
+          resp_body_string(html),
+          fixed = TRUE
         )
     ) {
       return(resp_body_string(html))
@@ -92,7 +93,7 @@ listEnsemblArchives <- function(https) {
     )
   )
 
-  archives <- strsplit(archive_box, split = "<li>")[[1]][-1]
+  archives <- strsplit(archive_box, split = "<li>", fixed = TRUE)[[1]][-1]
 
   extracted <- str_extract_all(
     string = archives,
@@ -105,7 +106,11 @@ listEnsemblArchives <- function(https) {
     return(c(x, version))
   })
 
-  current <- ifelse(stringr::str_detect(archives, "- this site"), "*", "")
+  current <- ifelse(
+    stringr::str_detect(archives, stringr::fixed("- this site")),
+    "*",
+    ""
+  )
 
   tab <- do.call("rbind", extracted)
   tab <- cbind(tab, current)
@@ -115,7 +120,7 @@ listEnsemblArchives <- function(https) {
     "date" = as.character(tab[, 3]),
     "url" = stringr::str_replace(
       tolower(as.character(tab[, 1])),
-      "http://",
+      stringr::fixed("http://"),
       "https://"
     ),
     "version" = as.character(tab[, 4]),
@@ -385,7 +390,7 @@ useEnsembl <- function(
     http_config = http_config
   )
 
-  if (grepl("archive", martHost(mart))) {
+  if (grepl("archive", martHost(mart), fixed = TRUE)) {
     ## hack to work around redirection of most recent mirror URL
     archives <- .listEnsemblArchives(https = TRUE, http_config = http_config)
     current_release <- archives[archives$current_release == "*", "url"]
@@ -397,7 +402,7 @@ useEnsembl <- function(
       )
       martHost(mart) <- stringr::str_replace(
         martHost(mart),
-        pattern = ":80/",
+        pattern = stringr::fixed(":80/"),
         ":443/"
       )
     }

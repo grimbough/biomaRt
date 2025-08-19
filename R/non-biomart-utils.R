@@ -55,7 +55,7 @@ pickReferenceStrain <- function(genomes_to_choose_from) {
 
   idx2 <- which(strains == "reference")
   if (length(idx2) == 0) {
-    idx2 <- which(grepl(pattern = "reference", x = strains))
+    idx2 <- grep(pattern = "reference", x = strains, fixed = TRUE)
   }
 
   if (length(idx2) != 1) {

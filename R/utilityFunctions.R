@@ -87,7 +87,11 @@
       if (
         filter %in%
           listFilters(mart, what = "name") &&
-          grepl("boolean", filterType(filter = filter, mart = mart))
+          grepl(
+            "boolean",
+            filterType(filter = filter, mart = mart),
+            fixed = TRUE
+          )
       ) {
         if (!is.logical(values[[filter]])) {
           stop(
@@ -191,7 +195,7 @@
 
   ## warn about Ensembl HTTPS here - later we'll force the change
   if (
-    grepl("ensembl", parsed_url$hostname) &&
+    grepl("ensembl", parsed_url$hostname, fixed = TRUE) &&
       parsed_url$scheme != "https" &&
       warn == TRUE
   ) {
@@ -223,7 +227,7 @@
     )
   }
 
-  if (grepl("ensembl", x = host)) {
+  if (grepl("ensembl", x = host, fixed = TRUE)) {
     err_msg <- c(
       err_msg,
       "\nConsider trying one of the Ensembl mirrors (for more details look at ?useEnsembl)"

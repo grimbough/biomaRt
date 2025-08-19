@@ -107,7 +107,7 @@ getGene <- function(id, type, mart) {
   }
 
   if (
-    grepl(pattern = "flank", x = seqType) &&
+    grepl(pattern = "flank", x = seqType, fixed = TRUE) &&
       (missing(upstream) && missing(downstream))
   ) {
     stop(

@@ -35,7 +35,8 @@ library(biomaRt)
 if (
   grepl(
     try(httr::GET("https://parasite.wormbase.org"), silent = TRUE)[1],
-    pattern = "sslv3 alert handshake"
+    pattern = "sslv3 alert handshake",
+    fixed = TRUE
   )
 ) {
   httr::set_config(httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))
