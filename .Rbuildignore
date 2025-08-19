@@ -4,3 +4,4 @@
 ^[.]?air[.]toml$
 ^\.vscode$
 ^\.git-blame-ignore-revs
+^\.lintr$
