@@ -1,17 +1,5 @@
 ## location of Ensembl specific functions
 
-.getEnsemblSSL <- function() {
-  cache <- .biomartCacheLocation()
-  bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-  if (.checkInCache(bfc, hash = "ensembl-ssl-settings-httr2")) {
-    ensembl_config <- .readFromCache(bfc, "ensembl-ssl-settings-httr2")
-  } else {
-    ensembl_config <- .checkEnsemblSSL()
-    .addToCache(bfc, ensembl_config, hash = "ensembl-ssl-settings-httr2")
-  }
-  return(ensembl_config)
-}
-
 .checkArchiveList <- function(https = TRUE, http_config = list()) {
   ## determine if a cached version exists and if it's less than one week old
   cache <- .biomartCacheLocation()
@@ -311,7 +299,8 @@ useEnsembl <- function(
     )
   }
 
-  biomart <- switch(tolower(biomart),
+  biomart <- switch(
+    tolower(biomart),
     "ensembl" = "ENSEMBL_MART_ENSEMBL",
     "genes" = "ENSEMBL_MART_ENSEMBL",
     "snp" = "ENSEMBL_MART_SNP",

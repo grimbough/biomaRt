@@ -7,6 +7,8 @@ INTERNAL CHANGES
   o Coding style throughout the package has been harmonized using the air tool.
   Contributors using RStudio, Positron or VS Code should have their code styled
   automatically on save.
+  o A duplicated definition of the `.getEnsemblSSL()` internal function has been
+  removed.
 
 CHANGES IN VERSION 2.64.0
 -------------------------
