@@ -463,9 +463,8 @@ useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
       "Available Ensembl Genomes Marts can be viewed with ",
       "the function listEnsemblGenomes()"
     )
-  } else {
-    martDetails <- marts[which(marts$biomart == biomart), ]
   }
+  martDetails <- marts[which(marts$biomart == biomart), ]
 
   host <- paste0("https://", martDetails$host)
 
