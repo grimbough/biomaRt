@@ -252,9 +252,7 @@
 
   ## content() prints a message about encoding not being supplied
   ## for ensembl.org - no default, so we suppress it
-  # return( suppressMessages(content(res)) )
-
-  return(resp_body_string(res))
+   return(resp_body_string(res))
 }
 
 #' if parsing of TSV results fails, try this
