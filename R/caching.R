@@ -64,25 +64,23 @@
   ## if there's a clash don't add anything and tidy up
   if (!.checkInCache(bfc, hash = hash)) {
     bfcadd(bfc, rname = hash, fpath = tf, action = "asis")
-    res <- TRUE
-  } else {
-    if (!update) {
-      file.remove(tf)
-      res <- FALSE
-    } else {
-      existing_record <- bfcquery(
-        bfc,
-        query = hash,
-        field = "rname",
-        exact = TRUE
-      )
-      bfcupdate(bfc, rids = existing_record$rid, rpath = tf, ask = FALSE)
-      ## deleted the old file
-      file.remove(existing_record$rpath)
-      res <- TRUE
-    }
+    return(invisible(TRUE))
   }
-  return(invisible(res))
+  if (!update) {
+    file.remove(tf)
+    return(invisible(FALSE))
+  }
+  existing_record <- bfcquery(
+    bfc,
+    query = hash,
+    field = "rname",
+    exact = TRUE
+  )
+  bfcupdate(bfc, rids = existing_record$rid, rpath = tf, ask = FALSE)
+  ## deleted the old file
+  file.remove(existing_record$rpath)
+
+  return(invisible(TRUE))
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to

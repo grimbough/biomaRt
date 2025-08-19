@@ -51,29 +51,28 @@
 
   if (all(vLength <= maxChunkSize)) {
     return(valuesList)
-  } else {
-    ## pick the next filter to split
-    vIdx <- min(which(vLength > maxChunkSize))
-
-    nchunks <- (vLength[vIdx] %/% maxChunkSize) + 1
-    splitIdx <- rep(1:nchunks, each = ceiling(vLength[vIdx] / nchunks))[
-      1:vLength[vIdx]
-    ]
-
-    ## a new list we will populate with the chunks
-    tmpList <- list()
-    for (i in 1:nchunks) {
-      for (j in 1:length(valuesList)) {
-        listIdx <- ((i - 1) * length(valuesList)) + j
-        tmpList[[listIdx]] <- valuesList[[j]]
-        tmpList[[listIdx]][[vIdx]] <- tmpList[[listIdx]][[vIdx]][which(
-          splitIdx == i
-        )]
-      }
-    }
-    ## recursively call the function to process next filter
-    valuesList <- .splitValues(tmpList, maxChunkSize = maxChunkSize)
   }
+  ## pick the next filter to split
+  vIdx <- min(which(vLength > maxChunkSize))
+
+  nchunks <- (vLength[vIdx] %/% maxChunkSize) + 1
+  splitIdx <- rep(1:nchunks, each = ceiling(vLength[vIdx] / nchunks))[
+    1:vLength[vIdx]
+  ]
+
+  ## a new list we will populate with the chunks
+  tmpList <- list()
+  for (i in 1:nchunks) {
+    for (j in 1:length(valuesList)) {
+      listIdx <- ((i - 1) * length(valuesList)) + j
+      tmpList[[listIdx]] <- valuesList[[j]]
+      tmpList[[listIdx]][[vIdx]] <- tmpList[[listIdx]][[vIdx]][which(
+        splitIdx == i
+      )]
+    }
+  }
+  ## recursively call the function to process next filter
+  valuesList <- .splitValues(tmpList, maxChunkSize = maxChunkSize)
   return(valuesList)
 }
 
@@ -310,15 +309,14 @@
     ),
     error = function(e) {
       ## if the error relates to number of element, try reading HTML version
-      if (grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements")) {
-        .fetchHTMLresults(
-          host = paste0(martHost(mart), hostURLsep),
-          query = fullXmlQuery,
-          http_config = martHTTPConfig(mart)
-        )
-      } else {
+      if (!grepl(x = e, pattern = "line [0-9]+ did not have [0-9]+ elements")) {
         stop(e)
       }
+      .fetchHTMLresults(
+        host = paste0(martHost(mart), hostURLsep),
+        query = fullXmlQuery,
+        http_config = martHTTPConfig(mart)
+      )
     }
   )
 

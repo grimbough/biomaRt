@@ -127,15 +127,15 @@ listMarts <- function(
         "The archive = TRUE argument is now defunct.\n",
         "Use listEnsemblArchives() to find the URL to directly query an Ensembl archive."
       )
-    } else {
-      request <- paste0(
-        host,
-        ":",
-        port,
-        path,
-        "?type=registry&requestid=biomaRt"
-      )
     }
+    request <- paste0(
+      host,
+      ":",
+      port,
+      path,
+      "?type=registry&requestid=biomaRt"
+    )
+
     if (is(http_config, "list")) {
       http_config <- do.call(c, http_config)
     }
@@ -249,16 +249,14 @@ useMart <- function(
       "No biomart databases specified. Specify a biomart database to use using the biomart or version argument"
     )
   }
-  if (!missing(biomart)) {
-    if (!(is.character(biomart))) {
-      stop(
-        "biomart argument is not a string. ",
-        "The biomart argument should be a single character string"
-      )
-    }
+  if (!missing(biomart) && !is.character(biomart)) {
+    stop(
+      "biomart argument is not a string. ",
+      "The biomart argument should be a single character string"
+    )
   }
 
-  if (biomart == "ensembl" & grepl(x = host, pattern = "ensembl.org")) {
+  if (biomart == "ensembl" && grepl(x = host, pattern = "ensembl.org")) {
     biomart <- "ENSEMBL_MART_ENSEMBL"
   }
 
@@ -604,9 +602,9 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
     stop(
       "No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets() function."
     )
-  } else {
-    dataset <- checkDataset(dataset = dataset, mart = mart)
   }
+
+  dataset <- checkDataset(dataset = dataset, mart = mart)
   martDataset(mart) <- dataset
 
   if (verbose) {
@@ -760,141 +758,140 @@ getBM <- function(
     }
     result <- .readFromCache(bfc, hash)
     return(result)
-  } else {
-    ## force the query to return the 'descriptive text' header names with the result
-    ## we use these later to match and order attribute/column names
-    xmlQuery <- paste0(
-      '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query virtualSchemaName = "',
-      martVSchema(mart),
-      '" uniqueRows="',
-      as.numeric(uniqueRows),
-      '" count="0" datasetConfigVersion="0.6" header="1"',
-      ' formatter="TSV" requestid="biomaRt"><Dataset name="',
-      martDataset(mart),
-      '">'
-    )
+  }
+  ## force the query to return the 'descriptive text' header names with the result
+  ## we use these later to match and order attribute/column names
+  xmlQuery <- paste0(
+    '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query virtualSchemaName = "',
+    martVSchema(mart),
+    '" uniqueRows="',
+    as.numeric(uniqueRows),
+    '" count="0" datasetConfigVersion="0.6" header="1"',
+    ' formatter="TSV" requestid="biomaRt"><Dataset name="',
+    martDataset(mart),
+    '">'
+  )
 
-    # checking the Attributes
-    invalid <- !(attributes %in% listAttributes(mart, what = "name"))
+  # checking the Attributes
+  invalid <- !(attributes %in% listAttributes(mart, what = "name"))
+  if (any(invalid)) {
+    stop(
+      "Invalid attribute(s):",
+      paste(attributes[invalid], collapse = ", "),
+      "\nPlease use the function 'listAttributes' to get valid attribute names"
+    )
+  }
+
+  # attribute are ok lets add them to the query
+  attributeXML <- paste0(
+    '<Attribute name = "',
+    attributes,
+    '"/>',
+    collapse = ""
+  )
+
+  # checking the filters
+  if (filters[1] != "" && checkFilters) {
+    invalid <- !(filters %in% listFilters(mart, what = "name"))
     if (any(invalid)) {
       stop(
-        "Invalid attribute(s):",
-        paste(attributes[invalid], collapse = ", "),
-        "\nPlease use the function 'listAttributes' to get valid attribute names"
+        "Invalid filters(s): ",
+        paste(filters[invalid], collapse = ", "),
+        "\nPlease use the function 'listFilters' to get valid filter names"
       )
     }
+  }
 
-    # attribute are ok lets add them to the query
-    attributeXML <- paste0(
-      '<Attribute name = "',
-      attributes,
-      '"/>',
-      collapse = ""
+  ## filterXML is a list containing filters with reduced numbers of values
+  ## to meet the 500 value limit in BioMart queries
+  filterXmlList <- .generateFilterXML(filters, values, mart)
+
+  resultList <- list()
+  if (length(filterXmlList) > 1) {
+    pb <- progress_bar$new(
+      total = length(filterXmlList),
+      width = options()$width - 10,
+      format = "Batch submitting query [:bar] :percent eta: :eta"
+    )
+    pb$tick(0)
+    on.exit(pb$terminate())
+  }
+
+  ## we submit a query for each chunk of the filter list
+  for (i in seq_along(filterXmlList)) {
+    if (i > 1) {
+      pb$tick()
+    }
+
+    filterXML <- filterXmlList[[i]]
+    fullXmlQuery <- paste(
+      xmlQuery,
+      attributeXML,
+      filterXML,
+      "</Dataset></Query>",
+      sep = ""
     )
 
-    # checking the filters
-    if (filters[1] != "" && checkFilters) {
-      invalid <- !(filters %in% listFilters(mart, what = "name"))
-      if (any(invalid)) {
-        stop(
-          "Invalid filters(s): ",
-          paste(filters[invalid], collapse = ", "),
-          "\nPlease use the function 'listFilters' to get valid filter names"
-        )
-      }
+    if (verbose) {
+      message(fullXmlQuery)
     }
 
-    ## filterXML is a list containing filters with reduced numbers of values
-    ## to meet the 500 value limit in BioMart queries
-    filterXmlList <- .generateFilterXML(filters, values, mart)
+    ## we choose a separator based on whether '?redirect=no' is present
+    sep <- ifelse(
+      grepl(x = martHost(mart), pattern = ".+\\?.+"),
+      "&",
+      "?"
+    )
 
-    resultList <- list()
-    if (length(filterXmlList) > 1) {
-      pb <- progress_bar$new(
-        total = length(filterXmlList),
-        width = options()$width - 10,
-        format = "Batch submitting query [:bar] :percent eta: :eta"
-      )
-      pb$tick(0)
-      on.exit(pb$terminate())
-    }
-
-    ## we submit a query for each chunk of the filter list
-    for (i in seq_along(filterXmlList)) {
-      if (i > 1) {
-        pb$tick()
-      }
-
-      filterXML <- filterXmlList[[i]]
-      fullXmlQuery <- paste(
-        xmlQuery,
-        attributeXML,
-        filterXML,
-        "</Dataset></Query>",
-        sep = ""
-      )
-
-      if (verbose) {
-        message(fullXmlQuery)
-      }
-
-      ## we choose a separator based on whether '?redirect=no' is present
-      sep <- ifelse(
-        grepl(x = martHost(mart), pattern = ".+\\?.+"),
-        "&",
-        "?"
-      )
-
-      ## create a unique name for this chunk & see if it has been run before
-      chunk_hash <- digest::digest(
-        paste(martHost(mart), fullXmlQuery),
-        algo = "md5",
-        serialize = FALSE
-      )
-      tf <- file.path(
-        tempdir(),
-        paste0("biomaRt_tmp_", chunk_hash, ".rds")
-      )
-      if (!file.exists(tf)) {
-        postRes <- .submitQueryXML(
-          host = paste0(martHost(mart), sep),
-          query = fullXmlQuery,
-          http_config = martHTTPConfig(mart)
-        )
-        result <- .processResults(
-          postRes,
-          mart = mart,
-          hostURLsep = sep,
-          fullXmlQuery = fullXmlQuery,
-          quote = quote,
-          numAttributes = length(attributes)
-        )
-        saveRDS(result, file = tf)
-      } else {
-        result <- readRDS(tf)
-      }
-      resultList[[i]] <- .setResultColNames(
-        result,
-        mart = mart,
-        attributes = attributes,
-        bmHeader = bmHeader
-      )
-    }
-    ## collate results
-    result <- do.call("rbind", resultList)
-
-    if (useCache) {
-      .addToCache(bfc = bfc, result = result, hash = hash)
-    }
-
-    ## remove any temp chunk files
-    file.remove(list.files(
+    ## create a unique name for this chunk & see if it has been run before
+    chunk_hash <- digest::digest(
+      paste(martHost(mart), fullXmlQuery),
+      algo = "md5",
+      serialize = FALSE
+    )
+    tf <- file.path(
       tempdir(),
-      pattern = "^biomaRt.*rds$",
-      full.names = TRUE
-    ))
-    return(result)
+      paste0("biomaRt_tmp_", chunk_hash, ".rds")
+    )
+    if (!file.exists(tf)) {
+      postRes <- .submitQueryXML(
+        host = paste0(martHost(mart), sep),
+        query = fullXmlQuery,
+        http_config = martHTTPConfig(mart)
+      )
+      result <- .processResults(
+        postRes,
+        mart = mart,
+        hostURLsep = sep,
+        fullXmlQuery = fullXmlQuery,
+        quote = quote,
+        numAttributes = length(attributes)
+      )
+      saveRDS(result, file = tf)
+    } else {
+      result <- readRDS(tf)
+    }
+    resultList[[i]] <- .setResultColNames(
+      result,
+      mart = mart,
+      attributes = attributes,
+      bmHeader = bmHeader
+    )
   }
+  ## collate results
+  result <- do.call("rbind", resultList)
+
+  if (useCache) {
+    .addToCache(bfc = bfc, result = result, hash = hash)
+  }
+
+  ## remove any temp chunk files
+  file.remove(list.files(
+    tempdir(),
+    pattern = "^biomaRt.*rds$",
+    full.names = TRUE
+  ))
+  return(result)
 }
 
 ###################################
