@@ -47,7 +47,7 @@
 ## incase there are multiple filters that need splitting, and should ensure
 ## all possible groupings of filters are retained.
 .splitValues <- function(valuesList, maxChunkSize = 500) {
-  vLength <- vapply(valuesList[[1]], FUN = length, FUN.VALUE = integer(1))
+  vLength <- lengths(valuesList[[1]])
 
   if (all(vLength <= maxChunkSize)) {
     return(valuesList)
