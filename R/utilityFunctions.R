@@ -105,7 +105,7 @@
             call. = FALSE
           )
         }
-        val <- ifelse(values[[filter]], yes = 0, no = 1)
+        val <- as.numeric(!values[[filter]])
         val <- paste0("\" excluded = \"", val, "\" ")
       } else {
         ## otherwise the filter isn't boolean, or doesn't exist
