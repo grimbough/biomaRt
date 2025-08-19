@@ -10,12 +10,11 @@ checkWrapperArgs <- function(id, type, mart) {
     )
   }
   if (!type %in% listFilters(mart)[, 1]) {
-    stop(paste(
+    stop(
       "Invalid identifier type:",
       type,
-      " see ?getGene for details. Use the listFilters function to get the valid value for the type argument.",
-      sep = ""
-    ))
+      " see ?getGene for details. Use the listFilters function to get the valid value for the type argument."
+    )
   }
   if (missing(id)) {
     stop(

@@ -29,12 +29,11 @@ martCheck <- function(mart, biomart = NULL) {
       }
     }
     if (!bmok) {
-      stop(paste(
+      stop(
         "This function only works when used with the ",
         biomart,
-        " BioMart.",
-        sep = ""
-      ))
+        " BioMart."
+      )
     }
   }
   if (martDataset(mart) == "") {
@@ -583,11 +582,11 @@ checkDataset <- function(dataset, mart) {
   }
 
   if (is.na(match(dataset, validDatasets$dataset))) {
-    stop(paste(
+    stop(
       "The given dataset: ",
       dataset,
       ", is not valid.  Correct dataset names can be obtained with the listDatasets() function."
-    ))
+    )
   }
 
   return(dataset)
@@ -778,11 +777,11 @@ getBM <- function(
     # checking the Attributes
     invalid <- !(attributes %in% listAttributes(mart, what = "name"))
     if (any(invalid)) {
-      stop(paste(
+      stop(
         "Invalid attribute(s):",
         paste(attributes[invalid], collapse = ", "),
         "\nPlease use the function 'listAttributes' to get valid attribute names"
-      ))
+      )
     }
 
     # attribute are ok lets add them to the query
@@ -797,11 +796,11 @@ getBM <- function(
     if (filters[1] != "" && checkFilters) {
       invalid <- !(filters %in% listFilters(mart, what = "name"))
       if (any(invalid)) {
-        stop(paste(
-          "Invalid filters(s):",
+        stop(
+          "Invalid filters(s): ",
           paste(filters[invalid], collapse = ", "),
           "\nPlease use the function 'listFilters' to get valid filter names"
-        ))
+        )
       }
     }
 
@@ -934,40 +933,40 @@ getLDS <- function(
 
   invalid <- !(attributes %in% listAttributes(mart, what = "name"))
   if (any(invalid)) {
-    stop(paste(
-      "Invalid attribute(s):",
+    stop(
+      "Invalid attribute(s): ",
       paste(attributes[invalid], collapse = ", "),
       "\nPlease use the function 'listAttributes' to get valid attribute names"
-    ))
+    )
   }
 
   invalid <- !(attributesL %in% listAttributes(martL, what = "name"))
   if (any(invalid)) {
-    stop(paste(
-      "Invalid attribute(s):",
+    stop(
+      "Invalid attribute(s): ",
       paste(attributesL[invalid], collapse = ", "),
       "\nPlease use the function 'listAttributes' to get valid attribute names"
-    ))
+    )
   }
 
   if (filters[1] != "") {
     invalid <- !(filters %in% listFilters(mart, what = "name"))
     if (any(invalid)) {
-      stop(paste(
-        "Invalid filters(s):",
+      stop(
+        "Invalid filters(s): ",
         paste(filters[invalid], collapse = ", "),
         "\nPlease use the function 'listFilters' to get valid filter names"
-      ))
+      )
     }
   }
   if (filtersL[1] != "") {
     invalid <- !(filtersL %in% listFilters(martL, what = "name"))
     if (any(invalid)) {
-      stop(paste(
-        "Invalid filters(s):",
+      stop(
+        "Invalid filters(s): ",
         paste(filtersL[invalid], collapse = ", "),
         "\nPlease use the function 'listFilters' to get valid filter names"
-      ))
+      )
     }
   }
 
