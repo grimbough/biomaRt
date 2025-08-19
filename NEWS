@@ -2,6 +2,11 @@
 CHANGES IN VERSION 2.66.0
 -------------------------
 
+BUG FIXES
+
+  o This package now explicitly depends on R >= 4.0.0. This was effectively
+  already the case since version 2.48 but not explicitly documented.
+
 INTERNAL CHANGES
 
   o Coding style throughout the package has been harmonized using the air tool.
@@ -9,6 +14,9 @@ INTERNAL CHANGES
   automatically on save.
   o A duplicated definition of the `.getEnsemblSSL()` internal function has been
   removed.
+  o Static analysis via the lintr package is now performed on each push and PR.
+  It should mostly be invisible to users but might result in slightly increased
+  performance in some cases.
 
 CHANGES IN VERSION 2.64.0
 -------------------------
