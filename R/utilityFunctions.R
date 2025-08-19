@@ -21,7 +21,7 @@
   resultNames <- colnames(result)
   ## match the returned column names with the attribute names
   matches <- match(resultNames, att[, 2], NA)
-  if (any(is.na(matches))) {
+  if (anyNA(matches)) {
     warning(
       "Problems assigning column names.",
       "Currently using the biomart description field.",
