@@ -810,7 +810,7 @@ getBM <- function(
   if (length(filterXmlList) > 1) {
     pb <- progress_bar$new(
       total = length(filterXmlList),
-      width = options()$width - 10,
+      width = getOption("width") - 10,
       format = "Batch submitting query [:bar] :percent eta: :eta"
     )
     pb$tick(0)
