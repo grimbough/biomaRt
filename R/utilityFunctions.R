@@ -63,7 +63,7 @@
   ## a new list we will populate with the chunks
   tmpList <- list()
   for (i in 1:nchunks) {
-    for (j in 1:length(valuesList)) {
+    for (j in seq_along(valuesList)) {
       listIdx <- ((i - 1) * length(valuesList)) + j
       tmpList[[listIdx]] <- valuesList[[j]]
       tmpList[[listIdx]][[vIdx]] <- tmpList[[listIdx]][[vIdx]][which(
