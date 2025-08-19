@@ -449,7 +449,7 @@ searchFilterOptions <- function(mart, filter, pattern) {
 searchFilterValues <- function(mart, filter, pattern) {
   .Defunct(
     new = "listFilterOptions",
-    msg = c("This function has been renamed searchFilterOptions()")
+    msg = "This function has been renamed searchFilterOptions()"
   )
 }
 
@@ -461,6 +461,6 @@ listFilterOptions <- function(mart, filter) {
 listFilterValues <- function(mart, filter) {
   .Defunct(
     new = "listFilterOptions",
-    msg = c("This function has been renamed listFilterOptions()")
+    msg = "This function has been renamed listFilterOptions()"
   )
 }
