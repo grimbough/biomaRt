@@ -84,6 +84,7 @@ setMethod("martHTTPConfig", signature("Mart"), function(obj) {
   searchFilterOptions(mart = x, filter = keytype)
 }
 setMethod("keys", "Mart", function(x, keytype, ...) {
+  # nolint next: undesirable_operator_linter.
   AnnotationDbi:::smartKeys(x = x, keytype = keytype, ..., FUN = .keys)
 })
 
