@@ -33,7 +33,7 @@ jobs:
           extra-packages: |
             any::gh
             any::lifecycle
-            any::lintr
+            r-lib/lintr
             any::purrr
             any::cyclocomp
           needs: check
