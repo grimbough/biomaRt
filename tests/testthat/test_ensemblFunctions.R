@@ -29,6 +29,13 @@ test_that("useEnsembl() error handling is OK", {
   )
 })
 
+test_that("useEnsembl(host = ) is not necessary for ensembl.org", {
+  # Bug report #72.
+  expect_no_error(
+    ensembl_mart <- useEnsembl("ensembl")
+  )
+  expect_s4_class(ensembl_mart, "Mart")
+})
 
 with_mock_dir(
   "all_500",
