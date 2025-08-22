@@ -465,8 +465,6 @@ useMart <- function(
 #'
 #' Lists or search the datasets available in the selected BioMart database
 #'
-#'
-#' @aliases listDatasets searchDatasets
 #' @param mart object of class Mart created with the useMart function
 #' @param verbose Give detailed output of what the method is doing, for
 #' debugging purposes
@@ -780,7 +778,6 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
 #' the available attributes in the selected dataset.
 #'
 #'
-#' @aliases listAttributes searchAttributes
 #' @param mart object of class Mart created using the useMart function
 #' @param page Show only the attributes that belong to the specified attribute
 #' page.
@@ -872,7 +869,6 @@ attributePages <- function(mart) {
 #' \code{chromosome} will be the filter, with corresponding value X.
 #'
 #'
-#' @aliases listFilters searchFilters
 #' @param mart object of class \code{Mart} created using the
 #' \code{\link{useMart}} function
 #' @param what character vector indicating what information to display about

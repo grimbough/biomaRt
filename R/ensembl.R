@@ -206,8 +206,6 @@ listEnsemblArchives <- function(https) {
 #' This function returns a list of BioMart databases hosted by Ensembl.  To
 #' establish a connection use the \code{\link{useEnsembl}} function.
 #'
-#'
-#' @aliases listEnsembl listEnsemblGenomes
 #' @param mart mart object created with the useEnsembl function.  This is
 #' optional, as you usually use \code{\link{listMarts}} to see which marts
 #' there are to connect to.
@@ -365,7 +363,6 @@ listEnsembl <- function(
 #' found.  Once identified that Ensembl server will be associated with the
 #' returned \code{Mart} object and will be used for all queries.
 #'
-#' @aliases useEnsembl useEnsemblGenomes
 #' @param biomart BioMart database name you want to connect to. Possible
 #' database names can be retrieved with the function \code{\link{listEnsembl}}
 #' @param dataset Dataset you want to use.  To see the different datasets
@@ -535,6 +532,7 @@ useEnsembl <- function(
 
 
 ##############################################
+#' @rdname listEnsembl
 #' @export
 listEnsemblGenomes <- function(includeHosts = FALSE, host = NULL) {
   ## use the default websites unless an alternative is provided
@@ -570,6 +568,7 @@ listEnsemblGenomes <- function(includeHosts = FALSE, host = NULL) {
   return(marts)
 }
 
+#' @rdname useEnsembl
 #' @export
 useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
   if (missing(biomart)) {

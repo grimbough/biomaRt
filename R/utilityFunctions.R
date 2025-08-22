@@ -253,7 +253,7 @@
 
   ## content() prints a message about encoding not being supplied
   ## for ensembl.org - no default, so we suppress it
-   return(resp_body_string(res))
+  return(resp_body_string(res))
 }
 
 ## if parsing of TSV results fails, try this
@@ -363,6 +363,7 @@
   }
 }
 
+#' @rdname listDatasets
 #' @export
 searchDatasets <- function(mart, pattern) {
   if (missing(mart)) {
@@ -382,6 +383,8 @@ searchDatasets <- function(mart, pattern) {
   }
 }
 
+#' @rdname listAttributes
+#'
 #' @export
 searchAttributes <- function(mart, pattern) {
   if (missing(mart)) {
@@ -401,6 +404,7 @@ searchAttributes <- function(mart, pattern) {
   }
 }
 
+#' @rdname listFilters
 #' @export
 searchFilters <- function(mart, pattern) {
   if (missing(mart)) {
