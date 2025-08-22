@@ -14,6 +14,8 @@ useEnsembl(
   mirror = NULL,
   verbose = FALSE
 )
+
+useEnsemblGenomes(biomart, dataset, host = NULL)
 }
 \arguments{
 \item{biomart}{BioMart database name you want to connect to. Possible

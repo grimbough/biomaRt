@@ -45,7 +45,6 @@ if(interactive()){
                        pattern = "crohn")
 }
 
-
 }
 \seealso{
 \code{\link{listFilters}}

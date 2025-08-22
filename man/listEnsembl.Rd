@@ -12,6 +12,8 @@ listEnsembl(
   mirror = NULL,
   verbose = FALSE
 )
+
+listEnsemblGenomes(includeHosts = FALSE, host = NULL)
 }
 \arguments{
 \item{mart}{mart object created with the useEnsembl function.  This is
