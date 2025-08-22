@@ -6,7 +6,7 @@
 \alias{filterOptions}
 \alias{searchFilterValues}
 \alias{listFilterValues}
-\title{Deprecated and defunct functions in package \sQuote{biomaRt}}
+\title{Deprecated and defunct functions in package \pkg{biomaRt}}
 \usage{
 filterOptions(filter, mart)
 

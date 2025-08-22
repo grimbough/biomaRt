@@ -1,4 +1,4 @@
-#' Deprecated and defunct functions in package \sQuote{biomaRt}
+#' Deprecated and defunct functions in package \pkg{biomaRt}
 #'
 #' These functions have been removed from biomaRt and replaced with
 #' alternatives.
