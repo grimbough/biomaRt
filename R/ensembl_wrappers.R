@@ -61,7 +61,7 @@ checkWrapperArgs <- function(id, type, mart) {
 #'
 #' @export
 getGene <- function(id, type, mart) {
-  martCheck(mart, "ensembl")
+  martCheck(mart, c("ensembl", "ENSEMBL_MART_ENSEMBL"))
   checkWrapperArgs(id, type, mart)
   symbolAttrib <- switch(
     strsplit(martDataset(mart), "_", fixed = TRUE, useBytes = TRUE)[[1]][1],
