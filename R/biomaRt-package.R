@@ -14,6 +14,7 @@
 #' }
 #'
 #' @name biomaRt-deprecated
+#' @aliases filterOptions searchFilterValues listFilterValues
 NULL
 
 #' @keywords internal
