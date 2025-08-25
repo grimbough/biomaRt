@@ -6,6 +6,10 @@ BUG FIXES
 
   o This package now explicitly depends on R >= 4.0.0. This was effectively
   already the case since version 2.48 but not explicitly documented.
+  o `getGene()` no longer errors with "This function only works when used with
+  the ensembl BioMart.", that was always returned, even when using the ensembl
+  BioMart. This bug was introduced in version 2.27.1 (Bioconductor 3.3).
+  Thanks to [Tobias Hoch](https://github.com/toobiwankenobi) for the report.
 
 INTERNAL CHANGES
 
