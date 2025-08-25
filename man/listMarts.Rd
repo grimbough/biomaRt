@@ -16,8 +16,8 @@ listMarts(
 )
 }
 \arguments{
-\item{mart}{mart object created with the \code{\link{useMart}} function.
-This is optional, as you usually use \code{\link{listMarts}} to see which
+\item{mart}{mart object created with the \code{\link[=useMart]{useMart()}} function.
+This is optional, as you usually use \code{\link[=listMarts]{listMarts()}} to see which
 marts there are to connect to.}
 
 \item{host}{Host to connect to. Defaults to \code{www.ensembl.org}}
@@ -34,10 +34,10 @@ the BioMart databases}
 of BioMart database. Note that this argument is now defunct and setting this
 value to \code{TRUE} will produce an error. A better alternative is to
 specify the url of the archived BioMart you want to access.  For Ensembl you
-can view the list of archives using \code{\link{listEnsemblArchives}}}
+can view the list of archives using \code{\link[=listEnsemblArchives]{listEnsemblArchives()}}}
 
 \item{http_config}{Some hosts require specific HTTP settings to be used when
-connecting. This argument takes the output of \code{\link[httr]{config}} and
+connecting. This argument takes the output of \code{\link[httr:config]{httr::config()}} and
 will be used when connecting to \code{host}.  Can be ignored if you
 experience no problems accessing \code{host}.}
 
@@ -55,7 +55,7 @@ available marts', this is often because there is a problem with the BioMart
 server you are trying to connect to, and something other than the list of
 available marts is being returned - often some like a 'down for
 maintainance' page.  If you browse to the provided URL and find a page that
-starts with '\code{<MartRegistry>}' this is the correct listing and you
+starts with '\verb{<MartRegistry>}' this is the correct listing and you
 should report the issue on the Bioconductor support site:
 https://support.bioconductor.org
 }

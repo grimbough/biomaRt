@@ -11,7 +11,7 @@ This function opens an editor displaying the analysis code of the Nature
 Protocols 2009 paper
 }
 \details{
-The \code{\link{edit}} function uses \code{getOption("editor")} to select
+The \code{\link[=edit]{edit()}} function uses \code{getOption("editor")} to select
 the editor. Use, for instance, \code{options(editor="emacs")} to set another
 editor.
 }
@@ -23,7 +23,7 @@ NP2009code()
 
 }
 \seealso{
-\code{\link{edit}}
+\code{\link[=edit]{edit()}}
 }
 \author{
 Steffen Durinck, Wolfgang Huber

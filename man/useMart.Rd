@@ -34,7 +34,7 @@ web service URL}
 of BioMart databases.  Note that this argument is now deprecated and will be
 removed in the future.  A better alternative is to leave archive = FALSE and
 to specify the url of the archived BioMart you want to access.  For Ensembl
-you can view the list of archives using \code{\link{listEnsemblArchives}}}
+you can view the list of archives using \code{\link[=listEnsemblArchives]{listEnsemblArchives()}}}
 
 \item{version}{Use version name instead of biomart name to specify which
 BioMart you want to use}

@@ -82,7 +82,7 @@
 #'
 #'
 #' @param settings A named list. Each entry should be a valid curl option, as
-#' found in \code{\link[curl]{curl_options}}.
+#' found in [curl::curl_options()].
 #' @author Mike Smith
 #' @examples
 #'

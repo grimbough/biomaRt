@@ -310,16 +310,16 @@ getGene <- function(id, type, mart) {
 #' @param type The type of identifier used.  Supported types are hugo, ensembl,
 #' embl, entrezgene, refseq, ensemblTrans and unigene. Alternatively one can
 #' also use a filter to specify the type. Possible filters are given by the
-#' \code{listFilters()} function.
+#' `listFilters()` function.
 #' @param seqType Type of sequence that you want to retrieve.  Allowed seqTypes
 #' are given in the details section.
 #' @param upstream To add the upstream sequence of a specified number of
 #' basepairs to the output.
 #' @param downstream To add the downstream sequence of a specified number of
 #' basepairs to the output.
-#' @param mart object of class Mart created using the \code{\link{useEnsembl}}
+#' @param mart object of class Mart created using the [useEnsembl()]
 #' function
-#' @param useCache If \code{useCache = TRUE} then biomaRt will try to store
+#' @param useCache If `useCache = TRUE` then biomaRt will try to store
 #' succesful query results on disk, and will load these if a query is run
 #' again, rather than contacting the Ensembl server.
 #' @param verbose If verbose = TRUE then the XML query that was send to the

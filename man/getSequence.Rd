@@ -41,7 +41,7 @@ basepairs to the output.}
 \item{downstream}{To add the downstream sequence of a specified number of
 basepairs to the output.}
 
-\item{mart}{object of class Mart created using the \code{\link{useEnsembl}}
+\item{mart}{object of class Mart created using the \code{\link[=useEnsembl]{useEnsembl()}}
 function}
 
 \item{useCache}{If \code{useCache = TRUE} then biomaRt will try to store

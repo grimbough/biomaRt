@@ -8,7 +8,7 @@ setEnsemblSSL(settings)
 }
 \arguments{
 \item{settings}{A named list. Each entry should be a valid curl option, as
-found in \code{\link[curl]{curl_options}}.}
+found in \code{\link[curl:curl_options]{curl::curl_options()}}.}
 }
 \description{
 On some systems specific SSL settings have to be applied to allow https

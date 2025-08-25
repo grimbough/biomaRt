@@ -8,9 +8,9 @@
 #' indicated below:
 #'
 #' \itemize{
-#' \item{filterOptions: \code{\link{listFilterOptions}}}
-#' \item{listFilterValues: \code{\link{listFilterOptions}}}
-#' \item{searchFilterValues: \code{\link{searchFilterOptions}}}
+#' \item{filterOptions: [listFilterOptions()]}
+#' \item{listFilterValues: [listFilterOptions()]}
+#' \item{searchFilterValues: [searchFilterOptions()]}
 #' }
 #'
 #' @name biomaRt-deprecated

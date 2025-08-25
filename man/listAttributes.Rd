@@ -19,7 +19,7 @@ page.}
 be displayed.  Can have values like name, description, fullDescription, page}
 
 \item{pattern}{Character vector defining the regular expression
-(\code{\link[base]{regex})} to be used for the search.  If left blank the
+(\verb{[regex][base::regex])} to be used for the search.  If left blank the
 default is to use ".*" which will match everything.}
 }
 \description{

@@ -2,10 +2,10 @@
 #'
 #' Represents a Mart class, containing connections to different BioMarts
 #'
-#' @param object An object of class \code{Mart}
+#' @param object An object of class `Mart`
 #'
 #' @aliases Mart-class show,Mart-method
-#' @section Methods: \describe{\code{show} Print summary of the object}
+#' @section Methods: \describe{`show` Print summary of the object}
 #' @author Steffen Durinck
 #' @keywords methods
 #' @rdname Mart-class
@@ -120,43 +120,43 @@ setMethod("martHTTPConfig", signature("Mart"), function(obj) {
 
 #' Retrieve information from the BioMart databases
 #'
-#' \code{select}, \code{columns} and \code{keys} are used together to extract
-#' data from a \code{Mart} object.  These functions work much the same as the
-#' classic biomaRt functions such as \code{getBM} etc. and are provide here to
+#' `select`, `columns` and `keys` are used together to extract
+#' data from a `Mart` object.  These functions work much the same as the
+#' classic biomaRt functions such as `getBM` etc. and are provide here to
 #' make this easier for people who are comfortable using these methods from
 #' other Annotation packages.  Examples of other objects in other packages
 #' where you can use these methods include (but are not limited to):
-#' \code{ChipDb}, \code{OrgDb} \code{GODb}, \code{InparanoidDb} and
-#' \code{ReactomeDb}.
+#' `ChipDb`, `OrgDb` `GODb`, `InparanoidDb` and
+#' `ReactomeDb`.
 #'
-#' \code{columns} shows which kinds of data can be returned from the
-#' \code{Mart} object.
+#' `columns` shows which kinds of data can be returned from the
+#' `Mart` object.
 #'
-#' \code{keytypes} allows the user to discover which keytypes can be passed in
-#' to \code{select} or \code{keys} as the \code{keytype} argument.
+#' `keytypes` allows the user to discover which keytypes can be passed in
+#' to `select` or `keys` as the `keytype` argument.
 #'
-#' \code{keys} returns keys from the \code{Mart} of the type specified by it's
-#' \code{keytype} argument.
+#' `keys` returns keys from the `Mart` of the type specified by it's
+#' `keytype` argument.
 #'
-#' \code{select} is meant to be used with these other methods and has arguments
+#' `select` is meant to be used with these other methods and has arguments
 #' that take the kinds of values that these other methods return.
-#' \code{select} will retrieve the results as a data.frame based on parameters
-#' for selected \code{keys} and \code{columns} and \code{keytype} arguments.
+#' `select` will retrieve the results as a data.frame based on parameters
+#' for selected `keys` and `columns` and `keytype` arguments.
 #'
 #'
 #' @aliases select-methods keys,Mart-method columns,Mart-method
 #' keytypes,Mart-method select,Mart-method keys columns keytypes select
-#' @param x the \code{Mart} object. The dataset of the \code{Mart} object must
+#' @param x the `Mart` object. The dataset of the `Mart` object must
 #' already be specified for all of these methods.
 #' @param keys the keys to select records for from the database.  Keys for some
-#' keytypes can be extracted by using the \code{keys} method.
+#' keytypes can be extracted by using the `keys` method.
 #' @param columns the columns or kinds of things that can be retrieved from the
-#' database.  As with \code{keys}, all possible columns are returned by using
-#' the \code{columns} method.
+#' database.  As with `keys`, all possible columns are returned by using
+#' the `columns` method.
 #' @param keytype the keytype that matches the keys used.  For the
-#' \code{select} methods, this is used to indicate the kind of ID being used
-#' with the keys argument. For the \code{keys} method this is used to indicate
-#' which kind of keys are desired from \code{keys}
+#' `select` methods, this is used to indicate the kind of ID being used
+#' with the keys argument. For the `keys` method this is used to indicate
+#' which kind of keys are desired from `keys`
 #' @param ... other arguments.  These include: \describe{ \item{pattern:}{the
 #' pattern to match (used by keys)} \item{column:}{the column to search on.
 #' This is used by keys and is for when the thing you want to pattern match is
@@ -164,8 +164,8 @@ setMethod("martHTTPConfig", signature("Mart"), function(obj) {
 #' have a value for the thing specified by the column argument.}
 #' \item{fuzzy:}{TRUE or FALSE value.  Use fuzzy matching? (this is used with
 #' pattern by the keys method)} }
-#' @return \code{keys},\code{columns} and \code{keytypes} each return a
-#' character vector or possible values.  \code{select} returns a data.frame.
+#' @return `keys`,`columns` and `keytypes` each return a
+#' character vector or possible values.  `select` returns a data.frame.
 #' @author Marc Carlson
 #' @keywords methods
 #' @examples
