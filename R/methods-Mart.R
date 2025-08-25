@@ -2,6 +2,8 @@
 #'
 #' Represents a Mart class, containing connections to different BioMarts
 #'
+#' @param object An object of class \code{Mart}
+#'
 #' @aliases Mart-class show,Mart-method
 #' @section Methods: \describe{\code{show} Print summary of the object}
 #' @author Steffen Durinck

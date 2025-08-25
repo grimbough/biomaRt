@@ -7,6 +7,9 @@
 \usage{
 \S4method{show}{Mart}(object)
 }
+\arguments{
+\item{object}{An object of class \code{Mart}}
+}
 \description{
 Represents a Mart class, containing connections to different BioMarts
 }
