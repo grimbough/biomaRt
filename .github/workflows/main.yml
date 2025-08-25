@@ -44,19 +44,21 @@ jobs:
       - name: Install pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Install dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck
+          extra-packages: any::rcmdcheck
+          needs: check
 
-      - name: Bioc - Build, Install, Check
-        id: build-install-check
-        uses: grimbough/bioc-actions/build-install-check@v1
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          error-on: '"warning"'
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
 
       - name: Run BiocCheck
         uses: grimbough/bioc-actions/run-BiocCheck@v1
         with:
-          error-on: 'never'
+          error-on: 'error'
           arguments: '--no-check-bioc-help'
 
       - name: Test coverage
