@@ -427,6 +427,7 @@ searchFilters <- function(mart, pattern) {
 
 ## Some filters have a predefined list of options that can be selected.
 ## This function lets us search those values, given a specified filter.
+#' @rdname listFilterOptions
 #' @export
 searchFilterOptions <- function(mart, filter, pattern) {
   if (missing(mart)) {
@@ -476,7 +477,6 @@ searchFilterValues <- function(mart, filter, pattern) {
 #' anything.
 #'
 #'
-#' @aliases searchFilterOptions listFilterOptions
 #' @param mart object of class \code{Mart} created using the
 #' \code{\link{useMart}}, or \code{\link{useEnsembl}} functions
 #' @param filter The name of the filter whose options should be listed or
