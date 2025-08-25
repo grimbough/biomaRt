@@ -916,8 +916,6 @@ listFilters <- function(mart, what = c("name", "description")) {
   return(filters[, what])
 }
 
-#' @rdname biomaRt-deprecated
-#'
 #' @export
 filterOptions <- function(filter, mart) {
   .Defunct(

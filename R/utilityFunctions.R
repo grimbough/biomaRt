@@ -458,8 +458,6 @@ searchFilterOptions <- function(mart, filter, pattern) {
   }
 }
 
-#' @rdname biomaRt-deprecated
-#'
 #' @export
 searchFilterValues <- function(mart, filter, pattern) {
   .Defunct(
@@ -513,8 +511,6 @@ listFilterOptions <- function(mart, filter) {
   searchFilterOptions(mart = mart, filter = filter)
 }
 
-#' @rdname biomaRt-deprecated
-#'
 #' @export
 listFilterValues <- function(mart, filter) {
   .Defunct(
