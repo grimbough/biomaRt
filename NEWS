@@ -18,6 +18,9 @@ INTERNAL CHANGES
   It should mostly be invisible to users but might result in slightly increased
   performance in some cases.
   o This package now uses roxygen2 to generate documentation and `NAMESPACE`.
+  o A `R CMD check` `NOTE` about a missing import has been resolved.
+  o This package continuous integration setup now errors on `R CMD check`
+  `WARNING`s. This is checked on each push and PR.
 
 CHANGES IN VERSION 2.64.0
 -------------------------
