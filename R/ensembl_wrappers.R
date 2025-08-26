@@ -38,7 +38,7 @@ checkWrapperArgs <- function(id, type, mart) {
 #' gene symbol), ensembl_gene_id, unigene, agilentprobe, affy_hg_u133_plus_2,
 #' refseq_dna, etc.
 #' @param mart object of class Mart, containing connections to the BioMart
-#' databases.  You can create such an object using the function useMart.
+#' databases.  You can create such an object using the function [useMart()].
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
@@ -281,27 +281,34 @@ getGene <- function(id, type, mart) {
 
 #' Retrieves sequences
 #'
-#' This function retrieves sequences given the chomosome, start and end
+#' This function retrieves sequences given the chromosome, start and end
 #' position or a list of identifiers. Using getSequence in web service mode
 #' (default) generates 5' to 3' sequences of the requested type on the correct
 #' strand.
 #'
 #' The type of sequence returned can be specified by the seqType argument which
-#' takes the following values: \itemize{ \item'cdna': for nucleotide sequences
-#' \item'peptide': for protein sequences \item'3utr': for 3' UTR sequences
-#' \item'5utr': for 5' UTR sequences \item'gene_exon': for exon sequences only
-#' \item'transcript_exon_intron': gives the full unspliced transcript, that is
-#' exons + introns \item'gene_exon_intron' gives the exons + introns of a
-#' gene;'coding' gives the coding sequence only \item'coding_transcript_flank':
-#' gives the flanking region of the transcript including the UTRs, this must be
-#' accompanied with a given value for the upstream or downstream attribute
-#' \item'coding_gene_flank': gives the flanking region of the gene including
-#' the UTRs, this must be accompanied with a given value for the upstream or
-#' downstream attribute \item'transcript_flank': gives the flanking region of
-#' the transcript exculding the UTRs, this must be accompanied with a given
-#' value for the upstream or downstream attribute \item'gene_flank': gives the
-#' flanking region of the gene excluding the UTRs, this must be accompanied
-#' with a given value for the upstream or downstream attribute }
+#' takes the following values:
+#' * 'cdna': for nucleotide sequences
+#' * 'peptide': for protein sequences
+#' * '3utr': for 3' UTR sequences
+#' * '5utr': for 5' UTR sequences
+#' * 'gene_exon': for exon sequences only
+#' * 'transcript_exon_intron': gives the full unspliced transcript, that is
+#'   exons + introns
+#' * 'gene_exon_intron' gives the exons + introns of a gene;'coding' gives the
+#'   coding sequence only
+#' * 'coding_transcript_flank': gives the flanking region of the transcript
+#'   including the UTRs, this must be accompanied with a given value for the
+#'   upstream or downstream attribute
+#' * 'coding_gene_flank': gives the flanking region of the gene including
+#'   the UTRs, this must be accompanied with a given value for the upstream or
+#'   downstream attribute
+#' * 'transcript_flank': gives the flanking region of the transcript excluding
+#'   the UTRs, this must be accompanied with a given value for the upstream or
+#'   downstream attribute
+#' * 'gene_flank': gives the flanking region of the gene excluding the UTRs,
+#'   this must be accompanied with a given value for the upstream or downstream
+#'   attribute
 #'
 #' @param chromosome Chromosome name
 #' @param start start position of sequence on chromosome
@@ -310,7 +317,7 @@ getGene <- function(id, type, mart) {
 #' @param type The type of identifier used.  Supported types are hugo, ensembl,
 #' embl, entrezgene, refseq, ensemblTrans and unigene. Alternatively one can
 #' also use a filter to specify the type. Possible filters are given by the
-#' `listFilters()` function.
+#' [listFilters()] function.
 #' @param seqType Type of sequence that you want to retrieve.  Allowed seqTypes
 #' are given in the details section.
 #' @param upstream To add the upstream sequence of a specified number of
@@ -322,7 +329,7 @@ getGene <- function(id, type, mart) {
 #' @param useCache If `useCache = TRUE` then biomaRt will try to store
 #' succesful query results on disk, and will load these if a query is run
 #' again, rather than contacting the Ensembl server.
-#' @param verbose If verbose = TRUE then the XML query that was send to the
+#' @param verbose If `verbose = TRUE`` then the XML query that was send to the
 #' webservice will be displayed.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods

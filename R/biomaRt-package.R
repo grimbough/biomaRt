@@ -7,11 +7,9 @@
 #' The following functions are defunct and no longer work; use the replacement
 #' indicated below:
 #'
-#' \itemize{
-#' \item{filterOptions: [listFilterOptions()]}
-#' \item{listFilterValues: [listFilterOptions()]}
-#' \item{searchFilterValues: [searchFilterOptions()]}
-#' }
+#' * filterOptions: [listFilterOptions()]
+#' * listFilterValues: [listFilterOptions()]
+#' * searchFilterValues: [searchFilterOptions()]
 #'
 #' @name biomaRt-deprecated
 #' @aliases filterOptions searchFilterValues listFilterValues

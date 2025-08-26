@@ -221,7 +221,7 @@ listEnsemblArchives <- function(https) {
 #' @param includeHosts If this option is set to `TRUE` a more detailed
 #' output is produced, including the URL used to access the corresponding mart.
 #' @param host Host to connect to. Use this argument to specify and archive
-#' site for `listEnsemblGenomes` to work with.
+#' site for [listEnsemblGenomes()] to work with.
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
 #' @examples
@@ -347,12 +347,12 @@ listEnsembl <- function(
 #' Connects to the selected BioMart database and dataset hosted by Ensembl
 #'
 #' A first step in using the biomaRt package is to select a BioMart database
-#' and dataset to use.  The `useEnsembl` function enables one to connect
+#' and dataset to use.  The [useEnsembl()] function enables one to connect
 #' to a specified BioMart database and dataset hosted by Ensembl without having
 #' to specify the Ensembl URL.  To know which BioMart databases are available
 #' see the [listEnsembl()] and [listEnsemblGenomes()]
 #' functions.  To know which datasets are available within a BioMart database,
-#' first select the BioMart database using `useEnsembl` and then use the
+#' first select the BioMart database using [useEnsembl()] and then use the
 #' [listDatasets()] function on the selected Mart object.
 #'
 #' The `mirror` argument can be considered as a "preferred choice" when
@@ -369,7 +369,7 @@ listEnsembl <- function(
 #' available within a biomaRt you can e.g. do: mart = useEnsembl('genes'),
 #' followed by listDatasets(mart).
 #' @param host Host to connect to.  Only needs to be specified if different
-#' from www.ensembl.org.  For `useEnsemblGenomes` this argument can be
+#' from www.ensembl.org.  For [useEnsemblGenomes()] this argument can be
 #' used to specify an archive site.
 #' @param version Ensembl version to connect to when wanting to connect to an
 #' archived Ensembl version

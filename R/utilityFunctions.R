@@ -480,7 +480,7 @@ searchFilterValues <- function(mart, filter, pattern) {
 #' @param filter The name of the filter whose options should be listed or
 #' searched.  You can list available filters via [listFilters()]
 #' @param pattern Character vector defining the regular expression
-#' (`[regex][base::regex])` to be used for the search.  If left blank the
+#' ([regex][base::regex]) to be used for the search.  If left blank the
 #' default is to use ".*" which will match everything.
 #' @author Mike Smith
 #' @seealso [listFilters()]
