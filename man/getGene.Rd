@@ -15,7 +15,7 @@ gene symbol), ensembl_gene_id, unigene, agilentprobe, affy_hg_u133_plus_2,
 refseq_dna, etc.}
 
 \item{mart}{object of class Mart, containing connections to the BioMart
-databases.  You can create such an object using the function useMart.}
+databases.  You can create such an object using the function \code{\link[=useMart]{useMart()}}.}
 }
 \description{
 This function retrieves gene annotations from Ensembl given a vector of

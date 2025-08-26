@@ -47,7 +47,7 @@ debugging purposes.}
 \description{
 This function returns a list of BioMart databases to which biomaRt can
 connect.  By default the Ensembl BioMart databases are displayed. To
-establish a connection use the \link{useMart} function.
+establish a connection use the \code{\link[=useMart]{useMart()}} function.
 }
 \details{
 If you receive an error message saying 'Unexpected format to the list of

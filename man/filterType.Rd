@@ -8,9 +8,9 @@ filterType(filter, mart)
 }
 \arguments{
 \item{filter}{A valid filter name. Valid filters are given by the
-listFilters function}
+\code{\link[=listFilters]{listFilters()}} function}
 
-\item{mart}{object of class Mart, created using the useMart function}
+\item{mart}{object of class Mart, created using the \code{\link[=useMart]{useMart()}} function}
 }
 \description{
 Displays the type of the filer given a filter name.

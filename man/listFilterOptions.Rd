@@ -17,7 +17,7 @@ listFilterOptions(mart, filter)
 searched.  You can list available filters via \code{\link[=listFilters]{listFilters()}}}
 
 \item{pattern}{Character vector defining the regular expression
-(\verb{[regex][base::regex])} to be used for the search.  If left blank the
+(\link[base:regex]{regex}) to be used for the search.  If left blank the
 default is to use ".*" which will match everything.}
 }
 \description{

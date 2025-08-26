@@ -17,11 +17,11 @@ useMart(
 }
 \arguments{
 \item{biomart}{BioMart database name you want to connect to. Possible
-database names can be retrieved with the functio listMarts}
+database names can be retrieved with the functio \code{\link[=listMarts]{listMarts()}}}
 
 \item{dataset}{Dataset you want to use.  To see the different datasets
-available within a biomaRt you can e.g. do: mart = useMart('ensembl'),
-followed by listDatasets(mart).}
+available within a biomaRt you can e.g. do: mart = \href{'ensembl'}{useMart()},
+followed by \href{mart}{listDatasets()}.}
 
 \item{host}{Host to connect to. Defaults to \code{www.ensembl.org}}
 
@@ -46,10 +46,10 @@ use, for debugging}
 A first step in using the biomaRt package is to select a BioMart database
 and dataset to use.  The useMart function enables one to connect to a
 specified BioMart database and dataset within this database.  To know which
-BioMart databases are available see the listMarts function.  To know which
+BioMart databases are available see the \code{\link[=listMarts]{listMarts()}} function.  To know which
 datasets are available within a BioMart database, first select the BioMart
-database using useMart and then use the listDatasets function on the
-selected BioMart, see listDatasets function.
+database using \code{\link[=useMart]{useMart()}} and then use the \code{\link[=listDatasets]{listDatasets()}} function on the
+selected BioMart, see \code{\link[=listDatasets]{listDatasets()}} function.
 }
 \examples{
 

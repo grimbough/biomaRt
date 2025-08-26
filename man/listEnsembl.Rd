@@ -37,7 +37,7 @@ debugging purposes}
 output is produced, including the URL used to access the corresponding mart.}
 
 \item{host}{Host to connect to. Use this argument to specify and archive
-site for \code{listEnsemblGenomes} to work with.}
+site for \code{\link[=listEnsemblGenomes]{listEnsemblGenomes()}} to work with.}
 }
 \description{
 This function returns a list of BioMart databases hosted by Ensembl.  To

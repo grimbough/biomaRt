@@ -26,7 +26,7 @@ available within a biomaRt you can e.g. do: mart = useEnsembl('genes'),
 followed by listDatasets(mart).}
 
 \item{host}{Host to connect to.  Only needs to be specified if different
-from www.ensembl.org.  For \code{useEnsemblGenomes} this argument can be
+from www.ensembl.org.  For \code{\link[=useEnsemblGenomes]{useEnsemblGenomes()}} this argument can be
 used to specify an archive site.}
 
 \item{version}{Ensembl version to connect to when wanting to connect to an
@@ -45,12 +45,12 @@ use, for debugging}
 }
 \description{
 A first step in using the biomaRt package is to select a BioMart database
-and dataset to use.  The \code{useEnsembl} function enables one to connect
+and dataset to use.  The \code{\link[=useEnsembl]{useEnsembl()}} function enables one to connect
 to a specified BioMart database and dataset hosted by Ensembl without having
 to specify the Ensembl URL.  To know which BioMart databases are available
 see the \code{\link[=listEnsembl]{listEnsembl()}} and \code{\link[=listEnsemblGenomes]{listEnsemblGenomes()}}
 functions.  To know which datasets are available within a BioMart database,
-first select the BioMart database using \code{useEnsembl} and then use the
+first select the BioMart database using \code{\link[=useEnsembl]{useEnsembl()}} and then use the
 \code{\link[=listDatasets]{listDatasets()}} function on the selected Mart object.
 }
 \details{

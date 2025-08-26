@@ -51,7 +51,7 @@ character vector or possible values.  \code{select} returns a data.frame.
 \description{
 \code{select}, \code{columns} and \code{keys} are used together to extract
 data from a \code{Mart} object.  These functions work much the same as the
-classic biomaRt functions such as \code{getBM} etc. and are provide here to
+classic biomaRt functions such as \code{\link[=getBM]{getBM()}} etc. and are provide here to
 make this easier for people who are comfortable using these methods from
 other Annotation packages.  Examples of other objects in other packages
 where you can use these methods include (but are not limited to):

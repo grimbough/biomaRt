@@ -10,7 +10,7 @@ listAttributes(mart, page, what = c("name", "description", "page"))
 searchAttributes(mart, pattern)
 }
 \arguments{
-\item{mart}{object of class Mart created using the useMart function}
+\item{mart}{object of class Mart created using the \code{\link[=useMart]{useMart()}} function}
 
 \item{page}{Show only the attributes that belong to the specified attribute
 page.}
@@ -19,7 +19,7 @@ page.}
 be displayed.  Can have values like name, description, fullDescription, page}
 
 \item{pattern}{Character vector defining the regular expression
-(\verb{[regex][base::regex])} to be used for the search.  If left blank the
+(\link[base:regex]{regex}) to be used for the search.  If left blank the
 default is to use ".*" which will match everything.}
 }
 \description{
