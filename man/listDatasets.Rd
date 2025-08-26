@@ -16,9 +16,9 @@ searchDatasets(mart, pattern)
 debugging purposes}
 
 \item{pattern}{Character vector defining the regular expression
-(\code{\link[base]{regex})} to be used for the search.  If left blank the
+(\link[base:regex]{regex}) to be used for the search.  If left blank the
 default is to use ".*" which will match everything and return the same as
-\code{listDatasets}.}
+\code{\link[=listDatasets]{listDatasets()}}.}
 }
 \description{
 Lists or search the datasets available in the selected BioMart database

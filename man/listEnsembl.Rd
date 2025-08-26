@@ -17,7 +17,7 @@ listEnsemblGenomes(includeHosts = FALSE, host = NULL)
 }
 \arguments{
 \item{mart}{mart object created with the useEnsembl function.  This is
-optional, as you usually use \code{\link{listMarts}} to see which marts
+optional, as you usually use \code{\link[=listMarts]{listMarts()}} to see which marts
 there are to connect to.}
 
 \item{version}{Ensembl version to connect to when wanting to connect to an
@@ -37,11 +37,11 @@ debugging purposes}
 output is produced, including the URL used to access the corresponding mart.}
 
 \item{host}{Host to connect to. Use this argument to specify and archive
-site for \code{listEnsemblGenomes} to work with.}
+site for \code{\link[=listEnsemblGenomes]{listEnsemblGenomes()}} to work with.}
 }
 \description{
 This function returns a list of BioMart databases hosted by Ensembl.  To
-establish a connection use the \code{\link{useEnsembl}} function.
+establish a connection use the \code{\link[=useEnsembl]{useEnsembl()}} function.
 }
 \examples{
 

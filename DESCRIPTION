@@ -64,3 +64,4 @@ Collate:
     'ensembl_ssl_settings.R'
     'utilityFunctions.R'
     'non-biomart-utils.R'
+Roxygen: list(markdown = TRUE)

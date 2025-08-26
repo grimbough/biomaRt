@@ -8,9 +8,9 @@ useDataset(dataset, mart, verbose = FALSE)
 }
 \arguments{
 \item{dataset}{Dataset you want to use.  List of possible datasets can be
-retrieved using the function listDatasets}
+retrieved using the function \code{\link[=listDatasets]{listDatasets()}}}
 
-\item{mart}{Mart object created with the useMart function}
+\item{mart}{Mart object created with the \code{\link[=useMart]{useMart()}} function}
 
 \item{verbose}{Give detailed output of what the method is doing, for
 debugging}

@@ -21,15 +21,15 @@ getLDS(
 \arguments{
 \item{attributes}{Attributes you want to retrieve of primary dataset.  A
 possible list of attributes can be retrieved using the function
-listAttributes.}
+\code{\link[=listAttributes]{listAttributes()}}.}
 
 \item{filters}{Filters that should be used in the query. These filters will
 be applied to primary dataset.  A possible list of filters can be retrieved
-using the function listFilters.}
+using the function \code{\link[=listFilters]{listFilters()}}.}
 
 \item{values}{Values of the filter, e.g. list of affy IDs}
 
-\item{mart}{object of class Mart created with the useMart function.}
+\item{mart}{object of class Mart created with the \code{\link[=useMart]{useMart()}} function.}
 
 \item{attributesL}{Attributes of linked dataset that needs to be retrieved}
 
@@ -39,15 +39,15 @@ using the function listFilters.}
 
 \item{martL}{Mart object representing linked dataset}
 
-\item{verbose}{When using biomaRt in webservice mode and setting verbose to
-TRUE, the XML query to the webservice will be printed.  Alternatively in
-MySQL mode the MySQL query will be printed.}
+\item{verbose}{When using \pkg{biomaRt} in webservice mode and setting
+verbose to \code{TRUE}, the XML query to the webservice will be printed.
+Alternatively in MySQL mode the MySQL query will be printed.}
 
 \item{uniqueRows}{Logical to indicate if the BioMart web service should
-return unique rows only or not.  Has the value of either TRUE or FALSE}
+return unique rows only or not.  Has the value of either \code{TRUE} or \code{FALSE}}
 
 \item{bmHeader}{Boolean to indicate if the result retrieved from the BioMart
-server should include the data headers or not, defaults to TRUE.  This
+server should include the data headers or not, defaults to \code{TRUE}.  This
 should only be switched off if the default behavior results in errors,
 setting to off might still be able to retrieve your data in that case}
 }
