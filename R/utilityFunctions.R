@@ -299,6 +299,7 @@
       header = TRUE,
       quote = quote,
       comment.char = "",
+      tryLogical = FALSE,
       stringsAsFactors = FALSE,
       check.names = FALSE
     ),
