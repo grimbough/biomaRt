@@ -48,7 +48,7 @@
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to
-#' BiocFileCache::BiocFileCache()
+#' [BiocFileCache::BiocFileCache()]
 #' @param hash unique hash representing a query.
 #' @importFrom BiocFileCache bfcadd bfcquery bfcupdate
 #' @noRd
@@ -86,7 +86,7 @@
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to
-#' BiocFileCache::BiocFileCache()
+#'   [BiocFileCache::BiocFileCache()]
 #' @param hash unique hash representing a query.
 #' @noRd
 #' @importFrom BiocFileCache bfcquery
@@ -105,11 +105,11 @@
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to
-#' BiocFileCache::BiocFileCache()
+#'   [BiocFileCache::BiocFileCache()]
 #' @param hash unique hash representing a query.
 #'
-#' This function returns TRUE if a record with the requested hash already
-#' exists in the file cache, otherwise returns FALSE.
+#' This function returns `TRUE` if a record with the requested hash already
+#' exists in the file cache, otherwise returns `FALSE`.
 #' @keywords Internal
 #' @noRd
 #' @importFrom BiocFileCache bfcquery
@@ -119,11 +119,11 @@
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to
-#' BiocFileCache::BiocFileCache()
+#' [BiocFileCache::BiocFileCache()]
 #' @param hash unique hash representing a query.
 #'
 #' This function checks if a cache entry is a valid RDS file.
-#' Returns TRUE if the cache entry is valid, FALSE otherwise.
+#' Returns `TRUE` if the cache entry is valid, `FALSE` otherwise.
 #' In the case of an invalid file the cache entry and file are
 #' deleted.
 #' @importFrom BiocFileCache bfcquery bfcremove
@@ -153,18 +153,18 @@
   )
 }
 
-#' biomaRt result caching
+#' \pkg{biomaRt} result caching
 #'
-#' biomaRt makes use of a results cache to speedup execution of queries that
-#' have been run before. These functions provide details on the status of this
-#' cache, and allow it to be deleted.
+#' \pkg{biomaRt} makes use of a results cache to speedup execution of queries
+#' that have been run before. These functions provide details on the status of
+#' this cache, and allow it to be deleted.
 #'
 #'
 #' @aliases biomartCacheInfo biomartCacheClear
 #' @return These functions do not return anything and are called for their side
-#' effects.  \code{biomartCacheInfo()} prints the location of the cache, along
+#' effects. [biomartCacheInfo()] prints the location of the cache, along
 #' with the number of files and their total size on disk.
-#' \code{biomartCacheClear()} will delete the current contents of the cache.
+#' [biomartCacheClear()] will delete the current contents of the cache.
 #' @author Mike Smith
 #' @keywords IO
 #'
@@ -208,7 +208,7 @@ biomartCacheInfo <- function() {
 
 #' Determine if a cached version exists and if it's less than one week old.
 #'
-#' @param bfc BiocFileCache object created by BiocFileCache()
+#' @param bfc BiocFileCache object created by [BiocFileCache()]
 #' @param cacheEntry The name of entry in the cache.
 #' @param numDays The number of days an entry should be considered valid. Entries
 #' older than this will be deleted.

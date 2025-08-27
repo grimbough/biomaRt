@@ -74,21 +74,21 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #'
 #' This function returns a list of BioMart databases to which biomaRt can
 #' connect.  By default the Ensembl BioMart databases are displayed. To
-#' establish a connection use the \link{useMart} function.
+#' establish a connection use the [useMart()] function.
 #'
 #' If you receive an error message saying 'Unexpected format to the list of
 #' available marts', this is often because there is a problem with the BioMart
 #' server you are trying to connect to, and something other than the list of
 #' available marts is being returned - often some like a 'down for
 #' maintainance' page.  If you browse to the provided URL and find a page that
-#' starts with '\code{<MartRegistry>}' this is the correct listing and you
+#' starts with '`<MartRegistry>`' this is the correct listing and you
 #' should report the issue on the Bioconductor support site:
 #' https://support.bioconductor.org
 #'
-#' @param mart mart object created with the \code{\link{useMart}} function.
-#' This is optional, as you usually use \code{\link{listMarts}} to see which
+#' @param mart mart object created with the [useMart()] function.
+#' This is optional, as you usually use [listMarts()] to see which
 #' marts there are to connect to.
-#' @param host Host to connect to. Defaults to \code{www.ensembl.org}
+#' @param host Host to connect to. Defaults to `www.ensembl.org`
 #' @param path path to martservice that should be pasted behind the host to get
 #' to web service URL
 #' @param port port to use in HTTP communication
@@ -96,13 +96,13 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' the BioMart databases
 #' @param archive Boolean to indicate if you want to access archived versions
 #' of BioMart database. Note that this argument is now defunct and setting this
-#' value to \code{TRUE} will produce an error. A better alternative is to
+#' value to `TRUE` will produce an error. A better alternative is to
 #' specify the url of the archived BioMart you want to access.  For Ensembl you
-#' can view the list of archives using \code{\link{listEnsemblArchives}}
+#' can view the list of archives using [listEnsemblArchives()]
 #' @param http_config Some hosts require specific HTTP settings to be used when
-#' connecting. This argument takes the output of \code{\link[httr]{config}} and
-#' will be used when connecting to \code{host}.  Can be ignored if you
-#' experience no problems accessing \code{host}.
+#' connecting. This argument takes the output of [httr::config()] and
+#' will be used when connecting to `host`.  Can be ignored if you
+#' experience no problems accessing `host`.
 #' @param verbose Give detailed output of what the method is doing, for
 #' debugging purposes.
 #' @author Steffen Durinck, Mike Smith
@@ -255,18 +255,18 @@ listMarts <- function(
 #' A first step in using the biomaRt package is to select a BioMart database
 #' and dataset to use.  The useMart function enables one to connect to a
 #' specified BioMart database and dataset within this database.  To know which
-#' BioMart databases are available see the listMarts function.  To know which
+#' BioMart databases are available see the [listMarts()] function.  To know which
 #' datasets are available within a BioMart database, first select the BioMart
-#' database using useMart and then use the listDatasets function on the
-#' selected BioMart, see listDatasets function.
+#' database using [useMart()] and then use the [listDatasets()] function on the
+#' selected BioMart, see [listDatasets()] function.
 #'
 #'
 #' @param biomart BioMart database name you want to connect to. Possible
-#' database names can be retrieved with the functio listMarts
+#' database names can be retrieved with the functio [listMarts()]
 #' @param dataset Dataset you want to use.  To see the different datasets
-#' available within a biomaRt you can e.g. do: mart = useMart('ensembl'),
-#' followed by listDatasets(mart).
-#' @param host Host to connect to. Defaults to \code{www.ensembl.org}
+#' available within a biomaRt you can e.g. do: mart = [useMart()]('ensembl'),
+#' followed by [listDatasets()](mart).
+#' @param host Host to connect to. Defaults to `www.ensembl.org`
 #' @param path Path that should be pasted after to host to get access to the
 #' web service URL
 #' @param port port to connect to, will be pasted between host and path
@@ -274,7 +274,7 @@ listMarts <- function(
 #' of BioMart databases.  Note that this argument is now deprecated and will be
 #' removed in the future.  A better alternative is to leave archive = FALSE and
 #' to specify the url of the archived BioMart you want to access.  For Ensembl
-#' you can view the list of archives using \code{\link{listEnsemblArchives}}
+#' you can view the list of archives using [listEnsemblArchives()]
 #' @param version Use version name instead of biomart name to specify which
 #' BioMart you want to use
 #' @param verbose Give detailed output of what the method is doing while in
@@ -469,9 +469,9 @@ useMart <- function(
 #' @param verbose Give detailed output of what the method is doing, for
 #' debugging purposes
 #' @param pattern Character vector defining the regular expression
-#' (\code{\link[base]{regex})} to be used for the search.  If left blank the
+#' ([regex][base::regex]) to be used for the search.  If left blank the
 #' default is to use ".*" which will match everything and return the same as
-#' \code{listDatasets}.
+#' [listDatasets()].
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #' @examples
@@ -722,8 +722,8 @@ checkDataset <- function(dataset, mart) {
 #'
 #'
 #' @param dataset Dataset you want to use.  List of possible datasets can be
-#' retrieved using the function listDatasets
-#' @param mart Mart object created with the useMart function
+#' retrieved using the function [listDatasets()]
+#' @param mart Mart object created with the [useMart()] function
 #' @param verbose Give detailed output of what the method is doing, for
 #' debugging
 #' @author Steffen Durinck
@@ -773,18 +773,18 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
 #'
 #' Attributes are the outputs of a biomaRt query, they are the information we
 #' want to retrieve.  For example if we want to retrieve all EntrezGene
-#' identifiers of genes located on chromosome X, \code{entrezgene_id} will be
-#' the attribute we use in the query.  The \code{listAttributes} function lists
+#' identifiers of genes located on chromosome X, `entrezgene_id` will be
+#' the attribute we use in the query.  The `listAttributes` function lists
 #' the available attributes in the selected dataset.
 #'
 #'
-#' @param mart object of class Mart created using the useMart function
+#' @param mart object of class Mart created using the [useMart()] function
 #' @param page Show only the attributes that belong to the specified attribute
 #' page.
 #' @param what vector of types of information about the attributes that need to
 #' be displayed.  Can have values like name, description, fullDescription, page
 #' @param pattern Character vector defining the regular expression
-#' (\code{\link[base]{regex})} to be used for the search.  If left blank the
+#' ([regex][base::regex]) to be used for the search.  If left blank the
 #' default is to use ".*" which will match everything.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
@@ -837,12 +837,12 @@ listAttributes <- function(
 #' Gives a summary of the attribute pages
 #'
 #' Attributes in BioMart databases are grouped together in attribute pages.
-#' The attributePages function gives a summary of the attribute categories and
+#' The [attributePages()] function gives a summary of the attribute categories and
 #' groups present in the BioMart.  These page names can be used to display only
-#' a subset of the available attributes in the listAttributes function.
+#' a subset of the available attributes in the [listAttributes()] function.
 #'
 #'
-#' @param mart object of class Mart, created with the useMart function.
+#' @param mart object of class Mart, created with the [useMart()] function.
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
@@ -866,18 +866,18 @@ attributePages <- function(mart) {
 #'
 #' Filters are what we use as inputs for a biomaRt query.  For example, if we
 #' want to retrieve all EntrezGene identifiers on chromosome X,
-#' \code{chromosome} will be the filter, with corresponding value X.
+#' `chromosome` will be the filter, with corresponding value X.
 #'
 #'
-#' @param mart object of class \code{Mart} created using the
-#' \code{\link{useMart}} function
+#' @param mart object of class `Mart` created using the
+#' [useMart()] function
 #' @param what character vector indicating what information to display about
-#' the available filters.  Valid values are \code{name}, \code{description},
-#' \code{options}, \code{fullDescription}, \code{filters}, \code{type},
-#' \code{operation}, \code{filters8}, \code{filters9}.
+#' the available filters.  Valid values are `name`, `description`,
+#' `options`, `fullDescription`, `filters`, `type`,
+#' `operation`, `filters8`, `filters9`.
 #' @param pattern Character vector defining the regular expression
-#' (\code{\link[base]{regex})} to be used for the search.  If left blank the
-#' default is to use ".*" which will match everything.
+#' ([regex][base::regex]) to be used for the search.  If left blank the
+#' default is to use `".*"`` which will match everything.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #' @examples
@@ -935,8 +935,8 @@ filterOptions <- function(filter, mart) {
 #'
 #'
 #' @param filter A valid filter name. Valid filters are given by the
-#' listFilters function
-#' @param mart object of class Mart, created using the useMart function
+#' [listFilters()] function
+#' @param mart object of class Mart, created using the [useMart()] function
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
@@ -979,39 +979,39 @@ filterType <- function(filter, mart) {
 #'
 #'
 #' @param attributes Attributes you want to retrieve.  A possible list of
-#' attributes can be retrieved using the function listAttributes.
+#' attributes can be retrieved using the function [listAttributes()].
 #' @param filters Filters (one or more) that should be used in the query.  A
-#' possible list of filters can be retrieved using the function listFilters.
+#' possible list of filters can be retrieved using the function [listFilters()].
 #' @param values Values of the filter, e.g. vector of affy IDs.  If multiple
 #' filters are specified then the argument should be a list of vectors of which
 #' the position of each vector corresponds to the position of the filters in
 #' the filters argument.
-#' @param mart object of class Mart, created with the useMart function.
+#' @param mart object of class Mart, created with the [useMart()] function.
 #' @param checkFilters Sometimes attributes where a value needs to be
 #' specified, for example upstream_flank with value 20 for obtaining upstream
 #' sequence flank regions of length 20bp, are treated as filters in BioMarts.
 #' To enable such a query to work, one must specify the attribute as a filter
-#' and set checkFilters = FALSE for the query to work.
+#' and set `checkFilters = FALSE` for the query to work.
 #' @param verbose When using biomaRt in webservice mode and setting verbose to
 #' TRUE, the XML query to the webservice will be printed.
 #' @param uniqueRows If the result of a query contains multiple identical rows,
-#' setting this argument to TRUE (default) will result in deleting the
+#' setting this argument to `TRUE` (default) will result in deleting the
 #' duplicated rows in the query result at the server side.
 #' @param bmHeader Boolean to indicate if the result retrieved from the BioMart
-#' server should include the data headers or not, defaults to FALSE.  This
+#' server should include the data headers or not, defaults to `FALSE`.  This
 #' should only be switched on if the default behavior results in errors,
 #' setting to on might still be able to retrieve your data in that case
 #' @param quote Sometimes parsing of the results fails due to errors in the
 #' Ensembl data fields such as containing a quote, in such cases you can try to
 #' change the value of quote to try to still parse the results.
 #' @param useCache Boolean indicating whether the results cache should be used.
-#' Setting to \code{FALSE} will disable reading and writing of the cache.  This
+#' Setting to `FALSE` will disable reading and writing of the cache.  This
 #' argument is likely to disappear after the cache functionality has been
 #' tested more thoroughly.
-#' @return A \code{data.frame}. There is no implicit mapping between its rows
-#' and the function arguments (e.g. \code{filters}, \code{values}), therefore
+#' @return A `data.frame`. There is no implicit mapping between its rows
+#' and the function arguments (e.g. `filters`, `values`), therefore
 #' make sure to have the relevant identifier(s) returned by specifying them in
-#' \code{attributes}. See Examples.
+#' `attributes`. See Examples.
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examples
@@ -1231,23 +1231,23 @@ getBM <- function(
 #'
 #' @param attributes Attributes you want to retrieve of primary dataset.  A
 #' possible list of attributes can be retrieved using the function
-#' listAttributes.
+#' [listAttributes()].
 #' @param filters Filters that should be used in the query. These filters will
 #' be applied to primary dataset.  A possible list of filters can be retrieved
-#' using the function listFilters.
+#' using the function [listFilters()].
 #' @param values Values of the filter, e.g. list of affy IDs
-#' @param mart object of class Mart created with the useMart function.
+#' @param mart object of class Mart created with the [useMart()] function.
 #' @param attributesL Attributes of linked dataset that needs to be retrieved
 #' @param filtersL Filters to be applied to the linked dataset
 #' @param valuesL Values for the linked dataset filters
 #' @param martL Mart object representing linked dataset
-#' @param verbose When using biomaRt in webservice mode and setting verbose to
-#' TRUE, the XML query to the webservice will be printed.  Alternatively in
-#' MySQL mode the MySQL query will be printed.
+#' @param verbose When using \pkg{biomaRt} in webservice mode and setting
+#' verbose to `TRUE`, the XML query to the webservice will be printed.
+#' Alternatively in MySQL mode the MySQL query will be printed.
 #' @param uniqueRows Logical to indicate if the BioMart web service should
-#' return unique rows only or not.  Has the value of either TRUE or FALSE
+#' return unique rows only or not.  Has the value of either `TRUE` or `FALSE`
 #' @param bmHeader Boolean to indicate if the result retrieved from the BioMart
-#' server should include the data headers or not, defaults to TRUE.  This
+#' server should include the data headers or not, defaults to `TRUE`.  This
 #' should only be switched off if the default behavior results in errors,
 #' setting to off might still be able to retrieve your data in that case
 #' @author Steffen Durinck
@@ -1446,7 +1446,7 @@ getLDS <- function(
 #' Exports getSequence results to FASTA format
 #'
 #'
-#' @param sequences A data.frame that was the output of the getSequence
+#' @param sequences A data.frame that was the output of the [getSequence()]
 #' function
 #' @param file File to which you want to write the data
 #' @author Steffen Durinck
@@ -1513,12 +1513,12 @@ exportFASTA <- function(sequences, file) {
 #' This function opens an editor displaying the analysis code of the Nature
 #' Protocols 2009 paper
 #'
-#' The \code{\link{edit}} function uses \code{getOption("editor")} to select
-#' the editor. Use, for instance, \code{options(editor="emacs")} to set another
+#' The [edit()] function uses `getOption("editor")` to select
+#' the editor. Use, for instance, `options(editor="emacs")` to set another
 #' editor.
 #'
 #' @author Steffen Durinck, Wolfgang Huber
-#' @seealso \code{\link{edit}}
+#' @seealso [edit()]
 #' @keywords methods
 #' @examples
 #'

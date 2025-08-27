@@ -11,13 +11,13 @@ listFilterOptions(mart, filter)
 }
 \arguments{
 \item{mart}{object of class \code{Mart} created using the
-\code{\link{useMart}}, or \code{\link{useEnsembl}} functions}
+\code{\link[=useMart]{useMart()}}, or \code{\link[=useEnsembl]{useEnsembl()}} functions}
 
 \item{filter}{The name of the filter whose options should be listed or
-searched.  You can list available filters via \code{\link{listFilters}}}
+searched.  You can list available filters via \code{\link[=listFilters]{listFilters()}}}
 
 \item{pattern}{Character vector defining the regular expression
-(\code{\link[base]{regex})} to be used for the search.  If left blank the
+(\link[base:regex]{regex}) to be used for the search.  If left blank the
 default is to use ".*" which will match everything.}
 }
 \description{
@@ -49,7 +49,7 @@ if(interactive()){
 
 }
 \seealso{
-\code{\link{listFilters}}
+\code{\link[=listFilters]{listFilters()}}
 }
 \author{
 Mike Smith

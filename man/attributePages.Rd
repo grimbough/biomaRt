@@ -7,13 +7,13 @@
 attributePages(mart)
 }
 \arguments{
-\item{mart}{object of class Mart, created with the useMart function.}
+\item{mart}{object of class Mart, created with the \code{\link[=useMart]{useMart()}} function.}
 }
 \description{
 Attributes in BioMart databases are grouped together in attribute pages.
-The attributePages function gives a summary of the attribute categories and
+The \code{\link[=attributePages]{attributePages()}} function gives a summary of the attribute categories and
 groups present in the BioMart.  These page names can be used to display only
-a subset of the available attributes in the listAttributes function.
+a subset of the available attributes in the \code{\link[=listAttributes]{listAttributes()}} function.
 }
 \examples{
 

@@ -7,7 +7,7 @@
 exportFASTA(sequences, file)
 }
 \arguments{
-\item{sequences}{A data.frame that was the output of the getSequence
+\item{sequences}{A data.frame that was the output of the \code{\link[=getSequence]{getSequence()}}
 function}
 
 \item{file}{File to which you want to write the data}

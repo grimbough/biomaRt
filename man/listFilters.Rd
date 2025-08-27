@@ -11,7 +11,7 @@ searchFilters(mart, pattern)
 }
 \arguments{
 \item{mart}{object of class \code{Mart} created using the
-\code{\link{useMart}} function}
+\code{\link[=useMart]{useMart()}} function}
 
 \item{what}{character vector indicating what information to display about
 the available filters.  Valid values are \code{name}, \code{description},
@@ -19,8 +19,8 @@ the available filters.  Valid values are \code{name}, \code{description},
 \code{operation}, \code{filters8}, \code{filters9}.}
 
 \item{pattern}{Character vector defining the regular expression
-(\code{\link[base]{regex})} to be used for the search.  If left blank the
-default is to use ".*" which will match everything.}
+(\link[base:regex]{regex}) to be used for the search.  If left blank the
+default is to use `".*"`` which will match everything.}
 }
 \description{
 Filters are what we use as inputs for a biomaRt query.  For example, if we
