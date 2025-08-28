@@ -6,3 +6,6 @@
 ^\.git-blame-ignore-revs
 ^\.lintr$
 ^revdep$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
