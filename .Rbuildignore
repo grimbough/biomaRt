@@ -5,3 +5,4 @@
 ^\.vscode$
 ^\.git-blame-ignore-revs
 ^\.lintr$
+^revdep$
