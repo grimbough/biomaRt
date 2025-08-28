@@ -44,7 +44,7 @@
     ),
     collapse = "_"
   )
-  paste0("biomaRt_", digest::digest(combined, algo = "md5", serialize = FALSE))
+  paste0("biomaRt_", tools::md5sum(bytes = charToRaw(combined)))
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to

@@ -32,7 +32,6 @@ Imports:
     AnnotationDbi,
     BiocFileCache,
     curl,
-    digest,
     httr2,
     progress,
     rappdirs,
