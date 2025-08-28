@@ -44,7 +44,7 @@
     ),
     collapse = "_"
   )
-  paste0("biomaRt_", digest::digest(combined, algo = "md5", serialize = FALSE))
+  paste0("biomaRt_", tools::md5sum(bytes = charToRaw(combined)))
 }
 
 #' @param bfc Object of class BiocFileCache, created by a call to
@@ -149,7 +149,7 @@
 .biomartCacheLocation <- function() {
   Sys.getenv(
     x = "BIOMART_CACHE",
-    unset = rappdirs::user_cache_dir(appname = "biomaRt")
+    unset = tools::R_user_dir(package = "biomaRt", which = "cache")
   )
 }
 

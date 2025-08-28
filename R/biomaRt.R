@@ -1168,10 +1168,8 @@ getBM <- function(
     )
 
     ## create a unique name for this chunk & see if it has been run before
-    chunk_hash <- digest::digest(
-      paste(martHost(mart), fullXmlQuery),
-      algo = "md5",
-      serialize = FALSE
+    chunk_hash <- tools::md5sum(
+      bytes = charToRaw(paste(martHost(mart), fullXmlQuery))
     )
     tf <- file.path(
       tempdir(),
