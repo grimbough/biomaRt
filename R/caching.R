@@ -149,7 +149,7 @@
 .biomartCacheLocation <- function() {
   Sys.getenv(
     x = "BIOMART_CACHE",
-    unset = rappdirs::user_cache_dir(appname = "biomaRt")
+    unset = tools::R_user_dir(package = "biomaRt", which = "cache")
   )
 }
 

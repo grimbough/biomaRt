@@ -34,7 +34,6 @@ Imports:
     curl,
     httr2,
     progress,
-    rappdirs,
     stringr,
     utils,
     xml2
