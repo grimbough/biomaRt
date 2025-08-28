@@ -2,9 +2,9 @@ name: Distros
 
 on:
   push:
-    branches: [main, master]
+    branches: devel
   pull_request:
-    branches: [main, master]
+    branches: devel
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
