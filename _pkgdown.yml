@@ -2,3 +2,36 @@ url: https://huber-group-embl.github.io/biomaRt/
 template:
   bootstrap: 5
 
+reference:
+- title: "`Mart` class and methods"
+- contents:
+  - Mart-class
+  - select-methods
+- title: "Create or update `Mart` objects"
+- contents:
+  - listMarts
+  - listEnsembl
+  - listEnsemblArchives
+  - starts_with("use")
+- title: "Extract data from BioMart databases"
+- contents:
+  - listAttributes
+  - attributePages
+  - listDatasets
+  - listFilters
+  - searchFilterOptions
+  - filterType
+  - starts_with("get")
+- title: "Data export"
+- contents:
+  - exportFASTA
+- title: "Network and cache utilities"
+- contents:
+  - setEnsemblSSL
+  - biomartCache
+- title: "Dataset"
+- contents:
+  - NP2009code
+- title: "Deprecated of Defunct functions"
+- contents:
+  - biomaRt-deprecated
