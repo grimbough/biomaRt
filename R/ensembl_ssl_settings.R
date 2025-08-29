@@ -88,12 +88,15 @@
 #'
 #'
 #' \dontrun{
-#'   ssl_settings <- list("ssl_cipher_list" = "DEFAULT@SECLEVEL=1",
-#'                        "ssl_verifypeer"  = FALSE)
-#'   setEnsemblSSL(ssl_settings)
+#' ssl_settings <- list(
+#'   "ssl_cipher_list" = "DEFAULT@SECLEVEL=1",
+#'   "ssl_verifypeer"  = FALSE
+#')
+#' setEnsemblSSL(ssl_settings)
 #' }
 #'
-#' @export setEnsemblSSL
+#' @importFrom utils modifyList
+#' @export
 setEnsemblSSL <- function(settings) {
   stopifnot(is.list(settings))
 
@@ -101,14 +104,11 @@ setEnsemblSSL <- function(settings) {
   bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
 
   existing_config <- .getEnsemblSSL()
-  updated_config <- existing_config
 
   if (length(settings) == 0L) {
     updated_config <- list()
   } else {
-    for (i in seq_along(settings)) {
-      updated_config[[names(settings)[i]]] <- settings[[i]]
-    }
+    updated_config <- modifyList(existing_config, settings)
   }
 
   .addToCache(

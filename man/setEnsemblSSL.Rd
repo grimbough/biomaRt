@@ -21,9 +21,11 @@ used to set them manually if required.
 
 
 \dontrun{
-  ssl_settings <- list("ssl_cipher_list" = "DEFAULT@SECLEVEL=1",
-                       "ssl_verifypeer"  = FALSE)
-  setEnsemblSSL(ssl_settings)
+ssl_settings <- list(
+  "ssl_cipher_list" = "DEFAULT@SECLEVEL=1",
+  "ssl_verifypeer"  = FALSE
+)
+setEnsemblSSL(ssl_settings)
 }
 
 }
