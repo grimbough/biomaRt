@@ -1,4 +1,4 @@
-# biomaRt
+# biomaRt <img src="man/figures/logo.svg" align="right" width="120" />
 
 The package provides an R interface to datasets that provide access via the
 BioMart software suite.
