@@ -439,20 +439,18 @@ useMart <- function(
   if (verbose) {
     writeLines(paste(
       "BioMartServer running BioMart version:",
-      BioMartVersion,
-      sep = " "
+      BioMartVersion
     ))
-    writeLines(paste("Mart virtual schema:", martVSchema(mart), sep = " "))
+    writeLines(paste("Mart virtual schema:", martVSchema(mart)))
     if (!any(grepl(reqHost, martHost(mart), fixed = TRUE))) {
       writeLines(paste(
-        "Requested host was redirected from ",
+        "Requested host was redirected from",
         reqHost,
-        " to ",
-        martHost(mart),
-        sep = ""
+        "to",
+        martHost(mart)
       ))
     }
-    writeLines(paste("Mart host:", martHost(mart), sep = " "))
+    writeLines(paste("Mart host:", martHost(mart)))
   }
   if (!missing(dataset)) {
     mart <- useDataset(mart = mart, dataset = dataset, verbose = verbose)
@@ -961,7 +959,7 @@ filterType <- function(filter, mart) {
   type <- "unknown"
   sel <- which(listFilters(mart, what = "name") == filter)
   if (is.null(sel)) {
-    stop(paste("Invalid filter", filter, sep = ": "))
+    stop("Invalid filter: ", filter, sep = ": ")
   }
   type <- listFilters(mart, what = "type")[sel]
   return(type)
@@ -1148,12 +1146,11 @@ getBM <- function(
     }
 
     filterXML <- filterXmlList[[i]]
-    fullXmlQuery <- paste(
+    fullXmlQuery <- paste0(
       xmlQuery,
       attributeXML,
       filterXML,
-      "</Dataset></Query>",
-      sep = ""
+      "</Dataset></Query>"
     )
 
     if (verbose) {
@@ -1473,7 +1470,7 @@ exportFASTA <- function(sequences, file) {
   if (length(sequences[1, ]) == 2) {
     for (i in seq(along = sequences[, 2])) {
       cat(
-        paste(">", sequences[i, 2], "\n", sep = ""),
+        paste0(">", sequences[i, 2], "\n"),
         file = file,
         append = TRUE
       )
@@ -1483,15 +1480,14 @@ exportFASTA <- function(sequences, file) {
   } else {
     for (i in seq(along = sequences[, 2])) {
       cat(
-        paste(
+        paste0(
           ">chromosome_",
           sequences[i, 1],
           "_start_",
           sequences[i, 2],
           "_end_",
           sequences[i, 3],
-          "\n",
-          sep = ""
+          "\n"
         ),
         file = file,
         append = TRUE
