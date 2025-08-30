@@ -459,7 +459,7 @@ getBM(
 
 ##  Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences
 
-All sequence related queries to Ensembl are available through the `getSequence()` wrapper function. `getBM()` can also be used directly to retrieve sequences but this can get complicated so using `getSequence()` is provided as a general purpose function suitable for most situtations.
+All sequence related queries to Ensembl are available through the `getSequence()` wrapper function. `getBM()` can also be used directly to retrieve sequences but this can get complicated so using `getSequence()` is provided as a general purpose function suitable for most situations.
 
 Sequences can be retrieved using the `getSequence()` function either starting from chromosomal coordinates or identifiers.
 The chromosome name can be specified using the *chromosome* argument.  The *start* and *end* arguments are used to specify *start* and *end* positions on the chromosome.

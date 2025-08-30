@@ -68,7 +68,7 @@ pickReferenceStrain <- function(genomes_to_choose_from) {
 
 pickReferenceStrain_msg <- function(input_term) {
   message(
-    "Your search term was ambigous and multiple strains matching '",
+    "Your search term was ambiguous and multiple strains matching '",
     input_term,
     "' were found.\n",
     "Selecting the reference genome for this organism.\n",
