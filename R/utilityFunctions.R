@@ -186,13 +186,6 @@
     parsed_url$hostname <- "www.ensembl.org"
   }
 
-  ## only prepend http if needed
-  if (is.null(parsed_url$scheme)) {
-    parsed_url$scheme <- "http"
-    parsed_url$hostname <- parsed_url$path
-    parsed_url$path <- ""
-  }
-
   ## warn about Ensembl HTTPS here - later we'll force the change
   if (
     grepl("ensembl", parsed_url$hostname, fixed = TRUE) &&
