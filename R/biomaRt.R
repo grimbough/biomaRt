@@ -80,7 +80,7 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' available marts', this is often because there is a problem with the BioMart
 #' server you are trying to connect to, and something other than the list of
 #' available marts is being returned - often some like a 'down for
-#' maintainance' page.  If you browse to the provided URL and find a page that
+#' maintenance' page.  If you browse to the provided URL and find a page that
 #' starts with '`<MartRegistry>`' this is the correct listing and you
 #' should report the issue on the Bioconductor support site:
 #' https://support.bioconductor.org
@@ -262,7 +262,7 @@ listMarts <- function(
 #'
 #'
 #' @param biomart BioMart database name you want to connect to. Possible
-#' database names can be retrieved with the functio [listMarts()]
+#' database names can be retrieved with the function [listMarts()]
 #' @param dataset Dataset you want to use.  To see the different datasets
 #' available within a biomaRt you can e.g. do: mart = [useMart()]('ensembl'),
 #' followed by [listDatasets()](mart).

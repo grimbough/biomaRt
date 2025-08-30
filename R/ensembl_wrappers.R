@@ -27,7 +27,7 @@ checkWrapperArgs <- function(id, type, mart) {
 #' Retrieves gene annotation information given a vector of identifiers
 #'
 #' This function retrieves gene annotations from Ensembl given a vector of
-#' identifiers.  Annotation includes chromsome name, band, start position, end
+#' identifiers.  Annotation includes chromosome name, band, start position, end
 #' position, gene description and gene symbol.  A wide variety of identifiers
 #' is available in Ensembl, these can be found with the listFilters function.
 #'
@@ -121,7 +121,7 @@ getGene <- function(id, type, mart) {
     stop(
       "Please specify the type argument.\n",
       "If you use chromosomal coordinates to retrieve sequences ",
-      "then the type argument will specify the type of gene indentifiers that you will retrieve with the sequences.\n",
+      "then the type argument will specify the type of gene identifiers that you will retrieve with the sequences.\n",
       "If you use a vector of identifiers to retrieve the sequences ",
       "the type argument specifies the type of identifiers you are using."
     )

@@ -83,7 +83,7 @@ The Phytozome 12 BioMart was [retired](https://jgi.doe.gov/more-intuitive-phytoz
 
 ### Version 13
 
-Version 13 of Phyotozome can be found at https://phytozome-next.jgi.doe.gov/ and if you wish to query that version the URL used to create the Mart object must reflect that.
+Version 13 of Phytozome can be found at https://phytozome-next.jgi.doe.gov/ and if you wish to query that version the URL used to create the Mart object must reflect that.
 
 ```{r, phytozome-13, echo = TRUE, eval = TRUE}
 phytozome_v13 <- useMart(
