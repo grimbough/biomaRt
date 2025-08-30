@@ -5,7 +5,7 @@
 \alias{listFilterOptions}
 \title{List or search the options available for a specified filter.}
 \usage{
-searchFilterOptions(mart, filter, pattern)
+searchFilterOptions(mart, filter, pattern = ".*")
 
 listFilterOptions(mart, filter)
 }

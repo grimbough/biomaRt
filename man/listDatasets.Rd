@@ -7,7 +7,7 @@
 \usage{
 listDatasets(mart, verbose = FALSE)
 
-searchDatasets(mart, pattern)
+searchDatasets(mart, pattern = ".*")
 }
 \arguments{
 \item{mart}{object of class Mart created with the useMart function}
