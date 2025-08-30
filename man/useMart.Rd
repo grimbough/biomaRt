@@ -17,7 +17,7 @@ useMart(
 }
 \arguments{
 \item{biomart}{BioMart database name you want to connect to. Possible
-database names can be retrieved with the functio \code{\link[=listMarts]{listMarts()}}}
+database names can be retrieved with the function \code{\link[=listMarts]{listMarts()}}}
 
 \item{dataset}{Dataset you want to use.  To see the different datasets
 available within a biomaRt you can e.g. do: mart = \href{'ensembl'}{useMart()},

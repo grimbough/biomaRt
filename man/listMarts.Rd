@@ -54,7 +54,7 @@ If you receive an error message saying 'Unexpected format to the list of
 available marts', this is often because there is a problem with the BioMart
 server you are trying to connect to, and something other than the list of
 available marts is being returned - often some like a 'down for
-maintainance' page.  If you browse to the provided URL and find a page that
+maintenance' page.  If you browse to the provided URL and find a page that
 starts with '\verb{<MartRegistry>}' this is the correct listing and you
 should report the issue on the Bioconductor support site:
 https://support.bioconductor.org

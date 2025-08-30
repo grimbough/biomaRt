@@ -7,7 +7,7 @@
 \usage{
 listAttributes(mart, page, what = c("name", "description", "page"))
 
-searchAttributes(mart, pattern)
+searchAttributes(mart, pattern = ".*")
 }
 \arguments{
 \item{mart}{object of class Mart created using the \code{\link[=useMart]{useMart()}} function}

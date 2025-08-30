@@ -7,7 +7,7 @@
 \usage{
 listFilters(mart, what = c("name", "description"))
 
-searchFilters(mart, pattern)
+searchFilters(mart, pattern = ".*")
 }
 \arguments{
 \item{mart}{object of class \code{Mart} created using the

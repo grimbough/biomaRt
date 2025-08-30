@@ -19,7 +19,7 @@ databases.  You can create such an object using the function \code{\link[=useMar
 }
 \description{
 This function retrieves gene annotations from Ensembl given a vector of
-identifiers.  Annotation includes chromsome name, band, start position, end
+identifiers.  Annotation includes chromosome name, band, start position, end
 position, gene description and gene symbol.  A wide variety of identifiers
 is available in Ensembl, these can be found with the listFilters function.
 }
