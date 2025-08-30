@@ -1308,7 +1308,7 @@ getLDS <- function(
     )
   }
 
-  if (filters[1] != "") {
+  if (nzchar(filters[1])) {
     invalid <- !(filters %in% listFilters(mart, what = "name"))
     if (any(invalid)) {
       stop(
@@ -1318,7 +1318,7 @@ getLDS <- function(
       )
     }
   }
-  if (filtersL[1] != "") {
+  if (nzchar(filtersL[1])) {
     invalid <- !(filtersL %in% listFilters(martL, what = "name"))
     if (any(invalid)) {
       stop(
