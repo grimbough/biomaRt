@@ -523,6 +523,7 @@ listDatasets <- function(mart, verbose = FALSE) {
     verbose = verbose
   )
   con <- textConnection(bmResult)
+  on.exit(close(con))
   txt <- scan(
     con,
     sep = "\t",
@@ -531,7 +532,6 @@ listDatasets <- function(mart, verbose = FALSE) {
     quiet = TRUE,
     quote = "\""
   )
-  close(con)
 
   ## select visible ("1") table sets
   i <- intersect(which(txt == "TableSet"), which(txt == "1") - 3L)
