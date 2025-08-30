@@ -537,19 +537,17 @@ useEnsembl <- function(
 listEnsemblGenomes <- function(includeHosts = FALSE, host = NULL) {
   ## use the default websites unless an alternative is provided
   if (is.null(host)) {
-    hosts <- c(
+    host <- c(
       "https://protists.ensembl.org/",
       "https://fungi.ensembl.org/",
       "https://metazoa.ensembl.org/",
       "https://plants.ensembl.org/"
     )
-  } else {
-    hosts <- host
   }
 
   http_config <- .getEnsemblSSL()
 
-  marts <- lapply(hosts, FUN = function(x) {
+  marts <- lapply(host, FUN = function(x) {
     as.data.frame(
       .listMarts(
         host = x,
