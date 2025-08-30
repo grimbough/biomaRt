@@ -358,12 +358,9 @@
 
 #' @rdname listDatasets
 #' @export
-searchDatasets <- function(mart, pattern) {
+searchDatasets <- function(mart, pattern = ".*") {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
-  }
-  if (missing(pattern)) {
-    pattern <- ".*"
   }
 
   datasets <- listDatasets(mart)
@@ -379,12 +376,9 @@ searchDatasets <- function(mart, pattern) {
 #' @rdname listAttributes
 #'
 #' @export
-searchAttributes <- function(mart, pattern) {
+searchAttributes <- function(mart, pattern = ".*") {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
-  }
-  if (missing(pattern)) {
-    pattern <- ".*"
   }
 
   attributes <- listAttributes(mart)
@@ -399,12 +393,9 @@ searchAttributes <- function(mart, pattern) {
 
 #' @rdname listFilters
 #' @export
-searchFilters <- function(mart, pattern) {
+searchFilters <- function(mart, pattern = ".*") {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
-  }
-  if (missing(pattern)) {
-    pattern <- ".*"
   }
 
   filters <- listFilters(mart)
@@ -422,15 +413,12 @@ searchFilters <- function(mart, pattern) {
 ## This function lets us search those values, given a specified filter.
 #' @rdname listFilterOptions
 #' @export
-searchFilterOptions <- function(mart, filter, pattern) {
+searchFilterOptions <- function(mart, filter, pattern = ".*") {
   if (missing(mart)) {
     stop("Argument 'mart' must be specified")
   }
   if (missing(filter)) {
     stop("Argument 'filter' must be specified")
-  }
-  if (missing(pattern)) {
-    pattern <- ".*"
   }
 
   ## first get all filters & their options, then reduce to what's requested
