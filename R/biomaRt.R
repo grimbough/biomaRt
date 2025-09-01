@@ -1143,7 +1143,7 @@ getBM <- function(
     )
     if (!file.exists(tf)) {
       postRes <- .submitQueryXML(
-        host = paste0(martHost(mart), sep),
+        host = martHost(mart),
         query = fullXmlQuery,
         http_config = martHTTPConfig(mart)
       )
