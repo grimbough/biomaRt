@@ -9,6 +9,7 @@ Authors@R: c(
     person("Vince S", "Buffalo", role = "ctb"),
     person("Mike", "Smith", , "grimbough@gmail.com", role = c("ctb", "cre"),
            comment = c(ORCID = "0000-0002-7800-3848")),
+    person("Hugo", "Gruson", , "hugo.gruson@embl.de", role = "ctb"),
     person("German Network for Bioinformatics Infrastructure - de.NBI", role = "fnd")
   )
 Description: In recent years a wealth of biological data has become
