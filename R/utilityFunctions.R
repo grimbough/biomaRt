@@ -234,6 +234,12 @@
 
   res <- httr2::req_perform(req)
 
+  if (httr2::resp_url(res) != host) {
+    req2 <- req |>
+      httr2::req_url(httr2::resp_url(res))
+    res <- httr2::req_perform(req2)
+  }
+
   if (httr2::resp_is_error(res)) {
     err_msg <- .createErrorMessage(error_code = resp_status(res), host = host)
     stop(err_msg, call. = FALSE)
