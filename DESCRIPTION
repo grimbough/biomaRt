@@ -65,3 +65,5 @@ Collate:
     'utilityFunctions.R'
     'non-biomart-utils.R'
 Roxygen: list(markdown = TRUE)
+Config/Needs/website:
+    xfun
