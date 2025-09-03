@@ -12,7 +12,7 @@ test_that("martCheck() catches bad input", {
 
   expect_error(
     biomaRt:::martCheck(ensembl),
-    regex = "No dataset selected, please select a dataset first"
+    regexp = "No dataset selected, please select a dataset first"
   )
 
   ensembl <- Mart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")

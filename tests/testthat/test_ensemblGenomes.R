@@ -3,7 +3,7 @@ test_that("Error handling works", {
 
   expect_error(
     useEnsemblGenomes(),
-    regex = "You must provide the argument 'biomart'"
+    regexp = "You must provide the argument 'biomart'"
   )
 
   mockery::stub(

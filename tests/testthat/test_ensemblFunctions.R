@@ -86,7 +86,7 @@ test_that("Ensembl URLs are constructed correctly", {
 
   expect_warning(
     .constructEnsemblURL(GRCh = 38),
-    regex = "Only 37 can be specified for GRCh version"
+    regexp = "Only 37 can be specified for GRCh version"
   ) %>%
     expect_equal("https://www.ensembl.org")
 
