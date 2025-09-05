@@ -12,6 +12,7 @@ In recent years a wealth of biological data has become available in public data 
 Useful links:
 \itemize{
   \item \url{https://github.com/Huber-group-EMBL/biomaRt}
+  \item \url{https://huber-group-embl.github.io/biomaRt/}
   \item Report bugs at \url{https://github.com/Huber-group-EMBL/biomaRt/issues}
 }
 
@@ -30,6 +31,8 @@ Other contributors:
   \item Sean Davis \email{sdavis2@mail.nih.gov} [contributor]
   \item Francois Pepin [contributor]
   \item Vince S Buffalo [contributor]
+  \item Hugo Gruson \email{hugo.gruson@embl.de} [contributor]
+  \item German Network for Bioinformatics Infrastructure - de.NBI [funder]
 }
 
 }
