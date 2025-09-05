@@ -98,7 +98,7 @@ listEnsemblArchives <- function() {
 
   extracted <- str_extract_all(
     string = archives,
-    pattern = "Ensembl [A-Za-z0-9 ]{2,6}|http[s]?://.*ensembl\\.org|[A-Z][a-z]{2} [0-9]{4}"
+    pattern = "Ensembl [A-Za-z0-9 ]{2,6}|https?://.*ensembl\\.org|[A-Z][a-z]{2} [0-9]{4}"
   )
 
   ## split the version number into a separate column
@@ -420,7 +420,7 @@ useEnsembl <- function(
   if (!missing(host)) {
     no_subdomain <- grepl(
       x = host,
-      pattern = "http[s]?://ensembl",
+      pattern = "https?://ensembl",
       fixed = FALSE
     )
   } else {

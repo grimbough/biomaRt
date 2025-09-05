@@ -174,7 +174,7 @@
 ## paste the complete URL strategy and produces something invalid.
 ## This function tidies that up to catch common variants.
 .cleanHostURL <- function(host, warn = TRUE) {
-  if (!grepl("^http[s]?://", x = host)) {
+  if (!grepl("^https?://", x = host)) {
     host <- paste0("http://", host)
   }
 
