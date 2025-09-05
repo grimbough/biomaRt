@@ -123,11 +123,12 @@ test_that("URL formatting works", {
     expected = "https://www.myurl.org"
   )
 
-  ## add 'www' to ensembl.org
-  ## We expect a warning about using http
+  ## add https & 'www' to ensembl.org
   host <- "ensembl.org"
-  expect_warning(object = .cleanHostURL(host = host)) |>
-    expect_equal(expected = "http://www.ensembl.org")
+  expect_equal(
+    object = .cleanHostURL(host = host),
+    expected = "https://www.ensembl.org"
+  )
 })
 
 test_that("TSV and HTML result tables match", {

@@ -162,12 +162,11 @@ listMarts <- function(
   archive = FALSE,
   verbose = FALSE,
   http_config,
-  ensemblRedirect = NULL,
-  warn = TRUE
+  ensemblRedirect = NULL
 ) {
   request <- NULL
   if (is.null(mart)) {
-    host <- .cleanHostURL(host, warn = warn)
+    host <- .cleanHostURL(host)
     if (archive) {
       stop(
         "The archive = TRUE argument is now defunct.\n",
@@ -356,8 +355,7 @@ useMart <- function(
     includeHosts = TRUE,
     http_config = http_config,
     archive = archive,
-    ensemblRedirect = ensemblRedirect,
-    warn = FALSE
+    ensemblRedirect = ensemblRedirect
   )
   mindex <- NA
   if (!missing(biomart)) {
