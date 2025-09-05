@@ -2,6 +2,12 @@
 CHANGES IN VERSION 2.66.0
 -------------------------
 
+BREAKING CHANGES
+
+  o the `https` argument in `useEnsembl()` has been removed, as announced in
+  version 2.50.0. Connections to Ensembl mirrors now always use `https://`, as
+  enforced by a redirect from the server.
+
 USER VISIBLE CHANGES
 
   o This package documentation is now available as a pkgdown website at
