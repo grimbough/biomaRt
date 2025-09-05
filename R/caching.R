@@ -219,10 +219,8 @@ biomartCacheInfo <- function() {
   use_cached_version <- FALSE
   if (.checkInCache(bfc, hash = cacheEntry)) {
     cache_entry <- bfcquery(x = bfc, query = cacheEntry)
-    if (
-      (nrow(cache_entry) == 1) &&
-        (as.Date(Sys.time()) - as.Date(cache_entry$create_time) < numDays)
-    ) {
+    is_outdated <- Sys.Date() - as.Date(cache_entry$create_time) >= numDays
+    if (nrow(cache_entry) == 1 && !is_outdated) {
       use_cached_version <- TRUE
     } else {
       bfcremove(bfc, cache_entry$rid)
