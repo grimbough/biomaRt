@@ -1,6 +1,6 @@
 ## location of Ensembl specific functions
 
-.checkArchiveList <- function(https = TRUE, http_config = list()) {
+.checkArchiveList <- function(http_config = list()) {
   ## determine if a cached version exists and if it's less than one week old
   cache <- .biomartCacheLocation()
   bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
@@ -14,7 +14,7 @@
   if (use_cached_version) {
     archive_html <- .readFromCache(bfc, cache_entry)
   } else {
-    archive_html <- .getArchiveList(https = https, http_config = http_config)
+    archive_html <- .getArchiveList(http_config = http_config)
     .addToCache(bfc, archive_html, hash = cache_entry)
   }
 
@@ -22,13 +22,12 @@
 }
 
 #' @importFrom httr2 req_error req_options req_perform req_retry req_timeout request resp_body_string resp_status
-.getArchiveList <- function(https = TRUE, http_config = list()) {
+.getArchiveList <- function(http_config = list()) {
   mirrors <- c("www", "asia", "useast")
-  protocol <- ifelse(https, "https://", "http://")
 
   while (length(mirrors) > 0) {
     url <- paste0(
-      protocol,
+      "https://",
       mirrors[1],
       ".ensembl.org/info/website/archives/index.html?redirect=no"
     )
@@ -71,11 +70,6 @@
 #' Returns a table containing the available archived versions of Ensembl, along
 #' with the dates they were created and the URL used to access them.
 #'
-#'
-#' @param https Deprecated argument.  Ensembl are enforcing https use from late
-#' 2021 and this argument will be removed at this time as it no longer serves a
-#' purpose.  Originally - "Logical value of length 1.  Determines whether https
-#' should be used to contact the Ensembl server."
 #' @author Mike Smith
 #' @keywords methods
 #' @examples
@@ -83,21 +77,14 @@
 #' listEnsemblArchives()
 #'
 #' @export
-listEnsemblArchives <- function(https) {
-  if (!missing(https)) {
-    warning(
-      "Ensembl will soon enforce the use of https.\n",
-      "As such the 'https' argument will be deprecated in the next release."
-    )
-  }
-  https <- TRUE
+listEnsemblArchives <- function() {
 
-  .listEnsemblArchives(https = https, http_config = list())
+  .listEnsemblArchives(http_config = list())
 }
 
 #' @importFrom stringr str_extract_all str_match
-.listEnsemblArchives <- function(https = TRUE, http_config) {
-  html <- .checkArchiveList(https, http_config)
+.listEnsemblArchives <- function(http_config) {
+  html <- .checkArchiveList(http_config)
   html <- xml2::read_html(html)
 
   archive_box <- as.character(
@@ -294,7 +281,7 @@ listEnsembl <- function(
   }
 
   if (!is.null(version)) {
-    archives <- .listEnsemblArchives(https = TRUE, http_config = list())
+    archives <- .listEnsemblArchives(http_config = list())
     idx <- match(version, archives[, "version"], nomatch = NA)
     if (is.na(idx)) {
       stop(
@@ -502,7 +489,7 @@ useEnsembl <- function(
 
   if (grepl("archive", martHost(mart), fixed = TRUE)) {
     ## hack to work around redirection of most recent mirror URL
-    archives <- .listEnsemblArchives(https = TRUE, http_config = http_config)
+    archives <- .listEnsemblArchives(http_config = http_config)
     current_release <- archives[archives$current_release == "*", "url"]
     if (grepl(martHost(mart), pattern = current_release)) {
       martHost(mart) <- stringr::str_replace(

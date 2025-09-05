@@ -416,7 +416,6 @@ useMart <- function(
   if (any(grepl("archive", martHost(mart), fixed = TRUE))) {
     ## hack to work around redirection of most recent mirror URL
     archives <- .listEnsemblArchives(
-      https = TRUE,
       http_config = http_config
     )
     current_release <- archives[archives$current_release == "*", "url"]
