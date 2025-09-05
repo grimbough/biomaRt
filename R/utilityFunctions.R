@@ -173,7 +173,7 @@
 ## include the "http://" and maybe a trailing "/" and this messes up our
 ## paste the complete URL strategy and produces something invalid.
 ## This function tidies that up to catch common variants.
-.cleanHostURL <- function(host, warn = TRUE) {
+.cleanHostURL <- function(host) {
   if (!grepl("^https?://", x = host)) {
     host <- paste0("http://", host)
   }
@@ -186,17 +186,12 @@
     parsed_url$hostname <- "www.ensembl.org"
   }
 
-  ## warn about Ensembl HTTPS here - later we'll force the change
+  ## For HTTPS on Ensembl
   if (
     grepl("ensembl", parsed_url$hostname, fixed = TRUE) &&
-      parsed_url$scheme != "https" &&
-      warn
+      parsed_url$scheme != "https"
   ) {
-    warning(
-      "Ensembl will soon enforce the use of https.\n",
-      "Ensure the 'host' argument includes \"https://\"",
-      call. = FALSE
-    )
+    parsed_url$scheme <- "https"
   }
 
   host <- httr2::url_build(parsed_url)
