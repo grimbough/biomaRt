@@ -23,21 +23,13 @@
 
 #' @importFrom httr2 req_error req_options req_perform req_retry req_timeout request resp_body_string resp_status
 .getArchiveList <- function(https = TRUE, http_config = list()) {
-  url_worked <- FALSE
   mirrors <- c("www", "asia", "useast")
   protocol <- ifelse(https, "https://", "http://")
 
-  while (!url_worked) {
-    if (length(mirrors) == 0) {
-      stop("Unable to contact any Ensembl mirror")
-    }
-
-    mirror_option <- mirrors[1]
-    mirrors <- mirrors[-1]
-
+  while (length(mirrors) > 0) {
     url <- paste0(
       protocol,
-      mirror_option,
+      mirrors[1],
       ".ensembl.org/info/website/archives/index.html?redirect=no"
     )
 
@@ -60,7 +52,9 @@
     ) {
       return(resp_body_string(html))
     }
+    mirrors <- mirrors[-1]
   }
+  stop("Unable to contact any Ensembl mirror")
 }
 
 .currentEnsemblVersion <- function() {
