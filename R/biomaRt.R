@@ -520,10 +520,8 @@ listDatasets <- function(mart, verbose = FALSE) {
     http_config = http_config,
     verbose = verbose
   )
-  con <- textConnection(bmResult)
-  on.exit(close(con))
   txt <- scan(
-    con,
+    text = bmResult,
     sep = "\t",
     blank.lines.skip = TRUE,
     what = "character",
@@ -584,16 +582,14 @@ bmVersion <- function(mart, verbose = FALSE) {
         ))
       }
     } else {
-      con <- textConnection(BioMartVersion)
       bmVersionParsed <- read.table(
-        con,
+        text = BioMartVersion,
         sep = "\t",
         header = FALSE,
         quote = "",
         comment.char = "",
         as.is = TRUE
       )
-      close(con)
       if (verbose) {
         print(bmVersionParsed)
       }
@@ -1393,9 +1389,8 @@ getLDS <- function(
   }
 
   if (postRes != "") {
-    con <- textConnection(postRes)
     result <- read.table(
-      con,
+      text = postRes,
       sep = "\t",
       header = bmHeader,
       quote = "\"",
@@ -1403,7 +1398,6 @@ getLDS <- function(
       as.is = TRUE,
       check.names = TRUE
     )
-    close(con)
 
     if (nrow(result) > 0 && all(is.na(result[, ncol(result)]))) {
       result <- result[, -ncol(result), drop = FALSE]
