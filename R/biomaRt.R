@@ -208,7 +208,7 @@ listMarts <- function(
 
   ## check this looks like the MartRegistry XML, otherwise throw an error
   if (!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
-    if (grepl(x = registry, pattern = "status.ensembl.org")) {
+    if (grepl(x = registry, pattern = "status.ensembl.org", fixed = TRUE)) {
       stop(
         "Your query has been redirected to http://status.ensembl.org ",
         "indicating this Ensembl service is currently unavailable.",
