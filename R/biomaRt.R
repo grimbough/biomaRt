@@ -1383,7 +1383,7 @@ getLDS <- function(
     http_config = martHTTPConfig(mart)
   )
 
-  if (any(startsWith(postRes, "^Query ERROR"))) {
+  if (any(startsWith(postRes, "Query ERROR"))) {
     stop(postRes)
   }
 
