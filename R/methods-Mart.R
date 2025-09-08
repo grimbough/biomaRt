@@ -42,15 +42,11 @@ setReplaceMethod("martBM", "Mart", function(obj, value) {
 
 
 #' @importFrom methods setGeneric
-setGeneric("martAttributes", function(obj, ...) {
-  standardGeneric("martAttributes")
-})
+setGeneric("martAttributes", function(obj, ...) standardGeneric("martAttributes"))
 #' @importFrom methods setMethod signature
 setMethod("martAttributes", signature("Mart"), function(obj) obj@attributes)
 #' @importFrom methods setGeneric
-setGeneric("martAttributes<-", function(obj, value) {
-  standardGeneric("martAttributes<-")
-})
+setGeneric("martAttributes<-", function(obj, value) standardGeneric("martAttributes<-"))
 #' @importFrom methods setReplaceMethod
 setReplaceMethod("martAttributes", "Mart", function(obj, value) {
   obj@attributes <- value
@@ -63,9 +59,7 @@ setGeneric("martFilters", function(obj, ...) standardGeneric("martFilters"))
 #' @importFrom methods setMethod signature
 setMethod("martFilters", signature("Mart"), function(obj) obj@filters)
 #' @importFrom methods setGeneric
-setGeneric("martFilters<-", function(obj, value) {
-  standardGeneric("martFilters<-")
-})
+setGeneric("martFilters<-", function(obj, value) standardGeneric("martFilters<-"))
 #' @importFrom methods setReplaceMethod
 setReplaceMethod("martFilters", "Mart", function(obj, value) {
   obj@filters <- value
@@ -78,9 +72,7 @@ setGeneric("martDataset", function(obj, ...) standardGeneric("martDataset"))
 #' @importFrom methods setMethod signature
 setMethod("martDataset", signature("Mart"), function(obj) obj@dataset)
 #' @importFrom methods setGeneric
-setGeneric("martDataset<-", function(obj, value) {
-  standardGeneric("martDataset<-")
-})
+setGeneric("martDataset<-", function(obj, value) standardGeneric("martDataset<-"))
 #' @importFrom methods setReplaceMethod
 setReplaceMethod("martDataset", "Mart", function(obj, value) {
   obj@dataset <- value
