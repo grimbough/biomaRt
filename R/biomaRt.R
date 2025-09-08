@@ -952,7 +952,6 @@ filterType <- function(filter, mart) {
     stop("Filter argument should be of class character")
   }
   martCheck(mart)
-  type <- "unknown"
   sel <- which(listFilters(mart, what = "name") == filter)
   if (is.null(sel)) {
     stop("Invalid filter: ", filter, sep = ": ")
