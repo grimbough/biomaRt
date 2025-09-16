@@ -1411,10 +1411,8 @@ getLDS <- function(
 #' mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 #'
 #' seq <- getSequence(
-#'   chromosome = c(2, 2),
-#'   start = c(100000, 30000),
-#'   end = c(100300, 30500),
-#'   type = "ensembl",
+#'   id = "BRCA1",
+#'   type = "hgnc_symbol",
 #'   seqType = "cdna",
 #'   mart = mart
 #' )
