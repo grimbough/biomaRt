@@ -39,6 +39,7 @@ INTERNAL CHANGES
   `WARNING`s. This is checked on each push and PR.
   o The digest and rappdirs dependencies have been removed in favour of
   functions provided by the base R tools package.
+  o Examples have been reviewed and fixed where necessary.
 
 CHANGES IN VERSION 2.64.0
 -------------------------
