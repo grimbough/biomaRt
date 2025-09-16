@@ -36,16 +36,22 @@ test_that("'Long' table of results for no search term", {
   skip_if_not_installed("mockery")
   mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
 
-  expect_is(x <- searchDatasets(ensembl), class = "data.frame")
+  expect_s3_class(x <- searchDatasets(ensembl), class = "data.frame")
   expect_equal(nrow(x), 5)
   expect_identical(example_datasets, x)
 })
 
 test_that("Return complete table of results for no search term", {
-  expect_is(x <- searchAttributes(ensembl_with_dataset), class = "data.frame")
+  expect_s3_class(
+    x <- searchAttributes(ensembl_with_dataset),
+    class = "data.frame"
+  )
   expect_identical(x, martAttributes(ensembl_with_dataset))
 
-  expect_is(x <- searchFilters(ensembl_with_dataset), class = "data.frame")
+  expect_s3_class(
+    x <- searchFilters(ensembl_with_dataset),
+    class = "data.frame"
+  )
   expect_identical(x, martFilters(ensembl_with_dataset))
 })
 
@@ -53,20 +59,17 @@ test_that("Message when nothing found", {
   skip_if_not_installed("mockery")
 
   mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
-  expect_message(searchDatasets(ensembl, pattern = "foobaa"), "No matching") %>%
-    expect_null()
+  searchDatasets(ensembl, pattern = "foobaa") |>
+    expect_null() |>
+    expect_message("No matching")
 
-  expect_message(
-    searchAttributes(ensembl_with_dataset, pattern = "foobaa"),
-    "No matching"
-  ) %>%
-    expect_null()
+  searchAttributes(ensembl_with_dataset, pattern = "foobaa") |>
+    expect_null() |>
+    expect_message("No matching")
 
-  expect_message(
-    searchFilters(ensembl_with_dataset, pattern = "foobaa"),
-    "No matching"
-  ) %>%
-    expect_null()
+  searchFilters(ensembl_with_dataset, pattern = "foobaa") |>
+    expect_null() |>
+    expect_message("No matching")
 })
 
 
@@ -74,16 +77,19 @@ test_that("'Sensible' table of results for specific search term", {
   skip_if_not_installed("mockery")
 
   mockery::stub(searchDatasets, "listDatasets", how = example_datasets)
-  expect_is(x <- searchDatasets(ensembl, pattern = "B_"), class = "data.frame")
+  expect_s3_class(
+    x <- searchDatasets(ensembl, pattern = "B_"),
+    class = "data.frame"
+  )
   expect_equal(nrow(x), 1) ## only one dataset should be found
 
-  expect_is(
+  expect_s3_class(
     x <- searchAttributes(ensembl_with_dataset, pattern = "Attr(A|B)"),
     class = "data.frame"
   )
   expect_equal(nrow(x), 2)
 
-  expect_is(
+  expect_s3_class(
     x <- searchFilters(ensembl_with_dataset, pattern = "Filt_Z"),
     class = "data.frame"
   )

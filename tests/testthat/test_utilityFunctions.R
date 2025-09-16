@@ -69,7 +69,7 @@ test_that("Renaming columns - synthetic data", {
 example_return <- "GO term accession\tGene name\tGO domain\nGO:0004465\tLpl\tmolecular_function\nGO:0006631\tLpl\tbiological_process\nGO:0005509\tLpl\tmolecular_function\n"
 
 test_that("Results processing works", {
-  expect_is(
+  expect_s3_class(
     result_table <- .processResults(
       postRes = example_return,
       mart = ensembl,
@@ -242,7 +242,7 @@ test_that("attribute and filter tables are parsed correctly", {
     "bmRequest",
     "ensembl_gene_id\tGene stable ID\tStable ID of the Gene\tfeature_page\thtml,txt,csv,tsv,xls\thsapiens_gene_ensembl__gene__main\tstable_id_1023\n",
   )
-  expect_is(
+  expect_s3_class(
     .getAttrFilt(mart = ensembl, verbose = TRUE, type = "attributes"),
     "data.frame"
   )
@@ -259,7 +259,7 @@ test_that("attribute and filter tables are parsed correctly", {
       as.is = TRUE
     )
   )
-  expect_is(.getAttributes(mart = ensembl, verbose = TRUE), "data.frame")
+  expect_s3_class(.getAttributes(mart = ensembl, verbose = TRUE), "data.frame")
 
   mockery::stub(
     .getFilters,
@@ -273,5 +273,5 @@ test_that("attribute and filter tables are parsed correctly", {
       as.is = TRUE
     )
   )
-  expect_is(.getFilters(mart = ensembl, verbose = TRUE), "data.frame")
+  expect_s3_class(.getFilters(mart = ensembl, verbose = TRUE), "data.frame")
 })

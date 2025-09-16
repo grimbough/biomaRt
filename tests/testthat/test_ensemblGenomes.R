@@ -23,5 +23,5 @@ test_that("Error handling works", {
 })
 
 test_that("return type is correct", {
-  expect_is(useEnsemblGenomes("protists_mart", "bnatans_eg_gene"), "Mart")
+  expect_s4_class(useEnsemblGenomes("protists_mart", "bnatans_eg_gene"), "Mart")
 })
