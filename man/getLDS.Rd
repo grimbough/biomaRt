@@ -58,11 +58,24 @@ translates to homology mapping.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-human <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-mouse <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
-getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
-    filters = "hgnc_symbol", values = "TP53", mart = human,
-    attributesL = c("chromosome_name","start_position"), martL = mouse)
+human <- useMart(
+  "ensembl",
+  dataset = "hsapiens_gene_ensembl",
+  host = "https://dec2021.archive.ensembl.org"
+)
+mouse <- useMart(
+  "ensembl",
+  dataset = "mmusculus_gene_ensembl",
+  host = "https://dec2021.archive.ensembl.org"
+)
+getLDS(
+  attributes = c("hgnc_symbol","chromosome_name", "start_position"),
+  filters = "hgnc_symbol",
+  values = "TP53",
+  mart = human,
+  attributesL = c("chromosome_name","start_position"),
+  martL = mouse
+)
 \dontshow{\}) # examplesIf}
 }
 \author{
