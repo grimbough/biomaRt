@@ -21,7 +21,7 @@ ReactomeDb."><meta property="og:image" content="https://huber-group-embl.github.
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -146,28 +146,28 @@ for selected <code>keys</code> and <code>columns</code> and <code>keytype</code>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="co">## 1st create a Mart object and specify the dataset</span></span></span>
-<span class="r-in"><span>  <span class="va">mart</span> <span class="op">&lt;-</span> <span class="fu"><a href="useEnsembl.html">useEnsembl</a></span><span class="op">(</span>dataset<span class="op">=</span><span class="st">"hsapiens_gene_ensembl"</span>,</span></span>
-<span class="r-in"><span>                     biomart<span class="op">=</span><span class="st">'ensembl'</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co">## you can list the keytypes</span></span></span>
-<span class="r-in"><span>  <span class="fu">keytypes</span><span class="op">(</span><span class="va">mart</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co">## you can list the columns</span></span></span>
-<span class="r-in"><span>  <span class="fu">columns</span><span class="op">(</span><span class="va">mart</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co">## And you can extract keys when this is supported for your keytype of interest</span></span></span>
-<span class="r-in"><span>  <span class="va">k</span> <span class="op">=</span> <span class="fu">keys</span><span class="op">(</span><span class="va">mart</span>, keytype<span class="op">=</span><span class="st">"chromosome_name"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co">## You can even do some pattern matching on the keys</span></span></span>
-<span class="r-in"><span>  <span class="va">k</span> <span class="op">=</span> <span class="fu">keys</span><span class="op">(</span><span class="va">mart</span>, keytype<span class="op">=</span><span class="st">"chromosome_name"</span>, pattern<span class="op">=</span><span class="st">"LRG"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co">## Finally you can use select to extract records for things that you are</span></span></span>
-<span class="r-in"><span>  <span class="co">## interested in.</span></span></span>
-<span class="r-in"><span>  <span class="va">affy</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"202763_at"</span>,<span class="st">"209310_s_at"</span>,<span class="st">"207500_at"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">select</span><span class="op">(</span><span class="va">mart</span>, keys<span class="op">=</span><span class="va">affy</span>, columns<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'affy_hg_u133_plus_2'</span>,<span class="st">'entrezgene_id'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    keytype<span class="op">=</span><span class="st">'affy_hg_u133_plus_2'</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
+<span class="r-in"><span><span class="co">## 1st create a Mart object and specify the dataset</span></span></span>
+<span class="r-in"><span><span class="va">mart</span> <span class="op">&lt;-</span> <span class="fu"><a href="useEnsembl.html">useEnsembl</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  biomart <span class="op">=</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>,</span></span>
+<span class="r-in"><span>  dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## you can list the keytypes</span></span></span>
+<span class="r-in"><span><span class="fu">keytypes</span><span class="op">(</span><span class="va">mart</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## you can list the columns</span></span></span>
+<span class="r-in"><span><span class="fu">columns</span><span class="op">(</span><span class="va">mart</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## And you can extract keys when this is supported for your keytype of interest</span></span></span>
+<span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">keys</span><span class="op">(</span><span class="va">mart</span>, keytype<span class="op">=</span><span class="st">"chromosome_name"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## You can even do some pattern matching on the keys</span></span></span>
+<span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">keys</span><span class="op">(</span><span class="va">mart</span>, keytype<span class="op">=</span><span class="st">"chromosome_name"</span>, pattern<span class="op">=</span><span class="st">"LRG"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## Finally you can use select to extract records for things that you are</span></span></span>
+<span class="r-in"><span><span class="co">## interested in.</span></span></span>
+<span class="r-in"><span><span class="va">affy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"202763_at"</span>, <span class="st">"209310_s_at"</span>, <span class="st">"207500_at"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">select</span><span class="op">(</span><span class="va">mart</span>, keys<span class="op">=</span><span class="va">affy</span>, columns<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'affy_hg_u133_plus_2'</span>,<span class="st">'entrezgene_id'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  keytype<span class="op">=</span><span class="st">'affy_hg_u133_plus_2'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

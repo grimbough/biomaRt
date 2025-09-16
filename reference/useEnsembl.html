@@ -21,7 +21,7 @@ listDatasets() function on the selected Mart object."><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -137,24 +137,25 @@ returned <code>Mart</code> object and will be used for all queries.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
+<span class="r-in"><span><span class="va">mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsembl</span><span class="op">(</span><span class="st">"ENSEMBL_MART_ENSEMBL"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsembl</span><span class="op">(</span><span class="st">"ensembl"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## using the US East mirror</span></span></span>
+<span class="r-in"><span><span class="va">us_mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsembl</span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>, mirror <span class="op">=</span> <span class="st">"useast"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## using the US West mirror</span></span></span>
-<span class="r-in"><span><span class="va">us_mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsembl</span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"ensembl"</span>, mirror <span class="op">=</span> <span class="st">"useast"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## using the Arabidopsis thaliana genes dataset in Ensembl Plants</span></span></span>
+<span class="r-in"><span><span class="va">plants_mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsemblGenomes</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  biomart <span class="op">=</span> <span class="st">"plants_mart"</span>,</span></span>
+<span class="r-in"><span>  dataset <span class="op">=</span> <span class="st">"athaliana_eg_gene"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## using the arabidopsis thaliana genes dataset in Ensembl Plants</span></span></span>
-<span class="r-in"><span><span class="va">plants_mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsemblGenomes</span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"plants_mart"</span>,</span></span>
-<span class="r-in"><span>                                 dataset <span class="op">=</span> <span class="st">"athaliana_eg_gene"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## using the cucumis melo genes dataset in the Ensembl Plants 56 archive</span></span></span>
-<span class="r-in"><span><span class="va">plants_mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsemblGenomes</span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"plants_mart"</span>,</span></span>
-<span class="r-in"><span>                                 dataset <span class="op">=</span> <span class="st">"cmelo_eg_gene"</span>,</span></span>
-<span class="r-in"><span>                                 host <span class="op">=</span> <span class="st">"https://eg56-plants.ensembl.org/"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## using the Cucumis melo genes dataset in the Ensembl Plants 56 archive</span></span></span>
+<span class="r-in"><span><span class="va">plants_mart</span> <span class="op">&lt;-</span> <span class="fu">useEnsemblGenomes</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  biomart <span class="op">=</span> <span class="st">"plants_mart"</span>,</span></span>
+<span class="r-in"><span>  dataset <span class="op">=</span> <span class="st">"cmelo_eg_gene"</span>,</span></span>
+<span class="r-in"><span>  host <span class="op">=</span> <span class="st">"https://feb2023-plants.ensembl.org/"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

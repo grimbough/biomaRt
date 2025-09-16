@@ -13,7 +13,7 @@ anything."><meta property="og:image" content="https://huber-group-embl.github.io
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,26 +88,27 @@ default is to use ".*" which will match everything.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
+<span class="r-in"><span><span class="co">## Use the Ensembl human genes dataset</span></span></span>
+<span class="r-in"><span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="useEnsembl.html">useEnsembl</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  biomart <span class="op">=</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>,</span></span>
+<span class="r-in"><span>  dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co">## we can search for the name of a filter we're interested in e.g. 'phenotype'</span></span></span>
+<span class="r-in"><span><span class="co">## we need to use the name of the filter in the next function</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="listFilters.html">searchFilters</a></span><span class="op">(</span><span class="va">ensembl</span>, pattern <span class="op">=</span> <span class="st">"phenotype"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## Use the Ensembl human genes dataset</span></span></span>
-<span class="r-in"><span>    <span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="useEnsembl.html">useEnsembl</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## list all the options available to the 'phenotype_source' filter</span></span></span>
+<span class="r-in"><span><span class="fu">listFilterOptions</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, filter <span class="op">=</span> <span class="st">"phenotype_source"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## we can search for the name of a filter we're interested in e.g. 'phenotype'</span></span></span>
-<span class="r-in"><span>    <span class="co">## we need to use the name of the filter in the next function</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="listFilters.html">searchFilters</a></span><span class="op">(</span><span class="va">ensembl</span>, pattern <span class="op">=</span> <span class="st">"phenotype"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## list all the options available to the 'phenotype_source' filter</span></span></span>
-<span class="r-in"><span>    <span class="fu">listFilterOptions</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, filter <span class="op">=</span> <span class="st">"phenotype_source"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## search the 'phenotype_description' filter for the term 'crohn'</span></span></span>
-<span class="r-in"><span>    <span class="fu">searchFilterOptions</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>,</span></span>
-<span class="r-in"><span>                       filter <span class="op">=</span> <span class="st">"phenotype_description"</span>,</span></span>
-<span class="r-in"><span>                       pattern <span class="op">=</span> <span class="st">"crohn"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## search the 'phenotype_description' filter for the term 'crohn'</span></span></span>
+<span class="r-in"><span><span class="fu">searchFilterOptions</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  mart <span class="op">=</span> <span class="va">ensembl</span>,</span></span>
+<span class="r-in"><span>  filter <span class="op">=</span> <span class="st">"phenotype_description"</span>,</span></span>
+<span class="r-in"><span>  pattern <span class="op">=</span> <span class="st">"crohn"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

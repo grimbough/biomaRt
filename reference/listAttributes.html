@@ -15,7 +15,7 @@ the available attributes in the selected dataset."><meta property="og:image" con
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,25 +91,24 @@ default is to use ".*" which will match everything.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># interactive()</span></span></span>
+<span class="r-in"><span><span class="co">## list the available Ensembl marts and use Ensembl Genes</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="listEnsembl.html">listEnsembl</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="useEnsembl.html">useEnsembl</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  biomart <span class="op">=</span> <span class="st">"ENSEMBL_MART_ENSEMBL"</span>,</span></span>
+<span class="r-in"><span>  dataset <span class="op">=</span> <span class="st">'hsapiens_gene_ensembl'</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co">## list the available datasets in this Mart</span></span></span>
+<span class="r-in"><span><span class="fu">listAttributes</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## list the available Ensembl marts and use Ensembl Genes</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="listEnsembl.html">listEnsembl</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="useEnsembl.html">useEnsembl</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">'hsapiens_gene_ensembl'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## the list of attributes is very long and gets truncated by R</span></span></span>
+<span class="r-in"><span><span class="co">## we can search for a term of interest to filter this e.g. 'start'</span></span></span>
+<span class="r-in"><span><span class="fu">searchAttributes</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, pattern <span class="op">=</span> <span class="st">"start"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## list the available datasets in this Mart</span></span></span>
-<span class="r-in"><span>    <span class="fu">listAttributes</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## the list of attributes is very long and gets truncated by R</span></span></span>
-<span class="r-in"><span>    <span class="co">## we can search for a term of interest to filter this e.g. 'start'</span></span></span>
-<span class="r-in"><span>    <span class="fu">searchAttributes</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, pattern <span class="op">=</span> <span class="st">"start"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>    <span class="co">## filter the attributes to give only entries containing 'entrez' or 'hgnc'</span></span></span>
-<span class="r-in"><span>    <span class="fu">searchAttributes</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, <span class="st">'entrez|hgnc'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## filter the attributes to give only entries containing 'entrez' or 'hgnc'</span></span></span>
+<span class="r-in"><span><span class="fu">searchAttributes</span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, <span class="st">'entrez|hgnc'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
