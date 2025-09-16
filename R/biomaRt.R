@@ -1422,13 +1422,13 @@ getLDS <- function(
 
 #' Exports getSequence results to FASTA format
 #'
-#' Exports getSequence results to FASTA format
-#'
-#'
 #' @param sequences A data.frame that was the output of the [getSequence()]
 #' function
 #' @param file File to which you want to write the data
+#'
 #' @author Steffen Durinck
+#' @author Hugo Gruson
+#'
 #' @keywords methods
 #'
 #' @examplesIf interactive()
@@ -1452,34 +1452,24 @@ exportFASTA <- function(sequences, file) {
   if (missing(file)) {
     stop("Please provide filename to write to")
   }
-  if (length(sequences[1, ]) == 2) {
-    for (i in seq_along(sequences[, 2])) {
-      cat(
-        paste0(">", sequences[i, 2], "\n"),
-        file = file,
-        append = TRUE
-      )
-      cat(as.character(sequences[i, 1]), file = file, append = TRUE)
-      cat("\n\n", file = file, append = TRUE)
-    }
+  if (ncol(sequences) == 2) {
+    writeLines(
+      sprintf(">%s\n%s", sequences[, 2], sequences[, 1]),
+      file,
+      sep = "\n\n"
+    )
   } else {
-    for (i in seq_along(sequences[, 2])) {
-      cat(
-        paste0(
-          ">chromosome_",
-          sequences[i, 1],
-          "_start_",
-          sequences[i, 2],
-          "_end_",
-          sequences[i, 3],
-          "\n"
-        ),
-        file = file,
-        append = TRUE
-      )
-      cat(as.character(sequences[i, 4]), file = file, append = TRUE)
-      cat("\n\n", file = file, append = TRUE)
-    }
+    writeLines(
+      sprintf(
+        ">chromosome_%s_start_%s_end_%s\n%s",
+        sequences[, 1],
+        sequences[, 2],
+        sequences[, 3],
+        sequences[, 4]
+      ),
+      file,
+      sep = "\n\n"
+    )
   }
 }
 
