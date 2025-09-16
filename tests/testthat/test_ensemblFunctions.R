@@ -54,11 +54,9 @@ with_mock_dir(
   "www_OK",
   {
     test_that("Ensembl mirror selection works", {
-      expect_message(
-        .chooseEnsemblMirror(mirror = "useast"),
-        regexp = "unresponsive"
-      ) |>
-        expect_equal("www")
+      .chooseEnsemblMirror(mirror = "useast") |>
+        expect_equal("www") |>
+        expect_message(regexp = "unresponsive")
     })
   },
   simplify = FALSE
@@ -66,15 +64,16 @@ with_mock_dir(
 
 test_that("Ensembl URLs are constructed correctly", {
   ## no arguments ##
-  expect_silent(.constructEnsemblURL()) |>
-    expect_equal("https://www.ensembl.org")
+  .constructEnsemblURL() |>
+    expect_equal("https://www.ensembl.org") |>
+    expect_silent()
 
   ## mirror ##
-  expect_warning(
-    .constructEnsemblURL(mirror = "INVALID_MIRROR"),
-    regexp = "Invalid mirror\\. Select a mirror"
-  ) %>%
-    expect_equal("https://www.ensembl.org")
+  .constructEnsemblURL(mirror = "INVALID_MIRROR") |>
+    expect_equal("https://www.ensembl.org") |>
+    expect_warning(,
+      regexp = "Invalid mirror\\. Select a mirror"
+    )
 
   expect_equal(
     .constructEnsemblURL(mirror = "useast"),
@@ -84,11 +83,11 @@ test_that("Ensembl URLs are constructed correctly", {
   ## GRCh ##
   expect_equal(.constructEnsemblURL(GRCh = 37), "https://grch37.ensembl.org")
 
-  expect_warning(
-    .constructEnsemblURL(GRCh = 38),
-    regexp = "Only 37 can be specified for GRCh version"
-  ) %>%
-    expect_equal("https://www.ensembl.org")
+  .constructEnsemblURL(GRCh = 38) |>
+    expect_equal("https://www.ensembl.org") |>
+    expect_warning(
+      regexp = "Only 37 can be specified for GRCh version"
+    )
 
   ## version ##
   expect_silent(.constructEnsemblURL(version = "100")) |>
@@ -105,17 +104,17 @@ test_that("Ensembl URLs are constructed correctly", {
     regexp = "version or GRCh arguments cannot be used together"
   )
 
-  expect_warning(
-    .constructEnsemblURL(mirror = "asia", version = 100),
-    regexp = "version or GRCh arguments cannot be used together with the mirror argument"
-  ) %>%
-    expect_equal("https://apr2020.archive.ensembl.org")
+  .constructEnsemblURL(mirror = "asia", version = 100) |>
+    expect_equal("https://apr2020.archive.ensembl.org") |>
+    expect_warning(
+      regexp = "version or GRCh arguments cannot be used together with the mirror argument"
+    )
 
-  expect_warning(
-    .constructEnsemblURL(mirror = "useast", GRCh = 37),
-    regexp = "version or GRCh arguments cannot be used together with the mirror argument"
-  ) %>%
-    expect_equal("https://grch37.ensembl.org")
+  .constructEnsemblURL(mirror = "useast", GRCh = 37) |>
+    expect_equal("https://grch37.ensembl.org") |>
+    expect_warning(
+      regexp = "version or GRCh arguments cannot be used together with the mirror argument"
+    )
 })
 
 test_that("sequence correct code is used to get sequence based on ID type", {
@@ -135,7 +134,7 @@ test_that("sequence correct code is used to get sequence based on ID type", {
 
   mockery::stub(.getSequenceFromId, "getBM", m)
 
-  expect_is(
+  expect_s3_class(
     hgnc <- .getSequenceFromId(
       id = "STAT1",
       type = "hgnc_symbol",
@@ -144,7 +143,7 @@ test_that("sequence correct code is used to get sequence based on ID type", {
     ),
     "data.frame"
   )
-  expect_is(
+  expect_s3_class(
     ens_id <- .getSequenceFromId(
       id = "ENSG00000115415",
       type = "ensembl_gene_id",

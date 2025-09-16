@@ -13,7 +13,7 @@ test_that("Both SSL settings are applied if needed", {
   mockery::stub(.checkEnsemblSSL, ".test_ensembl", m)
 
   expect_silent(http_config <- .checkEnsemblSSL())
-  expect_is(http_config, "list")
+  expect_type(http_config, "list")
   expect_length(http_config, 2L)
   expect_identical(http_config$ssl_cipher_list, "DEFAULT@SECLEVEL=1")
   expect_false(http_config$ssl_verifypeer)
@@ -63,7 +63,7 @@ test_that("SSL settings are stored in the cache", {
   mockery::stub(.checkEnsemblSSL, ".test_ensembl", m)
 
   expect_silent(http_config <- .getEnsemblSSL())
-  expect_is(http_config, "list")
+  expect_type(http_config, "list")
   expect_true(.checkInCache(bfc, "ensembl-ssl-settings-httr2"))
 })
 

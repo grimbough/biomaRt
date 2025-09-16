@@ -45,7 +45,7 @@ Suggests:
     knitr,
     mockery,
     rmarkdown,
-    testthat
+    testthat (>= 3.0.0)
 VignetteBuilder:
     knitr
 biocViews: Annotation
@@ -67,3 +67,4 @@ Collate:
 Roxygen: list(markdown = TRUE)
 Config/Needs/website:
     xfun
+Config/testthat/edition: 3

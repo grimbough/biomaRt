@@ -12,7 +12,7 @@ with_mock_dir(
         biomart = "ENSEMBL_MART_ENSEMBL",
         dataset = "hsapiens_gene_ensembl"
       )
-      expect_is(ensembl, "Mart")
+      expect_s4_class(ensembl, "Mart")
     })
   },
   simplify = TRUE

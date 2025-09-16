@@ -51,7 +51,7 @@ test_that("getBM returns sensible things", {
     ".submitQueryXML",
     "Gene stable ID\tChromosome/scaffold name\nENSG01\t13\nENSG02\t15\nENSG03\t17\n"
   )
-  expect_is(
+  expect_s3_class(
     getBM(mart = ensembl, attributes = c("ensembl_gene_id", "chromosome_name")),
     "data.frame"
   )
