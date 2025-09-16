@@ -379,7 +379,7 @@ listEnsembl <- function(
 #' plants_mart <- useEnsemblGenomes(
 #'   biomart = "plants_mart",
 #'   dataset = "cmelo_eg_gene",
-#'   host = "https://eg56-plants.ensembl.org/"
+#'   host = "https://feb2023-plants.ensembl.org/"
 #' )
 #'
 #' @export
