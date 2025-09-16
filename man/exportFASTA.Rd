@@ -30,5 +30,7 @@ exportFASTA(seq, file = "test.fasta")
 }
 \author{
 Steffen Durinck
+
+Hugo Gruson
 }
 \keyword{methods}
