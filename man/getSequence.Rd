@@ -85,24 +85,26 @@ attribute
 }
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
 
-if(interactive()){
-mart <- useEnsembl("ensembl", dataset="hsapiens_gene_ensembl")
-
-seq = getSequence(id = "BRCA1",
-                  type = "hgnc_symbol",
-                  seqType = "peptide",
-                  mart = mart)
+seq <- getSequence(
+  id = "BRCA1",
+  type = "hgnc_symbol",
+  seqType = "peptide",
+  mart = mart
+)
 show(seq)
 
-seq = getSequence(id="1939_at",
-                  type="affy_hg_u95av2",
-                  seqType="gene_flank",
-                  upstream = 20,
-                  mart = mart)
+seq <- getSequence(
+  id = "1939_at",
+  type = "affy_hg_u95av2",
+  seqType = "gene_flank",
+  upstream = 20,
+  mart = mart
+)
 show(seq)
-
-}
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck, Mike Smith

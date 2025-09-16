@@ -52,7 +52,7 @@ biocViews: Annotation
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: no
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Collate:
     'biomaRt-package.R'
     'biomaRtClasses.R'

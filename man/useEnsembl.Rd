@@ -63,24 +63,25 @@ found.  Once identified that Ensembl server will be associated with the
 returned \code{Mart} object and will be used for all queries.
 }
 \examples{
-
-if(interactive()){
-
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 mart <- useEnsembl("ensembl")
 
-## using the US West mirror
+## using the US East mirror
 us_mart <- useEnsembl(biomart = "ensembl", mirror = "useast")
 
-## using the arabidopsis thaliana genes dataset in Ensembl Plants
-plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
-                                 dataset = "athaliana_eg_gene")
+## using the Arabidopsis thaliana genes dataset in Ensembl Plants
+plants_mart <- useEnsemblGenomes(
+  biomart = "plants_mart",
+  dataset = "athaliana_eg_gene"
+)
 
-## using the cucumis melo genes dataset in the Ensembl Plants 56 archive
-plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
-                                 dataset = "cmelo_eg_gene",
-                                 host = "https://eg56-plants.ensembl.org/")
-}
-
+## using the Cucumis melo genes dataset in the Ensembl Plants 56 archive
+plants_mart <- useEnsemblGenomes(
+  biomart = "plants_mart",
+  dataset = "cmelo_eg_gene",
+  host = "https://eg56-plants.ensembl.org/"
+)
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck & Mike Smith

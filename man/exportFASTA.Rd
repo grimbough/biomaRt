@@ -16,16 +16,19 @@ function}
 Exports getSequence results to FASTA format
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 
-
-if(interactive()){
-    mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-
-    #seq<-getSequence(chromosome=c(2,2),start=c(100000,30000),end=c(100300,30500),mart=mart)
-    #exportFASTA(seq,file="test.fasta")
-
-}
-
+seq <- getSequence(
+  chromosome = c(2, 2),
+  start = c(100000, 30000),
+  end = c(100300, 30500),
+  type = "ensembl",
+  seqType = "cdna",
+  mart = mart
+)
+exportFASTA(seq, file = "test.fasta")
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck

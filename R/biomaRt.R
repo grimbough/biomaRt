@@ -107,11 +107,9 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' debugging purposes.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
+#' @examplesIf interactive()
 #' listMarts()
-#' }
 #'
 #' @export
 listMarts <- function(
@@ -280,13 +278,10 @@ listMarts <- function(
 #' use, for debugging
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
-#'
-#'     mart = useMart("ensembl")
-#'     mart=useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
-#' }
+#' @examplesIf interactive()
+#' mart <- useMart("ensembl")
+#' mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 #'
 #' @export
 useMart <- function(
@@ -469,25 +464,21 @@ useMart <- function(
 #' [listDatasets()].
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
-#' @examples
 #'
+#' @examplesIf interactive()
+#' ## list the available Ensembl marts and use Ensembl Genes
+#' listEnsembl()
+#' ensembl <- useEnsembl(biomart = "ensembl")
 #'
-#' if(interactive()){
+#' ## list the available datasets in this Mart
+#' listDatasets(mart = ensembl)
 #'
-#'     ## list the available Ensembl marts and use Ensembl Genes
-#'     listEnsembl()
-#'     ensembl <- useEnsembl(biomart = "ensembl")
+#' ## the list of Ensembl datasets grows ever larger (101 as of Ensembl 93)
+#' ## we can search for a term of interest to reduce the length e.g. 'sapiens'
+#' searchDatasets(mart = ensembl, pattern = "sapiens")
 #'
-#'     ## list the available datasets in this Mart
-#'     listDatasets(mart = ensembl)
-#'
-#'     ## the list of Ensembl datasets grows ever larger (101 as of Ensembl 93)
-#'     ## we can search for a term of interest to reduce the length e.g. 'sapiens'
-#'     searchDatasets(mart = ensembl, pattern = "sapiens")
-#'
-#'     ## search for any dataset containing the word Rat or rat
-#'     searchDatasets(mart = ensembl, pattern = "(R|r)at")
-#' }
+#' ## search for any dataset containing the word Rat or rat
+#' searchDatasets(mart = ensembl, pattern = "(R|r)at")
 #'
 #' @export
 listDatasets <- function(mart, verbose = FALSE) {
@@ -719,12 +710,10 @@ checkDataset <- function(dataset, mart) {
 #' debugging
 #' @author Steffen Durinck
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
-#' mart=useMart("ensembl")
-#' mart=useDataset("hsapiens_gene_ensembl", mart = mart)
-#' }
+#' @examplesIf interactive()
+#' mart <- useMart("ensembl")
+#' mart <- useDataset("hsapiens_gene_ensembl", mart = mart)
 #'
 #' @export
 useDataset <- function(dataset, mart, verbose = FALSE) {
@@ -779,25 +768,21 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
 #' default is to use ".*" which will match everything.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
-#' @examples
 #'
+#' @examplesIf interactive()
+#' ## list the available Ensembl marts and use Ensembl Genes
+#' listEnsembl()
+#' ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
 #'
-#' if(interactive()){
+#' ## list the available datasets in this Mart
+#' listAttributes(mart = ensembl)
 #'
-#'     ## list the available Ensembl marts and use Ensembl Genes
-#'     listEnsembl()
-#'     ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+#' ## the list of attributes is very long and gets truncated by R
+#' ## we can search for a term of interest to filter this e.g. 'start'
+#' searchAttributes(mart = ensembl, pattern = "start")
 #'
-#'     ## list the available datasets in this Mart
-#'     listAttributes(mart = ensembl)
-#'
-#'     ## the list of attributes is very long and gets truncated by R
-#'     ## we can search for a term of interest to filter this e.g. 'start'
-#'     searchAttributes(mart = ensembl, pattern = "start")
-#'
-#'     ## filter the attributes to give only entries containing 'entrez' or 'hgnc'
-#'     searchAttributes(mart = ensembl, 'entrez|hgnc')
-#' }
+#' ## filter the attributes to give only entries containing 'entrez' or 'hgnc'
+#' searchAttributes(mart = ensembl, 'entrez|hgnc')
 #'
 #' @export
 listAttributes <- function(
@@ -836,13 +821,9 @@ listAttributes <- function(
 #' @param mart object of class Mart, created with the [useMart()] function.
 #' @author Steffen Durinck
 #' @keywords methods
-#' @examples
-#'
-#'
-#' if(interactive()){
-#' mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+#' @examplesIf interactive()
+#' mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
 #' attributePages(mart)
-#' }
 #'
 #' @export
 attributePages <- function(mart) {
@@ -871,25 +852,21 @@ attributePages <- function(mart) {
 #' default is to use `".*"`` which will match everything.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
-#' @examples
 #'
+#' @examplesIf interactive()
+#' ## list the available Ensembl marts and use Ensembl Genes
+#' listEnsembl()
+#' ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
 #'
-#' if(interactive()){
+#' ## list the available datasets in this Mart
+#' listFilters(mart = ensembl)
 #'
-#'     ## list the available Ensembl marts and use Ensembl Genes
-#'     listEnsembl()
-#'     ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+#' ## the list of filters is long and not easy to read
+#' ## we can search for a term of interest to reduce this e.g. 'gene'
+#' searchFilters(mart = ensembl, pattern = "gene")
 #'
-#'     ## list the available datasets in this Mart
-#'     listFilters(mart = ensembl)
-#'
-#'     ## the list of filters is long and not easy to read
-#'     ## we can search for a term of interest to reduce this e.g. 'gene'
-#'     searchFilters(mart = ensembl, pattern = "gene")
-#'
-#'     ## search the available filters to find entries containing 'entrez' or 'hgnc'
-#'     searchFilters(mart = ensembl, 'entrez|hgnc')
-#' }
+#' ## search the available filters to find entries containing 'entrez' or 'hgnc'
+#' searchFilters(mart = ensembl, 'entrez|hgnc')
 #'
 #' @export
 listFilters <- function(mart, what = c("name", "description")) {
@@ -930,13 +907,10 @@ filterOptions <- function(filter, mart) {
 #' @param mart object of class Mart, created using the [useMart()] function
 #' @author Steffen Durinck
 #' @keywords methods
-#' @examples
-#'
-#'
-#' if(interactive()){
-#' mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+
+#' @examplesIf interactive()
+#' mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 #' filterType("chromosome_name", mart)
-#' }
 #'
 #' @export
 filterType <- function(filter, mart) {
@@ -1004,17 +978,15 @@ filterType <- function(filter, mart) {
 #' `attributes`. See Examples.
 #' @author Steffen Durinck
 #' @keywords methods
-#' @examples
+
+#' @examplesIf interactive()
+#' mart <- useEnsembl(biomart = "ensembl",
+#'                    dataset = "hsapiens_gene_ensembl")
 #'
-#' if(interactive()){
-#'   mart <- useEnsembl(biomart = "ensembl",
-#'                      dataset = "hsapiens_gene_ensembl")
-#'
-#'   getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
-#'         filters    = "affy_hg_u95av2",
-#'         values     = c("1939_at","1503_at","1454_at"),
-#'         mart       = mart)
-#'   }
+#' getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
+#'       filters    = "affy_hg_u95av2",
+#'       values     = c("1939_at","1503_at","1454_at"),
+#'       mart       = mart)
 #'
 #' @importFrom progress progress_bar
 #' @export
@@ -1239,15 +1211,13 @@ getBM <- function(
 #' setting to off might still be able to retrieve your data in that case
 #' @author Steffen Durinck
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
-#' human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-#' mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+#' @examplesIf interactive()
+#' human <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+#' mouse <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 #' getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
 #'     filters = "hgnc_symbol", values = "TP53", mart = human,
 #'     attributesL = c("chromosome_name","start_position"), martL = mouse)
-#' }
 #'
 #' @export
 #' @importFrom methods is
@@ -1436,16 +1406,19 @@ getLDS <- function(
 #' @param file File to which you want to write the data
 #' @author Steffen Durinck
 #' @keywords methods
-#' @examples
 #'
+#' @examplesIf interactive()
+#' mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 #'
-#' if(interactive()){
-#'     mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-#'
-#'     #seq<-getSequence(chromosome=c(2,2),start=c(100000,30000),end=c(100300,30500),mart=mart)
-#'     #exportFASTA(seq,file="test.fasta")
-#'
-#' }
+#' seq <- getSequence(
+#'   chromosome = c(2, 2),
+#'   start = c(100000, 30000),
+#'   end = c(100300, 30500),
+#'   type = "ensembl",
+#'   seqType = "cdna",
+#'   mart = mart
+#' )
+#' exportFASTA(seq, file = "test.fasta")
 #'
 #' @export
 exportFASTA <- function(sequences, file) {
@@ -1504,11 +1477,9 @@ exportFASTA <- function(sequences, file) {
 #' @author Steffen Durinck, Wolfgang Huber
 #' @seealso [edit()]
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
+#' @examplesIf interactive()
 #' NP2009code()
-#' }
 #'
 #' @export
 #' @importFrom utils edit

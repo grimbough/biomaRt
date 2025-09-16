@@ -72,8 +72,8 @@
 #'
 #' @author Mike Smith
 #' @keywords methods
-#' @examples
 #'
+#' @examples
 #' listEnsemblArchives()
 #'
 #' @export
@@ -205,17 +205,15 @@ listEnsemblArchives <- function() {
 #' site for [listEnsemblGenomes()] to work with.
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
+#' @examplesIf interactive()
 #' listEnsembl()
 #'
 #' ## list the default Ensembl Genomes marts
 #' listEnsemblGenomes()
 #'
-#' ## list only the marts available in the Ensmbl Plans 56 archive
+#' ## list only the marts available in the Ensmbl Plants 56 archive
 #' listEnsemblGenomes(host = "https://eg56-plants.ensembl.org/")
-#' }
 #'
 #' @export
 listEnsembl <- function(
@@ -364,24 +362,25 @@ listEnsembl <- function(
 #' use, for debugging
 #' @author Steffen Durinck & Mike Smith
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
-#'
+#' @examplesIf interactive()
 #' mart <- useEnsembl("ensembl")
 #'
-#' ## using the US West mirror
+#' ## using the US East mirror
 #' us_mart <- useEnsembl(biomart = "ensembl", mirror = "useast")
 #'
-#' ## using the arabidopsis thaliana genes dataset in Ensembl Plants
-#' plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
-#'                                  dataset = "athaliana_eg_gene")
+#' ## using the Arabidopsis thaliana genes dataset in Ensembl Plants
+#' plants_mart <- useEnsemblGenomes(
+#'   biomart = "plants_mart",
+#'   dataset = "athaliana_eg_gene"
+#' )
 #'
-#' ## using the cucumis melo genes dataset in the Ensembl Plants 56 archive
-#' plants_mart <- useEnsemblGenomes(biomart = "plants_mart",
-#'                                  dataset = "cmelo_eg_gene",
-#'                                  host = "https://eg56-plants.ensembl.org/")
-#' }
+#' ## using the Cucumis melo genes dataset in the Ensembl Plants 56 archive
+#' plants_mart <- useEnsemblGenomes(
+#'   biomart = "plants_mart",
+#'   dataset = "cmelo_eg_gene",
+#'   host = "https://eg56-plants.ensembl.org/"
+#' )
 #'
 #' @export
 useEnsembl <- function(

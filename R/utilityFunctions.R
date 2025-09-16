@@ -461,26 +461,24 @@ searchFilterValues <- function(mart, filter, pattern) {
 #' @author Mike Smith
 #' @seealso [listFilters()]
 #' @keywords methods
-#' @examples
 #'
+#' @examplesIf interactive()
+#' ## Use the Ensembl human genes dataset
+#' ensembl <- useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 #'
-#' if(interactive()){
+#' ## we can search for the name of a filter we're interested in e.g. 'phenotype'
+#' ## we need to use the name of the filter in the next function
+#' searchFilters(ensembl, pattern = "phenotype")
 #'
-#'     ## Use the Ensembl human genes dataset
-#'     ensembl <- useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+#' ## list all the options available to the 'phenotype_source' filter
+#' listFilterOptions(mart = ensembl, filter = "phenotype_source")
 #'
-#'     ## we can search for the name of a filter we're interested in e.g. 'phenotype'
-#'     ## we need to use the name of the filter in the next function
-#'     searchFilters(ensembl, pattern = "phenotype")
-#'
-#'     ## list all the options available to the 'phenotype_source' filter
-#'     listFilterOptions(mart = ensembl, filter = "phenotype_source")
-#'
-#'     ## search the 'phenotype_description' filter for the term 'crohn'
-#'     searchFilterOptions(mart = ensembl,
-#'                        filter = "phenotype_description",
-#'                        pattern = "crohn")
-#' }
+#' ## search the 'phenotype_description' filter for the term 'crohn'
+#' searchFilterOptions(
+#'   mart = ensembl,
+#'   filter = "phenotype_description",
+#'   pattern = "crohn"
+#' )
 #'
 #' @export
 listFilterOptions <- function(mart, filter) {

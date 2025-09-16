@@ -16,13 +16,10 @@ filterType(filter, mart)
 Displays the type of the filer given a filter name.
 }
 \examples{
-
-
-if(interactive()){
-mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 filterType("chromosome_name", mart)
-}
-
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck

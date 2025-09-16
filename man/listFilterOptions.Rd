@@ -27,26 +27,24 @@ filter, so you can check in the case where your biomaRt query is not finding
 anything.
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+## Use the Ensembl human genes dataset
+ensembl <- useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 
+## we can search for the name of a filter we're interested in e.g. 'phenotype'
+## we need to use the name of the filter in the next function
+searchFilters(ensembl, pattern = "phenotype")
 
-if(interactive()){
+## list all the options available to the 'phenotype_source' filter
+listFilterOptions(mart = ensembl, filter = "phenotype_source")
 
-    ## Use the Ensembl human genes dataset
-    ensembl <- useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
-
-    ## we can search for the name of a filter we're interested in e.g. 'phenotype'
-    ## we need to use the name of the filter in the next function
-    searchFilters(ensembl, pattern = "phenotype")
-
-    ## list all the options available to the 'phenotype_source' filter
-    listFilterOptions(mart = ensembl, filter = "phenotype_source")
-
-    ## search the 'phenotype_description' filter for the term 'crohn'
-    searchFilterOptions(mart = ensembl,
-                       filter = "phenotype_description",
-                       pattern = "crohn")
-}
-
+## search the 'phenotype_description' filter for the term 'crohn'
+searchFilterOptions(
+  mart = ensembl,
+  filter = "phenotype_description",
+  pattern = "crohn"
+)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=listFilters]{listFilters()}}
