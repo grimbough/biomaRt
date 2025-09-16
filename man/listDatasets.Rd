@@ -27,7 +27,7 @@ Lists or search the datasets available in the selected BioMart database
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 ## list the available Ensembl marts and use Ensembl Genes
 listEnsembl()
-ensembl <- useEnsembl(biomart = "ensembl")
+ensembl <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL")
 
 ## list the available datasets in this Mart
 listDatasets(mart = ensembl)

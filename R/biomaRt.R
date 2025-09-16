@@ -280,8 +280,11 @@ listMarts <- function(
 #' @keywords methods
 #'
 #' @examplesIf interactive()
-#' mart <- useMart("ensembl")
-#' mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+#' mart <- useMart("ENSEMBL_MART_ENSEMBL")
+#' mart <- useMart(
+#'   biomart = "ENSEMBL_MART_ENSEMBL",
+#'   dataset = "hsapiens_gene_ensembl"
+#' )
 #'
 #' @export
 useMart <- function(
@@ -468,7 +471,7 @@ useMart <- function(
 #' @examplesIf interactive()
 #' ## list the available Ensembl marts and use Ensembl Genes
 #' listEnsembl()
-#' ensembl <- useEnsembl(biomart = "ensembl")
+#' ensembl <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL")
 #'
 #' ## list the available datasets in this Mart
 #' listDatasets(mart = ensembl)
@@ -712,7 +715,7 @@ checkDataset <- function(dataset, mart) {
 #' @keywords methods
 #'
 #' @examplesIf interactive()
-#' mart <- useMart("ensembl")
+#' mart <- useMart("ENSEMBL_MART_ENSEMBL")
 #' mart <- useDataset("hsapiens_gene_ensembl", mart = mart)
 #'
 #' @export
@@ -772,7 +775,10 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
 #' @examplesIf interactive()
 #' ## list the available Ensembl marts and use Ensembl Genes
 #' listEnsembl()
-#' ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+#' ensembl <- useEnsembl(
+#'   biomart = "ENSEMBL_MART_ENSEMBL",
+#'   dataset = 'hsapiens_gene_ensembl'
+#' )
 #'
 #' ## list the available datasets in this Mart
 #' listAttributes(mart = ensembl)
@@ -822,7 +828,10 @@ listAttributes <- function(
 #' @author Steffen Durinck
 #' @keywords methods
 #' @examplesIf interactive()
-#' mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
+#' mart <- useMart(
+#'   "ENSEMBL_MART_ENSEMBL",
+#'   dataset = "hsapiens_gene_ensembl"
+#' )
 #' attributePages(mart)
 #'
 #' @export
@@ -856,7 +865,10 @@ attributePages <- function(mart) {
 #' @examplesIf interactive()
 #' ## list the available Ensembl marts and use Ensembl Genes
 #' listEnsembl()
-#' ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+#' ensembl <- useEnsembl(
+#'   biomart = "ENSEMBL_MART_ENSEMBL",
+#'   dataset = "hsapiens_gene_ensembl"
+#' )
 #'
 #' ## list the available datasets in this Mart
 #' listFilters(mart = ensembl)
@@ -909,7 +921,7 @@ filterOptions <- function(filter, mart) {
 #' @keywords methods
 
 #' @examplesIf interactive()
-#' mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+#' mart <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
 #' filterType("chromosome_name", mart)
 #'
 #' @export
@@ -980,7 +992,7 @@ filterType <- function(filter, mart) {
 #' @keywords methods
 
 #' @examplesIf interactive()
-#' mart <- useEnsembl(biomart = "ensembl",
+#' mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL",
 #'                    dataset = "hsapiens_gene_ensembl")
 #'
 #' getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
@@ -1214,12 +1226,12 @@ getBM <- function(
 #'
 #' @examplesIf interactive()
 #' human <- useMart(
-#'   "ensembl",
+#'   "ENSEMBL_MART_ENSEMBL",
 #'   dataset = "hsapiens_gene_ensembl",
 #'   host = "https://dec2021.archive.ensembl.org"
 #' )
 #' mouse <- useMart(
-#'   "ensembl",
+#'   "ENSEMBL_MART_ENSEMBL",
 #'   dataset = "mmusculus_gene_ensembl",
 #'   host = "https://dec2021.archive.ensembl.org"
 #' )
@@ -1420,7 +1432,7 @@ getLDS <- function(
 #' @keywords methods
 #'
 #' @examplesIf interactive()
-#' mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+#' mart <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
 #'
 #' seq <- getSequence(
 #'   id = "BRCA1",

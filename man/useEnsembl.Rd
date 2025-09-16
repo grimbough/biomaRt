@@ -64,10 +64,10 @@ returned \code{Mart} object and will be used for all queries.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-mart <- useEnsembl("ensembl")
+mart <- useEnsembl("ENSEMBL_MART_ENSEMBL")
 
 ## using the US East mirror
-us_mart <- useEnsembl(biomart = "ensembl", mirror = "useast")
+us_mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", mirror = "useast")
 
 ## using the Arabidopsis thaliana genes dataset in Ensembl Plants
 plants_mart <- useEnsemblGenomes(

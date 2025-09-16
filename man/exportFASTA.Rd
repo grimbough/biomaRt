@@ -17,7 +17,7 @@ Exports getSequence results to FASTA format
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+mart <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
 
 seq <- getSequence(
   id = "BRCA1",

@@ -43,7 +43,7 @@ checkWrapperArgs <- function(id, type, mart) {
 #' @keywords methods
 #'
 #' @examplesIf interactive()
-#' mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+#' mart <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
 #'
 #' # example using affy id
 #' g <- getGene(id = "1939_at", type = "affy_hg_u95av2", mart = mart)
@@ -329,7 +329,7 @@ getGene <- function(id, type, mart) {
 #' @keywords methods
 #'
 #' @examplesIf interactive()
-#' mart <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
+#' mart <- useEnsembl("ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
 #'
 #' seq <- getSequence(
 #'   id = "BRCA1",

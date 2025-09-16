@@ -33,7 +33,10 @@ the available attributes in the selected dataset.
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 ## list the available Ensembl marts and use Ensembl Genes
 listEnsembl()
-ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+ensembl <- useEnsembl(
+  biomart = "ENSEMBL_MART_ENSEMBL",
+  dataset = 'hsapiens_gene_ensembl'
+)
 
 ## list the available datasets in this Mart
 listAttributes(mart = ensembl)
