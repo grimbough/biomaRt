@@ -70,17 +70,15 @@ and corresponding values, it retrieves the user specified attributes from
 the BioMart database one is connected to.
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useEnsembl(biomart = "ensembl",
+                   dataset = "hsapiens_gene_ensembl")
 
-if(interactive()){
-  mart <- useEnsembl(biomart = "ensembl",
-                     dataset = "hsapiens_gene_ensembl")
-
-  getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
-        filters    = "affy_hg_u95av2",
-        values     = c("1939_at","1503_at","1454_at"),
-        mart       = mart)
-  }
-
+getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),
+      filters    = "affy_hg_u95av2",
+      values     = c("1939_at","1503_at","1454_at"),
+      mart       = mart)
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck

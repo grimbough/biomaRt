@@ -11,7 +11,6 @@ Returns a table containing the available archived versions of Ensembl, along
 with the dates they were created and the URL used to access them.
 }
 \examples{
-
 listEnsemblArchives()
 
 }

@@ -18,8 +18,6 @@ biomaRt will try to determine them automatically, but this function can be
 used to set them manually if required.
 }
 \examples{
-
-
 \dontrun{
 ssl_settings <- list(
   "ssl_cipher_list" = "DEFAULT@SECLEVEL=1",

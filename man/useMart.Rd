@@ -52,13 +52,10 @@ database using \code{\link[=useMart]{useMart()}} and then use the \code{\link[=l
 selected BioMart, see \code{\link[=listDatasets]{listDatasets()}} function.
 }
 \examples{
-
-if(interactive()){
-
-    mart = useMart("ensembl")
-    mart=useMart(biomart="ensembl", dataset="hsapiens_gene_ensembl")
-}
-
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useMart("ensembl")
+mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck, Mike L. Smith

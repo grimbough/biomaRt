@@ -57,15 +57,13 @@ retrieves information from these linked BioMart datasets.  In Ensembl this
 translates to homology mapping.
 }
 \examples{
-
-if(interactive()){
-human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+human <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+mouse <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 getLDS(attributes = c("hgnc_symbol","chromosome_name", "start_position"),
     filters = "hgnc_symbol", values = "TP53", mart = human,
     attributesL = c("chromosome_name","start_position"), martL = mouse)
-}
-
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck

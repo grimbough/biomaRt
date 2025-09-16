@@ -44,17 +44,15 @@ This function returns a list of BioMart databases hosted by Ensembl.  To
 establish a connection use the \code{\link[=useEnsembl]{useEnsembl()}} function.
 }
 \examples{
-
-if(interactive()){
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 listEnsembl()
 
 ## list the default Ensembl Genomes marts
 listEnsemblGenomes()
 
-## list only the marts available in the Ensmbl Plans 56 archive
+## list only the marts available in the Ensmbl Plants 56 archive
 listEnsemblGenomes(host = "https://eg56-plants.ensembl.org/")
-}
-
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck, Mike L. Smith

@@ -24,23 +24,17 @@ position, gene description and gene symbol.  A wide variety of identifiers
 is available in Ensembl, these can be found with the listFilters function.
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 
-
-if(interactive()){
-
-mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-
-#example using affy id
-
-g = getGene( id = "1939_at", type = "affy_hg_u95av2", mart = mart)
+# example using affy id
+g <- getGene(id = "1939_at", type = "affy_hg_u95av2", mart = mart)
 show(g)
 
-#example using Entrez Gene id
-
-g = getGene( id = "100", type = "entrezgene_id", mart = mart)
+# example using Entrez Gene id
+g <- getGene(id = "100", type = "entrezgene_id", mart = mart)
 show(g)
-}
-
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck

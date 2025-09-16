@@ -19,12 +19,10 @@ debugging}
 This function selects a dataset and updates the Mart object
 }
 \examples{
-
-if(interactive()){
-mart=useMart("ensembl")
-mart=useDataset("hsapiens_gene_ensembl", mart = mart)
-}
-
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useMart("ensembl")
+mart <- useDataset("hsapiens_gene_ensembl", mart = mart)
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck

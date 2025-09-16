@@ -16,11 +16,9 @@ the editor. Use, for instance, \code{options(editor="emacs")} to set another
 editor.
 }
 \examples{
-
-if(interactive()){
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 NP2009code()
-}
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=edit]{edit()}}

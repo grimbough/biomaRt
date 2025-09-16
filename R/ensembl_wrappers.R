@@ -41,23 +41,17 @@ checkWrapperArgs <- function(id, type, mart) {
 #' databases.  You can create such an object using the function [useMart()].
 #' @author Steffen Durinck
 #' @keywords methods
-#' @examples
 #'
+#' @examplesIf interactive()
+#' mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 #'
-#' if(interactive()){
-#'
-#' mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-#'
-#' #example using affy id
-#'
-#' g = getGene( id = "1939_at", type = "affy_hg_u95av2", mart = mart)
+#' # example using affy id
+#' g <- getGene(id = "1939_at", type = "affy_hg_u95av2", mart = mart)
 #' show(g)
 #'
-#' #example using Entrez Gene id
-#'
-#' g = getGene( id = "100", type = "entrezgene_id", mart = mart)
+#' # example using Entrez Gene id
+#' g <- getGene(id = "100", type = "entrezgene_id", mart = mart)
 #' show(g)
-#' }
 #'
 #' @export
 getGene <- function(id, type, mart) {
@@ -333,25 +327,27 @@ getGene <- function(id, type, mart) {
 #' webservice will be displayed.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
-#' @examples
 #'
-#' if(interactive()){
-#' mart <- useEnsembl("ensembl", dataset="hsapiens_gene_ensembl")
+#' @examplesIf interactive()
+#' mart <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
 #'
-#' seq = getSequence(id = "BRCA1",
-#'                   type = "hgnc_symbol",
-#'                   seqType = "peptide",
-#'                   mart = mart)
+#' seq <- getSequence(
+#'   id = "BRCA1",
+#'   type = "hgnc_symbol",
+#'   seqType = "peptide",
+#'   mart = mart
+#' )
 #' show(seq)
 #'
-#' seq = getSequence(id="1939_at",
-#'                   type="affy_hg_u95av2",
-#'                   seqType="gene_flank",
-#'                   upstream = 20,
-#'                   mart = mart)
+#' seq <- getSequence(
+#'   id = "1939_at",
+#'   type = "affy_hg_u95av2",
+#'   seqType = "gene_flank",
+#'   upstream = 20,
+#'   mart = mart
+#' )
 #' show(seq)
 #'
-#' }
 #' @export
 getSequence <- function(
   chromosome,

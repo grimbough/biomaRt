@@ -84,14 +84,13 @@
 #' @param settings A named list. Each entry should be a valid curl option, as
 #' found in [curl::curl_options()].
 #' @author Mike Smith
+#'
 #' @examples
-#'
-#'
 #' \dontrun{
 #' ssl_settings <- list(
 #'   "ssl_cipher_list" = "DEFAULT@SECLEVEL=1",
 #'   "ssl_verifypeer"  = FALSE
-#')
+#' )
 #' setEnsemblSSL(ssl_settings)
 #' }
 #'

@@ -30,25 +30,21 @@ the attribute we use in the query.  The \code{listAttributes} function lists
 the available attributes in the selected dataset.
 }
 \examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+## list the available Ensembl marts and use Ensembl Genes
+listEnsembl()
+ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
 
+## list the available datasets in this Mart
+listAttributes(mart = ensembl)
 
-if(interactive()){
+## the list of attributes is very long and gets truncated by R
+## we can search for a term of interest to filter this e.g. 'start'
+searchAttributes(mart = ensembl, pattern = "start")
 
-    ## list the available Ensembl marts and use Ensembl Genes
-    listEnsembl()
-    ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
-
-    ## list the available datasets in this Mart
-    listAttributes(mart = ensembl)
-
-    ## the list of attributes is very long and gets truncated by R
-    ## we can search for a term of interest to filter this e.g. 'start'
-    searchAttributes(mart = ensembl, pattern = "start")
-
-    ## filter the attributes to give only entries containing 'entrez' or 'hgnc'
-    searchAttributes(mart = ensembl, 'entrez|hgnc')
-}
-
+## filter the attributes to give only entries containing 'entrez' or 'hgnc'
+searchAttributes(mart = ensembl, 'entrez|hgnc')
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck, Mike Smith

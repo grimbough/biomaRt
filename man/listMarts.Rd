@@ -60,11 +60,9 @@ should report the issue on the Bioconductor support site:
 https://support.bioconductor.org
 }
 \examples{
-
-if(interactive()){
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 listMarts()
-}
-
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck, Mike Smith

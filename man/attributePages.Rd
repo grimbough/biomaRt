@@ -16,13 +16,10 @@ groups present in the BioMart.  These page names can be used to display only
 a subset of the available attributes in the \code{\link[=listAttributes]{listAttributes()}} function.
 }
 \examples{
-
-
-if(interactive()){
-mart = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
 attributePages(mart)
-}
-
+\dontshow{\}) # examplesIf}
 }
 \author{
 Steffen Durinck
