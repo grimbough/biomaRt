@@ -1429,7 +1429,7 @@ exportFASTA <- function(sequences, file) {
     stop("Please provide filename to write to")
   }
   if (length(sequences[1, ]) == 2) {
-    for (i in seq(along = sequences[, 2])) {
+    for (i in seq_along(sequences[, 2])) {
       cat(
         paste0(">", sequences[i, 2], "\n"),
         file = file,
@@ -1439,7 +1439,7 @@ exportFASTA <- function(sequences, file) {
       cat("\n\n", file = file, append = TRUE)
     }
   } else {
-    for (i in seq(along = sequences[, 2])) {
+    for (i in seq_along(sequences[, 2])) {
       cat(
         paste0(
           ">chromosome_",
