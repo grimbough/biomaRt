@@ -53,8 +53,11 @@ selected BioMart, see \code{\link[=listDatasets]{listDatasets()}} function.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-mart <- useMart("ensembl")
-mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+mart <- useMart("ENSEMBL_MART_ENSEMBL")
+mart <- useMart(
+  biomart = "ENSEMBL_MART_ENSEMBL",
+  dataset = "hsapiens_gene_ensembl"
+)
 \dontshow{\}) # examplesIf}
 }
 \author{

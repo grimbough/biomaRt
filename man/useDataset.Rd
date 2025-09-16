@@ -20,7 +20,7 @@ This function selects a dataset and updates the Mart object
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-mart <- useMart("ensembl")
+mart <- useMart("ENSEMBL_MART_ENSEMBL")
 mart <- useDataset("hsapiens_gene_ensembl", mart = mart)
 \dontshow{\}) # examplesIf}
 }

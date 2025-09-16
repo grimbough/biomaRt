@@ -17,7 +17,10 @@ a subset of the available attributes in the \code{\link[=listAttributes]{listAtt
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
+mart <- useMart(
+  "ENSEMBL_MART_ENSEMBL",
+  dataset = "hsapiens_gene_ensembl"
+)
 attributePages(mart)
 \dontshow{\}) # examplesIf}
 }

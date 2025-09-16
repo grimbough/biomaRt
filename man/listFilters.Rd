@@ -31,7 +31,10 @@ want to retrieve all EntrezGene identifiers on chromosome X,
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 ## list the available Ensembl marts and use Ensembl Genes
 listEnsembl()
-ensembl <- useEnsembl(biomart = "ensembl", dataset = 'hsapiens_gene_ensembl')
+ensembl <- useEnsembl(
+  biomart = "ENSEMBL_MART_ENSEMBL",
+  dataset = "hsapiens_gene_ensembl"
+)
 
 ## list the available datasets in this Mart
 listFilters(mart = ensembl)

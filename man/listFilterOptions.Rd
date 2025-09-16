@@ -29,7 +29,10 @@ anything.
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 ## Use the Ensembl human genes dataset
-ensembl <- useEnsembl(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+ensembl <- useEnsembl(
+  biomart = "ENSEMBL_MART_ENSEMBL",
+  dataset = "hsapiens_gene_ensembl"
+)
 
 ## we can search for the name of a filter we're interested in e.g. 'phenotype'
 ## we need to use the name of the filter in the next function

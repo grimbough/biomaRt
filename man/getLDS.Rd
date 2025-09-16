@@ -59,12 +59,12 @@ translates to homology mapping.
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 human <- useMart(
-  "ensembl",
+  "ENSEMBL_MART_ENSEMBL",
   dataset = "hsapiens_gene_ensembl",
   host = "https://dec2021.archive.ensembl.org"
 )
 mouse <- useMart(
-  "ensembl",
+  "ENSEMBL_MART_ENSEMBL",
   dataset = "mmusculus_gene_ensembl",
   host = "https://dec2021.archive.ensembl.org"
 )

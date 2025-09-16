@@ -71,7 +71,7 @@ the BioMart database one is connected to.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-mart <- useEnsembl(biomart = "ensembl",
+mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL",
                    dataset = "hsapiens_gene_ensembl")
 
 getBM(attributes = c("affy_hg_u95av2", "hgnc_symbol", "chromosome_name", "band"),

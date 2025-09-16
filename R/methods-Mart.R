@@ -163,8 +163,10 @@ setMethod("martHTTPConfig", signature("Mart"), function(obj) {
 #'
 #' @examplesIf interactive()
 #' ## 1st create a Mart object and specify the dataset
-#' mart <- useEnsembl(dataset="hsapiens_gene_ensembl",
-#'                    biomart='ensembl')
+#' mart <- useEnsembl(
+#'   biomart = "ENSEMBL_MART_ENSEMBL",
+#'   dataset = "hsapiens_gene_ensembl"
+#' )
 #' ## you can list the keytypes
 #' keytypes(mart)
 #' ## you can list the columns
