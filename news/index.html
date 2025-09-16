@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.66.0" id="changes-in-biomart-version-2660">CHANGES IN biomaRt VERSION 2.66.0<a class="anchor" aria-label="anchor" href="#changes-in-biomart-version-2660"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-2-66-0">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-2-66-0"></a></h3>
+<ul><li>the <code>https</code> argument in <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> has been removed, as announced in version 2.50.0. Connections to Ensembl mirrors now always use <code>https://</code>, as enforced by a redirect from the server.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="user-visible-changes-2-66-0">USER VISIBLE CHANGES<a class="anchor" aria-label="anchor" href="#user-visible-changes-2-66-0"></a></h3>
 <ul><li>This package documentation is now available as a pkgdown website at <a href="https://huber-group-embl.github.io/biomaRt/" class="uri">https://huber-group-embl.github.io/biomaRt/</a>.</li>
