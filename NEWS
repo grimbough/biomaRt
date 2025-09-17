@@ -12,6 +12,7 @@ USER VISIBLE CHANGES
 
   o This package documentation is now available as a pkgdown website at
   https://huber-group-embl.github.io/biomaRt/.
+  o The `exportFASTA()` function is now roughly 5x faster.
 
 BUG FIXES
 
