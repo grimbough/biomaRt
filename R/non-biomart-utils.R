@@ -82,26 +82,29 @@ findGenomeName <- function(input) {
   aliases <- createNameToAliasMap()
 
   if (input %in% names(aliases)) {
-    res <- input
+    return(input)
+  }
+
+  search <- vapply(
+    aliases,
+    FUN = \(x, input) {
+      any(grepl(pattern = input, x = x))
+    },
+    input = paste0("^", input, "$"),
+    FUN.VALUE = logical(1)
+  )
+
+  if (!any(search)) {
+    stop("Unable to match the search term to a genome")
+  }
+
+  if (sum(search) == 1) {
+    res <- names(aliases)[which(search)]
   } else {
-    search <- vapply(
-      aliases,
-      FUN = \(x, input) {
-        any(grepl(pattern = input, x = x))
-      },
-      input = paste0("^", input, "$"),
-      FUN.VALUE = logical(1)
+    res <- pickReferenceStrain(
+      genomes_to_choose_from = names(aliases)[which(search)]
     )
-    if (any(search) && (sum(search) == 1)) {
-      res <- names(aliases)[which(search)]
-    } else if (any(search) && (sum(search) > 1)) {
-      res <- pickReferenceStrain(
-        genomes_to_choose_from = names(aliases)[which(search)]
-      )
-      pickReferenceStrain_msg(input)
-    } else {
-      stop("Unable to match the search term to a genome")
-    }
+    pickReferenceStrain_msg(input)
   }
   return(res)
 }
