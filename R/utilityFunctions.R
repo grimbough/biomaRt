@@ -152,7 +152,7 @@
     )
   }
   ## it's easy to not realise you're passing a data frame here, so check
-  if (is.data.frame(values) && ncol(values == 1)) {
+  if (is.data.frame(values) && ncol(values) == 1) {
     values <- values[, 1]
   }
 
