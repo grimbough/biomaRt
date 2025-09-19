@@ -1,15 +1,16 @@
 Package: biomaRt
 Title: Interface to BioMart databases (i.e. Ensembl)
-Version: 2.65.12
+Version: 2.65.13
 Authors@R: c(
     person("Steffen", "Durinck", , "biomartdev@gmail.com", role = "aut"),
     person("Wolfgang", "Huber", role = "aut"),
     person("Sean", "Davis", , "sdavis2@mail.nih.gov", role = "ctb"),
     person("Francois", "Pepin", role = "ctb"),
     person("Vince S", "Buffalo", role = "ctb"),
-    person("Mike", "Smith", , "grimbough@gmail.com", role = c("ctb", "cre"),
+    person("Mike", "Smith", , "grimbough@gmail.com", role = "ctb",
            comment = c(ORCID = "0000-0002-7800-3848")),
-    person("Hugo", "Gruson", , "hugo.gruson@embl.de", role = "ctb"),
+    person("Hugo", "Gruson", , "hugo.gruson@embl.de", role = c("ctb", "cre"),
+           comment = c(ORCID = "0000-0002-4094-1476")),
     person("German Network for Bioinformatics Infrastructure - de.NBI", role = "fnd")
   )
 Description: In recent years a wealth of biological data has become
