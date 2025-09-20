@@ -179,7 +179,7 @@ listMarts <- function(
       "?type=registry&requestid=biomaRt"
     )
 
-    if (is(http_config, "list")) {
+    if (is.list(http_config)) {
       http_config <- do.call(c, http_config)
     }
   } else if (is(mart, "Mart")) {
@@ -1395,7 +1395,7 @@ getLDS <- function(
 
     res_attributes <- c(attributes, attributesL)
     if (
-      !(is(result, "data.frame") &&
+      !(is.data.frame(result) &&
         (ncol(result) == length(res_attributes)))
     ) {
       print(head(result))

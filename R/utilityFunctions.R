@@ -315,7 +315,7 @@
     }
   )
 
-  if (!(is(result, "data.frame") && (ncol(result) == numAttributes))) {
+  if (!(is.data.frame(result) && (ncol(result) == numAttributes))) {
     stop(
       "The query to the BioMart webservice returned an invalid result.\n",
       "The number of columns in the result table does not equal the number of attributes in the query.\n",
