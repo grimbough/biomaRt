@@ -6,7 +6,9 @@
 \alias{biomaRt-package}
 \title{biomaRt: Interface to BioMart databases (i.e. Ensembl)}
 \description{
-In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis. biomaRt provides an interface to a growing collection of databases implementing the BioMart software suite (\url{http://www.biomart.org}). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. The most prominent examples of BioMart databases are maintain by Ensembl, which provides biomaRt users direct access to a diverse set of data and enables a wide range of powerful online queries from gene annotation to database mining.
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
+In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis. biomaRt provides an interface to a growing collection of databases implementing the BioMart software suite (\url{https://www.ensembl.org/info/data/biomart/index.html}). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. The most prominent examples of BioMart databases are maintain by Ensembl, which provides biomaRt users direct access to a diverse set of data and enables a wide range of powerful online queries from gene annotation to database mining.
 }
 \seealso{
 Useful links:
@@ -18,7 +20,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Mike Smith \email{grimbough@gmail.com} (\href{https://orcid.org/0000-0002-7800-3848}{ORCID}) [contributor]
+\strong{Maintainer}: Hugo Gruson \email{hugo.gruson@embl.de} (\href{https://orcid.org/0000-0002-4094-1476}{ORCID}) [contributor]
 
 Authors:
 \itemize{
@@ -31,7 +33,7 @@ Other contributors:
   \item Sean Davis \email{sdavis2@mail.nih.gov} [contributor]
   \item Francois Pepin [contributor]
   \item Vince S Buffalo [contributor]
-  \item Hugo Gruson \email{hugo.gruson@embl.de} [contributor]
+  \item Mike Smith \email{grimbough@gmail.com} (\href{https://orcid.org/0000-0002-7800-3848}{ORCID}) [contributor]
   \item German Network for Bioinformatics Infrastructure - de.NBI [funder]
 }
 
