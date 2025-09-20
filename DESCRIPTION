@@ -18,19 +18,21 @@ Description: In recent years a wealth of biological data has become
     data resources and firm integration with data analysis is needed for
     comprehensive bioinformatics data analysis.  biomaRt provides an
     interface to a growing collection of databases implementing the
-    BioMart software suite (<https://www.ensembl.org/info/data/biomart/index.html>). The package enables
-    retrieval of large amounts of data in a uniform way without the need
-    to know the underlying database schemas or write complex SQL queries.
-    The most prominent examples of BioMart databases are maintain by
-    Ensembl, which provides biomaRt users direct access to a diverse set
-    of data and enables a wide range of powerful online queries from gene
-    annotation to database mining.
+    BioMart software suite
+    (<https://www.ensembl.org/info/data/biomart/index.html>). The package
+    enables retrieval of large amounts of data in a uniform way without
+    the need to know the underlying database schemas or write complex SQL
+    queries.  The most prominent examples of BioMart databases are
+    maintain by Ensembl, which provides biomaRt users direct access to a
+    diverse set of data and enables a wide range of powerful online
+    queries from gene annotation to database mining.
 License: Artistic-2.0
-URL: https://github.com/Huber-group-EMBL/biomaRt, https://huber-group-embl.github.io/biomaRt/
+URL: https://github.com/Huber-group-EMBL/biomaRt,
+    https://huber-group-embl.github.io/biomaRt/
 BugReports: https://github.com/Huber-group-EMBL/biomaRt/issues
 Depends:
-    R (>= 4.5.0),
-    methods
+    methods,
+    R (>= 4.5.0)
 Imports:
     AnnotationDbi,
     BiocFileCache,
@@ -50,9 +52,12 @@ Suggests:
 VignetteBuilder:
     knitr
 biocViews: Annotation
+Config/Needs/website:xfun
+Config/testthat/edition: 3
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: no
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Collate:
     'biomaRt-package.R'
@@ -65,7 +70,3 @@ Collate:
     'ensembl_ssl_settings.R'
     'utilityFunctions.R'
     'non-biomart-utils.R'
-Roxygen: list(markdown = TRUE)
-Config/Needs/website:
-    xfun
-Config/testthat/edition: 3
