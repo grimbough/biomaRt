@@ -119,22 +119,15 @@ listMarts <- function(
   port,
   includeHosts = FALSE,
   archive = FALSE,
-  http_config,
+  http_config = list(),
   verbose = FALSE
 ) {
   if (missing(port)) {
     port <- ifelse(startsWith(host, "https"), yes = 443, no = 80)
   }
 
-  if (
-    grepl(pattern = "^https://.*ensembl.org", x = host) &&
-      missing(http_config)
-  ) {
+  if (grepl("^https://.*ensembl.org", host) && missing(http_config)) {
     http_config <- .getEnsemblSSL()
-  }
-
-  if (missing(http_config)) {
-    http_config <- list()
   }
 
   .listMarts(
@@ -227,7 +220,7 @@ listMarts <- function(
   registry_xml2 <- xml2::xml_children(registry_xml2)
 
   ## create a table with the registry information
-  marts <- do.call("rbind", lapply(registry_xml2, FUN = xml2::xml_attrs))
+  marts <- do.call("rbind", xml2::xml_attrs(registry_xml2))
   marts <- as.data.frame(marts[marts[, "visible"] == "1", , drop = FALSE])
   ## rename some columns
   names(marts)[names(marts) == "name"] <- "biomart"

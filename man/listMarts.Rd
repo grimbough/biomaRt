@@ -11,7 +11,7 @@ listMarts(
   port,
   includeHosts = FALSE,
   archive = FALSE,
-  http_config,
+  http_config = list(),
   verbose = FALSE
 )
 }
