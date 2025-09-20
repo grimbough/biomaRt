@@ -222,7 +222,7 @@ setMethod("select", "Mart", function(x, keys, columns, keytype, ...) {
   if (length(keytype) > 0 && length(keys) == 0) {
     stop("Keys argument contains no data.")
   }
-  if (!(is.character(keytype)) || length(keytype) != 1) {
+  if (!is.character(keytype) || length(keytype) != 1) {
     stop("keytype should be single element character vector.")
   }
   getBM(attributes = columns, filters = keytype, values = keys, mart = x)

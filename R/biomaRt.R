@@ -884,7 +884,7 @@ attributePages <- function(mart) {
 listFilters <- function(mart, what = c("name", "description")) {
   martCheck(mart)
   filters <- martFilters(mart)
-  badwhat <- !(what %in% colnames(filters))
+  badwhat <- !what %in% colnames(filters)
   if (any(badwhat)) {
     stop(sprintf(
       "The function argument 'what' contains %s: %s\nValid are: %s\n",
@@ -1071,7 +1071,7 @@ getBM <- function(
   )
 
   # checking the Attributes
-  invalid <- !(attributes %in% listAttributes(mart, what = "name"))
+  invalid <- !attributes %in% listAttributes(mart, what = "name")
   if (any(invalid)) {
     stop(
       "Invalid attribute(s):",
@@ -1090,7 +1090,7 @@ getBM <- function(
 
   # checking the filters
   if (filters[1] != "" && checkFilters) {
-    invalid <- !(filters %in% listFilters(mart, what = "name"))
+    invalid <- !filters %in% listFilters(mart, what = "name")
     if (any(invalid)) {
       stop(
         "Invalid filters(s): ",
@@ -1276,7 +1276,7 @@ getLDS <- function(
     )
   }
 
-  invalid <- !(attributes %in% listAttributes(mart, what = "name"))
+  invalid <- !attributes %in% listAttributes(mart, what = "name")
   if (any(invalid)) {
     stop(
       "Invalid attribute(s): ",
@@ -1285,7 +1285,7 @@ getLDS <- function(
     )
   }
 
-  invalid <- !(attributesL %in% listAttributes(martL, what = "name"))
+  invalid <- !attributesL %in% listAttributes(martL, what = "name")
   if (any(invalid)) {
     stop(
       "Invalid attribute(s): ",
@@ -1295,7 +1295,7 @@ getLDS <- function(
   }
 
   if (nzchar(filters[1])) {
-    invalid <- !(filters %in% listFilters(mart, what = "name"))
+    invalid <- !filters %in% listFilters(mart, what = "name")
     if (any(invalid)) {
       stop(
         "Invalid filters(s): ",
@@ -1305,7 +1305,7 @@ getLDS <- function(
     }
   }
   if (nzchar(filtersL[1])) {
-    invalid <- !(filtersL %in% listFilters(martL, what = "name"))
+    invalid <- !filtersL %in% listFilters(martL, what = "name")
     if (any(invalid)) {
       stop(
         "Invalid filters(s): ",
@@ -1394,10 +1394,7 @@ getLDS <- function(
     }
 
     res_attributes <- c(attributes, attributesL)
-    if (
-      !(is.data.frame(result) &&
-        (ncol(result) == length(res_attributes)))
-    ) {
+    if (!is.data.frame(result) || ncol(result) != length(res_attributes)) {
       print(head(result))
       stop(
         "The query to the BioMart webservice returned an invalid result: ",

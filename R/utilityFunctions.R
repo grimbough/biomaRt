@@ -279,7 +279,7 @@
   numAttributes
 ) {
   ## we expect only a character vector of length 1
-  if (!(is.character(postRes) && (length(postRes) == 1L))) {
+  if (!is.character(postRes) || length(postRes) != 1L) {
     stop(
       "The query to the BioMart webservice returned an invalid result\n",
       "biomaRt expected a character string of length 1.\n",
@@ -315,7 +315,7 @@
     }
   )
 
-  if (!(is.data.frame(result) && (ncol(result) == numAttributes))) {
+  if (!is.data.frame(result) || ncol(result) != numAttributes) {
     stop(
       "The query to the BioMart webservice returned an invalid result.\n",
       "The number of columns in the result table does not equal the number of attributes in the query.\n",

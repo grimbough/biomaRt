@@ -258,7 +258,7 @@ getGene <- function(id, type, mart) {
       all.y = TRUE
     )
     # nolint next: scalar_in_linter.
-    sequence <- sequence[, !(names(sequence) %in% "ensembl_gene_id")]
+    sequence <- sequence[, !names(sequence) %in% "ensembl_gene_id"]
   } else {
     sequence <- getBM(
       attributes = c(seqType, type),

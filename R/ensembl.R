@@ -303,7 +303,7 @@ listEnsembl <- function(
   }
 
   if (!is.null(mirror)) {
-    if (!(mirror %in% c("www", "useast", "asia"))) {
+    if (!mirror %in% c("www", "useast", "asia")) {
       warning(
         "Invalid mirror. Select a mirror from [www, useast, asia].\n",
         "Default when no mirror is specified is to use ",
