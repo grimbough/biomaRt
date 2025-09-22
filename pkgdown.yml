@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   accessing_ensembl: accessing_ensembl.html
   accessing_other_marts: accessing_other_marts.html
-last_built: 2025-09-20T17:46Z
+last_built: 2025-09-22T16:13Z
 urls:
   reference: https://huber-group-embl.github.io/biomaRt/reference
   article: https://huber-group-embl.github.io/biomaRt/articles
