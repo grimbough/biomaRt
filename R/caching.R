@@ -93,9 +93,11 @@
 .readFromCache <- function(bfc, hash) {
   cache_hits <- bfcquery(bfc, hash, field = "rname")
   if (nrow(cache_hits) > 1) {
-    stop(
-      "Multiple cache results found.",
-      "\nPlease clear your cache by running biomartCacheClear()"
+    cli::cli_abort(
+      c(
+        "Multiple cache results found.",
+        "i" = "Please clear your cache by running biomartCacheClear()"
+      )
     )
   } else {
     rid <- cache_hits$rid
@@ -188,20 +190,21 @@ biomartCacheInfo <- function() {
     files <- bfcinfo(bfc)$rpath
     total_size <- sum(file.size(files))
     size_obj <- structure(total_size, class = "object_size")
-
-    message(
-      "biomaRt cache\n",
-      "- Location: ",
-      cache,
-      "\n",
-      "- No. of files: ",
-      length(files),
-      "\n",
-      "- Total size: ",
-      format(size_obj, units = "auto")
+    cli::cli_inform(
+      c(
+        "biomaRt cache",
+        "*" = "Location: {cache}",
+        "*" = "No. of files: {length(files)}",
+        "*" = "Total size: {format(size_obj, units = 'auto')}"
+      )
     )
   } else {
-    message("biomaRt cache uninitialized\n", "- Location: ", cache)
+    cli::cli_inform(
+      c(
+        "biomaRt cache uninitialized",
+        "i" = "Location: {cache}"
+      )
+    )
   }
   return(invisible(cache))
 }

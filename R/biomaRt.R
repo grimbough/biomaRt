@@ -16,8 +16,12 @@
 
 martCheck <- function(mart, biomart = NULL) {
   if (missing(mart) || !inherits(mart, "Mart")) {
-    stop(
-      "You must provide a valid Mart object. To create a Mart object use the function: useMart.  Check ?useMart for more information."
+    cli::cli_abort(
+      c(
+        "You must provide a valid Mart object.",
+        "i" = "To create a Mart object use the function {.fn useMart}.",
+        "i" = "Check {.code ?useMart} for more information."
+      )
     )
   }
   if (!is.null(biomart)) {
@@ -29,16 +33,22 @@ martCheck <- function(mart, biomart = NULL) {
       }
     }
     if (!bmok) {
-      stop(
-        "This function only works when used with the ",
-        biomart,
-        " BioMart."
+      cli::cli_abort(
+        "This function only works when used with the {biomart} BioMart."
       )
     }
   }
   if (martDataset(mart) == "") {
-    stop(
-      "No dataset selected, please select a dataset first.  You can see the available datasets by using the listDatasets function see ?listDatasets for more information.  Then you should create the Mart object by using the useMart function.  See ?useMart for more information"
+    cli::cli_abort(
+      c(
+        "No dataset selected, please select a dataset first.",
+        "i" = "You can see the available datasets by using the
+           {.fn listDatasets} function see {.code ?listDatasets}
+           for more information.",
+        "i" = "Then you should create the Mart object by using the
+           {.fn useMart} function.",
+        "i" = "See {.code ?useMart} for more information."
+      )
     )
   }
 }
@@ -47,7 +57,7 @@ martCheck <- function(mart, biomart = NULL) {
 #' @importFrom httr2 req_options req_perform req_timeout resp_body_string
 bmRequest <- function(request, http_config, verbose = FALSE) {
   if (verbose) {
-    message("Attempting web service request:\n", request)
+    cli::cli_inform("Attempting web service request:\n{request}")
   }
 
   request <- httr2::request(request) |>
@@ -159,9 +169,12 @@ listMarts <- function(
   if (is.null(mart)) {
     host <- .cleanHostURL(host)
     if (archive) {
-      stop(
-        "The archive = TRUE argument is now defunct.\n",
-        "Use listEnsemblArchives() to find the URL to directly query an Ensembl archive."
+      cli::cli_abort(
+        c(
+          "The {.arg archive = TRUE} argument is now defunct.",
+          "i" = "Use {.fn listEnsemblArchives} to find the URL to directly query
+           an Ensembl archive."
+        )
       )
     }
     request <- paste0(
@@ -179,10 +192,13 @@ listMarts <- function(
     request <- paste0(martHost(mart), "?type=registry&requestid=biomaRt")
     http_config <- martHTTPConfig(mart)
   } else {
-    stop(
-      mart,
-      " object needs to be of class Mart created with the useMart function.\n",
-      "If you don't have a Mart object yet, use listMarts() without arguments or only specify the host argument"
+    cli::cli_abort(
+      c(
+        "{.arg mart} object needs to be of class Mart created with the
+     {.fn useMart} function.",
+        "i" = "If you don't have a Mart object yet, use {.fn listMarts} without
+           arguments or only specify the host argument."
+      )
     )
   }
 
@@ -199,19 +215,21 @@ listMarts <- function(
   ## check this looks like the MartRegistry XML, otherwise throw an error
   if (!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
     if (grepl(x = registry, pattern = "status.ensembl.org", fixed = TRUE)) {
-      stop(
-        "Your query has been redirected to https://status.ensembl.org ",
-        "indicating this Ensembl service is currently unavailable.",
-        "\nLook at ?useEnsembl for details on how to try a mirror site.",
-        call. = FALSE
+      cli::cli_abort(
+        c(
+          "Your query has been redirected to https://status.ensembl.org
+     indicating this Ensembl service is currently unavailable.",
+          "i" = "Look at {.code ?useEnsembl} for details on how to try a mirror site."
+        )
       )
     } else {
-      stop(
-        "Unexpected format to the list of available marts.\n",
-        "Please check the following URL manually, ",
-        "and try ?listMarts for advice.\n",
-        request,
-        call. = FALSE
+      cli::cli_abort(
+        c(
+          "Unexpected format to the list of available marts.",
+          "i" = "Please check the following URL manually, and try
+           {.fn listMarts} for advice.",
+          "i" = "{.url {request}}"
+        )
       )
     }
   }
@@ -321,14 +339,17 @@ useMart <- function(
   verbose = FALSE
 ) {
   if (missing(biomart) && missing(version)) {
-    stop(
-      "No biomart databases specified. Specify a biomart database to use using the biomart or version argument"
+    cli::cli_abort(
+      "No biomart databases specified. Specify a biomart database to use
+   using the {.arg biomart} or {.arg version} argument."
     )
   }
   if (!missing(biomart) && !is.character(biomart)) {
-    stop(
-      "biomart argument is not a string. ",
-      "The biomart argument should be a single character string"
+    cli::cli_abort(
+      c(
+        "biomart argument is not a string.",
+        "i" = "The biomart argument should be a single character string."
+      )
     )
   }
 
@@ -359,8 +380,9 @@ useMart <- function(
     mindex <- match(biomart, marts$database)
   }
   if (is.na(mindex)) {
-    stop(
-      "Incorrect BioMart name, use the listMarts function to see which BioMart databases are available"
+    cli::cli_abort(
+      "Incorrect BioMart name, use the {.fn listMarts} function to see which
+   BioMart databases are available."
     )
   }
 
@@ -370,8 +392,12 @@ useMart <- function(
       is.na(marts$host[mindex]) ||
       is.na(marts$port[mindex])
   ) {
-    stop(
-      "The selected biomart databases is not available due to error in the BioMart central registry, please report so the BioMart registry file can be fixed."
+    cli::cli_abort(
+      c(
+        "The selected biomart database is not available due to error in
+     the BioMart central registry.",
+        "i" = "Please report so the BioMart registry file can be fixed."
+      )
     )
   }
 
@@ -484,7 +510,7 @@ listDatasets <- function(mart, verbose = FALSE) {
 #' @importFrom methods is
 .listDatasets <- function(mart, verbose = FALSE, sort = FALSE) {
   if (missing(mart) || !is(mart, "Mart")) {
-    stop("No Mart object given or object not of class 'Mart'")
+    cli::cli_abort("No Mart object given or object not of class {.cls Mart}.")
   }
 
   ## we choose a separator based on whether 'redirect=no' is present
@@ -559,11 +585,12 @@ bmVersion <- function(mart, verbose = FALSE) {
     if (BioMartVersion == "\n" || BioMartVersion == "") {
       bmv <- NA
       if (verbose) {
-        warning(paste(
-          "BioMart version is not available from BioMart server:",
-          request,
-          sep = "\n"
-        ))
+        cli::cli_warn(
+          c(
+            "BioMart version is not available from BioMart server:",
+            "i" = "{request}"
+          )
+        )
       }
     } else {
       bmVersionParsed <- read.table(
@@ -629,7 +656,7 @@ bmVersion <- function(mart, verbose = FALSE) {
   )
 
   if (ncol(attributes_table) < 4) {
-    stop(
+    cli::cli_abort(
       "biomaRt error: looks like we're connecting to incompatible version of BioMart."
     )
   }
@@ -651,7 +678,7 @@ bmVersion <- function(mart, verbose = FALSE) {
   )
 
   if (ncol(filters_table) < 7) {
-    stop(
+    cli::cli_abort(
       "biomaRt error: looks like we're connecting to incompatible version of BioMart."
     )
   }
@@ -678,14 +705,13 @@ checkDataset <- function(dataset, mart) {
   dataset <- as.character(dataset)
 
   if (length(dataset) > 1) {
-    stop("Please only specify a single dataset name")
+    cli::cli_abort("Please only specify a single dataset name.")
   }
 
   if (is.na(match(dataset, validDatasets$dataset))) {
-    stop(
-      "The given dataset: ",
-      dataset,
-      ", is not valid.  Correct dataset names can be obtained with the listDatasets() function."
+    cli::cli_abort(
+      "The given dataset {.val {dataset}} is not valid. Correct dataset
+   names can be obtained with the {.fn listDatasets} function."
     )
   }
 
@@ -714,14 +740,18 @@ checkDataset <- function(dataset, mart) {
 #' @export
 useDataset <- function(dataset, mart, verbose = FALSE) {
   if (missing(mart) || !inherits(mart, "Mart")) {
-    stop(
-      "No valid Mart object given, specify a Mart object with the attribute mart"
+    cli::cli_abort(
+      "No valid Mart object given, specify a Mart object with the attribute mart."
     )
   }
 
   if (missing(dataset)) {
-    stop(
-      "No dataset given.  Please use the dataset argument to specify which dataset you want to use. Correct dataset names can be obtained with the listDatasets() function."
+    cli::cli_abort(
+      c(
+        "No dataset given.",
+        "i" = "Please use the dataset argument to specify which dataset you want to use.",
+        "i" = "Correct dataset names can be obtained with the {.fn listDatasets} function."
+      )
     )
   }
 
@@ -729,16 +759,16 @@ useDataset <- function(dataset, mart, verbose = FALSE) {
   martDataset(mart) <- dataset
 
   if (verbose) {
-    message("Checking attributes ...", appendLF = FALSE)
+    cli::cli_inform("Checking attributes ...", .envir = parent.frame())
   }
   martAttributes(mart) <- .getAttributes(mart, verbose = verbose)
   if (verbose) {
-    message(" ok")
-    message("Checking filters ...", appendLF = FALSE)
+    cli::cli_inform(" ok")
+    cli::cli_inform("Checking filters ...", appendLF = FALSE)
   }
   martFilters(mart) <- .getFilters(mart, verbose = verbose)
   if (verbose) {
-    message(" ok")
+    cli::cli_inform("ok")
   }
   return(mart)
 }
@@ -791,10 +821,9 @@ listAttributes <- function(
 ) {
   martCheck(mart)
   if (!missing(page) && !page %in% attributePages(mart)) {
-    stop(
-      "The chosen page: ",
-      page,
-      " is not valid, please use the correct page name using the attributePages function"
+    cli::cli_abort(
+      "The chosen page {.val {page}} is not valid, please use the correct
+   page name using the {.fn attributePages} function."
     )
   }
   attrib <- NULL
@@ -879,12 +908,13 @@ listFilters <- function(mart, what = c("name", "description")) {
   filters <- martFilters(mart)
   badwhat <- !what %in% colnames(filters)
   if (any(badwhat)) {
-    stop(sprintf(
-      "The function argument 'what' contains %s: %s\nValid are: %s\n",
-      if (sum(badwhat) > 1) "invalid values" else "an invalid value",
-      paste(what[badwhat], collapse = ", "),
-      paste(colnames(filters), collapse = ", ")
-    ))
+    cli::cli_abort(
+      c(
+        "The function argument {.arg what} contains
+     {cli::qty(sum(badwhat))}invalid value{?s}: {what[badwhat]}.",
+        "i" = "Valid values are: {colnames(filters)}."
+      )
+    )
   }
   return(filters[, what])
 }
@@ -920,17 +950,18 @@ filterOptions <- function(filter, mart) {
 #' @export
 filterType <- function(filter, mart) {
   if (missing(filter)) {
-    stop(
-      "No filter given. Please specify the filter for which you want to retrieve the filter type"
+    cli::cli_abort(
+      "No filter given. Please specify the filter for which you want to
+   retrieve the filter type."
     )
   }
   if (!is.character(filter)) {
-    stop("Filter argument should be of class character")
+    cli::cli_abort("Filter argument should be of class {.cls character}.")
   }
   martCheck(mart)
   sel <- which(listFilters(mart, what = "name") == filter)
   if (is.null(sel)) {
-    stop("Invalid filter: ", filter, sep = ": ")
+    cli::cli_abort("Invalid filter: {filter}.")
   }
   type <- listFilters(mart, what = "type")[sel]
   return(type)
@@ -1010,30 +1041,33 @@ getBM <- function(
   ## check the arguments are all valid
   martCheck(mart)
   if (missing(attributes)) {
-    stop("Argument 'attributes' must be specified.")
+    cli::cli_abort("Argument {.arg attributes} must be specified.")
   }
 
   if (is.list(filters) && !missing(values)) {
-    warning(
-      "Argument 'values' should not be used when argument 'filters' is a list and will be ignored."
+    cli::cli_warn(
+      "Argument {.arg values} should not be used when argument
+   {.arg filters} is a list and will be ignored."
     )
   }
   if (is.list(filters) && is.null(names(filters))) {
-    stop("Argument 'filters' must be a named list when sent as a list.")
+    cli::cli_abort(
+      "Argument {.arg filters} must be a named list when sent as a list."
+    )
   }
   if (!is.list(filters) && all(nzchar(filters)) && missing(values)) {
-    stop("Argument 'values' must be specified.")
+    cli::cli_abort("Argument {.arg values} must be specified.")
   }
   if (length(filters) > 0 && length(values) == 0) {
-    stop("Values argument contains no data.")
+    cli::cli_abort("Values argument contains no data.")
   }
   if (is.list(filters)) {
     values <- filters
     filters <- names(filters)
   }
   if (!is.logical(uniqueRows)) {
-    stop(
-      "Argument 'uniqueRows' must be a logical value, so either TRUE or FALSE"
+    cli::cli_abort(
+      "{.arg uniqueRows} must be a logical value, so either {.val TRUE} or {.val FALSE}."
     )
   }
 
@@ -1066,10 +1100,12 @@ getBM <- function(
   # checking the Attributes
   invalid <- !attributes %in% listAttributes(mart, what = "name")
   if (any(invalid)) {
-    stop(
-      "Invalid attribute(s):",
-      paste(attributes[invalid], collapse = ", "),
-      "\nPlease use the function 'listAttributes' to get valid attribute names"
+    cli::cli_abort(
+      c(
+        "Invalid attribute{?s}: {attributes[invalid]}.",
+        "i" = "Please use the function {.fn listAttributes} to get valid
+           attribute names."
+      )
     )
   }
 
@@ -1085,10 +1121,11 @@ getBM <- function(
   if (filters[1] != "" && checkFilters) {
     invalid <- !filters %in% listFilters(mart, what = "name")
     if (any(invalid)) {
-      stop(
-        "Invalid filters(s): ",
-        paste(filters[invalid], collapse = ", "),
-        "\nPlease use the function 'listFilters' to get valid filter names"
+      cli::cli_abort(
+        c(
+          "Invalid filter{?s}: {filters[invalid]}.",
+          "i" = "Please use the function {.fn listFilters} to get valid filter names."
+        )
       )
     }
   }
@@ -1256,54 +1293,60 @@ getLDS <- function(
   martCheck(martL)
 
   if (martHost(mart) != martHost(martL)) {
-    stop("Both datasets must be located on the same host.")
+    cli::cli_abort("Both datasets must be located on the same host.")
   }
 
   if (martBM(mart) != martBM(martL)) {
-    stop(
-      "Both datasets must be located in the same Mart.\n",
-      "You are trying to combine datasets in ",
-      martBM(mart),
-      " and ",
-      martBM(martL)
+    cli::cli_abort(
+      c(
+        "Both datasets must be located in the same Mart.",
+        "i" = "You are trying to combine datasets in {martBM(mart)} and
+           {martBM(martL)}."
+      )
     )
   }
 
   invalid <- !attributes %in% listAttributes(mart, what = "name")
   if (any(invalid)) {
-    stop(
-      "Invalid attribute(s): ",
-      paste(attributes[invalid], collapse = ", "),
-      "\nPlease use the function 'listAttributes' to get valid attribute names"
+    cli::cli_abort(
+      c(
+        "Invalid attribute{?s}: {attributes[invalid]}.",
+        "i" = "Please use the function {.fn listAttributes} to get valid
+           attribute names."
+      )
     )
   }
 
   invalid <- !attributesL %in% listAttributes(martL, what = "name")
   if (any(invalid)) {
-    stop(
-      "Invalid attribute(s): ",
-      paste(attributesL[invalid], collapse = ", "),
-      "\nPlease use the function 'listAttributes' to get valid attribute names"
+    cli::cli_abort(
+      c(
+        "Invalid attribute{?s}: {attributesL[invalid]}.",
+        "i" = "Please use the function {.fn listAttributes} to get valid
+           attribute names."
+      )
     )
   }
 
   if (nzchar(filters[1])) {
     invalid <- !filters %in% listFilters(mart, what = "name")
     if (any(invalid)) {
-      stop(
-        "Invalid filters(s): ",
-        paste(filters[invalid], collapse = ", "),
-        "\nPlease use the function 'listFilters' to get valid filter names"
+      cli::cli_abort(
+        c(
+          "Invalid filter{?s}: {filters[invalid]}.",
+          "i" = "Please use the function {.fn listFilters} to get valid filter names."
+        )
       )
     }
   }
   if (nzchar(filtersL[1])) {
     invalid <- !filtersL %in% listFilters(martL, what = "name")
     if (any(invalid)) {
-      stop(
-        "Invalid filters(s): ",
-        paste(filtersL[invalid], collapse = ", "),
-        "\nPlease use the function 'listFilters' to get valid filter names"
+      cli::cli_abort(
+        c(
+          "Invalid filter{?s}: {filtersL[invalid]}.",
+          "i" = "Please use the function {.fn listFilters} to get valid filter names."
+        )
       )
     }
   }
@@ -1392,7 +1435,7 @@ getLDS <- function(
       stop(
         "The query to the BioMart webservice returned an invalid result: ",
         "the number of columns in the result table does not equal the number of attributes in the query. \n",
-        "Please report this on the support site at https://support.bioconductor.org"
+        "Please report this on the support site at http://support.bioconductor.org"
       )
     }
     if (!bmHeader) {
@@ -1400,7 +1443,7 @@ getLDS <- function(
       colnames(result) <- res_attributes
     }
   } else {
-    warning("getLDS returns NULL.")
+    cli::cli_warn("getLDS returns NULL.")
     result <- NULL
   }
   return(result)

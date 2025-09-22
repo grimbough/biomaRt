@@ -286,10 +286,13 @@
 ) {
   ## we expect only a character vector of length 1
   if (!is.character(postRes) || length(postRes) != 1L) {
-    stop(
-      "The query to the BioMart webservice returned an invalid result\n",
-      "biomaRt expected a character string of length 1.\n",
-      "Please report this on the support site at https://support.bioconductor.org"
+    cli::cli_abort(
+      c(
+        "The query to the BioMart webservice returned an invalid result.",
+        "i" = "biomaRt expected a character string of length 1.",
+        "i" = "Please report this on the support site at
+           {.url https://support.bioconductor.org}."
+      )
     )
   }
 
@@ -326,7 +329,7 @@
     stop(
       "The query to the BioMart webservice returned an invalid result.\n",
       "The number of columns in the result table does not equal the number of attributes in the query.\n",
-      "Please report this on the support site at https://support.bioconductor.org"
+      "Please report this on the support site at http://support.bioconductor.org"
     )
   }
 
@@ -353,7 +356,7 @@
   if (any(rowIdx)) {
     return(data[rowIdx, ])
   } else {
-    message("No matching datasets found")
+    cli::cli_inform("No matching datasets found.")
     return(NULL)
   }
 }
@@ -362,7 +365,7 @@
 #' @export
 searchDatasets <- function(mart, pattern = ".*") {
   if (missing(mart)) {
-    stop("Argument 'mart' must be specified")
+    cli::cli_abort("Argument {.arg mart} must be specified.")
   }
 
   datasets <- listDatasets(mart)
@@ -379,7 +382,7 @@ searchDatasets <- function(mart, pattern = ".*") {
 #' @export
 searchAttributes <- function(mart, pattern = ".*") {
   if (missing(mart)) {
-    stop("Argument 'mart' must be specified")
+    cli::cli_abort("Argument {.arg mart} must be specified.")
   }
 
   attributes <- listAttributes(mart)
@@ -395,7 +398,7 @@ searchAttributes <- function(mart, pattern = ".*") {
 #' @export
 searchFilters <- function(mart, pattern = ".*") {
   if (missing(mart)) {
-    stop("Argument 'mart' must be specified")
+    cli::cli_abort("Argument {.arg mart} must be specified.")
   }
 
   filters <- listFilters(mart)
@@ -414,17 +417,17 @@ searchFilters <- function(mart, pattern = ".*") {
 #' @export
 searchFilterOptions <- function(mart, filter, pattern = ".*") {
   if (missing(mart)) {
-    stop("Argument 'mart' must be specified")
+    cli::cli_abort("Argument {.arg mart} must be specified.")
   }
   if (missing(filter)) {
-    stop("Argument 'filter' must be specified")
+    cli::cli_abort("Argument {.arg filter} must be specified.")
   }
 
   ## first get all filters & their options, then reduce to what's requested
   filters <- listFilters(mart, what = c("name", "options"))
   filters <- filters[filters$name == filter, ]
   if (nrow(filters) == 0) {
-    stop("Filter '", filter, "' not found.")
+    cli::cli_abort("Filter {.val {filter}} not found.")
   }
   options <- gsub(filters$options, pattern = "^\\[|\\]$", replacement = "")
   options <- strsplit(options, split = ",", fixed = TRUE)[[1]]
@@ -432,7 +435,7 @@ searchFilterOptions <- function(mart, filter, pattern = ".*") {
   res <- grep(x = options, pattern = pattern, ignore.case = TRUE, value = TRUE)
 
   if (length(res) == 0) {
-    message("No matching values found")
+    cli::cli_inform("No matching values found")
   } else {
     res
   }

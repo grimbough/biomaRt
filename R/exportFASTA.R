@@ -23,12 +23,15 @@
 #' @export
 exportFASTA <- function(sequences, file) {
   if (missing(sequences) || !is.data.frame(sequences)) {
-    stop(
-      "No data.frame given to write FASTA.  The data.frame should be the output of the getSequence function."
+    cli::cli_abort(
+      c(
+        "No data.frame given to write FASTA.",
+        "i" = "The data.frame should be the output of the {.fn getSequence} function."
+      )
     )
   }
   if (missing(file)) {
-    stop("Please provide filename to write to")
+    cli::cli_abort("Please provide filename to write to.")
   }
   if (ncol(sequences) == 2) {
     writeLines(
