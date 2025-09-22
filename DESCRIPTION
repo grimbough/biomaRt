@@ -70,3 +70,5 @@ Collate:
     'ensembl_ssl_settings.R'
     'utilityFunctions.R'
     'non-biomart-utils.R'
+    'exportFASTA.R'
+    'NP2009code.R'
