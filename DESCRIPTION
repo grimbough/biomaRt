@@ -36,6 +36,7 @@ Depends:
 Imports:
     AnnotationDbi,
     BiocFileCache,
+    cli,
     curl,
     httr2,
     progress,
