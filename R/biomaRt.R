@@ -1432,10 +1432,14 @@ getLDS <- function(
     res_attributes <- c(attributes, attributesL)
     if (!is.data.frame(result) || ncol(result) != length(res_attributes)) {
       print(head(result))
-      stop(
-        "The query to the BioMart webservice returned an invalid result: ",
-        "the number of columns in the result table does not equal the number of attributes in the query. \n",
-        "Please report this on the support site at http://support.bioconductor.org"
+      cli::cli_abort(
+        c(
+          "The query to the BioMart webservice returned an invalid result.",
+          "i" = "The number of columns in the result table does not equal the
+           number of attributes in the query.",
+          "i" = "Please report this on the support site at
+           {.url https://support.bioconductor.org}."
+        )
       )
     }
     if (!bmHeader) {

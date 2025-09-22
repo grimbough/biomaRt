@@ -326,10 +326,14 @@
   )
 
   if (!is.data.frame(result) || ncol(result) != numAttributes) {
-    stop(
-      "The query to the BioMart webservice returned an invalid result.\n",
-      "The number of columns in the result table does not equal the number of attributes in the query.\n",
-      "Please report this on the support site at http://support.bioconductor.org"
+    cli::cli_abort(
+      c(
+        "The query to the BioMart webservice returned an invalid result.",
+        "i" = "The number of columns in the result table does not equal the
+              number of attributes in the query.",
+        "i" = "Please report this on the support site at
+              {.url https://support.bioconductor.org}."
+      )
     )
   }
 
