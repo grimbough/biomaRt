@@ -52,6 +52,8 @@ INTERNAL CHANGES
   o Examples have been reviewed and fixed where necessary.
   o testthat edition 3 (instead of previously edition 2) is now used for unit
   tests.
+  o The cli package is now used for user messages instead of base R and for
+  progress bars instead of the progress package.
 
 CHANGES IN VERSION 2.64.0
 -------------------------
