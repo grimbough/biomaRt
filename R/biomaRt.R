@@ -1024,7 +1024,6 @@ filterType <- function(filter, mart) {
 #'       values     = c("1939_at","1503_at","1454_at"),
 #'       mart       = mart)
 #'
-#' @importFrom progress progress_bar
 #' @export
 getBM <- function(
   attributes,
@@ -1135,22 +1134,11 @@ getBM <- function(
   filterXmlList <- .generateFilterXML(filters, values, mart)
 
   resultList <- list()
-  if (length(filterXmlList) > 1) {
-    pb <- progress_bar$new(
-      total = length(filterXmlList),
-      width = getOption("width") - 10,
-      format = "Batch submitting query [:bar] :percent eta: :eta"
-    )
-    pb$tick(0)
-    on.exit(pb$terminate())
-  }
+
+  pb_fmt <- "Batch submitting query {cli::pb_bar} {cli::pb_percent} eta: {cli::pb_eta}"
 
   ## we submit a query for each chunk of the filter list
-  for (i in seq_along(filterXmlList)) {
-    if (i > 1) {
-      pb$tick()
-    }
-
+  for (i in cli::cli_progress_along(filterXmlList, format = pb_fmt)) {
     filterXML <- filterXmlList[[i]]
     fullXmlQuery <- paste0(
       xmlQuery,

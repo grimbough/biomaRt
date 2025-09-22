@@ -39,7 +39,6 @@ Imports:
     cli,
     curl,
     httr2,
-    progress,
     stringr,
     utils,
     xml2
