@@ -23,6 +23,10 @@ BUG FIXES
   o This package now explicitly depends on R >= 4.1.0. This was effectively
   already the case since version 2.58, in line with Bioconductor policy, but
   not explicitly documented in `DESCRIPTION`.
+  o `getBM()` no longer silently convert alleles "T" and "F" to logical `TRUE`
+  and `FALSE`. This rarely happened when a single allele, coincidentally named
+  "T" or "F", was returned in a column. Thanks to
+  [Sina Rüeger](https://github.com/sinarueeger) for the report.
 
 INTERNAL CHANGES
 
