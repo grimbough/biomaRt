@@ -66,3 +66,27 @@ test_that("getBM returns sensible things", {
     "Argument 'values' should not be used when argument 'filters' is a list and will be ignored"
   )
 })
+
+test_that("getBM doesn't convert T/F alleles into TRUE/FALSE", {
+  skip_if_not_installed("mockery")
+
+  # Example from https://github.com/Huber-group-EMBL/biomaRt/issues/12
+  mockery::stub(
+    getBM,
+    ".submitQueryXML",
+    "Variant name\tMinor allele (ALL)\nrs1528723\tT\n"
+  )
+  snp_ensembl <- useEnsembl(
+    biomart = "snp",
+    dataset = "hsapiens_snp",
+    GRCh = 37
+  )
+  expect_snapshot(
+    getBM(
+      attributes = c("refsnp_id", "minor_allele"),
+      filters = c("chr_name", "start", "end"),
+      values = list(8, 35127386, 35127386),
+      mart = snp_ensembl
+    )
+  )
+})
