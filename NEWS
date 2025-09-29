@@ -27,6 +27,11 @@ BUG FIXES
   and `FALSE`. This rarely happened when a single allele, coincidentally named
   "T" or "F", was returned in a column. Thanks to
   [Sina Rüeger](https://github.com/sinarueeger) for the report.
+  o `getBM()` now internally handles redirects and automatically resubmits the
+  query to the new location. This fixes issues when using versioned forms such
+  as https://eg59-plants.ensembl.org/, which redirects to
+  <https://may2024-plants.ensembl.org/index.html>. Thanks to Edoardo Bertolini
+  for the report.
 
 INTERNAL CHANGES
 
