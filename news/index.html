@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.65.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,7 @@
 <ul><li><p><code><a href="../reference/getGene.html">getGene()</a></code> no longer errors with “This function only works when used with the ensembl BioMart.”, that was always returned, even when using the ensembl BioMart. This bug was introduced in version 2.27.1 (Bioconductor 3.3). Thanks to <a href="https://github.com/toobiwankenobi" class="external-link">Tobias Hoch</a> for the report.</p></li>
 <li><p>This package now explicitly depends on R &gt;= 4.1.0. This was effectively already the case since version 2.58, in line with Bioconductor policy, but not explicitly documented in <code>DESCRIPTION</code>.</p></li>
 <li><p><code><a href="../reference/getBM.html">getBM()</a></code> no longer silently convert alleles “T” and “F” to logical <code>TRUE</code> and <code>FALSE</code>. This rarely happened when a single allele, coincidentally named “T” or “F”, was returned in a column. Thanks to <a href="https://github.com/sinarueeger" class="external-link">Sina Rüeger</a> for the report.</p></li>
+<li><p><code><a href="../reference/getBM.html">getBM()</a></code> now internally handles redirects and automatically resubmits the query to the new location. This fixes issues when using versioned forms such as <a href="https://eg59-plants.ensembl.org/" class="external-link uri">https://eg59-plants.ensembl.org/</a>, which redirects to <a href="https://may2024-plants.ensembl.org/index.html" class="external-link uri">https://may2024-plants.ensembl.org/index.html</a>. Thanks to Edoardo Bertolini for the report.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="internal-changes-2-66-0">INTERNAL CHANGES<a class="anchor" aria-label="anchor" href="#internal-changes-2-66-0"></a></h3>
