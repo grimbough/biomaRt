@@ -21,7 +21,7 @@ options(width = 100)
 
 # Introduction
 
-In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r BiocStyle::Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](http://www.biomart.org). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r BiocStyle::Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
+In recent years a wealth of biological data has become available in public data repositories. Easy access to these valuable data resources and firm integration with data analysis is needed for comprehensive bioinformatics data analysis.  The `r BiocStyle::Biocpkg("biomaRt")` package,  provides an interface to a growing collection of databases implementing the [BioMart software suite](https://www.ensembl.org/info/data/biomart/index.html). The package enables retrieval of large amounts of data in a uniform way without the need to know the underlying database schemas or write complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot and HapMap. These major databases give `r BiocStyle::Biocpkg("biomaRt")` users direct access to a diverse set of data and enable a wide range of powerful online queries from R.
 
 # Using a BioMart other than Ensembl
 
