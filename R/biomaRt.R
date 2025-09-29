@@ -200,7 +200,7 @@ listMarts <- function(
   if (!grepl(x = registry, pattern = "^\n*<MartRegistry>")) {
     if (grepl(x = registry, pattern = "status.ensembl.org", fixed = TRUE)) {
       stop(
-        "Your query has been redirected to http://status.ensembl.org ",
+        "Your query has been redirected to https://status.ensembl.org ",
         "indicating this Ensembl service is currently unavailable.",
         "\nLook at ?useEnsembl for details on how to try a mirror site.",
         call. = FALSE
@@ -1392,7 +1392,7 @@ getLDS <- function(
       stop(
         "The query to the BioMart webservice returned an invalid result: ",
         "the number of columns in the result table does not equal the number of attributes in the query. \n",
-        "Please report this on the support site at http://support.bioconductor.org"
+        "Please report this on the support site at https://support.bioconductor.org"
       )
     }
     if (!bmHeader) {

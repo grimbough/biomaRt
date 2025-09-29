@@ -283,7 +283,7 @@
     stop(
       "The query to the BioMart webservice returned an invalid result\n",
       "biomaRt expected a character string of length 1.\n",
-      "Please report this on the support site at http://support.bioconductor.org"
+      "Please report this on the support site at https://support.bioconductor.org"
     )
   }
 
@@ -320,7 +320,7 @@
     stop(
       "The query to the BioMart webservice returned an invalid result.\n",
       "The number of columns in the result table does not equal the number of attributes in the query.\n",
-      "Please report this on the support site at http://support.bioconductor.org"
+      "Please report this on the support site at https://support.bioconductor.org"
     )
   }
 
