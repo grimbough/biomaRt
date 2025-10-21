@@ -229,7 +229,16 @@ getGene <- function(id, type, mart) {
     )
   }
 
-  if (!type %in% listAttributes(mart, page = "sequences", what = "name")) {
+  if (type %in% listAttributes(mart, page = "sequences", what = "name")) {
+    sequence <- getBM(
+      attributes = c(seqType, type),
+      filters = filters,
+      mart = mart,
+      checkFilters = FALSE,
+      verbose = verbose,
+      useCache = useCache
+    )
+  } else {
     mapping_id <- getBM(
       attributes = c(type, "ensembl_gene_id"),
       filters = type,
@@ -259,15 +268,6 @@ getGene <- function(id, type, mart) {
     )
     # nolint next: scalar_in_linter.
     sequence <- sequence[, !names(sequence) %in% "ensembl_gene_id"]
-  } else {
-    sequence <- getBM(
-      attributes = c(seqType, type),
-      filters = filters,
-      mart = mart,
-      checkFilters = FALSE,
-      verbose = verbose,
-      useCache = useCache
-    )
   }
   return(sequence)
 }

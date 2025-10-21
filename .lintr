@@ -21,7 +21,6 @@ linters: all_linters(
     one_call_pipe_linter = NULL,
     coalesce_linter = NULL,
     nonportable_path_linter = NULL,
-    if_not_else_linter = NULL,
     absolute_path_linter = NULL,
     indentation_linter = NULL,
     cyclocomp_linter = NULL,

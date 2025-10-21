@@ -78,7 +78,6 @@
 #'
 #' @export
 listEnsemblArchives <- function() {
-
   .listEnsemblArchives(http_config = list())
 }
 
@@ -303,15 +302,15 @@ listEnsembl <- function(
   }
 
   if (!is.null(mirror)) {
-    if (!mirror %in% c("www", "useast", "asia")) {
+    if (mirror %in% c("www", "useast", "asia")) {
+      host <- paste0("https://", mirror, ".ensembl.org")
+    } else {
       warning(
         "Invalid mirror. Select a mirror from [www, useast, asia].\n",
         "Default when no mirror is specified is to use ",
         "www.ensembl.org which may be automatically redirected."
       )
       host <- "https://www.ensembl.org"
-    } else {
-      host <- paste0("https://", mirror, ".ensembl.org")
     }
   }
 

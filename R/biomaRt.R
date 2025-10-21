@@ -1141,7 +1141,9 @@ getBM <- function(
       tempdir(),
       paste0("biomaRt_tmp_", chunk_hash, ".rds")
     )
-    if (!file.exists(tf)) {
+    if (file.exists(tf)) {
+      result <- readRDS(tf)
+    } else {
       postRes <- .submitQueryXML(
         host = martHost(mart),
         query = fullXmlQuery,
@@ -1156,8 +1158,6 @@ getBM <- function(
         numAttributes = length(attributes)
       )
       saveRDS(result, file = tf)
-    } else {
-      result <- readRDS(tf)
     }
     resultList[[i]] <- .setResultColNames(
       result,

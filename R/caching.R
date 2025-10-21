@@ -183,9 +183,7 @@ biomartCacheClear <- function() {
 biomartCacheInfo <- function() {
   cache <- .biomartCacheLocation()
 
-  if (!file.exists(cache)) {
-    message("biomaRt cache uninitialized\n", "- Location: ", cache)
-  } else {
+  if (file.exists(cache)) {
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
     files <- bfcinfo(bfc)$rpath
     total_size <- sum(file.size(files))
@@ -202,6 +200,8 @@ biomartCacheInfo <- function() {
       "- Total size: ",
       format(size_obj, units = "auto")
     )
+  } else {
+    message("biomaRt cache uninitialized\n", "- Location: ", cache)
   }
   return(invisible(cache))
 }
