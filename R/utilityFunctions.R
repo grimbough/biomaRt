@@ -369,10 +369,9 @@ searchDatasets <- function(mart, pattern = ".*") {
   res <- .searchInternal(pattern = pattern, data = datasets)
 
   if (is.null(res)) {
-    invisible(res)
-  } else {
-    res
+    return(invisible(NULL))
   }
+  res
 }
 
 #' @rdname listAttributes
@@ -387,10 +386,9 @@ searchAttributes <- function(mart, pattern = ".*") {
   res <- .searchInternal(pattern = pattern, data = attributes)
 
   if (is.null(res)) {
-    invisible(res)
-  } else {
-    res
+    return(invisible(NULL))
   }
+  res
 }
 
 #' @rdname listFilters
@@ -404,10 +402,9 @@ searchFilters <- function(mart, pattern = ".*") {
   res <- .searchInternal(pattern = pattern, data = filters)
 
   if (is.null(res)) {
-    invisible(res)
-  } else {
-    res
+    return(invisible(NULL))
   }
+  res
 }
 
 
