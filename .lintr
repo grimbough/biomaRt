@@ -19,7 +19,6 @@ linters: all_linters(
     line_length_linter = NULL,
     keyword_quote_linter = NULL,
     one_call_pipe_linter = NULL,
-    coalesce_linter = NULL,
     nonportable_path_linter = NULL,
     absolute_path_linter = NULL,
     indentation_linter = NULL,
