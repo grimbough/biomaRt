@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,8 +89,8 @@ pre code {
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Accessing the data available in Ensembl is by far most frequent use
-of the <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
-package. With that in mind <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+of the <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+package. With that in mind <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 provides a number of functions that are tailored to work specifically
 with the BioMart instances provided by Ensembl. This vignette details
 this Ensembl specific functionality and provides a number of example
@@ -100,14 +100,14 @@ queries.</p>
 <div class="section level2">
 <h2 id="selecting-an-ensembl-biomart-database-and-dataset">Selecting an Ensembl BioMart database and dataset<a class="anchor" aria-label="anchor" href="#selecting-an-ensembl-biomart-database-and-dataset"></a>
 </h2>
-<p>Every analysis with <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+<p>Every analysis with <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 starts with selecting a BioMart database to use. The commands below will
 connect us to Ensembl’s most recent version of the Human Genes
 BioMart.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Huber-group-EMBL/biomaRt" class="external-link">biomaRt</a></span><span class="op">)</span></span>
 <span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"genes"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span></span></code></pre></div>
-<p>If this your first time using <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em> ,
+<p>If this your first time using <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em> ,
 you might wonder how to find the two arguments we supplied to the
 <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> command. This is a two step process, but once
 you know the setting you need you can use the version shown above as a
@@ -166,7 +166,7 @@ the complete list has many entries.</em></p>
 <span><span class="co">## 6    amelanoleuca_gene_ensembl       Giant panda genes (ASM200744v2) ASM200744v2</span></span></code></pre>
 <p>The <code><a href="../reference/listDatasets.html">listDatasets()</a></code> function will return every available
 option, however this can be unwieldy when the list of results is long,
-involving much scrolling to find the entry you are interested in. <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+involving much scrolling to find the entry you are interested in. <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 also provides the functions <code><a href="../reference/listDatasets.html">searchDatasets()</a></code> which will try
 to find any entries matching a specific term or pattern. For example, if
 we want to find the details of any datasets in our <code>ensembl</code>
@@ -211,10 +211,10 @@ mirror.</p>
 <div class="section level3">
 <h3 id="using-archived-versions-of-ensembl">Using archived versions of Ensembl<a class="anchor" aria-label="anchor" href="#using-archived-versions-of-ensembl"></a>
 </h3>
-<p>It is possible to query archived versions of Ensembl through <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>,
+<p>It is possible to query archived versions of Ensembl through <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>,
 so you can maintain consistent annotation throughout the duration of a
 project.</p>
-<p><em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+<p><em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 provides the function <code><a href="../reference/listEnsemblArchives.html">listEnsemblArchives()</a></code> to view the
 available Ensembl archives. This function takes no arguments, and
 produces a table containing the name and version number of the available
@@ -352,7 +352,7 @@ available attributes in the selected dataset.</p>
 <span><span class="co">## 4 ensembl_transcript_id_version Transcript stable ID version feature_page</span></span>
 <span><span class="co">## 5            ensembl_peptide_id            Protein stable ID feature_page</span></span></code></pre>
 <p>The <code><a href="../reference/getBM.html">getBM()</a></code> function is the primary query function in
-<em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>.
+<em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>.
 It has four main arguments:</p>
 <ul>
 <li>
@@ -376,7 +376,7 @@ functions are available: <code><a href="../reference/getGene.html">getGene()</a>
 <code><a href="../reference/getBM.html">getBM()</a></code> function with hard coded filter and attribute
 names.</em></p>
 <p>Now that we selected a BioMart database and dataset, and know about
-attributes, filters, and the values for filters; we can build a <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+attributes, filters, and the values for filters; we can build a <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 query. Let’s make an easy query for the following problem: We have a
 list of Affymetrix identifiers from the u133plus2 platform and we want
 to retrieve the corresponding EntrezGene identifiers using the Ensembl
@@ -407,7 +407,7 @@ respectively. Let’s now run the query:</p>
 <p>The functions <code><a href="../reference/listAttributes.html">listAttributes()</a></code> and
 <code><a href="../reference/listFilters.html">listFilters()</a></code> will return every available option for their
 respective types, which can produce a very long output where it is hard
-to find the value you are interested in. <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+to find the value you are interested in. <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 also provides the functions <code><a href="../reference/listAttributes.html">searchAttributes()</a></code> and
 <code><a href="../reference/listFilters.html">searchFilters()</a></code> which will try to find any entries matching
 a specific term or pattern, in a similar fashion to
@@ -454,7 +454,7 @@ names of chromosomes when searching a dataset at Ensembl. In this online
 interface to BioMart these available options are displayed as a list as
 shown in Figure @ref(fig:filtervalues).</p>
 <div class="figure">
-<img src="filtervalues.png" alt="The options available to the Chromosome/Scaffold field are limited to a pretermined list based on the values in this dataset." width="100%"><p class="caption">
+<img src="filtervalues.png" class="r-plt" alt="The options available to the Chromosome/Scaffold field are limited to a pretermined list based on the values in this dataset." width="100%"><p class="caption">
 The options available to the Chromosome/Scaffold field are limited to a
 pretermined list based on the values in this dataset.
 </p>
@@ -490,7 +490,7 @@ second will find any phenotype descriptions that contain the string
 <div class="section level4">
 <h4 id="filtertype">filterType<a class="anchor" aria-label="anchor" href="#filtertype"></a>
 </h4>
-<p>Boolean filters need a value TRUE or FALSE in <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>.
+<p>Boolean filters need a value TRUE or FALSE in <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>.
 Setting the value TRUE will include all information that fulfil the
 filter requirement. Setting FALSE will exclude the information that
 fulfills the filter requirement and will return all values that don’t
@@ -586,12 +586,12 @@ for <code><a href="../reference/getBM.html">getBM()</a></code>).</p>
 <span><span class="co">## 3           207500_at           838</span></span></code></pre>
 <p>So why would we want to do this when we already have functions like
 <code><a href="../reference/getBM.html">getBM()</a></code>? For two reasons: 1) for people who are familiar
-with select and it’s helper methods, they can now proceed to use <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+with select and it’s helper methods, they can now proceed to use <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 making the same kinds of calls that are already familiar to them and 2)
 because the select method is implemented in many places elsewhere, the
 fact that these methods are shared allows for more convenient
 programmatic access of all these resources. An example of a package that
-takes advantage of this is the <em><a href="https://bioconductor.org/packages/3.21/OrganismDbi" class="external-link">OrganismDbi</a></em>
+takes advantage of this is the <em><a href="https://bioconductor.org/packages/3.22/OrganismDbi" class="external-link">OrganismDbi</a></em>
 package. Where several packages can be accessed as if they were one
 resource.</p>
 </div>
@@ -599,7 +599,7 @@ resource.</p>
 <div class="section level2">
 <h2 id="result-caching">Result Caching<a class="anchor" aria-label="anchor" href="#result-caching"></a>
 </h2>
-<p>To save time and computing resources <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+<p>To save time and computing resources <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 will attempt to identify when you are re-running a query you have
 executed before. Each time a new query is run, the results will be saved
 to a cache on your computer. If a query is identified as having been run
@@ -628,14 +628,14 @@ changed.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>BIOMART_CACHE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/biomartCache.html">biomartCacheInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## biomaRt cache</span></span>
-<span><span class="co">## - Location: /tmp/Rtmp1LGgHj</span></span>
+<span><span class="co">## - Location: /tmp/Rtmpl1v9gK</span></span>
 <span><span class="co">## - No. of files: 0</span></span>
 <span><span class="co">## - Total size: 0 bytes</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="biomart-helper-functions">biomaRt helper functions<a class="anchor" aria-label="anchor" href="#biomart-helper-functions"></a>
 </h2>
-<p>This section describes a set of <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+<p>This section describes a set of <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 helper functions that can be used to export FASTA format sequences,
 retrieve values for certain filters and exploring the available filters
 and attributes in a more systematic manner.</p>
@@ -652,7 +652,7 @@ using the file argument.</p>
 <h2 id="examples-of-biomart-queries">Examples of biomaRt queries<a class="anchor" aria-label="anchor" href="#examples-of-biomart-queries"></a>
 </h2>
 <p>In the sections below a variety of example queries are described.
-Every example is written as a task, and we have to come up with a <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+Every example is written as a task, and we have to come up with a <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 solution to the problem.</p>
 <div class="section level3">
 <h3 id="annotate-a-set-of-affymetrix-identifiers-with-hugo-symbol-and-chromosomal-locations-of-corresponding-genes">Annotate a set of Affymetrix identifiers with HUGO symbol and
@@ -934,11 +934,12 @@ sequence of 100bp. Putting this all together in
 <span>  upstream <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error in .processResults(postRes, mart = mart, hostURLsep = sep, fullXmlQuery = fullXmlQuery, : Query ERROR: caught BioMart::Exception::Usage: Filter upstream_flank NOT FOUND</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Usage: Filter upstream_flank NOT FOUND</span></span></code></pre>
 <p>One further thing to note is that, although we are searching for
 genes based on their NCBI Gene IDs, Ensembl BioMart doesn’t allow some
 ID types (including NCBI IDs) to be returned directly. To try and
-accommodate this <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+accommodate this <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 attempts to map the query IDs to Ensembl Gene IDs internally before
 finding the sequence information. If no such mapping exists (or at least
 isn’t found in Ensembl) then no sequence will be returned for the
@@ -965,26 +966,26 @@ the name given to the &lt;code&gt;type&lt;/code&gt; argument.&lt;/p&gt;"><sup>5<
 <span><span class="op">)</span></span>
 <span><span class="va">utr5</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                                                                                                  5utr</span></span>
-<span><span class="co">## 1                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 2                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 3                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 4  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 5                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 6      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 7                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 8                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 9          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 10                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 11            AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 12                                                                          CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 1                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 2                                                                                                                                Sequence unavailable</span></span>
+<span><span class="co">## 3          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 4                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 5      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 6                                                                                                                                Sequence unavailable</span></span>
+<span><span class="co">## 7                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 8             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 9  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 10                                                                          CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 11                                                            TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 12                              ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
 <span><span class="co">## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
 <span><span class="co">##    entrezgene_id</span></span>
-<span><span class="co">## 1             NA</span></span>
+<span><span class="co">## 1         200879</span></span>
 <span><span class="co">## 2         200879</span></span>
 <span><span class="co">## 3         200879</span></span>
 <span><span class="co">## 4         200879</span></span>
 <span><span class="co">## 5         200879</span></span>
-<span><span class="co">## 6         200879</span></span>
+<span><span class="co">## 6             NA</span></span>
 <span><span class="co">## 7         200879</span></span>
 <span><span class="co">## 8         200879</span></span>
 <span><span class="co">## 9         200879</span></span>
@@ -1010,8 +1011,8 @@ to the <code><a href="../reference/listFilters.html">listFilters()</a></code> fu
 <span><span class="va">protein</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     peptide</span></span>
 <span><span class="co">## 1 MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKAVYKAWLCSEYFSVTQQECQRWVPCKQYCLEVQTRCPFILPDNEEMVYGGLPGFICTGLLDTSPKRLETKCCDVQWVSCEAKKKKFKESEAPKTHQQQFHHSYFHHYHQQYHHYHPHHDPPGRVSNKPALLPVSGGSRLSPSRIRLCVLVLMLLHTVVSFSSNQGGGGLGLETLPALEEGLTREE*</span></span>
-<span><span class="co">## 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable</span></span>
-<span><span class="co">## 3                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*</span></span>
+<span><span class="co">## 2                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*</span></span>
+<span><span class="co">## 3                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable</span></span>
 <span><span class="co">## 4                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*</span></span>
 <span><span class="co">##   entrezgene_id</span></span>
 <span><span class="co">## 1         27112</span></span>
@@ -1143,10 +1144,10 @@ or you have a new error not listed here, please reported it on the <a href="http
 Site</a>.</p>
 <div class="section level3">
 <h3 id="biomart-specific-solutions">
-<em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+<em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 specific solutions<a class="anchor" aria-label="anchor" href="#biomart-specific-solutions"></a>
 </h3>
-<p>If you are using <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+<p>If you are using <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 directly make sure you are using <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> to create the
 <strong>Mart</strong> object, rather than <code><a href="../reference/useMart.html">useMart()</a></code>.
 <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> is aware of some specific connection details
@@ -1156,13 +1157,13 @@ problems without requiring you to do anything further.</p>
 <div class="section level3">
 <h3 id="global-connection-settings">Global connection settings<a class="anchor" aria-label="anchor" href="#global-connection-settings"></a>
 </h3>
-<p>If you are unable to modify the <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
-code (for example if you are using another package that calls <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+<p>If you are unable to modify the <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+code (for example if you are using another package that calls <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 as part of one if its functions) it’s still possible to modify the
 connection settings for your R session. Below are some reported error
 messages and code that has been known to resolve them. You will need to
 execute this code only once in an R session. The settings will then be
-saved to the <em><a href="https://bioconductor.org/packages/3.21/biomaRt" class="external-link">biomaRt</a></em>
+saved to the <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
 cache and will be used from then on when you try to connect to the
 Ensembl BioMart.</p>
 <div class="section level4">
@@ -1203,7 +1204,7 @@ change. You could also consider alerting Ensembl to this issue.</p>
 </h2>
 <div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.5.1 (2025-06-13)</span></span>
+<pre><code><span><span class="co">## R version 4.5.2 (2025-10-31)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">## Running under: Ubuntu 24.04.3 LTS</span></span>
 <span><span class="co">## </span></span>
@@ -1223,27 +1224,27 @@ change. You could also consider alerting Ensembl to this issue.</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] biomaRt_2.67.0   BiocStyle_2.36.0</span></span>
+<span><span class="co">## [1] biomaRt_2.67.1   BiocStyle_2.38.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] KEGGREST_1.48.1         xfun_0.53               bslib_0.9.0             httr2_1.2.1            </span></span>
-<span><span class="co">##  [5] Biobase_2.68.0          vctrs_0.6.5             tools_4.5.1             generics_0.1.4         </span></span>
-<span><span class="co">##  [9] stats4_4.5.1            curl_7.0.0              tibble_3.3.0            AnnotationDbi_1.70.0   </span></span>
-<span><span class="co">## [13] RSQLite_2.4.3           blob_1.2.4              pkgconfig_2.0.3         dbplyr_2.5.1           </span></span>
-<span><span class="co">## [17] desc_1.4.3              S4Vectors_0.46.0        GenomeInfoDbData_1.2.14 lifecycle_1.0.4        </span></span>
-<span><span class="co">## [21] compiler_4.5.1          stringr_1.5.2           textshaping_1.0.4       Biostrings_2.76.0      </span></span>
-<span><span class="co">## [25] progress_1.2.3          GenomeInfoDb_1.44.3     htmltools_0.5.8.1       sass_0.4.10            </span></span>
-<span><span class="co">## [29] yaml_2.3.10             pillar_1.11.1           pkgdown_2.1.3           crayon_1.5.3           </span></span>
-<span><span class="co">## [33] jquerylib_0.1.4         cachem_1.1.0            tidyselect_1.2.1        digest_0.6.37          </span></span>
-<span><span class="co">## [37] stringi_1.8.7           purrr_1.1.0             dplyr_1.1.4             bookdown_0.45          </span></span>
-<span><span class="co">## [41] fastmap_1.2.0           cli_3.6.5               magrittr_2.0.4          withr_3.0.2            </span></span>
-<span><span class="co">## [45] prettyunits_1.2.0       filelock_1.0.3          UCSC.utils_1.4.0        rappdirs_0.3.3         </span></span>
-<span><span class="co">## [49] bit64_4.6.0-1           rmarkdown_2.30          XVector_0.48.0          httr_1.4.7             </span></span>
-<span><span class="co">## [53] bit_4.6.0               ragg_1.5.0              png_0.1-8               hms_1.1.4              </span></span>
-<span><span class="co">## [57] memoise_2.0.1           evaluate_1.0.5          knitr_1.50              IRanges_2.42.0         </span></span>
-<span><span class="co">## [61] BiocFileCache_2.16.2    rlang_1.1.6             glue_1.8.0              DBI_1.2.3              </span></span>
-<span><span class="co">## [65] xml2_1.4.1              BiocManager_1.30.26     BiocGenerics_0.54.1     jsonlite_2.0.0         </span></span>
-<span><span class="co">## [69] R6_2.6.1                systemfonts_1.3.1       fs_1.6.6</span></span></code></pre>
+<span><span class="co">##  [1] KEGGREST_1.50.0      xfun_0.55            bslib_0.9.0          httr2_1.2.2         </span></span>
+<span><span class="co">##  [5] Biobase_2.70.0       vctrs_0.6.5          tools_4.5.2          generics_0.1.4      </span></span>
+<span><span class="co">##  [9] stats4_4.5.2         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0</span></span>
+<span><span class="co">## [13] RSQLite_2.4.5        blob_1.2.4           pkgconfig_2.0.3      dbplyr_2.5.1        </span></span>
+<span><span class="co">## [17] desc_1.4.3           S4Vectors_0.48.0     lifecycle_1.0.5      compiler_4.5.2      </span></span>
+<span><span class="co">## [21] stringr_1.6.0        textshaping_1.0.4    Biostrings_2.78.0    progress_1.2.3      </span></span>
+<span><span class="co">## [25] Seqinfo_1.0.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         </span></span>
+<span><span class="co">## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     </span></span>
+<span><span class="co">## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       </span></span>
+<span><span class="co">## [37] dplyr_1.1.4          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       </span></span>
+<span><span class="co">## [41] cli_3.6.5            magrittr_2.0.4       withr_3.0.2          prettyunits_1.2.0   </span></span>
+<span><span class="co">## [45] filelock_1.0.3       rappdirs_0.3.3       bit64_4.6.0-1        rmarkdown_2.30      </span></span>
+<span><span class="co">## [49] XVector_0.50.0       httr_1.4.7           bit_4.6.0            ragg_1.5.0          </span></span>
+<span><span class="co">## [53] png_0.1-8            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      </span></span>
+<span><span class="co">## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         </span></span>
+<span><span class="co">## [61] glue_1.8.0           DBI_1.2.3            xml2_1.5.1           BiocManager_1.30.27 </span></span>
+<span><span class="co">## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   </span></span>
+<span><span class="co">## [69] fs_1.6.6</span></span></code></pre>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -1257,7 +1258,7 @@ change. You could also consider alerting Ensembl to this issue.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

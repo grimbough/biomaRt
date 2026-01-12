@@ -9,7 +9,7 @@ with the dates they were created and the URL used to access them."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,50 +57,10 @@ with the dates they were created and the URL used to access them.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">listEnsemblArchives</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              name     date                                 url version</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  Ensembl GRCh37 Feb 2014          https://grch37.ensembl.org  GRCh37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     Ensembl 115 Sep 2025 https://sep2025.archive.ensembl.org     115</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     Ensembl 114 May 2025 https://may2025.archive.ensembl.org     114</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     Ensembl 113 Oct 2024 https://oct2024.archive.ensembl.org     113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5     Ensembl 112 May 2024 https://may2024.archive.ensembl.org     112</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6     Ensembl 111 Jan 2024 https://jan2024.archive.ensembl.org     111</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7     Ensembl 110 Jul 2023 https://jul2023.archive.ensembl.org     110</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8     Ensembl 109 Feb 2023 https://feb2023.archive.ensembl.org     109</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9     Ensembl 108 Oct 2022 https://oct2022.archive.ensembl.org     108</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10    Ensembl 107 Jul 2022 https://jul2022.archive.ensembl.org     107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11    Ensembl 106 Apr 2022 https://apr2022.archive.ensembl.org     106</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12    Ensembl 105 Dec 2021 https://dec2021.archive.ensembl.org     105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13    Ensembl 104 May 2021 https://may2021.archive.ensembl.org     104</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14    Ensembl 103 Feb 2021 https://feb2021.archive.ensembl.org     103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15    Ensembl 102 Nov 2020 https://nov2020.archive.ensembl.org     102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16    Ensembl 101 Aug 2020 https://aug2020.archive.ensembl.org     101</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17    Ensembl 100 Apr 2020 https://apr2020.archive.ensembl.org     100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     Ensembl 80 May 2015 https://may2015.archive.ensembl.org      80</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     Ensembl 77 Oct 2014 https://oct2014.archive.ensembl.org      77</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     Ensembl 75 Feb 2014 https://feb2014.archive.ensembl.org      75</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21     Ensembl 54 May 2009 https://may2009.archive.ensembl.org      54</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    current_release</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                *</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21                </span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in req_perform(html_request):</span> Failed to perform HTTP request.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Timeout was reached [www.ensembl.org]:</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> Operation timed out after 10002 milliseconds with 0 bytes received</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -113,7 +73,7 @@ with the dates they were created and the URL used to access them.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
