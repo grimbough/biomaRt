@@ -1,6 +1,6 @@
 Package: biomaRt
 Title: Interface to BioMart databases (i.e. Ensembl)
-Version: 2.67.0
+Version: 2.67.1
 Authors@R: c(
     person("Steffen", "Durinck", , "biomartdev@gmail.com", role = "aut"),
     person("Wolfgang", "Huber", role = "aut"),
