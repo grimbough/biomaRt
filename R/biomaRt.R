@@ -123,7 +123,7 @@ listMarts <- function(
   verbose = FALSE
 ) {
   if (missing(port)) {
-    port <- ifelse(startsWith(host, "https"), yes = 443, no = 80)
+    port <- ifelse(startsWith(host, "http://"), yes = 80, no = 443)
   }
 
   if (grepl("^https://.*ensembl.org", host) && missing(http_config)) {
@@ -148,7 +148,7 @@ listMarts <- function(
   mart = NULL,
   host = "www.ensembl.org",
   path = "/biomart/martservice",
-  port = 80,
+  port = 443,
   includeHosts = FALSE,
   archive = FALSE,
   verbose = FALSE,
@@ -291,7 +291,7 @@ useMart <- function(
   verbose = FALSE
 ) {
   if (missing(port)) {
-    port <- ifelse(startsWith(host, "https")[1], yes = 443, no = 80)
+    port <- ifelse(startsWith(host, "http://")[1], yes = 80, no = 443)
   }
 
   .useMart(

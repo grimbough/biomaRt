@@ -160,7 +160,7 @@ listEnsemblArchives <- function() {
       version = version,
       GRCh = GRCh
     )
-    port <- ifelse(startsWith(host, "https")[1], yes = 443, no = 80)
+    port <- ifelse(startsWith(host, "http://")[1], yes = 80, no = 443)
     ensemblRedirect <- is.null(mirror)
 
     http_config <- .getEnsemblSSL()
@@ -448,7 +448,7 @@ useEnsembl <- function(
   }
 
   ## choose the port based on whether we use https or not
-  port <- ifelse(startsWith(host, "https://"), yes = 443, no = 80)
+  port <- ifelse(startsWith(host, "http://"), yes = 80, no = 443)
 
   if (grepl(x = host, pattern = "www|useast|asia")) {
     marts <- .listEnsembl(version = version, GRCh = GRCh, mirror = mirror)
