@@ -220,11 +220,8 @@ how to query Ensembl 110.
 listEnsembl(version = 110)
 ```
 
-    ##         biomart                version
-    ## 1         genes      Ensembl Genes 110
-    ## 2 mouse_strains      Mouse strains 110
-    ## 3          snps  Ensembl Variation 110
-    ## 4    regulation Ensembl Regulation 110
+    ## Error in `req_perform()`:
+    ## ! HTTP 500 Internal Server Error.
 
 ``` r
 ensembl_110 <- useEnsembl(
@@ -233,6 +230,9 @@ ensembl_110 <- useEnsembl(
   version = 110
 )
 ```
+
+    ## Error in `req_perform()`:
+    ## ! HTTP 500 Internal Server Error.
 
 ### Using Ensembl Genomes
 
@@ -680,8 +680,8 @@ biomartCacheInfo()
 
     ## biomaRt cache
     ## - Location: /home/runner/.cache/R/biomaRt
-    ## - No. of files: 5
-    ## - Total size: 10 Kb
+    ## - No. of files: 4
+    ## - Total size: 9.7 Kb
 
 The cache can be deleted using the command
 [`biomartCacheClear()`](https://huber-group-embl.github.io/biomaRt/reference/biomartCache.md).
@@ -701,7 +701,7 @@ biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/Rtmpl1v9gK
+    ## - Location: /tmp/RtmpUBUKOq
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
@@ -1052,26 +1052,26 @@ utr5
 ```
 
     ##                                                                                                                                                  5utr
-    ## 1                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 2                                                                                                                                Sequence unavailable
-    ## 3          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 4                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 5      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 6                                                                                                                                Sequence unavailable
-    ## 7                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 8             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 9  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 10                                                                          CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 11                                                            TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 12                              ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 1                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 2                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 3                                                                                                                                Sequence unavailable
+    ## 4  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 5                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 6                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 7                                                                                                                                Sequence unavailable
+    ## 8          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 9                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 10     AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 11            AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 12                                                            TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ##    entrezgene_id
     ## 1         200879
     ## 2         200879
-    ## 3         200879
+    ## 3             NA
     ## 4         200879
     ## 5         200879
-    ## 6             NA
+    ## 6         200879
     ## 7         200879
     ## 8         200879
     ## 9         200879
@@ -1338,25 +1338,25 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.1   BiocStyle_2.38.0
+    ## [1] biomaRt_2.67.2   BiocStyle_2.38.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] KEGGREST_1.50.0      xfun_0.55            bslib_0.9.0          httr2_1.2.2         
-    ##  [5] Biobase_2.70.0       vctrs_0.6.5          tools_4.5.2          generics_0.1.4      
+    ##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         
+    ##  [5] Biobase_2.70.0       vctrs_0.7.1          tools_4.5.2          generics_0.1.4      
     ##  [9] stats4_4.5.2         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0
-    ## [13] RSQLite_2.4.5        blob_1.2.4           pkgconfig_2.0.3      dbplyr_2.5.1        
+    ## [13] RSQLite_2.4.6        blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.5.1        
     ## [17] desc_1.4.3           S4Vectors_0.48.0     lifecycle_1.0.5      compiler_4.5.2      
     ## [21] stringr_1.6.0        textshaping_1.0.4    Biostrings_2.78.0    progress_1.2.3      
     ## [25] Seqinfo_1.0.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
     ## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     
     ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
-    ## [37] dplyr_1.1.4          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       
+    ## [37] dplyr_1.2.0          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       
     ## [41] cli_3.6.5            magrittr_2.0.4       withr_3.0.2          prettyunits_1.2.0   
-    ## [45] filelock_1.0.3       rappdirs_0.3.3       bit64_4.6.0-1        rmarkdown_2.30      
+    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.30      
     ## [49] XVector_0.50.0       httr_1.4.7           bit_4.6.0            ragg_1.5.0          
     ## [53] png_0.1-8            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
     ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         
-    ## [61] glue_1.8.0           DBI_1.2.3            xml2_1.5.1           BiocManager_1.30.27 
+    ## [61] glue_1.8.0           DBI_1.2.3            xml2_1.5.2           BiocManager_1.30.27 
     ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   
     ## [69] fs_1.6.6
 
