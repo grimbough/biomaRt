@@ -23,5 +23,10 @@ test_that("Error handling works", {
 })
 
 test_that("return type is correct", {
+  skip_if_offline("protists.ensembl.org")
+  skip_if_offline("fungi.ensembl.org")
+  skip_if_offline("metazoa.ensembl.org")
+  skip_if_offline("plants.ensembl.org")
+
   expect_s4_class(useEnsemblGenomes("protists_mart", "bnatans_eg_gene"), "Mart")
 })
