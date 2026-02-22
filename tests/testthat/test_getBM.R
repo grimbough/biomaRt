@@ -69,6 +69,7 @@ test_that("getBM returns sensible things", {
 
 test_that("getBM doesn't convert T/F alleles into TRUE/FALSE", {
   skip_if_not_installed("mockery")
+  skip_if_offline("www.ensembl.org")
 
   # Example from https://github.com/Huber-group-EMBL/biomaRt/issues/12
   mockery::stub(
