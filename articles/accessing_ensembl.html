@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -259,11 +259,11 @@ shown below to connect to the specified BioMart database. The example
 below shows how to query Ensembl 110.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listEnsembl.html">listEnsembl</a></span><span class="op">(</span>version <span class="op">=</span> <span class="fl">110</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span></span>
-<span><span class="co">## <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Timeout was reached [jul2023.archive.ensembl.org]:</span></span>
-<span><span class="co">## Operation timed out after 60002 milliseconds with 0 bytes received</span></span></code></pre>
+<pre><code><span><span class="co">##         biomart                version</span></span>
+<span><span class="co">## 1         genes      Ensembl Genes 110</span></span>
+<span><span class="co">## 2 mouse_strains      Mouse strains 110</span></span>
+<span><span class="co">## 3          snps  Ensembl Variation 110</span></span>
+<span><span class="co">## 4    regulation Ensembl Regulation 110</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl_110</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span></span>
 <span>  biomart <span class="op">=</span> <span class="st">"genes"</span>,</span>
@@ -274,7 +274,7 @@ below shows how to query Ensembl 110.</p>
 <span><span class="co">## <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span></span>
 <span><span class="co">## <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span></span>
 <span><span class="co">## <span style="color: #BBBB00;">!</span> Timeout was reached [jul2023.archive.ensembl.org]:</span></span>
-<span><span class="co">## Operation timed out after 60001 milliseconds with 0 bytes received</span></span></code></pre>
+<span><span class="co">## Operation timed out after 60002 milliseconds with 0 bytes received</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="using-ensembl-genomes">Using Ensembl Genomes<a class="anchor" aria-label="anchor" href="#using-ensembl-genomes"></a>
@@ -616,8 +616,8 @@ using the function <code><a href="../reference/biomartCache.html">biomartCacheIn
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/biomartCache.html">biomartCacheInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## biomaRt cache</span></span>
 <span><span class="co">## - Location: /home/runner/.cache/R/biomaRt</span></span>
-<span><span class="co">## - No. of files: 4</span></span>
-<span><span class="co">## - Total size: 9.8 Kb</span></span></code></pre>
+<span><span class="co">## - No. of files: 5</span></span>
+<span><span class="co">## - Total size: 10 Kb</span></span></code></pre>
 <p>The cache can be deleted using the command
 <code><a href="../reference/biomartCache.html">biomartCacheClear()</a></code>. This will remove all cached files.</p>
 <p>The default location for the cache is specific to your computer and
@@ -633,7 +633,7 @@ changed.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>BIOMART_CACHE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/biomartCache.html">biomartCacheInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## biomaRt cache</span></span>
-<span><span class="co">## - Location: /tmp/RtmpkYz6Nl</span></span>
+<span><span class="co">## - Location: /tmp/RtmpuSfmh1</span></span>
 <span><span class="co">## - No. of files: 0</span></span>
 <span><span class="co">## - Total size: 0 bytes</span></span></code></pre>
 </div>
@@ -971,25 +971,25 @@ the name given to the &lt;code&gt;type&lt;/code&gt; argument.&lt;/p&gt;"><sup>5<
 <span><span class="op">)</span></span>
 <span><span class="va">utr5</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                                                                                                  5utr</span></span>
-<span><span class="co">## 1                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 2                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 3                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 4             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 5                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 6                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 7      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 8  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 9                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 10         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 11                                                                          CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 12                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 1                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 2  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 3                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 4                                                                                                                                Sequence unavailable</span></span>
+<span><span class="co">## 5                                                                                                                                Sequence unavailable</span></span>
+<span><span class="co">## 6                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 7                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 8                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 9      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 10                                                            TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 11         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 12            AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
 <span><span class="co">## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
 <span><span class="co">##    entrezgene_id</span></span>
-<span><span class="co">## 1             NA</span></span>
+<span><span class="co">## 1         200879</span></span>
 <span><span class="co">## 2         200879</span></span>
 <span><span class="co">## 3         200879</span></span>
 <span><span class="co">## 4         200879</span></span>
-<span><span class="co">## 5         200879</span></span>
+<span><span class="co">## 5             NA</span></span>
 <span><span class="co">## 6         200879</span></span>
 <span><span class="co">## 7         200879</span></span>
 <span><span class="co">## 8         200879</span></span>
@@ -1229,7 +1229,7 @@ change. You could also consider alerting Ensembl to this issue.</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] biomaRt_2.67.2   BiocStyle_2.38.0</span></span>
+<span><span class="co">## [1] biomaRt_2.67.3   BiocStyle_2.38.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         </span></span>
@@ -1247,7 +1247,7 @@ change. You could also consider alerting Ensembl to this issue.</p>
 <span><span class="co">## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.0          </span></span>
 <span><span class="co">## [53] png_0.1-8            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      </span></span>
 <span><span class="co">## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         </span></span>
-<span><span class="co">## [61] glue_1.8.0           DBI_1.2.3            xml2_1.5.2           BiocManager_1.30.27 </span></span>
+<span><span class="co">## [61] glue_1.8.0           DBI_1.3.0            xml2_1.5.2           BiocManager_1.30.27 </span></span>
 <span><span class="co">## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   </span></span>
 <span><span class="co">## [69] fs_1.6.6</span></span></code></pre>
 </div>

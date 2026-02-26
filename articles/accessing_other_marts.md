@@ -187,7 +187,7 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.2   BiocStyle_2.38.0
+    ## [1] biomaRt_2.67.3   BiocStyle_2.38.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         
@@ -205,7 +205,7 @@ sessionInfo()
     ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.0          
     ## [53] png_0.1-8            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
     ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         
-    ## [61] glue_1.8.0           DBI_1.2.3            BiocManager_1.30.27  xml2_1.5.2          
+    ## [61] glue_1.8.0           DBI_1.3.0            BiocManager_1.30.27  xml2_1.5.2          
     ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   
     ## [69] fs_1.6.6
 

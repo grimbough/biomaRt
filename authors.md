@@ -24,9 +24,10 @@
 Source:
 [`inst/CITATION`](https://github.com/Huber-group-EMBL/biomaRt/blob/devel/inst/CITATION)
 
-Mapping identifiers for the integration of genomic datasets with the
-R/Bioconductor package biomaRt. Steffen Durinck, Paul T. Spellman, Ewan
-Birney and Wolfgang Huber, Nature Protocols 4, 1184-1191 (2009).
+Durinck S, Spellman P, Birney E, Huber W (2009). “Mapping identifiers
+for the integration of genomic datasets with the R/Bioconductor package
+biomaRt.” *Nature Protocols*, **4**, 1184–1191.
+[doi:10.1038/nprot.2009.97](https://doi.org/10.1038/nprot.2009.97).
 
     @Article{,
       title = {Mapping identifiers for the integration of genomic datasets with the R/Bioconductor package biomaRt},
@@ -35,12 +36,14 @@ Birney and Wolfgang Huber, Nature Protocols 4, 1184-1191 (2009).
       year = {2009},
       volume = {4},
       pages = {1184--1191},
+      doi = {10.1038/nprot.2009.97},
     }
 
-BioMart and Bioconductor: a powerful link between biological databases
-and microarray data analysis. Steffen Durinck, Yves Moreau, Arek
-Kasprzyk, Sean Davis, Bart De Moor, Alvis Brazma and Wolfgang Huber,
-Bioinformatics 21, 3439-3440 (2005).
+Durinck S, Moreau Y, Kasprzyk A, Davis S, De Moor B, Brazma A, Huber W
+(2005). “BioMart and Bioconductor: a powerful link between biological
+databases and microarray data analysis.” *Bioinformatics*, **21**,
+3439–3440.
+[doi:10.1093/bioinformatics/bti525](https://doi.org/10.1093/bioinformatics/bti525).
 
     @Article{,
       title = {BioMart and Bioconductor: a powerful link between biological databases and microarray data analysis},
@@ -49,4 +52,5 @@ Bioinformatics 21, 3439-3440 (2005).
       year = {2005},
       volume = {21},
       pages = {3439--3440},
+      doi = {10.1093/bioinformatics/bti525},
     }

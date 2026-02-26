@@ -220,11 +220,11 @@ how to query Ensembl 110.
 listEnsembl(version = 110)
 ```
 
-    ## Error in `req_perform()`:
-    ## ! Failed to perform HTTP request.
-    ## Caused by error in `curl::curl_fetch_memory()`:
-    ## ! Timeout was reached [jul2023.archive.ensembl.org]:
-    ## Operation timed out after 60002 milliseconds with 0 bytes received
+    ##         biomart                version
+    ## 1         genes      Ensembl Genes 110
+    ## 2 mouse_strains      Mouse strains 110
+    ## 3          snps  Ensembl Variation 110
+    ## 4    regulation Ensembl Regulation 110
 
 ``` r
 ensembl_110 <- useEnsembl(
@@ -238,7 +238,7 @@ ensembl_110 <- useEnsembl(
     ## ! Failed to perform HTTP request.
     ## Caused by error in `curl::curl_fetch_memory()`:
     ## ! Timeout was reached [jul2023.archive.ensembl.org]:
-    ## Operation timed out after 60001 milliseconds with 0 bytes received
+    ## Operation timed out after 60002 milliseconds with 0 bytes received
 
 ### Using Ensembl Genomes
 
@@ -686,8 +686,8 @@ biomartCacheInfo()
 
     ## biomaRt cache
     ## - Location: /home/runner/.cache/R/biomaRt
-    ## - No. of files: 4
-    ## - Total size: 9.8 Kb
+    ## - No. of files: 5
+    ## - Total size: 10 Kb
 
 The cache can be deleted using the command
 [`biomartCacheClear()`](https://huber-group-embl.github.io/biomaRt/reference/biomartCache.md).
@@ -707,7 +707,7 @@ biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/RtmpkYz6Nl
+    ## - Location: /tmp/RtmpuSfmh1
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
@@ -1058,25 +1058,25 @@ utr5
 ```
 
     ##                                                                                                                                                  5utr
-    ## 1                                                                                                                                Sequence unavailable
-    ## 2                                                                                                                                Sequence unavailable
-    ## 3                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 4             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 5                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 6                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 7      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 8  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 9                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 10         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 11                                                                          CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 12                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 1                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 2  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 3                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 4                                                                                                                                Sequence unavailable
+    ## 5                                                                                                                                Sequence unavailable
+    ## 6                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 7                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 8                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 9      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 10                                                            TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 11         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 12            AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ##    entrezgene_id
-    ## 1             NA
+    ## 1         200879
     ## 2         200879
     ## 3         200879
     ## 4         200879
-    ## 5         200879
+    ## 5             NA
     ## 6         200879
     ## 7         200879
     ## 8         200879
@@ -1344,7 +1344,7 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.2   BiocStyle_2.38.0
+    ## [1] biomaRt_2.67.3   BiocStyle_2.38.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         
@@ -1362,7 +1362,7 @@ sessionInfo()
     ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.0          
     ## [53] png_0.1-8            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
     ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         
-    ## [61] glue_1.8.0           DBI_1.2.3            xml2_1.5.2           BiocManager_1.30.27 
+    ## [61] glue_1.8.0           DBI_1.3.0            xml2_1.5.2           BiocManager_1.30.27 
     ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   
     ## [69] fs_1.6.6
 
