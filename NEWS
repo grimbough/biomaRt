@@ -8,6 +8,11 @@ BREAKING CHANGES
   `80` (the standard port for `http`). This fixes issue #155 reported by 
   Lori Shepherd.
 
+MINOR IMPROVEMENTS
+
+  o All requests sent by biomaRt now include a custom user agent linking to the 
+  source GitHub repository, and indicating the package version.
+
 CHANGES IN VERSION 2.66.0
 -------------------------
 
