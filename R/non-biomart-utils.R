@@ -6,6 +6,9 @@ createNameToAliasMap <- function() {
   url <- "https://rest.ensembl.org/info/species?"
 
   req <- httr2::request(url) |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     httr2::req_headers("Accept" = "application/json")
   json <- httr2::req_perform(req) |>
     httr2::resp_body_json()
@@ -32,6 +35,9 @@ pickReferenceStrain <- function(genomes_to_choose_from) {
   url <- "https://rest.ensembl.org/info/species?"
 
   req <- httr2::request(url) |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     httr2::req_headers("Accept" = "application/json")
   json <- req_perform(req) |>
     resp_body_json()
@@ -112,6 +118,9 @@ findGenomeName <- function(input) {
 ## use the Ensembl Rest API to get the current Ensembl version
 getCurrentEnsemblRelease <- function() {
   req <- httr2::request("https://rest.ensembl.org/info/data/") |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     httr2::req_headers("Accept" = "application/json")
 
   version <- req |>
@@ -135,8 +144,9 @@ listFilesInEnsemblFTP <- function(species, release, dir) {
     species
   )
 
-  list_files <- curl::new_handle()
-  curl::handle_setopt(list_files, ftp_use_epsv = TRUE, dirlistonly = TRUE)
+  list_files <- curl::new_handle() |>
+    curl::handle_setheaders(useragent = .biomaRt_user_agent()) |>
+    curl::handle_setopt(ftp_use_epsv = TRUE, dirlistonly = TRUE)
   con <- curl::curl(url = ftp_dir, open = "r", handle = list_files)
   files <- readLines(con)
   close(con)

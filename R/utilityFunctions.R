@@ -228,6 +228,9 @@
 #' @importFrom httr2 req_body_form req_options req_timeout resp_body_string resp_status
 .submitQueryXML <- function(host, query, http_config) {
   req <- httr2::request(host) |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     req_body_form(query = query) |>
     req_timeout(max(getOption("timeout", default = 300), 300)) |>
     req_options(!!!http_config)
@@ -497,5 +500,12 @@ listFilterValues <- function(mart, filter) {
   .Defunct(
     new = "listFilterOptions",
     msg = "This function has been renamed listFilterOptions()"
+  )
+}
+
+.biomaRt_user_agent <- function() {
+  paste(
+    "biomaRt R package (https://github.com/Huber-group-EMBL/biomaRt) version",
+    utils::packageVersion("biomaRt")
   )
 }
