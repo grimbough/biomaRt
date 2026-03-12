@@ -234,12 +234,6 @@ ensembl_110 <- useEnsembl(
 )
 ```
 
-    ## Error in `req_perform()`:
-    ## ! Failed to perform HTTP request.
-    ## Caused by error in `curl::curl_fetch_memory()`:
-    ## ! Timeout was reached [jul2023.archive.ensembl.org]:
-    ## Operation timed out after 60002 milliseconds with 0 bytes received
-
 ### Using Ensembl Genomes
 
 Ensembl Genomes expands the effort to provide annotation from the
@@ -707,7 +701,7 @@ biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/RtmpuSfmh1
+    ## - Location: /tmp/RtmpOSI1Rv
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
@@ -1024,8 +1018,14 @@ getSequence(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Usage: Filter upstream_flank NOT FOUND
+    ##                                                                                      coding_gene_flank
+    ## 1 TCCTTCTCTGCAGGCCCAGGTGACCCAGGGTTGGAAGTGTCTCATGCTGGATCCCCACTTTTCCTCTTGCAGCAGCCAGACTGCCTTCCGGGTCACTGCC
+    ## 2 CCTCCGCCTCCGCCTCCGCCTCCGCCTCCCCCAGCTCTCCGCCTCCCTTCCCCCTCCCCGCCCGACAGCGGCCGCTCGGGCCCCGGCTCTCGGTTATAAG
+    ## 3 CACGTTTCCGCCCTTTGCAATAAGGAAATACATAGTTTACTTTCATTTTTGACTCTGAGGCTCTTTCCAACGCTGTAAAAAAGGACAGAGGCTGTTCCCT
+    ##   entrezgene_id
+    ## 1          7157
+    ## 2           673
+    ## 3           837
 
 One further thing to note is that, although we are searching for genes
 based on their NCBI Gene IDs, Ensembl BioMart doesn’t allow some ID
@@ -1058,25 +1058,25 @@ utr5
 ```
 
     ##                                                                                                                                                  5utr
-    ## 1                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 2  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 1                                                                                                                                Sequence unavailable
+    ## 2                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ## 3                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 4                                                                                                                                Sequence unavailable
-    ## 5                                                                                                                                Sequence unavailable
-    ## 6                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 7                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 8                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 4                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 5                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 6  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 7             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 8                                                                                                                                Sequence unavailable
     ## 9      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 10                                                            TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 10                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ## 11         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 12            AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 12                                                                          CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ##    entrezgene_id
-    ## 1         200879
+    ## 1             NA
     ## 2         200879
     ## 3         200879
     ## 4         200879
-    ## 5             NA
+    ## 5         200879
     ## 6         200879
     ## 7         200879
     ## 8         200879
@@ -1214,6 +1214,13 @@ homologs <- getHomologs(
   species_from = "human",
   species_to = "mouse"
 )
+```
+
+    ## Ensembl site unresponsive, trying asia mirror
+
+    ## Ensembl site unresponsive, trying useast mirror
+
+``` r
 homologs
 ```
 
@@ -1226,6 +1233,11 @@ to query the mouse gene dataset and get the details we require.
 
 ``` r
 mouse <- useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl")
+```
+
+    ## Ensembl site unresponsive, trying useast mirror
+
+``` r
 BRCA2_mouse <- getBM(
   mart = mouse,
   filters = "ensembl_gene_id",
@@ -1324,7 +1336,7 @@ could also consider alerting Ensembl to this issue.
 sessionInfo()
 ```
 
-    ## R version 4.5.2 (2025-10-31)
+    ## R version 4.5.3 (2026-03-11)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.3 LTS
     ## 
@@ -1348,23 +1360,23 @@ sessionInfo()
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         
-    ##  [5] Biobase_2.70.0       vctrs_0.7.1          tools_4.5.2          generics_0.1.4      
-    ##  [9] stats4_4.5.2         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0
+    ##  [5] Biobase_2.70.0       vctrs_0.7.1          tools_4.5.3          generics_0.1.4      
+    ##  [9] stats4_4.5.3         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0
     ## [13] RSQLite_2.4.6        blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.5.2        
-    ## [17] desc_1.4.3           S4Vectors_0.48.0     lifecycle_1.0.5      compiler_4.5.2      
-    ## [21] stringr_1.6.0        textshaping_1.0.4    Biostrings_2.78.0    progress_1.2.3      
+    ## [17] desc_1.4.3           S4Vectors_0.48.0     lifecycle_1.0.5      compiler_4.5.3      
+    ## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.78.0    progress_1.2.3      
     ## [25] Seqinfo_1.0.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
     ## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     
     ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
     ## [37] dplyr_1.2.0          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       
     ## [41] cli_3.6.5            magrittr_2.0.4       withr_3.0.2          prettyunits_1.2.0   
     ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.30      
-    ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.0          
+    ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.1          
     ## [53] png_0.1-8            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
     ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         
     ## [61] glue_1.8.0           DBI_1.3.0            xml2_1.5.2           BiocManager_1.30.27 
-    ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   
-    ## [69] fs_1.6.6
+    ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   
+    ## [69] fs_1.6.7
 
 ------------------------------------------------------------------------
 
