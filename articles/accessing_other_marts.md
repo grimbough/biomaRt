@@ -187,7 +187,7 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.3   BiocStyle_2.38.0
+    ## [1] biomaRt_2.67.4   BiocStyle_2.38.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         

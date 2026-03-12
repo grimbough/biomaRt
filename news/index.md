@@ -10,6 +10,11 @@
   issue [\#155](https://github.com/Huber-group-EMBL/biomaRt/issues/155)
   reported by Lori Shepherd.
 
+### MINOR IMPROVEMENTS
+
+- All requests sent by biomaRt now include a custom user agent linking
+  to the source GitHub repository, and indicating the package version.
+
 ## CHANGES IN biomaRt VERSION 2.66.0
 
 ### BREAKING CHANGES

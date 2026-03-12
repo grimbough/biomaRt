@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,10 @@
 <div class="section level3">
 <h3 id="breaking-changes-2-68-0">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-2-68-0"></a></h3>
 <ul><li>The <code>port</code> argument, if unspecified and if no scheme is provided in the <code>host</code> argument, now defaults to <code>443</code> (the standard port for <code>https</code>), instead of <code>80</code> (the standard port for <code>http</code>). This fixes issue <a href="https://github.com/Huber-group-EMBL/biomaRt/issues/155" class="external-link">#155</a> reported by Lori Shepherd.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-2-68-0">MINOR IMPROVEMENTS<a class="anchor" aria-label="anchor" href="#minor-improvements-2-68-0"></a></h3>
+<ul><li>All requests sent by biomaRt now include a custom user agent linking to the source GitHub repository, and indicating the package version.</li>
 </ul></div>
 </div>
     <div class="section level2">
