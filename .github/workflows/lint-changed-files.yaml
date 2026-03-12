@@ -36,6 +36,7 @@ jobs:
             r-lib/lintr
             any::purrr
             any::cyclocomp
+            any::tidyverse
           needs: check
 
       - name: Install package
