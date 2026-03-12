@@ -51,6 +51,9 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
   }
 
   request <- httr2::request(request) |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     req_timeout(getOption("timeout", default = 60)) |>
     req_options(!!!http_config)
 

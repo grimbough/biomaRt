@@ -1,9 +1,15 @@
 #' @importFrom httr2 req_options req_perform req_timeout req_user_agent request
 .test_ensembl <- function(config = list()) {
   main <- request("https://www.ensembl.org/index.html?redirect=no") |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     req_timeout(5) |>
     req_options(!!!config)
   useast <- request("https://useast.ensembl.org/index.html?redirect=no") |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     req_timeout(5) |>
     req_options(!!!config) |>
     ## hopefully temporary work around for 403 error on this mirror

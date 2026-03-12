@@ -33,6 +33,9 @@
     )
 
     html_request <- request(url) |>
+      req_user_agent(
+        .biomaRt_user_agent()
+      ) |>
       req_timeout(10) |>
       req_options(!!!http_config) |>
       req_retry(max_tries = 3) |>
@@ -614,6 +617,9 @@ useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
   mirror <- str_match(host, pattern = "://([a-z]{3,6})\\.")[1, 2]
 
   req <- httr2::request(host) |>
+    req_user_agent(
+      .biomaRt_user_agent()
+    ) |>
     req_body_form(query = example_query) |>
     req_timeout(10) |>
     req_options(!!!http_config)
@@ -637,6 +643,9 @@ useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
       )
 
       req <- httr2::request(host) |>
+        req_user_agent(
+          .biomaRt_user_agent()
+        ) |>
         req_body_form(query = example_query) |>
         req_timeout(10) |>
         req_options(!!!http_config)
