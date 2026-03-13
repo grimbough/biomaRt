@@ -1,6 +1,6 @@
 library(biomaRt)
 
-cache <- file.path(tempdir(), "biomart_cache_test")
+cache <- withr::local_tempfile(pattern = "biomart_cache_test")
 Sys.setenv(BIOMART_CACHE = cache)
 
 go <- c("GO:0051330", "GO:0000080", "GO:0000114", "GO:0000082")
@@ -8,25 +8,27 @@ chrom <- c(17, 20, "Y")
 attributes <- "hgnc_symbol"
 filters <- c("go", "chromosome_name")
 values <- list(go, chrom)
-ensembl <- Mart(
+fake_mart <- Mart(
   biomart = "ensembl",
   dataset = "hsapiens_gene_ensembl",
-  host = "www.ensembl.org"
+  # To avoid hitting ensembl.org with .listEnsemblArchives() in .createHash()
+  host = "example.com"
 )
 
 test_that("Hashing is order insensitive", {
   expect_identical(
-    .createHash(ensembl, attributes, filters, values),
-    .createHash(ensembl, rev(attributes), rev(filters), rev(values))
+    .createHash(fake_mart, attributes, filters, values),
+    .createHash(fake_mart, rev(attributes), rev(filters), rev(values))
   )
 })
+
 
 test_that("Environment variable for cache location is used", {
   expect_message(biomartCacheInfo(), regexp = "biomart_cache_test")
 })
 
 ## create an example hash and dataframe to test code with
-hash <- .createHash(ensembl, attributes, filters, values)
+hash <- .createHash(fake_mart, attributes, filters, values)
 result <- data.frame(
   name = c("affy_hg_u133a_2", "chromosome_name", "transcript_tsl"),
   description = c(
@@ -78,5 +80,3 @@ test_that("Cache can be cleared", {
   expect_silent(biomartCacheClear())
   expect_false(file.exists(cache_file))
 })
-
-Sys.unsetenv("BIOMART_CACHE")

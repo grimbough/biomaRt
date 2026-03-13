@@ -4,7 +4,8 @@ Sys.setenv(BIOMART_CACHE = cache)
 ensembl <- Mart(
   biomart = "ensembl",
   dataset = "hsapiens_gene_ensembl",
-  host = "www.ensembl.org",
+  # To avoid hitting ensembl.org with .listEnsemblArchives() in .createHash()
+  host = "www.example.com",
   attributes = data.frame(
     name = c("chromosome_name", "ensembl_gene_id"),
     description = c("Chromosome/scaffold name", "Gene stable ID")
