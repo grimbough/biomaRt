@@ -214,16 +214,16 @@ setMethod("columns", "Mart", function(x) {
 #' @importFrom methods setMethod
 setMethod("select", "Mart", function(x, keys, columns, keytype, ...) {
   if (missing(columns)) {
-    stop("Argument 'columns' must be specified.")
+    cli::cli_abort("Argument {.arg columns} must be specified.")
   }
   if (!is.list(keytype) && keytype != "" && missing(keys)) {
-    stop("Argument 'keys' must be specified.")
+    cli::cli_abort("Argument {.arg keys} must be specified.")
   }
   if (length(keytype) > 0 && length(keys) == 0) {
-    stop("Keys argument contains no data.")
+    cli::cli_abort("Argument {.arg keys} contains no data.")
   }
   if (!is.character(keytype) || length(keytype) != 1) {
-    stop("keytype should be single element character vector.")
+    cli::cli_abort("{.arg keytype} should be single element character vector.")
   }
   getBM(attributes = columns, filters = keytype, values = keys, mart = x)
 })

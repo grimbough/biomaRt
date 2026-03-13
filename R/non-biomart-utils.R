@@ -66,20 +66,21 @@ pickReferenceStrain <- function(genomes_to_choose_from) {
   }
 
   if (length(idx2) != 1) {
-    stop("unable to determine reference strain")
+cli::cli_abort("Unable to determine reference strain.")
   }
 
   return(names[idx][idx2])
 }
 
 pickReferenceStrain_msg <- function(input_term) {
-  message(
-    "Your search term was ambiguous and multiple strains matching '",
-    input_term,
-    "' were found.\n",
-    "Selecting the reference genome for this organism.\n",
-    "Use a more specific search term if this is inappropriate."
+cli::cli_inform(
+  c(
+    "Your search term was ambiguous and multiple strains matching
+     {.val {input_term}} were found.",
+    "i" = "Selecting the reference genome for this organism.",
+    "i" = "Use a more specific search term if this is inappropriate."
   )
+)
 }
 
 ## Given an input string, try to identify the genome name for the organism
@@ -101,7 +102,7 @@ findGenomeName <- function(input) {
   )
 
   if (!any(search)) {
-    stop("Unable to match the search term to a genome")
+cli::cli_abort("Unable to match the search term to a genome.")
   }
 
   if (sum(search) == 1) {

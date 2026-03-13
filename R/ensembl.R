@@ -56,7 +56,7 @@
     }
     mirrors <- mirrors[-1]
   }
-  stop("Unable to contact any Ensembl mirror")
+  cli::cli_abort("Unable to contact any Ensembl mirror.")
 }
 
 .currentEnsemblVersion <- function() {
@@ -264,42 +264,40 @@ listEnsembl <- function(
   host <- NULL
 
   if (!is.null(mirror) && (!is.null(version) || !is.null(GRCh))) {
-    warning(
-      "version or GRCh arguments cannot be used together with the mirror argument.\n",
-      "We will ignore the mirror argument and connect to the main Ensembl site.",
-      call. = FALSE
+    cli::cli_warn(
+      c(
+        "The {.arg version} or {.arg GRCh} arguments cannot be used together
+        with the {.arg mirror} argument.",
+        "i" = "We will ignore the {.arg mirror} argument and connect to the
+              main Ensembl site."
+      )
     )
-    mirror <- NULL
   }
 
   if (!is.null(version) && !is.null(GRCh)) {
-    stop(
-      "version or GRCh arguments cannot be used together.\n",
-      "Please specify only the 'version' or 'GRCh' argument.",
-      call. = FALSE
+    cli::cli_abort(
+      c(
+        "The {.arg version} or {.arg GRCh} arguments cannot be used together.",
+        "i" = "Please specify only the {.arg version} or {.arg GRCh} argument."
+      )
     )
   }
 
   if (!is.null(version)) {
-    archives <- .listEnsemblArchives(http_config = list())
-    idx <- match(version, archives[, "version"], nomatch = NA)
-    if (is.na(idx)) {
-      stop(
-        "Specified Ensembl version is not available.\n",
-        "Use listEnsemblArchives() to view available versions.",
-        call. = FALSE
+    cli::cli_abort(
+      c(
+        "Specified Ensembl version is not available.",
+        "i" = "Use {.fn listEnsemblArchives} to view available versions."
       )
-    }
-    host <- archives[idx, "url"]
+    )
   }
 
   if (!is.null(GRCh)) {
     if (GRCh == 37) {
-      host <- paste0("https://grch", GRCh, ".ensembl.org")
+      host <- "https://grch37.ensembl.org"
     } else {
-      warning(
-        "Only 37 can be specified for GRCh version. Using the current version.",
-        call. = FALSE
+      cli::cli_warn(
+        "Only 37 can be specified for GRCh version. Using the current version."
       )
     }
   }
@@ -308,10 +306,13 @@ listEnsembl <- function(
     if (mirror %in% c("www", "useast", "asia")) {
       host <- paste0("https://", mirror, ".ensembl.org")
     } else {
-      warning(
-        "Invalid mirror. Select a mirror from [www, useast, asia].\n",
-        "Default when no mirror is specified is to use ",
-        "www.ensembl.org which may be automatically redirected."
+      cli::cli_warn(
+        c(
+          "Invalid mirror.",
+          "Select a mirror from {.val {c('www', 'useast', 'asia')}}.",
+          "i" = "Default when no mirror is specified is to use www.ensembl.org
+               which may be automatically redirected."
+        )
       )
       host <- "https://www.ensembl.org"
     }
@@ -395,10 +396,12 @@ useEnsembl <- function(
   verbose = FALSE
 ) {
   if (missing(biomart)) {
-    stop(
-      "You must provide the argument 'biomart'\n",
-      "Available Ensembl Marts can be viewed with ",
-      "the function listEnsembl()"
+    cli::cli_abort(
+      c(
+        "You must provide the argument {.arg biomart}.",
+        "i" = "Available Ensembl Marts can be viewed with the function
+           {.fn listEnsembl}."
+      )
     )
   }
 
@@ -431,9 +434,12 @@ useEnsembl <- function(
   ## create the host URL & turn off redirection if a mirror is specified
   if (missing(host) || no_subdomain) {
     if (no_subdomain) {
-      warning(
-        "You cannot use the host 'ensembl.org'.\n",
-        "Please provide a subdomain e.g. www.ensembl.org or use one of the 'mirror', 'version', 'GRCh' arguments"
+      cli::cli_warn(
+        c(
+          "You cannot use the host {.val ensembl.org}.",
+          "i" = "Please provide a subdomain e.g. {.val www.ensembl.org} or use
+          one of the {.arg mirror}, {.arg version}, {.arg GRCh} arguments."
+        )
       )
     }
 
@@ -469,8 +475,9 @@ useEnsembl <- function(
     mindex <- match(biomart, marts$biomart)
   }
   if (is.na(mindex)) {
-    stop(
-      "Incorrect BioMart name, use the listMarts function to see which BioMart databases are available"
+    cli::cli_abort(
+      "Incorrect BioMart name, use the {.fn listMarts} function to see
+   which BioMart databases are available."
     )
   }
 
@@ -552,20 +559,23 @@ listEnsemblGenomes <- function(includeHosts = FALSE, host = NULL) {
 #' @export
 useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
   if (missing(biomart)) {
-    stop(
-      "You must provide the argument 'biomart'\n",
-      "Available Ensembl Genomes Marts can be viewed with ",
-      "the function listEnsemblGenomes()"
+    cli::cli_abort(
+      c(
+        "You must provide the argument {.arg biomart}.",
+        "i" = "Available Ensembl Genomes Marts can be viewed with
+           the function {.fn listEnsemblGenomes}."
+      )
     )
   }
 
   marts <- listEnsemblGenomes(includeHosts = TRUE, host = host)
   if (!biomart %in% marts$biomart) {
-    stop(
-      biomart,
-      " is not in the list of available Marts'\n",
-      "Available Ensembl Genomes Marts can be viewed with ",
-      "the function listEnsemblGenomes()"
+    cli::cli_abort(
+      c(
+        "{.val {biomart}} is not in the list of available Marts.",
+        "i" = "Available Ensembl Genomes Marts can be viewed with
+           {.fn listEnsemblGenomes}."
+      )
     )
   }
   martDetails <- marts[which(marts$biomart == biomart), ]
@@ -635,7 +645,7 @@ useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
     remaining_mirrors <- setdiff(mirrors, mirror)
     while ((length(remaining_mirrors) > 0) && (tryAgain)) {
       mirror <- sample(remaining_mirrors, size = 1)
-      message("Ensembl site unresponsive, trying ", mirror, " mirror")
+cli::cli_inform("Ensembl site unresponsive, trying {mirror} mirror.")
       host <- str_replace(
         host,
         pattern = "://([a-z]{3,6})\\.",
@@ -660,7 +670,7 @@ useEnsemblGenomes <- function(biomart, dataset, host = NULL) {
     }
   }
   if (tryAgain) {
-    stop("Unable to query any Ensembl site")
+cli::cli_abort("Unable to query any Ensembl site.")
   }
 
   return(mirror)
