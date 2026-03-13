@@ -15,7 +15,7 @@
 - All requests sent by biomaRt now include a custom user agent linking
   to the source GitHub repository, and indicating the package version.
 
-- The defunct `archive` in
+- The defunct `archive` argument in
   [`listMarts()`](https://huber-group-embl.github.io/biomaRt/reference/listMarts.md)
   and
   [`useMart()`](https://huber-group-embl.github.io/biomaRt/reference/useMart.md)
