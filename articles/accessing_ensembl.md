@@ -701,7 +701,7 @@ biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/RtmpiTIzJz
+    ## - Location: /tmp/RtmpzDA47s
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
@@ -1018,14 +1018,8 @@ getSequence(
 )
 ```
 
-    ##                                                                                      coding_gene_flank
-    ## 1 TCCTTCTCTGCAGGCCCAGGTGACCCAGGGTTGGAAGTGTCTCATGCTGGATCCCCACTTTTCCTCTTGCAGCAGCCAGACTGCCTTCCGGGTCACTGCC
-    ## 2 CCTCCGCCTCCGCCTCCGCCTCCGCCTCCCCCAGCTCTCCGCCTCCCTTCCCCCTCCCCGCCCGACAGCGGCCGCTCGGGCCCCGGCTCTCGGTTATAAG
-    ## 3 CACGTTTCCGCCCTTTGCAATAAGGAAATACATAGTTTACTTTCATTTTTGACTCTGAGGCTCTTTCCAACGCTGTAAAAAAGGACAGAGGCTGTTCCCT
-    ##   entrezgene_id
-    ## 1          7157
-    ## 2           673
-    ## 3           837
+    ## Error in `.processResults()`:
+    ## ! Query ERROR: caught BioMart::Exception::Usage: Filter upstream_flank NOT FOUND
 
 One further thing to note is that, although we are searching for genes
 based on their NCBI Gene IDs, Ensembl BioMart doesn’t allow some ID
@@ -1058,23 +1052,23 @@ utr5
 ```
 
     ##                                                                                                                                                  5utr
-    ## 1                                                                                                                                Sequence unavailable
-    ## 2  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 3                                  ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 4                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 5                                                                                                                                Sequence unavailable
-    ## 6             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 7                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 8                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 9                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 10     AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 11                                                            TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 12         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 1                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 2                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 3                                                                                                                                Sequence unavailable
+    ## 4  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 5                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 6                                                                                                                                Sequence unavailable
+    ## 7                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 8      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 9                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 10         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 11            AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 12                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
     ##    entrezgene_id
-    ## 1             NA
+    ## 1         200879
     ## 2         200879
-    ## 3         200879
+    ## 3             NA
     ## 4         200879
     ## 5         200879
     ## 6         200879
@@ -1106,8 +1100,8 @@ protein
 
     ##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     peptide
     ## 1 MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKAVYKAWLCSEYFSVTQQECQRWVPCKQYCLEVQTRCPFILPDNEEMVYGGLPGFICTGLLDTSPKRLETKCCDVQWVSCEAKKKKFKESEAPKTHQQQFHHSYFHHYHQQYHHYHPHHDPPGRVSNKPALLPVSGGSRLSPSRIRLCVLVLMLLHTVVSFSSNQGGGGLGLETLPALEEGLTREE*
-    ## 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable
-    ## 3                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*
+    ## 2                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*
+    ## 3                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable
     ## 4                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*
     ##   entrezgene_id
     ## 1         27112
@@ -1344,7 +1338,7 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.4   BiocStyle_2.38.0
+    ## [1] biomaRt_2.67.5   BiocStyle_2.38.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         

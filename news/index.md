@@ -15,6 +15,11 @@
 - All requests sent by biomaRt now include a custom user agent linking
   to the source GitHub repository, and indicating the package version.
 
+### INTERNAL CHANGES
+
+- Tests and some internals are now more robust to Ensembl Biomart being
+  not responsible or unstable.
+
 ## CHANGES IN biomaRt VERSION 2.66.0
 
 ### BREAKING CHANGES
