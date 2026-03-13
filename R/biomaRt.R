@@ -97,11 +97,6 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' @param port port to use in HTTP communication
 #' @param includeHosts boolean to indicate if function should return host of
 #' the BioMart databases
-#' @param archive Boolean to indicate if you want to access archived versions
-#' of BioMart database. Note that this argument is now defunct and setting this
-#' value to `TRUE` will produce an error. A better alternative is to
-#' specify the url of the archived BioMart you want to access.  For Ensembl you
-#' can view the list of archives using [listEnsemblArchives()]
 #' @param http_config Some hosts require specific HTTP settings to be used when
 #' connecting. This argument takes the output of [httr::config()] and
 #' will be used when connecting to `host`.  Can be ignored if you
@@ -110,6 +105,12 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' debugging purposes.
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
+#'
+#' @details
+#' The previously available `archive` argument is defunct.
+#' A better alternative is to specify the url of the archived BioMart
+#' you want to access. For Ensembl you can view the list of archives using
+#' [listEnsemblArchives()].
 #'
 #' @examplesIf interactive()
 #' listMarts()
@@ -121,7 +122,6 @@ listMarts <- function(
   path = "/biomart/martservice",
   port,
   includeHosts = FALSE,
-  archive = FALSE,
   http_config = list(),
   verbose = FALSE
 ) {
@@ -139,7 +139,6 @@ listMarts <- function(
     path = path,
     port = port,
     includeHosts = includeHosts,
-    archive = archive,
     verbose = verbose,
     http_config = http_config,
     ensemblRedirect = TRUE
@@ -153,7 +152,6 @@ listMarts <- function(
   path = "/biomart/martservice",
   port = 443,
   includeHosts = FALSE,
-  archive = FALSE,
   verbose = FALSE,
   http_config,
   ensemblRedirect = NULL
@@ -161,12 +159,6 @@ listMarts <- function(
   request <- NULL
   if (is.null(mart)) {
     host <- .cleanHostURL(host)
-    if (archive) {
-      stop(
-        "The archive = TRUE argument is now defunct.\n",
-        "Use listEnsemblArchives() to find the URL to directly query an Ensembl archive."
-      )
-    }
     request <- paste0(
       host,
       ":",
@@ -263,17 +255,18 @@ listMarts <- function(
 #' @param path Path that should be pasted after to host to get access to the
 #' web service URL
 #' @param port port to connect to, will be pasted between host and path
-#' @param archive Boolean to indicate if you want to access archived versions
-#' of BioMart databases.  Note that this argument is now deprecated and will be
-#' removed in the future.  A better alternative is to leave archive = FALSE and
-#' to specify the url of the archived BioMart you want to access.  For Ensembl
-#' you can view the list of archives using [listEnsemblArchives()]
 #' @param version Use version name instead of biomart name to specify which
 #' BioMart you want to use
 #' @param verbose Give detailed output of what the method is doing while in
 #' use, for debugging
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
+#'
+#' @details
+#' The previously available `archive` argument is defunct.
+#' A better alternative is to specify the url of the archived BioMart
+#' you want to access. For Ensembl you can view the list of archives using
+#' [listEnsemblArchives()].
 #'
 #' @examplesIf interactive()
 #' mart <- useMart("ENSEMBL_MART_ENSEMBL")
@@ -289,7 +282,6 @@ useMart <- function(
   host = "https://www.ensembl.org",
   path = "/biomart/martservice",
   port,
-  archive = FALSE,
   version,
   verbose = FALSE
 ) {
@@ -303,7 +295,6 @@ useMart <- function(
     host = host,
     path = path,
     port = port,
-    archive = archive,
     version = version,
     verbose = verbose,
     http_config = list(),
@@ -317,7 +308,6 @@ useMart <- function(
   host = "https://www.ensembl.org",
   path = "/biomart/martservice",
   port = 443,
-  archive = FALSE,
   ensemblRedirect = NULL,
   version,
   http_config,
@@ -348,7 +338,6 @@ useMart <- function(
     port = port,
     includeHosts = TRUE,
     http_config = http_config,
-    archive = archive,
     ensemblRedirect = ensemblRedirect
   )
   mindex <- NA
@@ -358,7 +347,7 @@ useMart <- function(
   if (!missing(version)) {
     mindex <- match(version, marts$version)
   }
-  if (is.na(mindex) || archive) {
+  if (is.na(mindex)) {
     mindex <- match(biomart, marts$database)
   }
   if (is.na(mindex)) {

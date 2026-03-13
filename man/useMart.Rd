@@ -10,7 +10,6 @@ useMart(
   host = "https://www.ensembl.org",
   path = "/biomart/martservice",
   port,
-  archive = FALSE,
   version,
   verbose = FALSE
 )
@@ -30,12 +29,6 @@ web service URL}
 
 \item{port}{port to connect to, will be pasted between host and path}
 
-\item{archive}{Boolean to indicate if you want to access archived versions
-of BioMart databases.  Note that this argument is now deprecated and will be
-removed in the future.  A better alternative is to leave archive = FALSE and
-to specify the url of the archived BioMart you want to access.  For Ensembl
-you can view the list of archives using \code{\link[=listEnsemblArchives]{listEnsemblArchives()}}}
-
 \item{version}{Use version name instead of biomart name to specify which
 BioMart you want to use}
 
@@ -50,6 +43,12 @@ BioMart databases are available see the \code{\link[=listMarts]{listMarts()}} fu
 datasets are available within a BioMart database, first select the BioMart
 database using \code{\link[=useMart]{useMart()}} and then use the \code{\link[=listDatasets]{listDatasets()}} function on the
 selected BioMart, see \code{\link[=listDatasets]{listDatasets()}} function.
+}
+\details{
+The previously available \code{archive} argument is defunct.
+A better alternative is to specify the url of the archived BioMart
+you want to access. For Ensembl you can view the list of archives using
+\code{\link[=listEnsemblArchives]{listEnsemblArchives()}}.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
