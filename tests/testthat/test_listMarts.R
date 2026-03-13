@@ -14,13 +14,6 @@ with_mock_dir(
   simplify = TRUE
 )
 
-test_that("Error when archive = TRUE", {
-  expect_error(
-    listMarts(host = "https://www.ensembl.org", archive = TRUE),
-    regexp = "Use listEnsemblArchives"
-  )
-})
-
 test_that("Error when old URL is used", {
   expect_error(listMarts(host = "www.biomart.org"))
 })

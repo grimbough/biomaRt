@@ -10,7 +10,6 @@ listMarts(
   path = "/biomart/martservice",
   port,
   includeHosts = FALSE,
-  archive = FALSE,
   http_config = list(),
   verbose = FALSE
 )
@@ -29,12 +28,6 @@ to web service URL}
 
 \item{includeHosts}{boolean to indicate if function should return host of
 the BioMart databases}
-
-\item{archive}{Boolean to indicate if you want to access archived versions
-of BioMart database. Note that this argument is now defunct and setting this
-value to \code{TRUE} will produce an error. A better alternative is to
-specify the url of the archived BioMart you want to access.  For Ensembl you
-can view the list of archives using \code{\link[=listEnsemblArchives]{listEnsemblArchives()}}}
 
 \item{http_config}{Some hosts require specific HTTP settings to be used when
 connecting. This argument takes the output of \code{\link[httr:config]{httr::config()}} and
@@ -58,6 +51,11 @@ maintenance' page.  If you browse to the provided URL and find a page that
 starts with '\verb{<MartRegistry>}' this is the correct listing and you
 should report the issue on the Bioconductor support site:
 https://support.bioconductor.org
+
+The previously available \code{archive} argument is defunct.
+A better alternative is to specify the url of the archived BioMart
+you want to access. For Ensembl you can view the list of archives using
+\code{\link[=listEnsemblArchives]{listEnsemblArchives()}}.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
