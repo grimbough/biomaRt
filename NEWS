@@ -12,6 +12,9 @@ MINOR IMPROVEMENTS
 
   o All requests sent by biomaRt now include a custom user agent linking to the 
   source GitHub repository, and indicating the package version.
+  o The defunct `archive` in `listMarts()` and `useMart()` has been removed.
+  It has been deprecated since Bioconductor 3.7 and defunct since Bioconductor 
+  3.8 (2018).
 
 INTERNAL CHANGES
 
