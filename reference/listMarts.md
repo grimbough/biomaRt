@@ -15,7 +15,6 @@ listMarts(
   path = "/biomart/martservice",
   port,
   includeHosts = FALSE,
-  archive = FALSE,
   http_config = list(),
   verbose = FALSE
 )
@@ -48,15 +47,6 @@ listMarts(
   boolean to indicate if function should return host of the BioMart
   databases
 
-- archive:
-
-  Boolean to indicate if you want to access archived versions of BioMart
-  database. Note that this argument is now defunct and setting this
-  value to `TRUE` will produce an error. A better alternative is to
-  specify the url of the archived BioMart you want to access. For
-  Ensembl you can view the list of archives using
-  [`listEnsemblArchives()`](https://huber-group-embl.github.io/biomaRt/reference/listEnsemblArchives.md)
-
 - http_config:
 
   Some hosts require specific HTTP settings to be used when connecting.
@@ -80,6 +70,11 @@ for maintenance' page. If you browse to the provided URL and find a page
 that starts with '`<MartRegistry>`' this is the correct listing and you
 should report the issue on the Bioconductor support site:
 https://support.bioconductor.org
+
+The previously available `archive` argument is defunct. A better
+alternative is to specify the url of the archived BioMart you want to
+access. For Ensembl you can view the list of archives using
+[`listEnsemblArchives()`](https://huber-group-embl.github.io/biomaRt/reference/listEnsemblArchives.md).
 
 ## Author
 

@@ -22,7 +22,6 @@ useMart(
   host = "https://www.ensembl.org",
   path = "/biomart/martservice",
   port,
-  archive = FALSE,
   version,
   verbose = FALSE
 )
@@ -57,15 +56,6 @@ useMart(
 
   port to connect to, will be pasted between host and path
 
-- archive:
-
-  Boolean to indicate if you want to access archived versions of BioMart
-  databases. Note that this argument is now deprecated and will be
-  removed in the future. A better alternative is to leave archive =
-  FALSE and to specify the url of the archived BioMart you want to
-  access. For Ensembl you can view the list of archives using
-  [`listEnsemblArchives()`](https://huber-group-embl.github.io/biomaRt/reference/listEnsemblArchives.md)
-
 - version:
 
   Use version name instead of biomart name to specify which BioMart you
@@ -75,6 +65,13 @@ useMart(
 
   Give detailed output of what the method is doing while in use, for
   debugging
+
+## Details
+
+The previously available `archive` argument is defunct. A better
+alternative is to specify the url of the archived BioMart you want to
+access. For Ensembl you can view the list of archives using
+[`listEnsemblArchives()`](https://huber-group-embl.github.io/biomaRt/reference/listEnsemblArchives.md).
 
 ## Author
 
