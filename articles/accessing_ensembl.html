@@ -628,7 +628,7 @@ changed.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>BIOMART_CACHE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/biomartCache.html">biomartCacheInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## biomaRt cache</span></span>
-<span><span class="co">## - Location: /tmp/RtmpK4c7cn</span></span>
+<span><span class="co">## - Location: /tmp/Rtmp3jd2Jm</span></span>
 <span><span class="co">## - No. of files: 0</span></span>
 <span><span class="co">## - Total size: 0 bytes</span></span></code></pre>
 </div>
@@ -934,14 +934,8 @@ sequence of 100bp. Putting this all together in
 <span>  upstream <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                                                                      coding_gene_flank</span></span>
-<span><span class="co">## 1 TCCTTCTCTGCAGGCCCAGGTGACCCAGGGTTGGAAGTGTCTCATGCTGGATCCCCACTTTTCCTCTTGCAGCAGCCAGACTGCCTTCCGGGTCACTGCC</span></span>
-<span><span class="co">## 2 CCTCCGCCTCCGCCTCCGCCTCCGCCTCCCCCAGCTCTCCGCCTCCCTTCCCCCTCCCCGCCCGACAGCGGCCGCTCGGGCCCCGGCTCTCGGTTATAAG</span></span>
-<span><span class="co">## 3 CACGTTTCCGCCCTTTGCAATAAGGAAATACATAGTTTACTTTCATTTTTGACTCTGAGGCTCTTTCCAACGCTGTAAAAAAGGACAGAGGCTGTTCCCT</span></span>
-<span><span class="co">##   entrezgene_id</span></span>
-<span><span class="co">## 1          7157</span></span>
-<span><span class="co">## 2           673</span></span>
-<span><span class="co">## 3           837</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Usage: Filter upstream_flank NOT FOUND</span></span></code></pre>
 <p>One further thing to note is that, although we are searching for
 genes based on their NCBI Gene IDs, Ensembl BioMart doesn’t allow some
 ID types (including NCBI IDs) to be returned directly. To try and
@@ -972,27 +966,27 @@ the name given to the &lt;code&gt;type&lt;/code&gt; argument.&lt;/p&gt;"><sup>5<
 <span><span class="op">)</span></span>
 <span><span class="va">utr5</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                                                                                                  5utr</span></span>
-<span><span class="co">## 1  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 2                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 3             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 4                                                                                                             ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 5                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 6                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 7                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 8                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 9                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 10                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 11     AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 12         CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 1                                                                                                                                Sequence unavailable</span></span>
+<span><span class="co">## 2      AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 3                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 4                                                                                                                                Sequence unavailable</span></span>
+<span><span class="co">## 5                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 6          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 7  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 8                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 9             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 10                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 11                                         GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 12                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
 <span><span class="co">## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
 <span><span class="co">##    entrezgene_id</span></span>
-<span><span class="co">## 1         200879</span></span>
+<span><span class="co">## 1             NA</span></span>
 <span><span class="co">## 2         200879</span></span>
 <span><span class="co">## 3         200879</span></span>
 <span><span class="co">## 4         200879</span></span>
 <span><span class="co">## 5         200879</span></span>
 <span><span class="co">## 6         200879</span></span>
-<span><span class="co">## 7             NA</span></span>
+<span><span class="co">## 7         200879</span></span>
 <span><span class="co">## 8         200879</span></span>
 <span><span class="co">## 9         200879</span></span>
 <span><span class="co">## 10        200879</span></span>
@@ -1017,9 +1011,9 @@ to the <code><a href="../reference/listFilters.html">listFilters()</a></code> fu
 <span><span class="va">protein</span></span></code></pre></div>
 <pre><code><span><span class="co">##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     peptide</span></span>
 <span><span class="co">## 1 MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKAVYKAWLCSEYFSVTQQECQRWVPCKQYCLEVQTRCPFILPDNEEMVYGGLPGFICTGLLDTSPKRLETKCCDVQWVSCEAKKKKFKESEAPKTHQQQFHHSYFHHYHQQYHHYHPHHDPPGRVSNKPALLPVSGGSRLSPSRIRLCVLVLMLLHTVVSFSSNQGGGGLGLETLPALEEGLTREE*</span></span>
-<span><span class="co">## 2                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*</span></span>
-<span><span class="co">## 3                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*</span></span>
-<span><span class="co">## 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable</span></span>
+<span><span class="co">## 2                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable</span></span>
+<span><span class="co">## 3                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*</span></span>
+<span><span class="co">## 4                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*</span></span>
 <span><span class="co">##   entrezgene_id</span></span>
 <span><span class="co">## 1         27112</span></span>
 <span><span class="co">## 2        653067</span></span>

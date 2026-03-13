@@ -25,7 +25,7 @@
 ### INTERNAL CHANGES
 
 - Tests and some internals are now more robust to Ensembl Biomart being
-  not responsible or unstable.
+  not responsive or unstable.
 
 ## CHANGES IN biomaRt VERSION 2.66.0
 
