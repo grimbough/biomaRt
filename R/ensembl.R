@@ -141,7 +141,7 @@ listEnsemblArchives <- function() {
   verbose = FALSE
 ) {
   if (is.null(version)) {
-    version_num <- .currentEnsemblVersion()["version"]
+    version_num <- getCurrentEnsemblRelease()
   } else {
     version_num <- version
   }
