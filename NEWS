@@ -19,7 +19,7 @@ MINOR IMPROVEMENTS
 INTERNAL CHANGES
 
   o Tests and some internals are now more robust to Ensembl Biomart being not
-  responsible or unstable.
+  responsive or unstable.
 
 CHANGES IN VERSION 2.66.0
 -------------------------
