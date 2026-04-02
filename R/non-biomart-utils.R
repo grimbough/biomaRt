@@ -135,8 +135,6 @@ getCurrentEnsemblRelease <- function() {
 ## list files in Ensembl FTP TSV directory
 ## this is used to identify if there is an ensembl<->entrez mapping file
 listFilesInEnsemblFTP <- function(species, release, dir) {
-  loadNamespace("curl")
-
   ftp_dir <- sprintf(
     "ftp://ftp.ensembl.org/pub/release-%s/%s/%s/",
     release,
