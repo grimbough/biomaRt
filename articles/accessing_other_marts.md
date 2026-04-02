@@ -66,6 +66,9 @@ wormbase <- useMart(
 )
 ```
 
+    ## Error in `req_perform()`:
+    ## ! HTTP 500 Internal Server Error.
+
 We can then use functions described earlier in this vignette to find and
 select the gene dataset, and print the first 6 available attributes and
 filters. Then we use a list of gene names as filter and retrieve
@@ -75,33 +78,29 @@ associated transcript IDs and the transcript biotype.
 listDatasets(wormbase)
 ```
 
-    ##     dataset          description version
-    ## 1 wbps_gene All Species (WBPS19)      19
+    ## Error:
+    ## ! object 'wormbase' not found
 
 ``` r
 wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
+```
+
+    ## Error:
+    ## ! object 'wormbase' not found
+
+``` r
 head(listFilters(wormbase))
 ```
 
-    ##                  name     description
-    ## 1     species_id_1010          Genome
-    ## 2 nematode_clade_1010  Nematode Clade
-    ## 3     chromosome_name Chromosome name
-    ## 4               start           Start
-    ## 5                 end             End
-    ## 6              strand          Strand
+    ## Error:
+    ## ! object 'wormbase' not found
 
 ``` r
 head(listAttributes(wormbase))
 ```
 
-    ##                      name        description         page
-    ## 1          species_id_key      Internal Name feature_page
-    ## 2    production_name_1010     Genome project feature_page
-    ## 3       display_name_1010        Genome name feature_page
-    ## 4        taxonomy_id_1010        Taxonomy ID feature_page
-    ## 5 assembly_accession_1010 Assembly accession feature_page
-    ## 6     nematode_clade_1010     Nematode clade feature_page
+    ## Error:
+    ## ! object 'wormbase' not found
 
 ``` r
 getBM(
@@ -116,12 +115,8 @@ getBM(
 )
 ```
 
-    ##   external_gene_id wbps_transcript_id transcript_biotype
-    ## 1           his-33         F17E9.13.1     protein_coding
-    ## 2           unc-26          JC8.10a.1     protein_coding
-    ## 3           unc-26          JC8.10b.1     protein_coding
-    ## 4           unc-26          JC8.10c.1     protein_coding
-    ## 5           unc-26          JC8.10d.1     protein_coding
+    ## Error:
+    ## ! object 'wormbase' not found
 
 ### Phytozome
 
@@ -169,7 +164,7 @@ sessionInfo()
 
     ## R version 4.5.3 (2026-03-11)
     ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.3 LTS
+    ## Running under: Ubuntu 24.04.4 LTS
     ## 
     ## Matrix products: default
     ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -190,8 +185,8 @@ sessionInfo()
     ## [1] biomaRt_2.67.6   BiocStyle_2.38.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] KEGGREST_1.50.0      xfun_0.56            bslib_0.10.0         httr2_1.2.2         
-    ##  [5] Biobase_2.70.0       vctrs_0.7.1          tools_4.5.3          generics_0.1.4      
+    ##  [1] KEGGREST_1.50.0      xfun_0.57            bslib_0.10.0         httr2_1.2.2         
+    ##  [5] Biobase_2.70.0       vctrs_0.7.2          tools_4.5.3          generics_0.1.4      
     ##  [9] stats4_4.5.3         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0
     ## [13] RSQLite_2.4.6        blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.5.2        
     ## [17] desc_1.4.3           S4Vectors_0.48.0     lifecycle_1.0.5      compiler_4.5.3      
@@ -201,13 +196,13 @@ sessionInfo()
     ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
     ## [37] purrr_1.2.1          dplyr_1.2.0          bookdown_0.46        fastmap_1.2.0       
     ## [41] cli_3.6.5            magrittr_2.0.4       withr_3.0.2          prettyunits_1.2.0   
-    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.30      
-    ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.1          
-    ## [53] png_0.1-8            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
+    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.31      
+    ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.2          
+    ## [53] png_0.1-9            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
     ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         
     ## [61] glue_1.8.0           DBI_1.3.0            BiocManager_1.30.27  xml2_1.5.2          
     ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   
-    ## [69] fs_1.6.7
+    ## [69] fs_2.0.1
 
 ``` r
 warnings()
