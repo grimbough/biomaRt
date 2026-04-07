@@ -76,12 +76,18 @@ provided by the German Network for Bioinformatics Infrastructure
   : Retrieves information from the BioMart database
 - [`getGene()`](https://huber-group-embl.github.io/biomaRt/reference/getGene.md)
   : Retrieves gene annotation information given a vector of identifiers
-- [`getHomologs()`](https://huber-group-embl.github.io/biomaRt/reference/getHomologs.md)
-  : List homologous genes between two species.
 - [`getLDS()`](https://huber-group-embl.github.io/biomaRt/reference/getLDS.md)
   : Retrieves information from two linked datasets
 - [`getSequence()`](https://huber-group-embl.github.io/biomaRt/reference/getSequence.md)
   : Retrieves sequences
+
+## Other utilities
+
+These functions provide functionality previously covered by BioMart, but
+no longer available in recent Ensembl releases.
+
+- [`getHomologs()`](https://huber-group-embl.github.io/biomaRt/reference/getHomologs.md)
+  : List homologous genes between two species.
 
 ## Data export
 

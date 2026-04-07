@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,8 @@
 <h2 class="pkg-version" data-toc-text="2.68.0" id="changes-in-biomart-version-2680">CHANGES IN biomaRt VERSION 2.68.0<a class="anchor" aria-label="anchor" href="#changes-in-biomart-version-2680"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-2-68-0">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-2-68-0"></a></h3>
-<ul><li>The <code>port</code> argument, if unspecified and if no scheme is provided in the <code>host</code> argument, now defaults to <code>443</code> (the standard port for <code>https</code>), instead of <code>80</code> (the standard port for <code>http</code>). This fixes issue <a href="https://github.com/Huber-group-EMBL/biomaRt/issues/155" class="external-link">#155</a> reported by Lori Shepherd.</li>
+<ul><li><p>The <code>port</code> argument, if unspecified and if no scheme is provided in the <code>host</code> argument, now defaults to <code>443</code> (the standard port for <code>https</code>), instead of <code>80</code> (the standard port for <code>http</code>). This fixes issue <a href="https://github.com/Huber-group-EMBL/biomaRt/issues/155" class="external-link">#155</a> reported by Lori Shepherd.</p></li>
+<li><p>For security reasons, biomaRt no longer tries to downgrade SSL settings in case of HTTPS connection issues. It is expected that most clients and servers are now set up to deal properly with HTTPS. In case of persistent issues, users are still able to set the SSL settings manually via <code><a href="../reference/setEnsemblSSL.html">setEnsemblSSL()</a></code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-2-68-0">MINOR IMPROVEMENTS<a class="anchor" aria-label="anchor" href="#minor-improvements-2-68-0"></a></h3>

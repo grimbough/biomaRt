@@ -252,28 +252,25 @@ we can list the available Ensembl Genomes marts:
 listEnsemblGenomes()
 ```
 
-    ##               biomart                        version
-    ## 1       protists_mart      Ensembl Protists Genes 62
-    ## 2 protists_variations Ensembl Protists Variations 62
-    ## 3          fungi_mart         Ensembl Fungi Genes 62
-    ## 4    fungi_variations    Ensembl Fungi Variations 62
-    ## 5        metazoa_mart       Ensembl Metazoa Genes 62
-    ## 6  metazoa_variations  Ensembl Metazoa Variations 62
-    ## 7         plants_mart        Ensembl Plants Genes 62
-    ## 8   plants_variations   Ensembl Plants Variations 62
+    ## Error in `req_perform()`:
+    ## ! HTTP 500 Internal Server Error.
 
 We can the select the Ensembl Plants database, and search for the
 dataset name for Arabidopsis.
 
 ``` r
 ensembl_plants <- useEnsemblGenomes(biomart = "plants_mart")
+```
+
+    ## Error in `req_perform()`:
+    ## ! HTTP 500 Internal Server Error.
+
+``` r
 searchDatasets(ensembl_plants, pattern = "Arabidopsis")
 ```
 
-    ##              dataset                         description version
-    ## 6   ahalleri_eg_gene Arabidopsis halleri genes (Ahal2.2) Ahal2.2
-    ## 10   alyrata_eg_gene    Arabidopsis lyrata genes (v.1.0)   v.1.0
-    ## 15 athaliana_eg_gene Arabidopsis thaliana genes (TAIR10)  TAIR10
+    ## Error:
+    ## ! object 'ensembl_plants' not found
 
 We can then use this information to create our `Mart` object that will
 access the correct database and dataset.
@@ -284,6 +281,9 @@ ensembl_arabidopsis <- useEnsemblGenomes(
   dataset = "athaliana_eg_gene"
 )
 ```
+
+    ## Error in `req_perform()`:
+    ## ! HTTP 500 Internal Server Error.
 
 ## How to build a biomaRt query
 
@@ -639,8 +639,10 @@ select(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ##   affy_hg_u133_plus_2 entrezgene_id
+    ## 1         209310_s_at           837
+    ## 2           202763_at           836
+    ## 3           207500_at           838
 
 So why would we want to do this when we already have functions like
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)?
@@ -677,7 +679,7 @@ biomartCacheInfo()
     ## biomaRt cache
     ## - Location: /home/runner/.cache/R/biomaRt
     ## - No. of files: 4
-    ## - Total size: 9.8 Kb
+    ## - Total size: 9.9 Kb
 
 The cache can be deleted using the command
 [`biomartCacheClear()`](https://huber-group-embl.github.io/biomaRt/reference/biomartCache.md).
@@ -697,7 +699,7 @@ biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/RtmpHC61Pm
+    ## - Location: /tmp/RtmpCsHFcD
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
@@ -762,8 +764,10 @@ getBM(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ##   affy_hg_u133_plus_2 hgnc_symbol chromosome_name start_position end_position  band
+    ## 1         209310_s_at       CASP4              11      104942866    104969366 q22.3
+    ## 2           202763_at       CASP3               4      184627695    184650418 q35.1
+    ## 3           207500_at       CASP5              11      104992636    105023168 q22.3
 
 ### Annotate a set of EntrezGene identifiers with GO annotation
 
@@ -785,17 +789,16 @@ goids <- getBM(
   values = entrez,
   mart = ensembl
 )
-```
-
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-
-``` r
 head(goids)
 ```
 
-    ## Error:
-    ## ! object 'goids' not found
+    ##   entrezgene_id      go_id
+    ## 1           673 GO:0005524
+    ## 2           673 GO:0007165
+    ## 3           673 GO:0006468
+    ## 4           673 GO:0004672
+    ## 5           673 GO:0016740
+    ## 6           673 GO:0005829
 
 ### Retrieve all HUGO gene symbols of genes that are located on chromosomes 17,20 or Y, and are associated with specific GO terms
 
@@ -821,8 +824,9 @@ getBM(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ##   hgnc_symbol
+    ## 1        CDK3
+    ## 2     RPS6KB1
 
 ### Annotate set of idenfiers with INTERPRO protein domain identifiers
 
@@ -989,17 +993,37 @@ utr5 <- getSequence(
   seqType = "5utr",
   mart = ensembl
 )
-```
-
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-
-``` r
 utr5
 ```
 
-    ## Error:
-    ## ! object 'utr5' not found
+    ##                                                                                                                                                  5utr
+    ## 1                                                                                                                                Sequence unavailable
+    ## 2  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 3                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 4                                                                                                                                Sequence unavailable
+    ## 5                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 6                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 7          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 8             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 9                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 10     AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 11                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 12                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ##    entrezgene_id
+    ## 1             NA
+    ## 2         200879
+    ## 3         200879
+    ## 4         200879
+    ## 5         200879
+    ## 6         200879
+    ## 7         200879
+    ## 8         200879
+    ## 9         200879
+    ## 10        200879
+    ## 11        200879
+    ## 12        200879
+    ## 13        200879
 
 ### Retrieve protein sequences for a given list of EntrezGene identifiers
 
@@ -1058,8 +1082,35 @@ getBM(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database snp_mart_115: DBI connect('database=snp_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ##       refsnp_id  allele chrom_start chrom_strand
+    ## 1  rs1450830176     G/C      148350            1
+    ## 2  rs1360310185   C/A/T      148352            1
+    ## 3  rs1434776028     A/T      148353            1
+    ## 4  rs1800818835     A/T      148355            1
+    ## 5  rs1413161474     C/T      148356            1
+    ## 6  rs1800818940     T/G      148358            1
+    ## 7  rs1800818966     C/T      148362            1
+    ## 8  rs1800818982     C/T      148363            1
+    ## 9  rs1410590268     A/G      148365            1
+    ## 10 rs1193735780   T/A/C      148368            1
+    ## 11 rs1800819063   T/A/C      148370            1
+    ## 12 rs1409139861     C/T      148371            1
+    ## 13  rs868546642     A/G      148372            1
+    ## 14  rs547420070   A/C/G      148373            1
+    ## 15 rs1236874674     C/T      148375            1
+    ## 16 rs1207902742     C/T      148376            1
+    ## 17 rs1437239557     T/C      148377            1
+    ## 18 rs1160135941   T/C/G      148379            1
+    ## 19 rs1229249227   A/G/T      148380            1
+    ## 20 rs1584865972     C/G      148381            1
+    ## 21 rs1800819310     T/G      148382            1
+    ## 22 rs1800819329     T/C      148384            1
+    ## 23 rs1328678285     C/G      148390            1
+    ## 24   rs77274555 G/A/C/T      148391            1
+    ## 25 rs1800819423     T/C      148392            1
+    ## 26  rs567299969   T/A/C      148394            1
+    ## 27 rs1457776094   A/C/G      148395            1
+    ## 28 rs1800819520     T/C      148396            1
 
 ### Given the human gene TP53, retrieve the human chromosomal location of this gene and also retrieve the chromosomal location and RefSeq id of its homolog in mouse.
 
@@ -1246,24 +1297,24 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.6   BiocStyle_2.38.0
+    ## [1] biomaRt_2.67.7   BiocStyle_2.38.0
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] KEGGREST_1.50.0      xfun_0.57            bslib_0.10.0         httr2_1.2.2         
     ##  [5] Biobase_2.70.0       vctrs_0.7.2          tools_4.5.3          generics_0.1.4      
     ##  [9] stats4_4.5.3         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0
     ## [13] RSQLite_2.4.6        blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.5.2        
-    ## [17] desc_1.4.3           S4Vectors_0.48.0     lifecycle_1.0.5      compiler_4.5.3      
+    ## [17] desc_1.4.3           S4Vectors_0.48.1     lifecycle_1.0.5      compiler_4.5.3      
     ## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.78.0    progress_1.2.3      
     ## [25] Seqinfo_1.0.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
     ## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     
     ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
-    ## [37] dplyr_1.2.0          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       
-    ## [41] cli_3.6.5            magrittr_2.0.4       withr_3.0.2          prettyunits_1.2.0   
+    ## [37] dplyr_1.2.1          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       
+    ## [41] cli_3.6.5            magrittr_2.0.5       withr_3.0.2          prettyunits_1.2.0   
     ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.31      
     ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.2          
     ## [53] png_0.1-9            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
-    ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.1.7         
+    ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.2.0         
     ## [61] glue_1.8.0           DBI_1.3.0            xml2_1.5.2           BiocManager_1.30.27 
     ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   
     ## [69] fs_2.0.1

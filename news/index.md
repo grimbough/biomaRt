@@ -10,6 +10,13 @@
   issue [\#155](https://github.com/Huber-group-EMBL/biomaRt/issues/155)
   reported by Lori Shepherd.
 
+- For security reasons, biomaRt no longer tries to downgrade SSL
+  settings in case of HTTPS connection issues. It is expected that most
+  clients and servers are now set up to deal properly with HTTPS. In
+  case of persistent issues, users are still able to set the SSL
+  settings manually via
+  [`setEnsemblSSL()`](https://huber-group-embl.github.io/biomaRt/reference/setEnsemblSSL.md).
+
 ### MINOR IMPROVEMENTS
 
 - All requests sent by biomaRt now include a custom user agent linking
