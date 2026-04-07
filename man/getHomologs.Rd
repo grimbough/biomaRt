@@ -25,3 +25,4 @@ trying to return the homologs for one or more gene IDs between two species.
 \author{
 Mike Smith
 }
+\concept{non-biomart}

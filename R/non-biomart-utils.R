@@ -189,6 +189,8 @@ listFilesInEnsemblFTP <- function(species, release, dir) {
 #' genome can be made.
 #' @author Mike Smith
 #' @export getHomologs
+#'
+#' @concept non-biomart
 getHomologs <- function(ensembl_gene_ids, species_from, species_to) {
   from <- findGenomeName(species_from)
   to <- findGenomeName(species_to)
