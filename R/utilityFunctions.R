@@ -225,7 +225,7 @@
   return(err_msg)
 }
 
-#' @importFrom httr2 req_body_form req_options req_timeout resp_body_string resp_status
+#' @importFrom httr2 req_body_form req_options req_timeout resp_body_string resp_status req_user_agent
 .submitQueryXML <- function(host, query, http_config) {
   req <- httr2::request(host) |>
     req_user_agent(

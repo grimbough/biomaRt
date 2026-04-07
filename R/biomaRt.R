@@ -44,7 +44,7 @@ martCheck <- function(mart, biomart = NULL) {
 }
 
 
-#' @importFrom httr2 req_options req_perform req_timeout resp_body_string
+#' @importFrom httr2 req_options req_perform req_timeout resp_body_string req_user_agent
 bmRequest <- function(request, http_config, verbose = FALSE) {
   if (verbose) {
     message("Attempting web service request:\n", request)

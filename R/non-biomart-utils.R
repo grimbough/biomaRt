@@ -6,7 +6,7 @@ createNameToAliasMap <- function() {
   url <- "https://rest.ensembl.org/info/species?"
 
   req <- httr2::request(url) |>
-    req_user_agent(
+    httr2::req_user_agent(
       .biomaRt_user_agent()
     ) |>
     httr2::req_headers("Accept" = "application/json")
@@ -35,7 +35,7 @@ pickReferenceStrain <- function(genomes_to_choose_from) {
   url <- "https://rest.ensembl.org/info/species?"
 
   req <- httr2::request(url) |>
-    req_user_agent(
+    httr2::req_user_agent(
       .biomaRt_user_agent()
     ) |>
     httr2::req_headers("Accept" = "application/json")
@@ -118,7 +118,7 @@ findGenomeName <- function(input) {
 ## use the Ensembl Rest API to get the current Ensembl version
 getCurrentEnsemblRelease <- function() {
   req <- httr2::request("https://rest.ensembl.org/info/data/") |>
-    req_user_agent(
+    httr2::req_user_agent(
       .biomaRt_user_agent()
     ) |>
     httr2::req_headers("Accept" = "application/json")
