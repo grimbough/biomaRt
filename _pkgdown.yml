@@ -21,7 +21,12 @@ reference:
   - listFilters
   - searchFilterOptions
   - filterType
-  - starts_with("get")
+  - starts_with("get") & !has_concept("non-biomart")
+- title: "Other utilities"
+  description: > 
+    These functions provide functionality previously covered by BioMart, but no longer available in recent Ensembl releases.
+  contents:
+  - getHomolog
 - title: "Data export"
 - contents:
   - exportFASTA
