@@ -7,6 +7,10 @@ BREAKING CHANGES
   argument, now defaults to `443` (the standard port for `https`), instead of
   `80` (the standard port for `http`). This fixes issue #155 reported by 
   Lori Shepherd.
+  o For security reasons, biomaRt no longer tries to downgrade SSL settings in
+  case of HTTPS connection issues. It is expected that most clients and servers are
+  now set up to deal properly with HTTPS. In case of persistent issues, users are
+  still able to set the SSL settings manually via `setEnsemblSSL()`.
 
 MINOR IMPROVEMENTS
 
