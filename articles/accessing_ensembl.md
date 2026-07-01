@@ -3,9 +3,9 @@
 ## Introduction
 
 Accessing the data available in Ensembl is by far most frequent use of
-the *[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* package.
+the *[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* package.
 With that in mind
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* provides a
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* provides a
 number of functions that are tailored to work specifically with the
 BioMart instances provided by Ensembl. This vignette details this
 Ensembl specific functionality and provides a number of example usecases
@@ -14,17 +14,20 @@ that can be used as the basis for specifying your own queries.
 ## Selecting an Ensembl BioMart database and dataset
 
 Every analysis with
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* starts with
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* starts with
 selecting a BioMart database to use. The commands below will connect us
 to Ensembl’s most recent version of the Human Genes BioMart.
 
 ``` r
+
 library(biomaRt)
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
+    ## Ensembl site unresponsive, trying asia mirror
+
 If this your first time using
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* , you might
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* , you might
 wonder how to find the two arguments we supplied to the
 [`useEnsembl()`](https://huber-group-embl.github.io/biomaRt/reference/useEnsembl.md)
 command. This is a two step process, but once you know the setting you
@@ -43,14 +46,15 @@ and the second gives a more comprehensive title for the dataset along
 with the Ensembl version.
 
 ``` r
+
 listEnsembl()
 ```
 
     ##         biomart                version
-    ## 1         genes      Ensembl Genes 115
-    ## 2 mouse_strains      Mouse strains 115
-    ## 3          snps  Ensembl Variation 115
-    ## 4    regulation Ensembl Regulation 115
+    ## 1         genes      Ensembl Genes 116
+    ## 2 mouse_strains      Mouse strains 116
+    ## 3          snps  Ensembl Variation 116
+    ## 4    regulation Ensembl Regulation 116
 
 The
 [`useEnsembl()`](https://huber-group-embl.github.io/biomaRt/reference/useEnsembl.md)
@@ -61,14 +65,18 @@ In the next example we will select the main Ensembl mart, which provides
 access to gene annotation information.
 
 ``` r
+
 ensembl <- useEnsembl(biomart = "genes")
 ```
 
+    ## Ensembl site unresponsive, trying asia mirror
+
 If we print the current `ensembl` object, we can see that the
-`ENSEMBL_MART_ENSEMBL` database [¹](#fn1) has been selected, but that no
+`ENSEMBL_MART_ENSEMBL` database [^1] has been selected, but that no
 dataset has been chosen.
 
 ``` r
+
 ensembl
 ```
 
@@ -88,6 +96,7 @@ using the function
 5 entries as the complete list has many entries.*
 
 ``` r
+
 datasets <- listDatasets(ensembl)
 head(datasets)
 ```
@@ -105,7 +114,7 @@ The
 function will return every available option, however this can be
 unwieldy when the list of results is long, involving much scrolling to
 find the entry you are interested in.
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* also
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* also
 provides the functions
 [`searchDatasets()`](https://huber-group-embl.github.io/biomaRt/reference/listDatasets.md)
 which will try to find any entries matching a specific term or pattern.
@@ -114,6 +123,7 @@ For example, if we want to find the details of any datasets in our
 following:
 
 ``` r
+
 searchDatasets(mart = ensembl, pattern = "hsapiens")
 ```
 
@@ -125,6 +135,7 @@ To use a dataset we can update our `Mart` object using the function
 In the example below we choose to use the *hsapiens* dataset.
 
 ``` r
+
 ensembl <- useDataset(dataset = "hsapiens_gene_ensembl", mart = ensembl)
 ```
 
@@ -133,6 +144,7 @@ advance i.e. you’ve gone through this process before, we can select a
 both the database and dataset in one step:
 
 ``` r
+
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
@@ -150,6 +162,7 @@ you. You can use the `mirror` argument to
 to explicitly request a specific mirror.
 
 ``` r
+
 ensembl <- useEnsembl(
   biomart = "ensembl",
   dataset = "hsapiens_gene_ensembl",
@@ -162,10 +175,10 @@ Values for the mirror argument are: `useast`, `asia`, and `www`.
 ### Using archived versions of Ensembl
 
 It is possible to query archived versions of Ensembl through
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)*, so you can
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)*, so you can
 maintain consistent annotation throughout the duration of a project.
 
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* provides the
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* provides the
 function
 [`listEnsemblArchives()`](https://huber-group-embl.github.io/biomaRt/reference/listEnsemblArchives.md)
 to view the available Ensembl archives. This function takes no
@@ -174,31 +187,28 @@ of the available archives, the date they were first released, and the
 URL where they can be accessed.
 
 ``` r
+
 listEnsemblArchives()
 ```
 
     ##              name     date                                 url version current_release
     ## 1  Ensembl GRCh37 Feb 2014          https://grch37.ensembl.org  GRCh37                
-    ## 2     Ensembl 115 Sep 2025 https://sep2025.archive.ensembl.org     115               *
-    ## 3     Ensembl 114 May 2025 https://may2025.archive.ensembl.org     114                
-    ## 4     Ensembl 113 Oct 2024 https://oct2024.archive.ensembl.org     113                
-    ## 5     Ensembl 112 May 2024 https://may2024.archive.ensembl.org     112                
-    ## 6     Ensembl 111 Jan 2024 https://jan2024.archive.ensembl.org     111                
-    ## 7     Ensembl 110 Jul 2023 https://jul2023.archive.ensembl.org     110                
-    ## 8     Ensembl 109 Feb 2023 https://feb2023.archive.ensembl.org     109                
-    ## 9     Ensembl 108 Oct 2022 https://oct2022.archive.ensembl.org     108                
-    ## 10    Ensembl 107 Jul 2022 https://jul2022.archive.ensembl.org     107                
-    ## 11    Ensembl 106 Apr 2022 https://apr2022.archive.ensembl.org     106                
-    ## 12    Ensembl 105 Dec 2021 https://dec2021.archive.ensembl.org     105                
-    ## 13    Ensembl 104 May 2021 https://may2021.archive.ensembl.org     104                
-    ## 14    Ensembl 103 Feb 2021 https://feb2021.archive.ensembl.org     103                
-    ## 15    Ensembl 102 Nov 2020 https://nov2020.archive.ensembl.org     102                
-    ## 16    Ensembl 101 Aug 2020 https://aug2020.archive.ensembl.org     101                
-    ## 17    Ensembl 100 Apr 2020 https://apr2020.archive.ensembl.org     100                
-    ## 18     Ensembl 80 May 2015 https://may2015.archive.ensembl.org      80                
-    ## 19     Ensembl 77 Oct 2014 https://oct2014.archive.ensembl.org      77                
-    ## 20     Ensembl 75 Feb 2014 https://feb2014.archive.ensembl.org      75                
-    ## 21     Ensembl 54 May 2009 https://may2009.archive.ensembl.org      54
+    ## 2     Ensembl 116 Jun 2026 https://jun2026.archive.ensembl.org     116               *
+    ## 3     Ensembl 115 Sep 2025 https://sep2025.archive.ensembl.org     115                
+    ## 4     Ensembl 114 May 2025 https://may2025.archive.ensembl.org     114                
+    ## 5     Ensembl 113 Oct 2024 https://oct2024.archive.ensembl.org     113                
+    ## 6     Ensembl 112 May 2024 https://may2024.archive.ensembl.org     112                
+    ## 7     Ensembl 111 Jan 2024 https://jan2024.archive.ensembl.org     111                
+    ## 8     Ensembl 110 Jul 2023 https://jul2023.archive.ensembl.org     110                
+    ## 9     Ensembl 109 Feb 2023 https://feb2023.archive.ensembl.org     109                
+    ## 10    Ensembl 108 Oct 2022 https://oct2022.archive.ensembl.org     108                
+    ## 11    Ensembl 107 Jul 2022 https://jul2022.archive.ensembl.org     107                
+    ## 12    Ensembl 106 Apr 2022 https://apr2022.archive.ensembl.org     106                
+    ## 13    Ensembl 105 Dec 2021 https://dec2021.archive.ensembl.org     105                
+    ## 14     Ensembl 80 May 2015 https://may2015.archive.ensembl.org      80                
+    ## 15     Ensembl 77 Oct 2014 https://oct2014.archive.ensembl.org      77                
+    ## 16     Ensembl 75 Feb 2014 https://feb2014.archive.ensembl.org      75                
+    ## 17     Ensembl 54 May 2009 https://may2009.archive.ensembl.org      54
 
 Alternatively, one can use the <https://www.ensembl.org> website to find
 an archived version. From the main page scroll down the bottom of the
@@ -217,16 +227,18 @@ to connect to the specified BioMart database. The example below shows
 how to query Ensembl 110.
 
 ``` r
+
 listEnsembl(version = 110)
 ```
 
-    ##         biomart                version
-    ## 1         genes      Ensembl Genes 110
-    ## 2 mouse_strains      Mouse strains 110
-    ## 3          snps  Ensembl Variation 110
-    ## 4    regulation Ensembl Regulation 110
+    ## Error in `req_perform()`:
+    ## ! Failed to perform HTTP request.
+    ## Caused by error in `curl::curl_fetch_memory()`:
+    ## ! Timeout was reached [jul2023.archive.ensembl.org]:
+    ## Operation timed out after 60000 milliseconds with 0 bytes received
 
 ``` r
+
 ensembl_110 <- useEnsembl(
   biomart = "genes",
   dataset = "hsapiens_gene_ensembl",
@@ -234,12 +246,18 @@ ensembl_110 <- useEnsembl(
 )
 ```
 
+    ## Error in `req_perform()`:
+    ## ! Failed to perform HTTP request.
+    ## Caused by error in `curl::curl_fetch_memory()`:
+    ## ! Timeout was reached [jul2023.archive.ensembl.org]:
+    ## Operation timed out after 60002 milliseconds with 0 bytes received
+
 ### Using Ensembl Genomes
 
 Ensembl Genomes expands the effort to provide annotation from the
 vertebrate genomes provided by the main Ensembl project across taxonomic
 space, with separate BioMart interfaces for Protists, Plants, Metazoa
-and Fungi. [²](#fn2).
+and Fungi. [^2].
 
 You can use the functions
 [`listEnsemblGenomes()`](https://huber-group-embl.github.io/biomaRt/reference/listEnsembl.md)
@@ -249,41 +267,44 @@ in similar fashion to the functions shown previously. For example first
 we can list the available Ensembl Genomes marts:
 
 ``` r
+
 listEnsemblGenomes()
 ```
 
-    ## Error in `req_perform()`:
-    ## ! HTTP 500 Internal Server Error.
+    ##               biomart                        version
+    ## 1       protists_mart      Ensembl Protists Genes 63
+    ## 2 protists_variations Ensembl Protists Variations 63
+    ## 3          fungi_mart         Ensembl Fungi Genes 63
+    ## 4    fungi_variations    Ensembl Fungi Variations 63
+    ## 5        metazoa_mart       Ensembl Metazoa Genes 63
+    ## 6  metazoa_variations  Ensembl Metazoa Variations 63
+    ## 7         plants_mart        Ensembl Plants Genes 63
+    ## 8   plants_variations   Ensembl Plants Variations 63
 
 We can the select the Ensembl Plants database, and search for the
 dataset name for Arabidopsis.
 
 ``` r
+
 ensembl_plants <- useEnsemblGenomes(biomart = "plants_mart")
-```
-
-    ## Error in `req_perform()`:
-    ## ! HTTP 500 Internal Server Error.
-
-``` r
 searchDatasets(ensembl_plants, pattern = "Arabidopsis")
 ```
 
-    ## Error:
-    ## ! object 'ensembl_plants' not found
+    ##              dataset                         description version
+    ## 7   ahalleri_eg_gene Arabidopsis halleri genes (Ahal2.2) Ahal2.2
+    ## 11   alyrata_eg_gene    Arabidopsis lyrata genes (v.1.0)   v.1.0
+    ## 42 athaliana_eg_gene Arabidopsis thaliana genes (TAIR10)  TAIR10
 
 We can then use this information to create our `Mart` object that will
 access the correct database and dataset.
 
 ``` r
+
 ensembl_arabidopsis <- useEnsemblGenomes(
   biomart = "plants_mart",
   dataset = "athaliana_eg_gene"
 )
 ```
-
-    ## Error in `req_perform()`:
-    ## ! HTTP 500 Internal Server Error.
 
 ## How to build a biomaRt query
 
@@ -305,6 +326,7 @@ human X chromosome then the filter *chromosome_name* can be used with
 function shows you all available filters in the selected dataset.
 
 ``` r
+
 filters <- listFilters(ensembl)
 filters[1:5, ]
 ```
@@ -323,6 +345,7 @@ coordinates. The
 function displays all available attributes in the selected dataset.
 
 ``` r
+
 attributes <- listAttributes(ensembl)
 attributes[1:5, ]
 ```
@@ -337,7 +360,7 @@ attributes[1:5, ]
 The
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)
 function is the primary query function in
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)*. It has four
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)*. It has four
 main arguments:
 
 - `attributes`: is a vector of attributes that one wants to retrieve (=
@@ -363,7 +386,7 @@ function with hard coded filter and attribute names.*
 
 Now that we selected a BioMart database and dataset, and know about
 attributes, filters, and the values for filters; we can build a
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* query. Let’s
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* query. Let’s
 make an easy query for the following problem: We have a list of
 Affymetrix identifiers from the u133plus2 platform and we want to
 retrieve the corresponding EntrezGene identifiers using the Ensembl
@@ -381,6 +404,7 @@ and
 function respectively. Let’s now run the query:
 
 ``` r
+
 affyids <- c("202763_at", "209310_s_at", "207500_at")
 getBM(
   attributes = c("affy_hg_u133_plus_2", "entrezgene_id"),
@@ -390,8 +414,10 @@ getBM(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ##   affy_hg_u133_plus_2 entrezgene_id
+    ## 1           207500_at           838
+    ## 2           202763_at           836
+    ## 3         209310_s_at           837
 
 ### Searching for filters and attributes
 
@@ -402,7 +428,7 @@ and
 will return every available option for their respective types, which can
 produce a very long output where it is hard to find the value you are
 interested in.
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* also
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* also
 provides the functions
 [`searchAttributes()`](https://huber-group-embl.github.io/biomaRt/reference/listAttributes.md)
 and
@@ -416,12 +442,13 @@ returns the details for all attributes that contain the pattern
 ‘*hgnc*’.
 
 ``` r
+
 searchAttributes(mart = ensembl, pattern = "hgnc")
 ```
 
     ##               name        description         page
-    ## 63     hgnc_symbol        HGNC symbol feature_page
-    ## 64         hgnc_id            HGNC ID feature_page
+    ## 63         hgnc_id            HGNC ID feature_page
+    ## 64     hgnc_symbol        HGNC symbol feature_page
     ## 95 hgnc_trans_name Transcript name ID feature_page
 
 For advanced use, note that the *pattern* argument takes a regular
@@ -434,12 +461,13 @@ This allows us to reduced the list of filters to only those that might
 be appropriate for our example.
 
 ``` r
+
 searchFilters(mart = ensembl, pattern = "ensembl.*id")
 ```
 
     ##                             name                                                    description
     ## 54               ensembl_gene_id                       Gene stable ID(s) [e.g. ENSG00000000003]
-    ## 55       ensembl_gene_id_version       Gene stable ID(s) with version [e.g. ENSG00000000003.17]
+    ## 55       ensembl_gene_id_version       Gene stable ID(s) with version [e.g. ENSG00000000003.18]
     ## 56         ensembl_transcript_id                 Transcript stable ID(s) [e.g. ENST00000000233]
     ## 57 ensembl_transcript_id_version Transcript stable ID(s) with version [e.g. ENST00000000233.10]
     ## 58            ensembl_peptide_id                    Protein stable ID(s) [e.g. ENSP00000000233]
@@ -472,6 +500,7 @@ passing it a `Mart` object and the name of the filter. For example, to
 list the possible chromosome names you could run the following:
 
 ``` r
+
 listFilterOptions(mart = ensembl, filter = "chromosome_name")
 ```
 
@@ -482,6 +511,7 @@ starting with “*GL*”, while the second will find any phenotype
 descriptions that contain the string “*Crohn*”.
 
 ``` r
+
 searchFilterOptions(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
 ```
 
@@ -489,6 +519,7 @@ searchFilterOptions(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
     ##  [8] "GL000216.2" "GL000218.1" "GL000219.1" "GL000220.1" "GL000221.1" "GL000224.1" "GL000225.1"
 
 ``` r
+
 searchFilterOptions(
   mart = ensembl,
   filter = "phenotype_description",
@@ -496,16 +527,15 @@ searchFilterOptions(
 )
 ```
 
-    ## [1] "Crohn's disease"                             "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 1" 
-    ## [3] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 10" "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 19"
-    ## [5] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 30"
+    ## [1] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 1"  "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 10"
+    ## [3] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 19" "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 30"
 
 ### Finding out more information on filters
 
 #### filterType
 
 Boolean filters need a value TRUE or FALSE in
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)*. Setting the
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)*. Setting the
 value TRUE will include all information that fulfil the filter
 requirement. Setting FALSE will exclude the information that fulfills
 the filter requirement and will return all values that don’t fulfil the
@@ -517,6 +547,7 @@ function
 to investigate the type of the filter you want to use.
 
 ``` r
+
 filterType("with_affy_hg_u133_plus_2", ensembl)
 ```
 
@@ -535,6 +566,7 @@ dataset can be obtained with the
 function.
 
 ``` r
+
 pages <- attributePages(ensembl)
 pages
 ```
@@ -544,9 +576,10 @@ pages
 To show us a smaller list of attributes which belong to a specific page,
 we can now specify this in the
 [`listAttributes()`](https://huber-group-embl.github.io/biomaRt/reference/listAttributes.md)
-function.[³](#fn3)
+function.[^3]
 
 ``` r
+
 head(listAttributes(ensembl, page = "feature_page"))
 ```
 
@@ -583,28 +616,52 @@ to discover which things can be used as keys with
 [`select()`](https://huber-group-embl.github.io/biomaRt/reference/select-methods.md).
 
 ``` r
+
 mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart = "ensembl")
+```
+
+    ## Ensembl site unresponsive, trying useast mirror
+
+    ## Ensembl site unresponsive, trying asia mirror
+
+    ## Error in `.chooseEnsemblMirror()`:
+    ## ! Unable to query any Ensembl site
+
+``` r
+
 head(keytypes(mart), n = 3)
 ```
 
-    ## [1] "affy_hc_g110"        "affy_hg_focus"       "affy_hg_u133_plus_2"
+    ## Error in `h()`:
+    ## ! error in evaluating the argument 'x' in selecting a method for function 'keytypes': object 'mart' not found
 
 ``` r
+
 head(columns(mart), n = 3)
 ```
 
-    ## [1] "3_utr_end"   "3_utr_end"   "3_utr_start"
+    ## Error in `h()`:
+    ## ! error in evaluating the argument 'x' in selecting a method for function 'columns': object 'mart' not found
 
 And you still can use
 [`keys()`](https://huber-group-embl.github.io/biomaRt/reference/select-methods.md)
 to extract potential keys, for a particular key type.
 
 ``` r
+
 k <- keys(mart, keytype = "chromosome_name")
+```
+
+    ## Error in `h()`:
+    ## ! error in evaluating the argument 'x' in selecting a method for function 'keys': object 'mart' not found
+
+``` r
+
 head(k, n = 3)
 ```
 
-    ## [1] "1" "2" "3"
+    ## Error:
+    ## ! object 'k' not found
 
 When using
 [`keys()`](https://huber-group-embl.github.io/biomaRt/reference/select-methods.md),
@@ -612,11 +669,20 @@ you can even take advantage of the extra arguments that are available
 for others keys methods.
 
 ``` r
+
 k <- keys(mart, keytype = "chromosome_name", pattern = "LRG")
+```
+
+    ## Error in `h()`:
+    ## ! error in evaluating the argument 'x' in selecting a method for function 'keys': object 'mart' not found
+
+``` r
+
 head(k, n = 3)
 ```
 
-    ## character(0)
+    ## Error:
+    ## ! object 'k' not found
 
 Unfortunately the
 [`keys()`](https://huber-group-embl.github.io/biomaRt/reference/select-methods.md)
@@ -630,6 +696,7 @@ here to extract columns of data that match a particular set of keys
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)).
 
 ``` r
+
 affy <- c("202763_at", "209310_s_at", "207500_at")
 select(
   mart,
@@ -639,29 +706,27 @@ select(
 )
 ```
 
-    ##   affy_hg_u133_plus_2 entrezgene_id
-    ## 1         209310_s_at           837
-    ## 2           202763_at           836
-    ## 3           207500_at           838
+    ## Error in `h()`:
+    ## ! error in evaluating the argument 'x' in selecting a method for function 'select': object 'mart' not found
 
 So why would we want to do this when we already have functions like
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)?
 For two reasons: 1) for people who are familiar with select and it’s
 helper methods, they can now proceed to use
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* making the
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* making the
 same kinds of calls that are already familiar to them and 2) because the
 select method is implemented in many places elsewhere, the fact that
 these methods are shared allows for more convenient programmatic access
 of all these resources. An example of a package that takes advantage of
 this is the
-*[OrganismDbi](https://bioconductor.org/packages/3.22/OrganismDbi)*
+*[OrganismDbi](https://bioconductor.org/packages/3.23/OrganismDbi)*
 package. Where several packages can be accessed as if they were one
 resource.
 
 ## Result Caching
 
 To save time and computing resources
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* will attempt
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* will attempt
 to identify when you are re-running a query you have executed before.
 Each time a new query is run, the results will be saved to a cache on
 your computer. If a query is identified as having been run previously,
@@ -673,13 +738,14 @@ the function
 [`biomartCacheInfo()`](https://huber-group-embl.github.io/biomaRt/reference/biomartCache.md):
 
 ``` r
+
 biomartCacheInfo()
 ```
 
     ## biomaRt cache
     ## - Location: /home/runner/.cache/R/biomaRt
-    ## - No. of files: 4
-    ## - Total size: 9.9 Kb
+    ## - No. of files: 3
+    ## - Total size: 10 Kb
 
 The cache can be deleted using the command
 [`biomartCacheClear()`](https://huber-group-embl.github.io/biomaRt/reference/biomartCache.md).
@@ -691,22 +757,23 @@ this via the `BIOMART_CACHE` environment variable. You can either set
 this outside of R, or within R via a call to
 `Sys.setenv(BIOMART_CACHE = "</where/i/store/my/cache>")`. The code
 below gives an example where we change the location to a temporary
-file[⁴](#fn4) and then confirm that the location has changed.
+file[^4] and then confirm that the location has changed.
 
 ``` r
+
 Sys.setenv(BIOMART_CACHE = tempdir())
 biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/RtmpCsHFcD
+    ## - Location: /tmp/RtmpPrlxvh
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
 ## biomaRt helper functions
 
 This section describes a set of
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* helper
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* helper
 functions that can be used to export FASTA format sequences, retrieve
 values for certain filters and exploring the available filters and
 attributes in a more systematic manner.
@@ -724,7 +791,7 @@ using the file argument.
 
 In the sections below a variety of example queries are described. Every
 example is written as a task, and we have to come up with a
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* solution to
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* solution to
 the problem.
 
 ### Annotate a set of Affymetrix identifiers with HUGO symbol and chromosomal locations of corresponding genes
@@ -748,6 +815,7 @@ the
 and performing the query gives:
 
 ``` r
+
 affyids <- c("202763_at", "209310_s_at", "207500_at")
 getBM(
   attributes = c(
@@ -765,9 +833,9 @@ getBM(
 ```
 
     ##   affy_hg_u133_plus_2 hgnc_symbol chromosome_name start_position end_position  band
-    ## 1         209310_s_at       CASP4              11      104942866    104969366 q22.3
+    ## 1           207500_at       CASP5              11      104991932    105023169 q22.3
     ## 2           202763_at       CASP3               4      184627695    184650418 q35.1
-    ## 3           207500_at       CASP5              11      104992636    105023168 q22.3
+    ## 3         209310_s_at       CASP4              11      104942866    104969366 q22.3
 
 ### Annotate a set of EntrezGene identifiers with GO annotation
 
@@ -782,6 +850,7 @@ to find the filter and attributes we need. Then we construct the
 following query:
 
 ``` r
+
 entrez <- c("673", "837")
 goids <- getBM(
   attributes = c("entrezgene_id", "go_id"),
@@ -797,8 +866,8 @@ head(goids)
     ## 2           673 GO:0007165
     ## 3           673 GO:0006468
     ## 4           673 GO:0004672
-    ## 5           673 GO:0016740
-    ## 6           673 GO:0005829
+    ## 5           673 GO:0000166
+    ## 6           673 GO:0016740
 
 ### Retrieve all HUGO gene symbols of genes that are located on chromosomes 17,20 or Y, and are associated with specific GO terms
 
@@ -814,6 +883,7 @@ second filter and so on. The elements of this list are vectors
 containing the possible values for the corresponding filters.
 
 ``` r
+
 go <- c("GO:0051330", "GO:0000080", "GO:0000114", "GO:0000082")
 chrom <- c(17, 20, "Y")
 getBM(
@@ -825,8 +895,8 @@ getBM(
 ```
 
     ##   hgnc_symbol
-    ## 1        CDK3
-    ## 2     RPS6KB1
+    ## 1     RPS6KB1
+    ## 2        CDK3
 
 ### Annotate set of idenfiers with INTERPRO protein domain identifiers
 
@@ -835,6 +905,7 @@ identifiers: **NM_005359** and **NM_000546** with INTERPRO protein
 domain identifiers and a description of the protein domains.
 
 ``` r
+
 refseqids <- c("NM_005359", "NM_000546")
 ipro <- getBM(
   attributes = c("refseq_mrna", "interpro", "interpro_description"),
@@ -842,17 +913,26 @@ ipro <- getBM(
   values = refseqids,
   mart = ensembl
 )
-```
-
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-
-``` r
 ipro
 ```
 
-    ## Error:
-    ## ! object 'ipro' not found
+    ##    refseq_mrna  interpro                                               interpro_description
+    ## 1    NM_000546 IPR008967      p53-like transcription factor, DNA-binding domain superfamily
+    ## 2    NM_000546 IPR036674                        p53-like tetramerisation domain superfamily
+    ## 3    NM_000546 IPR012346 p53/RUNT-type transcription factor, DNA-binding domain superfamily
+    ## 4    NM_000546 IPR002117                                       p53 tumour suppressor family
+    ## 5    NM_000546 IPR011615                                            p53, DNA-binding domain
+    ## 6    NM_000546 IPR057064                                        p53, central conserved site
+    ## 7    NM_000546 IPR010991                                        p53, tetramerisation domain
+    ## 8    NM_000546 IPR040926               Cellular tumor antigen p53, transactivation domain 2
+    ## 9    NM_000546 IPR013872                                        p53, transactivation domain
+    ## 10   NM_005359 IPR003619                                       MAD homology 1, Dwarfin-type
+    ## 11   NM_005359 IPR008984                                        SMAD/FHA domain superfamily
+    ## 12   NM_005359 IPR017855                                       SMAD-like domain superfamily
+    ## 13   NM_005359 IPR001132                                          SMAD domain, Dwarfin-type
+    ## 14   NM_005359 IPR013019                                                  MAD homology, MH1
+    ## 15   NM_005359 IPR036578                                        SMAD MH1 domain superfamily
+    ## 16   NM_005359 IPR013790                                                            Dwarfin
 
 ### Select all Affymetrix identifiers on the hgu133plus2 chip and Ensembl gene identifiers for genes located on chromosome 16 between basepair 1100000 and 1250000.
 
@@ -864,6 +944,7 @@ everything from the given chromosome between the given start and end
 positions.
 
 ``` r
+
 getBM(
   attributes = c("affy_hg_u133_plus_2", "ensembl_gene_id"),
   filters = c("chromosome_name", "start", "end"),
@@ -872,8 +953,33 @@ getBM(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ##    affy_hg_u133_plus_2 ensembl_gene_id
+    ## 1                      ENSG00000292423
+    ## 2                      ENSG00000260702
+    ## 3                      ENSG00000260532
+    ## 4            215502_at ENSG00000260532
+    ## 5                      ENSG00000292400
+    ## 6                      ENSG00000292401
+    ## 7                      ENSG00000273551
+    ## 8            205845_at ENSG00000196557
+    ## 9                      ENSG00000196557
+    ## 10                     ENSG00000260403
+    ## 11                     ENSG00000259910
+    ## 12                     ENSG00000261294
+    ## 13         220339_s_at ENSG00000116176
+    ## 14         210084_x_at ENSG00000197253
+    ## 15         217023_x_at ENSG00000197253
+    ## 16         216474_x_at ENSG00000197253
+    ## 17         205683_x_at ENSG00000197253
+    ## 18         207134_x_at ENSG00000197253
+    ## 19         215382_x_at ENSG00000197253
+    ## 20                     ENSG00000292385
+    ## 21         210084_x_at ENSG00000172236
+    ## 22         217023_x_at ENSG00000172236
+    ## 23         216474_x_at ENSG00000172236
+    ## 24         205683_x_at ENSG00000172236
+    ## 25         207134_x_at ENSG00000172236
+    ## 26         215382_x_at ENSG00000172236
 
 ### Retrieve all EntrezGene identifiers and HUGO gene symbols of genes which have a “MAP kinase activity” GO term associated with it.
 
@@ -882,6 +988,7 @@ query we will use *go_id* as our filter, and *entrezgene_id* and
 *hgnc_symbol* as attributes. Here’s the query:
 
 ``` r
+
 getBM(
   attributes = c("entrezgene_id", "hgnc_symbol"),
   filters = "go",
@@ -890,8 +997,27 @@ getBM(
 )
 ```
 
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ##    entrezgene_id hgnc_symbol
+    ## 1           1022        CDK7
+    ## 2         225689      MAPK15
+    ## 3           6300      MAPK12
+    ## 4           5596       MAPK4
+    ## 5           5600      MAPK11
+    ## 6           5595       MAPK3
+    ## 7           6885      MAP3K7
+    ## 8           1432      MAPK14
+    ## 9           5597       MAPK6
+    ## 10          5127       CDK16
+    ## 11          5594       MAPK1
+    ## 12          5891         MOK
+    ## 13          2932       GSK3B
+    ## 14          8621       CDK13
+    ## 15          5599       MAPK8
+    ## 16          5601       MAPK9
+    ## 17          5603      MAPK13
+    ## 18          5602      MAPK10
+    ## 19         51701         NLK
+    ## 20          5598       MAPK7
 
 ### Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences
 
@@ -953,6 +1079,7 @@ together in
 gives:
 
 ``` r
+
 entrez <- c("673", "7157", "837")
 getSequence(
   id = entrez,
@@ -964,13 +1091,13 @@ getSequence(
 ```
 
     ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
+    ## ! Query ERROR: caught BioMart::Exception::Usage: Filter upstream_flank NOT FOUND
 
 One further thing to note is that, although we are searching for genes
 based on their NCBI Gene IDs, Ensembl BioMart doesn’t allow some ID
 types (including NCBI IDs) to be returned directly. To try and
 accommodate this
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* attempts to
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* attempts to
 map the query IDs to Ensembl Gene IDs internally before finding the
 sequence information. If no such mapping exists (or at least isn’t found
 in Ensembl) then no sequence will be returned for the affected IDs.
@@ -982,9 +1109,10 @@ As described in the previous task
 can also use chromosomal coordinates to retrieve sequences of all genes
 that lie in the given region. We also have to specify which type of
 identifier we want to retrieve together with the sequences. Here we
-choose the NCBI Gene ID[⁵](#fn5)
+choose the NCBI Gene ID[^5]
 
 ``` r
+
 utr5 <- getSequence(
   chromosome = 3,
   start = 185514033,
@@ -996,34 +1124,22 @@ utr5 <- getSequence(
 utr5
 ```
 
-    ##                                                                                                                                                  5utr
-    ## 1                                                                                                                                Sequence unavailable
-    ## 2  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 3                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 4                                                                                                                                Sequence unavailable
-    ## 5                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 6                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 7          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 8             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 9                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 10     AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 11                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 12                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ##    entrezgene_id
-    ## 1             NA
-    ## 2         200879
-    ## 3         200879
-    ## 4         200879
-    ## 5         200879
-    ## 6         200879
-    ## 7         200879
-    ## 8         200879
-    ## 9         200879
-    ## 10        200879
-    ## 11        200879
-    ## 12        200879
-    ## 13        200879
+    ##                                                                                                                                                 5utr
+    ## 1 AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 2                                                                                                                               Sequence unavailable
+    ## 3                              ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 4                                                                                                                               Sequence unavailable
+    ## 5        CCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 6                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 7       TCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ##   entrezgene_id
+    ## 1        200879
+    ## 2            NA
+    ## 3        200879
+    ## 4        200879
+    ## 5        200879
+    ## 6        200879
+    ## 7        200879
 
 ### Retrieve protein sequences for a given list of EntrezGene identifiers
 
@@ -1034,23 +1150,34 @@ to the
 function.
 
 ``` r
+
 protein <- getSequence(
   id = c(27112, 653067),
   type = "entrezgene_id",
   seqType = "peptide",
   mart = ensembl
 )
-```
-
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-
-``` r
 protein
 ```
 
-    ## Error:
-    ## ! object 'protein' not found
+    ##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     peptide
+    ## 1 MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKAVYKAWLCSEYFSVTQQECQRWVPCKQYCLEVQTRCPFILPDNEEMVYGGLPGFICTGLLDTSPKRLETKCCDVQWVSCEAKKKKFKESEAPKTHQQQFHHSYFHHYHQQYHHYHPHHDPPGRVSNKPALLPVSGGSRLSPSRIRLCVLVLMLLHTVVSFSSNQGGGGLGLETLPALEEGLTREE*
+    ## 2                                                                                                                                                                                     MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKKLCAH*
+    ## 3                                                                                                                                     MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKRLELNVLGLAGAGGRPKMGGRIFGNQTLTLWLLPVGERTSTPGGGAHHTLDLM*
+    ## 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable
+    ## 5                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*
+    ## 6                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*
+    ## 7                                                                                                                                                                                                                                                                                                                                                                                                          MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAEQPQV*
+    ## 8                                                                                                                                                                                                                                                                                                                                                                                                           MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAAFPQ*
+    ##   entrezgene_id
+    ## 1         27112
+    ## 2         27112
+    ## 3         27112
+    ## 4        653067
+    ## 5        653067
+    ## 6        653067
+    ## 7        653067
+    ## 8        653067
 
 ### Retrieve known SNPs located on the human chromosome 8 between positions 148350 and 148400
 
@@ -1058,8 +1185,11 @@ For this example we’ll first have to connect to a different BioMart
 database, namely snp.
 
 ``` r
+
 snpmart <- useEnsembl(biomart = "snp", dataset = "hsapiens_snp")
 ```
+
+    ## Ensembl site unresponsive, trying asia mirror
 
 The
 [`listAttributes()`](https://huber-group-embl.github.io/biomaRt/reference/listAttributes.md)
@@ -1068,12 +1198,13 @@ and
 functions give us an overview of the available attributes and filters.
 From these we need: *refsnp_id*, *allele*, *chrom_start* and
 *chrom_strand* as attributes; and as filters we’ll use: *chrom_start*,
-*chrom_end* and *chr_name*. [⁶](#fn6) Putting our selected attributes
-and filters into
+*chrom_end* and *chr_name*. [^6] Putting our selected attributes and
+filters into
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)
 gives:
 
 ``` r
+
 getBM(
   attributes = c("refsnp_id", "allele", "chrom_start", "chrom_strand"),
   filters = c("chr_name", "start", "end"),
@@ -1120,7 +1251,15 @@ and return the chromosomal location. Note we also retrieve the Ensembl
 Gene ID, as this will be required in the next step.
 
 ``` r
+
 human <- useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl")
+```
+
+    ## Ensembl site unresponsive, trying useast mirror
+
+    ## Ensembl site unresponsive, trying asia mirror
+
+``` r
 
 BRCA2_human <- getBM(
   mart = human,
@@ -1128,17 +1267,11 @@ BRCA2_human <- getBM(
   value = "BRCA2",
   attributes = c("ensembl_gene_id", "chromosome_name", "start_position")
 )
-```
-
-    ## Error in `.processResults()`:
-    ## ! Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.
-
-``` r
 BRCA2_human
 ```
 
-    ## Error:
-    ## ! object 'BRCA2_human' not found
+    ##   ensembl_gene_id chromosome_name start_position
+    ## 1 ENSG00000139618              13       32315086
 
 Next we can use the
 [`getHomologs()`](https://huber-group-embl.github.io/biomaRt/reference/getHomologs.md)
@@ -1147,11 +1280,12 @@ to provide the ensembl IDs for the genes we’re interest in, which is why
 we included this in the output retrieved before.
 [`getHomologs()`](https://huber-group-embl.github.io/biomaRt/reference/getHomologs.md)
 can actually take the English names for the organisms you’re interested
-in, and will attempt to find the correct BioMart dataset [⁷](#fn7) Our
+in, and will attempt to find the correct BioMart dataset [^7] Our
 returned table contains the paired Ensembl IDs between the two
 organisms.
 
 ``` r
+
 homologs <- getHomologs(
   ensembl_gene_ids = BRCA2_human$ensembl_gene_id,
   species_from = "human",
@@ -1159,39 +1293,42 @@ homologs <- getHomologs(
 )
 ```
 
-    ## Error:
-    ## ! object 'BRCA2_human' not found
+    ## Ensembl site unresponsive, trying asia mirror
 
 ``` r
+
 homologs
 ```
 
-    ## Error:
-    ## ! object 'homologs' not found
+    ##   ensembl_gene_id mmusculus_homolog_ensembl_gene
+    ## 1 ENSG00000139618             ENSMUSG00000041147
 
 Finally we can use the mouse Ensembl gene IDs found by
 [`getHomologs()`](https://huber-group-embl.github.io/biomaRt/reference/getHomologs.md)
 to query the mouse gene dataset and get the details we require.
 
 ``` r
+
 mouse <- useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl")
+```
+
+    ## Ensembl site unresponsive, trying asia mirror
+
+``` r
+
 BRCA2_mouse <- getBM(
   mart = mouse,
   filters = "ensembl_gene_id",
   values = homologs$mmusculus_homolog_ensembl_gene,
   attributes = c("refseq_mrna", "chromosome_name", "start_position")
 )
-```
-
-    ## Error:
-    ## ! object 'homologs' not found
-
-``` r
 BRCA2_mouse
 ```
 
-    ## Error:
-    ## ! object 'BRCA2_mouse' not found
+    ##    refseq_mrna chromosome_name start_position
+    ## 1                            5      150446057
+    ## 2    NM_009765               5      150446057
+    ## 3 NM_001081001               5      150446057
 
 ## Connection troubleshooting
 
@@ -1202,10 +1339,10 @@ suggested code to fix the problem. If a suggested solution doesn’t work,
 or you have a new error not listed here, please reported it on the
 [Bioconductor Support Site](https://support.bioconductor.org/).
 
-### *[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* specific solutions
+### *[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* specific solutions
 
 If you are using
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* directly
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* directly
 make sure you are using
 [`useEnsembl()`](https://huber-group-embl.github.io/biomaRt/reference/useEnsembl.md)
 to create the **Mart** object, rather than
@@ -1218,14 +1355,14 @@ you to do anything further.
 ### Global connection settings
 
 If you are unable to modify the
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* code (for
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* code (for
 example if you are using another package that calls
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* as part of
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* as part of
 one if its functions) it’s still possible to modify the connection
 settings for your R session. Below are some reported error messages and
 code that has been known to resolve them. You will need to execute this
 code only once in an R session. The settings will then be saved to the
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* cache and
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* cache and
 will be used from then on when you try to connect to the Ensembl
 BioMart.
 
@@ -1239,6 +1376,7 @@ BioMart.
 **Fix**
 
 ``` r
+
 setEnsemblSSL(list(ssl_verifypeer = FALSE))
 ```
 
@@ -1255,6 +1393,7 @@ If you’re running Ubuntu 20.04 or newer the following command should fix
 the issue.
 
 ``` r
+
 setEnsemblSSL(list(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))
 ```
 
@@ -1274,10 +1413,11 @@ could also consider alerting Ensembl to this issue.
 ## Session Info
 
 ``` r
+
 sessionInfo()
 ```
 
-    ## R version 4.5.3 (2026-03-11)
+    ## R version 4.6.1 (2026-06-24)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
@@ -1297,51 +1437,50 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.7   BiocStyle_2.38.0
+    ## [1] biomaRt_2.69.0   BiocStyle_2.40.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] KEGGREST_1.50.0      xfun_0.57            bslib_0.10.0         httr2_1.2.2         
-    ##  [5] Biobase_2.70.0       vctrs_0.7.2          tools_4.5.3          generics_0.1.4      
-    ##  [9] stats4_4.5.3         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0
-    ## [13] RSQLite_2.4.6        blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.5.2        
-    ## [17] desc_1.4.3           S4Vectors_0.48.1     lifecycle_1.0.5      compiler_4.5.3      
-    ## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.78.0    progress_1.2.3      
-    ## [25] Seqinfo_1.0.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
+    ##  [1] KEGGREST_1.52.2      xfun_0.59            bslib_0.11.0         httr2_1.2.3         
+    ##  [5] Biobase_2.72.0       vctrs_0.7.3          tools_4.6.1          generics_0.1.4      
+    ##  [9] stats4_4.6.1         curl_7.1.0           tibble_3.3.1         AnnotationDbi_1.74.0
+    ## [13] RSQLite_3.53.3       blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.6.0        
+    ## [17] desc_1.4.3           S4Vectors_0.50.1     lifecycle_1.0.5      compiler_4.6.1      
+    ## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.80.1    progress_1.2.3      
+    ## [25] Seqinfo_1.2.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
     ## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     
     ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
-    ## [37] dplyr_1.2.1          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       
-    ## [41] cli_3.6.5            magrittr_2.0.5       withr_3.0.2          prettyunits_1.2.0   
-    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.31      
-    ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.2          
-    ## [53] png_0.1-9            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
-    ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.2.0         
-    ## [61] glue_1.8.0           DBI_1.3.0            xml2_1.5.2           BiocManager_1.30.27 
-    ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   
-    ## [69] fs_2.0.1
+    ## [37] dplyr_1.2.1          purrr_1.2.2          bookdown_0.47        fastmap_1.2.0       
+    ## [41] cli_3.6.6            magrittr_2.0.5       withr_3.0.3          prettyunits_1.2.0   
+    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.8.2          rmarkdown_2.31      
+    ## [49] XVector_0.52.0       httr_1.4.8           bit_4.6.0            otel_0.2.0          
+    ## [53] ragg_1.5.2           png_0.1-9            hms_1.1.4            memoise_2.0.1       
+    ## [57] evaluate_1.0.5       knitr_1.51           IRanges_2.46.0       BiocFileCache_3.2.0 
+    ## [61] rlang_1.2.0          glue_1.8.1           DBI_1.3.0            xml2_1.6.0          
+    ## [65] BiocManager_1.30.27  BiocGenerics_0.58.1  jsonlite_2.0.0       R6_2.6.1            
+    ## [69] systemfonts_1.3.2    fs_2.1.0
 
-------------------------------------------------------------------------
+[^1]: this is how Ensembl name the database on their server
 
-1.  this is how Ensembl name the database on their server
-
-2.  Note: Unfortunately there is no BioMart interface to the Ensembl
+[^2]: Note: Unfortunately there is no BioMart interface to the Ensembl
     Bacteria data. The number of bacterial genomes is in the tens of
     thousands and BioMart does not perform well when providing data on
     that scale
 
-3.  The set of attributes is still quite long, so we use
+[^3]: The set of attributes is still quite long, so we use
     [`head()`](https://rdrr.io/r/utils/head.html) to show only the first
     few items here.
 
-4.  This would not be a sensible choice on your machine, but is
+[^4]: This would not be a sensible choice on your machine, but is
     convenient on the Bioconductor server.
 
-5.  These were historically called “Entrezgene IDs”, hence the name
+[^5]: These were historically called “Entrezgene IDs”, hence the name
     given to the `type` argument.
 
-6.  Note that when a chromosome name, a start position and an end
+[^6]: Note that when a chromosome name, a start position and an end
     position are jointly used as filters, the BioMart webservice
     interprets this as return everything from the given chromosome
     between the given start and end positions.
 
-7.  We get a warning for the term ‘mouse’ as there are multiple strains
-    in BioMart. In this case **biomaRt** selects the reference strain.
+[^7]: We get a warning for the term ‘mouse’ as there are multiple
+    strains in BioMart. In this case **biomaRt** selects the reference
+    strain.

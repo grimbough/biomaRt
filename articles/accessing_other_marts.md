@@ -6,7 +6,7 @@ In recent years a wealth of biological data has become available in
 public data repositories. Easy access to these valuable data resources
 and firm integration with data analysis is needed for comprehensive
 bioinformatics data analysis. The
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* package,
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* package,
 provides an interface to a growing collection of databases implementing
 the [BioMart software
 suite](https://www.ensembl.org/info/data/biomart/index.html). The
@@ -14,7 +14,7 @@ package enables retrieval of large amounts of data in a uniform way
 without the need to know the underlying database schemas or write
 complex SQL queries. Examples of BioMart databases are Ensembl, Uniprot
 and HapMap. These major databases give
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* users direct
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* users direct
 access to a diverse set of data and enable a wide range of powerful
 online queries from R.
 
@@ -22,33 +22,35 @@ online queries from R.
 
 There are a small number of non-Ensembl databases that offer a BioMart
 interface to their data. The
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* package can
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* package can
 be used to access these in a very similar fashion to Ensembl. The
-majority of *[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)*
+majority of *[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)*
 functions will work in the same manner, but the construction of the
 initial Mart object requires slightly more setup. In this section we
 demonstrate the setting requires to query [Wormbase
 ParaSite](https://parasite.wormbase.org/index.html) and
 [Phytozome](https://phytozome.jgi.doe.gov/pz/portal.html). First we need
-to load *[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)*.
+to load *[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)*.
 
 ``` r
+
 library(biomaRt)
 ```
 
 ### Wormbase
 
 To demonstrate the use of the
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* package with
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* package with
 non-Ensembl databases the next query is performed using the Wormbase
 ParaSite BioMart. In this example, we use the
 [`listMarts()`](https://huber-group-embl.github.io/biomaRt/reference/listMarts.md)
 function to find the name of the available marts, given the URL of
 Wormbase. We use this to connect to Wormbase BioMart using the
 [`useMart()`](https://huber-group-embl.github.io/biomaRt/reference/useMart.md)
-function.[¹](#fn1)
+function.[^1]
 
 ``` r
+
 listMarts(host = "parasite.wormbase.org")
 ```
 
@@ -59,6 +61,7 @@ listMarts(host = "parasite.wormbase.org")
     ## Received HTTP/0.9 when not allowed
 
 ``` r
+
 wormbase <- useMart(
   biomart = "parasite_mart",
   host = "https://parasite.wormbase.org",
@@ -72,6 +75,7 @@ filters. Then we use a list of gene names as filter and retrieve
 associated transcript IDs and the transcript biotype.
 
 ``` r
+
 listDatasets(wormbase)
 ```
 
@@ -79,6 +83,7 @@ listDatasets(wormbase)
     ## 1 wbps_gene All Species (WBPS19)      19
 
 ``` r
+
 wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
 head(listFilters(wormbase))
 ```
@@ -92,6 +97,7 @@ head(listFilters(wormbase))
     ## 6              strand          Strand
 
 ``` r
+
 head(listAttributes(wormbase))
 ```
 
@@ -104,6 +110,7 @@ head(listAttributes(wormbase))
     ## 6     nematode_clade_1010     Nematode clade feature_page
 
 ``` r
+
 getBM(
   attributes = c(
     "external_gene_id",
@@ -138,6 +145,7 @@ Version 13 of Phytozome can be found at
 version the URL used to create the Mart object must reflect that.
 
 ``` r
+
 phytozome_v13 <- useMart(
   biomart = "phytozome_mart",
   dataset = "phytozome",
@@ -146,10 +154,11 @@ phytozome_v13 <- useMart(
 ```
 
 Once this is set up the usual
-*[biomaRt](https://bioconductor.org/packages/3.22/biomaRt)* functions
+*[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* functions
 can be used to interrogate the database options and run queries.
 
 ``` r
+
 getBM(
   attributes = c("organism_name", "gene_name1"),
   filters = "gene_name_filter",
@@ -164,10 +173,11 @@ getBM(
 ## Session Info
 
 ``` r
+
 sessionInfo()
 ```
 
-    ## R version 4.5.3 (2026-03-11)
+    ## R version 4.6.1 (2026-06-24)
     ## Platform: x86_64-pc-linux-gnu
     ## Running under: Ubuntu 24.04.4 LTS
     ## 
@@ -187,33 +197,32 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] biomaRt_2.67.7   BiocStyle_2.38.0
+    ## [1] biomaRt_2.69.0   BiocStyle_2.40.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] KEGGREST_1.50.0      xfun_0.57            bslib_0.10.0         httr2_1.2.2         
-    ##  [5] Biobase_2.70.0       vctrs_0.7.2          tools_4.5.3          generics_0.1.4      
-    ##  [9] stats4_4.5.3         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0
-    ## [13] RSQLite_2.4.6        blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.5.2        
-    ## [17] desc_1.4.3           S4Vectors_0.48.1     lifecycle_1.0.5      compiler_4.5.3      
-    ## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.78.0    progress_1.2.3      
-    ## [25] Seqinfo_1.0.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
+    ##  [1] KEGGREST_1.52.2      xfun_0.59            bslib_0.11.0         httr2_1.2.3         
+    ##  [5] Biobase_2.72.0       vctrs_0.7.3          tools_4.6.1          generics_0.1.4      
+    ##  [9] stats4_4.6.1         curl_7.1.0           tibble_3.3.1         AnnotationDbi_1.74.0
+    ## [13] RSQLite_3.53.3       blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.6.0        
+    ## [17] desc_1.4.3           S4Vectors_0.50.1     lifecycle_1.0.5      compiler_4.6.1      
+    ## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.80.1    progress_1.2.3      
+    ## [25] Seqinfo_1.2.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
     ## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     
     ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
-    ## [37] purrr_1.2.1          dplyr_1.2.1          bookdown_0.46        fastmap_1.2.0       
-    ## [41] cli_3.6.5            magrittr_2.0.5       withr_3.0.2          prettyunits_1.2.0   
-    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.31      
-    ## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.2          
-    ## [53] png_0.1-9            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
-    ## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.2.0         
-    ## [61] glue_1.8.0           DBI_1.3.0            BiocManager_1.30.27  xml2_1.5.2          
-    ## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   
-    ## [69] fs_2.0.1
+    ## [37] purrr_1.2.2          dplyr_1.2.1          bookdown_0.47        fastmap_1.2.0       
+    ## [41] cli_3.6.6            magrittr_2.0.5       withr_3.0.3          prettyunits_1.2.0   
+    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.8.2          rmarkdown_2.31      
+    ## [49] XVector_0.52.0       httr_1.4.8           bit_4.6.0            otel_0.2.0          
+    ## [53] ragg_1.5.2           png_0.1-9            hms_1.1.4            memoise_2.0.1       
+    ## [57] evaluate_1.0.5       knitr_1.51           IRanges_2.46.0       BiocFileCache_3.2.0 
+    ## [61] rlang_1.2.0          glue_1.8.1           DBI_1.3.0            BiocManager_1.30.27 
+    ## [65] xml2_1.6.0           BiocGenerics_0.58.1  jsonlite_2.0.0       R6_2.6.1            
+    ## [69] systemfonts_1.3.2    fs_2.1.0
 
 ``` r
+
 warnings()
 ```
 
-------------------------------------------------------------------------
-
-1.  Note that we use the `https` address and must provide the port as
+[^1]: Note that we use the `https` address and must provide the port as
     `443`. Queries to WormBase will fail without these options.

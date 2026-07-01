@@ -66,6 +66,14 @@ useMart(
   Give detailed output of what the method is doing while in use, for
   debugging
 
+## Value
+
+An object of class Mart, which can be used in functions such as
+[`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md),
+[`getLDS()`](https://huber-group-embl.github.io/biomaRt/reference/getLDS.md),
+[`getGene()`](https://huber-group-embl.github.io/biomaRt/reference/getGene.md),
+etc. to retrieve data from the selected BioMart database.
+
 ## Details
 
 The previously available `archive` argument is defunct. A better

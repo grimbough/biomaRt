@@ -34,6 +34,14 @@ searchFilters(mart, pattern = ".*")
   search. If left blank the default is to use \`".\*"“ which will match
   everything.
 
+## Value
+
+A `data.frame` with available filters as 2 columns:
+
+- `name`: the name of the filter
+
+- `description`: text description of the filter
+
 ## Author
 
 Steffen Durinck, Mike Smith

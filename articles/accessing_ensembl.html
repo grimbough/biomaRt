@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Accessing Ensembl annotation with biomaRt">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">biomaRt</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.67.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.69.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,8 +89,8 @@ pre code {
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>Accessing the data available in Ensembl is by far most frequent use
-of the <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
-package. With that in mind <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+of the <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
+package. With that in mind <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 provides a number of functions that are tailored to work specifically
 with the BioMart instances provided by Ensembl. This vignette details
 this Ensembl specific functionality and provides a number of example
@@ -100,14 +100,15 @@ queries.</p>
 <div class="section level2">
 <h2 id="selecting-an-ensembl-biomart-database-and-dataset">Selecting an Ensembl BioMart database and dataset<a class="anchor" aria-label="anchor" href="#selecting-an-ensembl-biomart-database-and-dataset"></a>
 </h2>
-<p>Every analysis with <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+<p>Every analysis with <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 starts with selecting a BioMart database to use. The commands below will
 connect us to Ensembl’s most recent version of the Human Genes
 BioMart.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Huber-group-EMBL/biomaRt" class="external-link">biomaRt</a></span><span class="op">)</span></span>
 <span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"genes"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span></span></code></pre></div>
-<p>If this your first time using <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em> ,
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying asia mirror</span></span></code></pre>
+<p>If this your first time using <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em> ,
 you might wonder how to find the two arguments we supplied to the
 <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> command. This is a two step process, but once
 you know the setting you need you can use the version shown above as a
@@ -122,24 +123,25 @@ BioMart web services. The first column gives us the name we should
 provide to the <code>biomart</code> argument in
 <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code>, and the second gives a more comprehensive
 title for the dataset along with the Ensembl version.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listEnsembl.html">listEnsembl</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##         biomart                version</span></span>
-<span><span class="co">## 1         genes      Ensembl Genes 115</span></span>
-<span><span class="co">## 2 mouse_strains      Mouse strains 115</span></span>
-<span><span class="co">## 3          snps  Ensembl Variation 115</span></span>
-<span><span class="co">## 4    regulation Ensembl Regulation 115</span></span></code></pre>
+<span><span class="co">## 1         genes      Ensembl Genes 116</span></span>
+<span><span class="co">## 2 mouse_strains      Mouse strains 116</span></span>
+<span><span class="co">## 3          snps  Ensembl Variation 116</span></span>
+<span><span class="co">## 4    regulation Ensembl Regulation 116</span></span></code></pre>
 <p>The <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> function can now be used to connect to
 the desired BioMart database. The <code>biomart</code> argument should
 be given a valid name from the output of <code><a href="../reference/listEnsembl.html">listEnsembl()</a></code>. In
 the next example we will select the main Ensembl mart, which provides
 access to gene annotation information.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"genes"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying asia mirror</span></span></code></pre>
 <p>If we print the current <code>ensembl</code> object, we can see that
 the <code>ENSEMBL_MART_ENSEMBL</code> database <a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;this is how Ensembl name the database on their server&lt;/p&gt;"><sup>1</sup></a> has been selected, but
 that no dataset has been chosen.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl</span></span></code></pre></div>
 <pre><code><span><span class="co">## Object of class 'Mart':</span></span>
 <span><span class="co">##   Using the ENSEMBL_MART_ENSEMBL BioMart database</span></span>
@@ -154,7 +156,7 @@ step we look at which datasets are available in the selected BioMart by
 using the function <code><a href="../reference/listDatasets.html">listDatasets()</a></code>. <em>Note: here we use
 the function <code><a href="https://rdrr.io/r/utils/head.html" class="external-link">head()</a></code> to display only the first 5 entries as
 the complete list has many entries.</em></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">datasets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/listDatasets.html">listDatasets</a></span><span class="op">(</span><span class="va">ensembl</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">datasets</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                        dataset                           description     version</span></span>
@@ -166,25 +168,25 @@ the complete list has many entries.</em></p>
 <span><span class="co">## 6    amelanoleuca_gene_ensembl       Giant panda genes (ASM200744v2) ASM200744v2</span></span></code></pre>
 <p>The <code><a href="../reference/listDatasets.html">listDatasets()</a></code> function will return every available
 option, however this can be unwieldy when the list of results is long,
-involving much scrolling to find the entry you are interested in. <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+involving much scrolling to find the entry you are interested in. <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 also provides the functions <code><a href="../reference/listDatasets.html">searchDatasets()</a></code> which will try
 to find any entries matching a specific term or pattern. For example, if
 we want to find the details of any datasets in our <code>ensembl</code>
 mart that contain the term ‘<em>hsapiens</em>’ we could do the
 following:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listDatasets.html">searchDatasets</a></span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, pattern <span class="op">=</span> <span class="st">"hsapiens"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                  dataset              description    version</span></span>
 <span><span class="co">## 80 hsapiens_gene_ensembl Human genes (GRCh38.p14) GRCh38.p14</span></span></code></pre>
 <p>To use a dataset we can update our <code>Mart</code> object using the
 function <code><a href="../reference/useDataset.html">useDataset()</a></code>. In the example below we choose to
 use the <em>hsapiens</em> dataset.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useDataset.html">useDataset</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span>, mart <span class="op">=</span> <span class="va">ensembl</span><span class="op">)</span></span></code></pre></div>
 <p>As mentioned previously, if the dataset one wants to use is known in
 advance i.e. you’ve gone through this process before, we can select a
 both the database and dataset in one step:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"genes"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -199,7 +201,7 @@ example, if the nearest mirror is experiencing many queries from other
 users it may perform poorly for you. You can use the <code>mirror</code>
 argument to <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> to explicitly request a specific
 mirror.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span></span>
 <span>  biomart <span class="op">=</span> <span class="st">"ensembl"</span>,</span>
 <span>  dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span>,</span>
@@ -211,39 +213,35 @@ mirror.</p>
 <div class="section level3">
 <h3 id="using-archived-versions-of-ensembl">Using archived versions of Ensembl<a class="anchor" aria-label="anchor" href="#using-archived-versions-of-ensembl"></a>
 </h3>
-<p>It is possible to query archived versions of Ensembl through <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>,
+<p>It is possible to query archived versions of Ensembl through <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>,
 so you can maintain consistent annotation throughout the duration of a
 project.</p>
-<p><em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+<p><em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 provides the function <code><a href="../reference/listEnsemblArchives.html">listEnsemblArchives()</a></code> to view the
 available Ensembl archives. This function takes no arguments, and
 produces a table containing the name and version number of the available
 archives, the date they were first released, and the URL where they can
 be accessed.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listEnsemblArchives.html">listEnsemblArchives</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##              name     date                                 url version current_release</span></span>
 <span><span class="co">## 1  Ensembl GRCh37 Feb 2014          https://grch37.ensembl.org  GRCh37                </span></span>
-<span><span class="co">## 2     Ensembl 115 Sep 2025 https://sep2025.archive.ensembl.org     115               *</span></span>
-<span><span class="co">## 3     Ensembl 114 May 2025 https://may2025.archive.ensembl.org     114                </span></span>
-<span><span class="co">## 4     Ensembl 113 Oct 2024 https://oct2024.archive.ensembl.org     113                </span></span>
-<span><span class="co">## 5     Ensembl 112 May 2024 https://may2024.archive.ensembl.org     112                </span></span>
-<span><span class="co">## 6     Ensembl 111 Jan 2024 https://jan2024.archive.ensembl.org     111                </span></span>
-<span><span class="co">## 7     Ensembl 110 Jul 2023 https://jul2023.archive.ensembl.org     110                </span></span>
-<span><span class="co">## 8     Ensembl 109 Feb 2023 https://feb2023.archive.ensembl.org     109                </span></span>
-<span><span class="co">## 9     Ensembl 108 Oct 2022 https://oct2022.archive.ensembl.org     108                </span></span>
-<span><span class="co">## 10    Ensembl 107 Jul 2022 https://jul2022.archive.ensembl.org     107                </span></span>
-<span><span class="co">## 11    Ensembl 106 Apr 2022 https://apr2022.archive.ensembl.org     106                </span></span>
-<span><span class="co">## 12    Ensembl 105 Dec 2021 https://dec2021.archive.ensembl.org     105                </span></span>
-<span><span class="co">## 13    Ensembl 104 May 2021 https://may2021.archive.ensembl.org     104                </span></span>
-<span><span class="co">## 14    Ensembl 103 Feb 2021 https://feb2021.archive.ensembl.org     103                </span></span>
-<span><span class="co">## 15    Ensembl 102 Nov 2020 https://nov2020.archive.ensembl.org     102                </span></span>
-<span><span class="co">## 16    Ensembl 101 Aug 2020 https://aug2020.archive.ensembl.org     101                </span></span>
-<span><span class="co">## 17    Ensembl 100 Apr 2020 https://apr2020.archive.ensembl.org     100                </span></span>
-<span><span class="co">## 18     Ensembl 80 May 2015 https://may2015.archive.ensembl.org      80                </span></span>
-<span><span class="co">## 19     Ensembl 77 Oct 2014 https://oct2014.archive.ensembl.org      77                </span></span>
-<span><span class="co">## 20     Ensembl 75 Feb 2014 https://feb2014.archive.ensembl.org      75                </span></span>
-<span><span class="co">## 21     Ensembl 54 May 2009 https://may2009.archive.ensembl.org      54</span></span></code></pre>
+<span><span class="co">## 2     Ensembl 116 Jun 2026 https://jun2026.archive.ensembl.org     116               *</span></span>
+<span><span class="co">## 3     Ensembl 115 Sep 2025 https://sep2025.archive.ensembl.org     115                </span></span>
+<span><span class="co">## 4     Ensembl 114 May 2025 https://may2025.archive.ensembl.org     114                </span></span>
+<span><span class="co">## 5     Ensembl 113 Oct 2024 https://oct2024.archive.ensembl.org     113                </span></span>
+<span><span class="co">## 6     Ensembl 112 May 2024 https://may2024.archive.ensembl.org     112                </span></span>
+<span><span class="co">## 7     Ensembl 111 Jan 2024 https://jan2024.archive.ensembl.org     111                </span></span>
+<span><span class="co">## 8     Ensembl 110 Jul 2023 https://jul2023.archive.ensembl.org     110                </span></span>
+<span><span class="co">## 9     Ensembl 109 Feb 2023 https://feb2023.archive.ensembl.org     109                </span></span>
+<span><span class="co">## 10    Ensembl 108 Oct 2022 https://oct2022.archive.ensembl.org     108                </span></span>
+<span><span class="co">## 11    Ensembl 107 Jul 2022 https://jul2022.archive.ensembl.org     107                </span></span>
+<span><span class="co">## 12    Ensembl 106 Apr 2022 https://apr2022.archive.ensembl.org     106                </span></span>
+<span><span class="co">## 13    Ensembl 105 Dec 2021 https://dec2021.archive.ensembl.org     105                </span></span>
+<span><span class="co">## 14     Ensembl 80 May 2015 https://may2015.archive.ensembl.org      80                </span></span>
+<span><span class="co">## 15     Ensembl 77 Oct 2014 https://oct2014.archive.ensembl.org      77                </span></span>
+<span><span class="co">## 16     Ensembl 75 Feb 2014 https://feb2014.archive.ensembl.org      75                </span></span>
+<span><span class="co">## 17     Ensembl 54 May 2009 https://may2009.archive.ensembl.org      54</span></span></code></pre>
 <p>Alternatively, one can use the <a href="https://www.ensembl.org" class="external-link uri">https://www.ensembl.org</a> website to find an archived
 version. From the main page scroll down the bottom of the page, click on
 ‘view in Archive’ and select the archive you need.</p>
@@ -257,19 +255,24 @@ releases come out.</em></p>
 query, copy the url and use that in the <code>host</code> argument as
 shown below to connect to the specified BioMart database. The example
 below shows how to query Ensembl 110.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/listEnsembl.html">listEnsembl</a></span><span class="op">(</span>version <span class="op">=</span> <span class="fl">110</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##         biomart                version</span></span>
-<span><span class="co">## 1         genes      Ensembl Genes 110</span></span>
-<span><span class="co">## 2 mouse_strains      Mouse strains 110</span></span>
-<span><span class="co">## 3          snps  Ensembl Variation 110</span></span>
-<span><span class="co">## 4    regulation Ensembl Regulation 110</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/listEnsembl.html">listEnsembl</a></span><span class="op">(</span>version <span class="op">=</span> <span class="fl">110</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span></span>
+<span><span class="co">## <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Timeout was reached [jul2023.archive.ensembl.org]:</span></span>
+<span><span class="co">## Operation timed out after 60000 milliseconds with 0 bytes received</span></span></code></pre>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl_110</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span></span>
 <span>  biomart <span class="op">=</span> <span class="st">"genes"</span>,</span>
 <span>  dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span>,</span>
 <span>  version <span class="op">=</span> <span class="fl">110</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Failed to perform HTTP request.</span></span>
+<span><span class="co">## <span style="font-weight: bold;">Caused by error in `curl::curl_fetch_memory()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Timeout was reached [jul2023.archive.ensembl.org]:</span></span>
+<span><span class="co">## Operation timed out after 60002 milliseconds with 0 bytes received</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="using-ensembl-genomes">Using Ensembl Genomes<a class="anchor" aria-label="anchor" href="#using-ensembl-genomes"></a>
@@ -285,29 +288,33 @@ scale&lt;/p&gt;"><sup>2</sup></a>.</p>
 <code><a href="../reference/useEnsembl.html">useEnsemblGenomes()</a></code> in similar fashion to the functions
 shown previously. For example first we can list the available Ensembl
 Genomes marts:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listEnsembl.html">listEnsemblGenomes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> HTTP 500 Internal Server Error.</span></span></code></pre>
+<pre><code><span><span class="co">##               biomart                        version</span></span>
+<span><span class="co">## 1       protists_mart      Ensembl Protists Genes 63</span></span>
+<span><span class="co">## 2 protists_variations Ensembl Protists Variations 63</span></span>
+<span><span class="co">## 3          fungi_mart         Ensembl Fungi Genes 63</span></span>
+<span><span class="co">## 4    fungi_variations    Ensembl Fungi Variations 63</span></span>
+<span><span class="co">## 5        metazoa_mart       Ensembl Metazoa Genes 63</span></span>
+<span><span class="co">## 6  metazoa_variations  Ensembl Metazoa Variations 63</span></span>
+<span><span class="co">## 7         plants_mart        Ensembl Plants Genes 63</span></span>
+<span><span class="co">## 8   plants_variations   Ensembl Plants Variations 63</span></span></code></pre>
 <p>We can the select the Ensembl Plants database, and search for the
 dataset name for Arabidopsis.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ensembl_plants</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsemblGenomes</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"plants_mart"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> HTTP 500 Internal Server Error.</span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/listDatasets.html">searchDatasets</a></span><span class="op">(</span><span class="va">ensembl_plants</span>, pattern <span class="op">=</span> <span class="st">"Arabidopsis"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'ensembl_plants' not found</span></span></code></pre>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ensembl_plants</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsemblGenomes</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"plants_mart"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/listDatasets.html">searchDatasets</a></span><span class="op">(</span><span class="va">ensembl_plants</span>, pattern <span class="op">=</span> <span class="st">"Arabidopsis"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##              dataset                         description version</span></span>
+<span><span class="co">## 7   ahalleri_eg_gene Arabidopsis halleri genes (Ahal2.2) Ahal2.2</span></span>
+<span><span class="co">## 11   alyrata_eg_gene    Arabidopsis lyrata genes (v.1.0)   v.1.0</span></span>
+<span><span class="co">## 42 athaliana_eg_gene Arabidopsis thaliana genes (TAIR10)  TAIR10</span></span></code></pre>
 <p>We can then use this information to create our <code>Mart</code>
 object that will access the correct database and dataset.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ensembl_arabidopsis</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsemblGenomes</a></span><span class="op">(</span></span>
 <span>  biomart <span class="op">=</span> <span class="st">"plants_mart"</span>,</span>
 <span>  dataset <span class="op">=</span> <span class="st">"athaliana_eg_gene"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> HTTP 500 Internal Server Error.</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -348,7 +355,7 @@ available attributes in the selected dataset.</p>
 <span><span class="co">## 4 ensembl_transcript_id_version Transcript stable ID version feature_page</span></span>
 <span><span class="co">## 5            ensembl_peptide_id            Protein stable ID feature_page</span></span></code></pre>
 <p>The <code><a href="../reference/getBM.html">getBM()</a></code> function is the primary query function in
-<em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>.
+<em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>.
 It has four main arguments:</p>
 <ul>
 <li>
@@ -372,7 +379,7 @@ functions are available: <code><a href="../reference/getGene.html">getGene()</a>
 <code><a href="../reference/getBM.html">getBM()</a></code> function with hard coded filter and attribute
 names.</em></p>
 <p>Now that we selected a BioMart database and dataset, and know about
-attributes, filters, and the values for filters; we can build a <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+attributes, filters, and the values for filters; we can build a <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 query. Let’s make an easy query for the following problem: We have a
 list of Affymetrix identifiers from the u133plus2 platform and we want
 to retrieve the corresponding EntrezGene identifiers using the Ensembl
@@ -393,15 +400,17 @@ respectively. Let’s now run the query:</p>
 <span>  values <span class="op">=</span> <span class="va">affyids</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.</span></span></code></pre>
+<pre><code><span><span class="co">##   affy_hg_u133_plus_2 entrezgene_id</span></span>
+<span><span class="co">## 1           207500_at           838</span></span>
+<span><span class="co">## 2           202763_at           836</span></span>
+<span><span class="co">## 3         209310_s_at           837</span></span></code></pre>
 <div class="section level3">
 <h3 id="searching-for-filters-and-attributes">Searching for filters and attributes<a class="anchor" aria-label="anchor" href="#searching-for-filters-and-attributes"></a>
 </h3>
 <p>The functions <code><a href="../reference/listAttributes.html">listAttributes()</a></code> and
 <code><a href="../reference/listFilters.html">listFilters()</a></code> will return every available option for their
 respective types, which can produce a very long output where it is hard
-to find the value you are interested in. <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+to find the value you are interested in. <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 also provides the functions <code><a href="../reference/listAttributes.html">searchAttributes()</a></code> and
 <code><a href="../reference/listFilters.html">searchFilters()</a></code> which will try to find any entries matching
 a specific term or pattern, in a similar fashion to
@@ -412,8 +421,8 @@ that contain the pattern ‘<em>hgnc</em>’.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listAttributes.html">searchAttributes</a></span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, pattern <span class="op">=</span> <span class="st">"hgnc"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##               name        description         page</span></span>
-<span><span class="co">## 63     hgnc_symbol        HGNC symbol feature_page</span></span>
-<span><span class="co">## 64         hgnc_id            HGNC ID feature_page</span></span>
+<span><span class="co">## 63         hgnc_id            HGNC ID feature_page</span></span>
+<span><span class="co">## 64     hgnc_symbol        HGNC symbol feature_page</span></span>
 <span><span class="co">## 95 hgnc_trans_name Transcript name ID feature_page</span></span></code></pre>
 <p>For advanced use, note that the <em>pattern</em> argument takes a
 regular expression. This means you can create more complex queries if
@@ -428,7 +437,7 @@ example.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listFilters.html">searchFilters</a></span><span class="op">(</span>mart <span class="op">=</span> <span class="va">ensembl</span>, pattern <span class="op">=</span> <span class="st">"ensembl.*id"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                             name                                                    description</span></span>
 <span><span class="co">## 54               ensembl_gene_id                       Gene stable ID(s) [e.g. ENSG00000000003]</span></span>
-<span><span class="co">## 55       ensembl_gene_id_version       Gene stable ID(s) with version [e.g. ENSG00000000003.17]</span></span>
+<span><span class="co">## 55       ensembl_gene_id_version       Gene stable ID(s) with version [e.g. ENSG00000000003.18]</span></span>
 <span><span class="co">## 56         ensembl_transcript_id                 Transcript stable ID(s) [e.g. ENST00000000233]</span></span>
 <span><span class="co">## 57 ensembl_transcript_id_version Transcript stable ID(s) with version [e.g. ENST00000000233.10]</span></span>
 <span><span class="co">## 58            ensembl_peptide_id                    Protein stable ID(s) [e.g. ENSP00000000233]</span></span>
@@ -474,9 +483,8 @@ second will find any phenotype descriptions that contain the string
 <span>  filter <span class="op">=</span> <span class="st">"phenotype_description"</span>,</span>
 <span>  pattern <span class="op">=</span> <span class="st">"Crohn"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "Crohn's disease"                             "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 1" </span></span>
-<span><span class="co">## [3] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 10" "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 19"</span></span>
-<span><span class="co">## [5] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 30"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 1"  "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 10"</span></span>
+<span><span class="co">## [3] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 19" "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 30"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="finding-out-more-information-on-filters">Finding out more information on filters<a class="anchor" aria-label="anchor" href="#finding-out-more-information-on-filters"></a>
@@ -484,7 +492,7 @@ second will find any phenotype descriptions that contain the string
 <div class="section level4">
 <h4 id="filtertype">filterType<a class="anchor" aria-label="anchor" href="#filtertype"></a>
 </h4>
-<p>Boolean filters need a value TRUE or FALSE in <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>.
+<p>Boolean filters need a value TRUE or FALSE in <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>.
 Setting the value TRUE will include all information that fulfil the
 filter requirement. Setting FALSE will exclude the information that
 fulfills the filter requirement and will return all values that don’t
@@ -543,30 +551,45 @@ extracted from a <code>Mart</code>, and <code><a href="../reference/select-metho
 discover which things can be used as keys with
 <code><a href="../reference/select-methods.html">select()</a></code>.</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mart</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span>, biomart <span class="op">=</span> <span class="st">"ensembl"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/select-methods.html">keytypes</a></span><span class="op">(</span><span class="va">mart</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "affy_hc_g110"        "affy_hg_focus"       "affy_hg_u133_plus_2"</span></span></code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mart</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span>dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span>, biomart <span class="op">=</span> <span class="st">"ensembl"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying useast mirror</span></span></code></pre>
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying asia mirror</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.chooseEnsemblMirror()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Unable to query any Ensembl site</span></span></code></pre>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/select-methods.html">keytypes</a></span><span class="op">(</span><span class="va">mart</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `h()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> error in evaluating the argument 'x' in selecting a method for function 'keytypes': object 'mart' not found</span></span></code></pre>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/select-methods.html">columns</a></span><span class="op">(</span><span class="va">mart</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "3_utr_end"   "3_utr_end"   "3_utr_start"</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `h()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> error in evaluating the argument 'x' in selecting a method for function 'columns': object 'mart' not found</span></span></code></pre>
 <p>And you still can use <code><a href="../reference/select-methods.html">keys()</a></code> to extract potential keys,
 for a particular key type.</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select-methods.html">keys</a></span><span class="op">(</span><span class="va">mart</span>, keytype <span class="op">=</span> <span class="st">"chromosome_name"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "1" "2" "3"</span></span></code></pre>
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select-methods.html">keys</a></span><span class="op">(</span><span class="va">mart</span>, keytype <span class="op">=</span> <span class="st">"chromosome_name"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `h()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> error in evaluating the argument 'x' in selecting a method for function 'keys': object 'mart' not found</span></span></code></pre>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'k' not found</span></span></code></pre>
 <p>When using <code><a href="../reference/select-methods.html">keys()</a></code>, you can even take advantage of the
 extra arguments that are available for others keys methods.</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select-methods.html">keys</a></span><span class="op">(</span><span class="va">mart</span>, keytype <span class="op">=</span> <span class="st">"chromosome_name"</span>, pattern <span class="op">=</span> <span class="st">"LRG"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## character(0)</span></span></code></pre>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select-methods.html">keys</a></span><span class="op">(</span><span class="va">mart</span>, keytype <span class="op">=</span> <span class="st">"chromosome_name"</span>, pattern <span class="op">=</span> <span class="st">"LRG"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `h()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> error in evaluating the argument 'x' in selecting a method for function 'keys': object 'mart' not found</span></span></code></pre>
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">k</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'k' not found</span></span></code></pre>
 <p>Unfortunately the <code><a href="../reference/select-methods.html">keys()</a></code> method will not work with all
 key types because they are not all supported.</p>
 <p>But you can still use <code><a href="../reference/select-methods.html">select()</a></code> here to extract columns
 of data that match a particular set of keys (this is basically a wrapper
 for <code><a href="../reference/getBM.html">getBM()</a></code>).</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">affy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"202763_at"</span>, <span class="st">"209310_s_at"</span>, <span class="st">"207500_at"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/select-methods.html">select</a></span><span class="op">(</span></span>
 <span>  <span class="va">mart</span>,</span>
@@ -574,18 +597,16 @@ for <code><a href="../reference/getBM.html">getBM()</a></code>).</p>
 <span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"affy_hg_u133_plus_2"</span>, <span class="st">"entrezgene_id"</span><span class="op">)</span>,</span>
 <span>  keytype <span class="op">=</span> <span class="st">"affy_hg_u133_plus_2"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   affy_hg_u133_plus_2 entrezgene_id</span></span>
-<span><span class="co">## 1         209310_s_at           837</span></span>
-<span><span class="co">## 2           202763_at           836</span></span>
-<span><span class="co">## 3           207500_at           838</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `h()`:</span></span></span>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> error in evaluating the argument 'x' in selecting a method for function 'select': object 'mart' not found</span></span></code></pre>
 <p>So why would we want to do this when we already have functions like
 <code><a href="../reference/getBM.html">getBM()</a></code>? For two reasons: 1) for people who are familiar
-with select and it’s helper methods, they can now proceed to use <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+with select and it’s helper methods, they can now proceed to use <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 making the same kinds of calls that are already familiar to them and 2)
 because the select method is implemented in many places elsewhere, the
 fact that these methods are shared allows for more convenient
 programmatic access of all these resources. An example of a package that
-takes advantage of this is the <em><a href="https://bioconductor.org/packages/3.22/OrganismDbi" class="external-link">OrganismDbi</a></em>
+takes advantage of this is the <em><a href="https://bioconductor.org/packages/3.23/OrganismDbi" class="external-link">OrganismDbi</a></em>
 package. Where several packages can be accessed as if they were one
 resource.</p>
 </div>
@@ -593,7 +614,7 @@ resource.</p>
 <div class="section level2">
 <h2 id="result-caching">Result Caching<a class="anchor" aria-label="anchor" href="#result-caching"></a>
 </h2>
-<p>To save time and computing resources <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+<p>To save time and computing resources <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 will attempt to identify when you are re-running a query you have
 executed before. Each time a new query is run, the results will be saved
 to a cache on your computer. If a query is identified as having been run
@@ -601,12 +622,12 @@ previously, rather than submitting the query to the server, the results
 will be loaded from the cache.</p>
 <p>You can get some information on the size and location of the cache
 using the function <code><a href="../reference/biomartCache.html">biomartCacheInfo()</a></code>:</p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/biomartCache.html">biomartCacheInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## biomaRt cache</span></span>
 <span><span class="co">## - Location: /home/runner/.cache/R/biomaRt</span></span>
-<span><span class="co">## - No. of files: 4</span></span>
-<span><span class="co">## - Total size: 9.9 Kb</span></span></code></pre>
+<span><span class="co">## - No. of files: 3</span></span>
+<span><span class="co">## - Total size: 10 Kb</span></span></code></pre>
 <p>The cache can be deleted using the command
 <code><a href="../reference/biomartCache.html">biomartCacheClear()</a></code>. This will remove all cached files.</p>
 <p>The default location for the cache is specific to your computer and
@@ -618,18 +639,18 @@ The code below gives an example where we change the location to a
 temporary file<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;This would not be a sensible choice on your machine, but
 is convenient on the Bioconductor server.&lt;/p&gt;"><sup>4</sup></a> and then confirm that the location has
 changed.</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>BIOMART_CACHE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/biomartCache.html">biomartCacheInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## biomaRt cache</span></span>
-<span><span class="co">## - Location: /tmp/RtmpCsHFcD</span></span>
+<span><span class="co">## - Location: /tmp/RtmpPrlxvh</span></span>
 <span><span class="co">## - No. of files: 0</span></span>
 <span><span class="co">## - Total size: 0 bytes</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="biomart-helper-functions">biomaRt helper functions<a class="anchor" aria-label="anchor" href="#biomart-helper-functions"></a>
 </h2>
-<p>This section describes a set of <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+<p>This section describes a set of <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 helper functions that can be used to export FASTA format sequences,
 retrieve values for certain filters and exploring the available filters
 and attributes in a more systematic manner.</p>
@@ -646,7 +667,7 @@ using the file argument.</p>
 <h2 id="examples-of-biomart-queries">Examples of biomaRt queries<a class="anchor" aria-label="anchor" href="#examples-of-biomart-queries"></a>
 </h2>
 <p>In the sections below a variety of example queries are described.
-Every example is written as a task, and we have to come up with a <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+Every example is written as a task, and we have to come up with a <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 solution to the problem.</p>
 <div class="section level3">
 <h3 id="annotate-a-set-of-affymetrix-identifiers-with-hugo-symbol-and-chromosomal-locations-of-corresponding-genes">Annotate a set of Affymetrix identifiers with HUGO symbol and
@@ -665,7 +686,7 @@ a mapping with our original Affymetrix input identifiers. There is one
 filter in this query which is the affy_hg_u133_plus_2 filter as we use a
 list of Affymetrix identifiers as input. Putting this all together in
 the <code><a href="../reference/getBM.html">getBM()</a></code> and performing the query gives:</p>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">affyids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"202763_at"</span>, <span class="st">"209310_s_at"</span>, <span class="st">"207500_at"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -681,9 +702,9 @@ the <code><a href="../reference/getBM.html">getBM()</a></code> and performing th
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   affy_hg_u133_plus_2 hgnc_symbol chromosome_name start_position end_position  band</span></span>
-<span><span class="co">## 1         209310_s_at       CASP4              11      104942866    104969366 q22.3</span></span>
+<span><span class="co">## 1           207500_at       CASP5              11      104991932    105023169 q22.3</span></span>
 <span><span class="co">## 2           202763_at       CASP3               4      184627695    184650418 q35.1</span></span>
-<span><span class="co">## 3           207500_at       CASP5              11      104992636    105023168 q22.3</span></span></code></pre>
+<span><span class="co">## 3         209310_s_at       CASP4              11      104942866    104969366 q22.3</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="annotate-a-set-of-entrezgene-identifiers-with-go-annotation">Annotate a set of EntrezGene identifiers with GO annotation<a class="anchor" aria-label="anchor" href="#annotate-a-set-of-entrezgene-identifiers-with-go-annotation"></a>
@@ -694,7 +715,7 @@ associated with these entrezgene identifiers. Again we look at the
 output of <code><a href="../reference/listAttributes.html">listAttributes()</a></code> and <code><a href="../reference/listFilters.html">listFilters()</a></code>
 to find the filter and attributes we need. Then we construct the
 following query:</p>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">entrez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"673"</span>, <span class="st">"837"</span><span class="op">)</span></span>
 <span><span class="va">goids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entrezgene_id"</span>, <span class="st">"go_id"</span><span class="op">)</span>,</span>
@@ -708,8 +729,8 @@ following query:</p>
 <span><span class="co">## 2           673 GO:0007165</span></span>
 <span><span class="co">## 3           673 GO:0006468</span></span>
 <span><span class="co">## 4           673 GO:0004672</span></span>
-<span><span class="co">## 5           673 GO:0016740</span></span>
-<span><span class="co">## 6           673 GO:0005829</span></span></code></pre>
+<span><span class="co">## 5           673 GO:0000166</span></span>
+<span><span class="co">## 6           673 GO:0016740</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="retrieve-all-hugo-gene-symbols-of-genes-that-are-located-on-chromosomes-1720-or-y-and-are-associated-with-specific-go-terms">Retrieve all HUGO gene symbols of genes that are located on
@@ -723,7 +744,7 @@ a list, where the first element of the list corresponds to the first
 filter and the second list element to the second filter and so on. The
 elements of this list are vectors containing the possible values for the
 corresponding filters.</p>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">go</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GO:0051330"</span>, <span class="st">"GO:0000080"</span>, <span class="st">"GO:0000114"</span>, <span class="st">"GO:0000082"</span><span class="op">)</span></span>
 <span><span class="va">chrom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">17</span>, <span class="fl">20</span>, <span class="st">"Y"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
@@ -733,8 +754,8 @@ corresponding filters.</p>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   hgnc_symbol</span></span>
-<span><span class="co">## 1        CDK3</span></span>
-<span><span class="co">## 2     RPS6KB1</span></span></code></pre>
+<span><span class="co">## 1     RPS6KB1</span></span>
+<span><span class="co">## 2        CDK3</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="annotate-set-of-idenfiers-with-interpro-protein-domain-identifiers">Annotate set of idenfiers with INTERPRO protein domain
@@ -744,20 +765,32 @@ identifiers<a class="anchor" aria-label="anchor" href="#annotate-set-of-idenfier
 identifiers: <strong>NM_005359</strong> and <strong>NM_000546</strong>
 with INTERPRO protein domain identifiers and a description of the
 protein domains.</p>
-<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">refseqids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NM_005359"</span>, <span class="st">"NM_000546"</span><span class="op">)</span></span>
 <span><span class="va">ipro</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refseq_mrna"</span>, <span class="st">"interpro"</span>, <span class="st">"interpro_description"</span><span class="op">)</span>,</span>
 <span>  filters <span class="op">=</span> <span class="st">"refseq_mrna"</span>,</span>
 <span>  values <span class="op">=</span> <span class="va">refseqids</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.</span></span></code></pre>
-<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ipro</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'ipro' not found</span></span></code></pre>
+<span><span class="op">)</span></span>
+<span><span class="va">ipro</span></span></code></pre></div>
+<pre><code><span><span class="co">##    refseq_mrna  interpro                                               interpro_description</span></span>
+<span><span class="co">## 1    NM_000546 IPR008967      p53-like transcription factor, DNA-binding domain superfamily</span></span>
+<span><span class="co">## 2    NM_000546 IPR036674                        p53-like tetramerisation domain superfamily</span></span>
+<span><span class="co">## 3    NM_000546 IPR012346 p53/RUNT-type transcription factor, DNA-binding domain superfamily</span></span>
+<span><span class="co">## 4    NM_000546 IPR002117                                       p53 tumour suppressor family</span></span>
+<span><span class="co">## 5    NM_000546 IPR011615                                            p53, DNA-binding domain</span></span>
+<span><span class="co">## 6    NM_000546 IPR057064                                        p53, central conserved site</span></span>
+<span><span class="co">## 7    NM_000546 IPR010991                                        p53, tetramerisation domain</span></span>
+<span><span class="co">## 8    NM_000546 IPR040926               Cellular tumor antigen p53, transactivation domain 2</span></span>
+<span><span class="co">## 9    NM_000546 IPR013872                                        p53, transactivation domain</span></span>
+<span><span class="co">## 10   NM_005359 IPR003619                                       MAD homology 1, Dwarfin-type</span></span>
+<span><span class="co">## 11   NM_005359 IPR008984                                        SMAD/FHA domain superfamily</span></span>
+<span><span class="co">## 12   NM_005359 IPR017855                                       SMAD-like domain superfamily</span></span>
+<span><span class="co">## 13   NM_005359 IPR001132                                          SMAD domain, Dwarfin-type</span></span>
+<span><span class="co">## 14   NM_005359 IPR013019                                                  MAD homology, MH1</span></span>
+<span><span class="co">## 15   NM_005359 IPR036578                                        SMAD MH1 domain superfamily</span></span>
+<span><span class="co">## 16   NM_005359 IPR013790                                                            Dwarfin</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="select-all-affymetrix-identifiers-on-the-hgu133plus2-chip-and-ensembl-gene-identifiers-for-genes-located-on-chromosome-16-between-basepair-1100000-and-1250000-">Select all Affymetrix identifiers on the hgu133plus2 chip and
@@ -770,15 +803,40 @@ on these three conditions. Note that when a chromosome name, a start
 position and an end position are jointly used as filters, the BioMart
 webservice interprets this as return everything from the given
 chromosome between the given start and end positions.</p>
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"affy_hg_u133_plus_2"</span>, <span class="st">"ensembl_gene_id"</span><span class="op">)</span>,</span>
 <span>  filters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chromosome_name"</span>, <span class="st">"start"</span>, <span class="st">"end"</span><span class="op">)</span>,</span>
 <span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">1100000</span>, <span class="fl">1250000</span><span class="op">)</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.</span></span></code></pre>
+<pre><code><span><span class="co">##    affy_hg_u133_plus_2 ensembl_gene_id</span></span>
+<span><span class="co">## 1                      ENSG00000292423</span></span>
+<span><span class="co">## 2                      ENSG00000260702</span></span>
+<span><span class="co">## 3                      ENSG00000260532</span></span>
+<span><span class="co">## 4            215502_at ENSG00000260532</span></span>
+<span><span class="co">## 5                      ENSG00000292400</span></span>
+<span><span class="co">## 6                      ENSG00000292401</span></span>
+<span><span class="co">## 7                      ENSG00000273551</span></span>
+<span><span class="co">## 8            205845_at ENSG00000196557</span></span>
+<span><span class="co">## 9                      ENSG00000196557</span></span>
+<span><span class="co">## 10                     ENSG00000260403</span></span>
+<span><span class="co">## 11                     ENSG00000259910</span></span>
+<span><span class="co">## 12                     ENSG00000261294</span></span>
+<span><span class="co">## 13         220339_s_at ENSG00000116176</span></span>
+<span><span class="co">## 14         210084_x_at ENSG00000197253</span></span>
+<span><span class="co">## 15         217023_x_at ENSG00000197253</span></span>
+<span><span class="co">## 16         216474_x_at ENSG00000197253</span></span>
+<span><span class="co">## 17         205683_x_at ENSG00000197253</span></span>
+<span><span class="co">## 18         207134_x_at ENSG00000197253</span></span>
+<span><span class="co">## 19         215382_x_at ENSG00000197253</span></span>
+<span><span class="co">## 20                     ENSG00000292385</span></span>
+<span><span class="co">## 21         210084_x_at ENSG00000172236</span></span>
+<span><span class="co">## 22         217023_x_at ENSG00000172236</span></span>
+<span><span class="co">## 23         216474_x_at ENSG00000172236</span></span>
+<span><span class="co">## 24         205683_x_at ENSG00000172236</span></span>
+<span><span class="co">## 25         207134_x_at ENSG00000172236</span></span>
+<span><span class="co">## 26         215382_x_at ENSG00000172236</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="retrieve-all-entrezgene-identifiers-and-hugo-gene-symbols-of-genes-which-have-a-map-kinase-activity-go-term-associated-with-it-">Retrieve all EntrezGene identifiers and HUGO gene symbols of genes
@@ -787,15 +845,34 @@ which have a “MAP kinase activity” GO term associated with it.<a class="anch
 <p>The GO identifier for MAP kinase activity is <strong><a href="GO:0004707" class="uri">GO:0004707</a></strong>. In our query we
 will use <em>go_id</em> as our filter, and <em>entrezgene_id</em> and
 <em>hgnc_symbol</em> as attributes. Here’s the query:</p>
-<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entrezgene_id"</span>, <span class="st">"hgnc_symbol"</span><span class="op">)</span>,</span>
 <span>  filters <span class="op">=</span> <span class="st">"go"</span>,</span>
 <span>  values <span class="op">=</span> <span class="st">"GO:0004707"</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.</span></span></code></pre>
+<pre><code><span><span class="co">##    entrezgene_id hgnc_symbol</span></span>
+<span><span class="co">## 1           1022        CDK7</span></span>
+<span><span class="co">## 2         225689      MAPK15</span></span>
+<span><span class="co">## 3           6300      MAPK12</span></span>
+<span><span class="co">## 4           5596       MAPK4</span></span>
+<span><span class="co">## 5           5600      MAPK11</span></span>
+<span><span class="co">## 6           5595       MAPK3</span></span>
+<span><span class="co">## 7           6885      MAP3K7</span></span>
+<span><span class="co">## 8           1432      MAPK14</span></span>
+<span><span class="co">## 9           5597       MAPK6</span></span>
+<span><span class="co">## 10          5127       CDK16</span></span>
+<span><span class="co">## 11          5594       MAPK1</span></span>
+<span><span class="co">## 12          5891         MOK</span></span>
+<span><span class="co">## 13          2932       GSK3B</span></span>
+<span><span class="co">## 14          8621       CDK13</span></span>
+<span><span class="co">## 15          5599       MAPK8</span></span>
+<span><span class="co">## 16          5601       MAPK9</span></span>
+<span><span class="co">## 17          5603      MAPK13</span></span>
+<span><span class="co">## 18          5602      MAPK10</span></span>
+<span><span class="co">## 19         51701         NLK</span></span>
+<span><span class="co">## 20          5598       MAPK7</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="given-a-set-of-entrezgene-identifiers-retrieve-100bp-upstream-promoter-sequences">Given a set of EntrezGene identifiers, retrieve 100bp upstream
@@ -863,7 +940,7 @@ next to the coding start of the gene. Setting the <em>seqType</em> to
 sequence we want to retrieve, here we’ll retrieve a rather short
 sequence of 100bp. Putting this all together in
 <code><a href="../reference/getSequence.html">getSequence()</a></code> gives:</p>
-<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">entrez</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"673"</span>, <span class="st">"7157"</span>, <span class="st">"837"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/getSequence.html">getSequence</a></span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="va">entrez</span>,</span>
@@ -873,11 +950,11 @@ sequence of 100bp. Putting this all together in
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.</span></span></code></pre>
+<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Usage: Filter upstream_flank NOT FOUND</span></span></code></pre>
 <p>One further thing to note is that, although we are searching for
 genes based on their NCBI Gene IDs, Ensembl BioMart doesn’t allow some
 ID types (including NCBI IDs) to be returned directly. To try and
-accommodate this <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+accommodate this <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 attempts to map the query IDs to Ensembl Gene IDs internally before
 finding the sequence information. If no such mapping exists (or at least
 isn’t found in Ensembl) then no sequence will be returned for the
@@ -893,7 +970,7 @@ in the given region. We also have to specify which type of identifier we
 want to retrieve together with the sequences. Here we choose the NCBI
 Gene ID<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;These were historically called “Entrezgene IDs”, hence
 the name given to the &lt;code&gt;type&lt;/code&gt; argument.&lt;/p&gt;"><sup>5</sup></a></p>
-<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">utr5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getSequence.html">getSequence</a></span><span class="op">(</span></span>
 <span>  chromosome <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  start <span class="op">=</span> <span class="fl">185514033</span>,</span>
@@ -903,34 +980,22 @@ the name given to the &lt;code&gt;type&lt;/code&gt; argument.&lt;/p&gt;"><sup>5<
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">utr5</span></span></code></pre></div>
-<pre><code><span><span class="co">##                                                                                                                                                  5utr</span></span>
-<span><span class="co">## 1                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 2  AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 3                               ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 4                                                                                                                                Sequence unavailable</span></span>
-<span><span class="co">## 5                                          GAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 6                                                             TGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 7          CCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 8             AGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 9                                                                           CAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 10     AGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 11                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 12                                 ACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">## 13                                                                                            CTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
-<span><span class="co">##    entrezgene_id</span></span>
-<span><span class="co">## 1             NA</span></span>
-<span><span class="co">## 2         200879</span></span>
-<span><span class="co">## 3         200879</span></span>
-<span><span class="co">## 4         200879</span></span>
-<span><span class="co">## 5         200879</span></span>
-<span><span class="co">## 6         200879</span></span>
-<span><span class="co">## 7         200879</span></span>
-<span><span class="co">## 8         200879</span></span>
-<span><span class="co">## 9         200879</span></span>
-<span><span class="co">## 10        200879</span></span>
-<span><span class="co">## 11        200879</span></span>
-<span><span class="co">## 12        200879</span></span>
-<span><span class="co">## 13        200879</span></span></code></pre>
+<pre><code><span><span class="co">##                                                                                                                                                 5utr</span></span>
+<span><span class="co">## 1 AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 2                                                                                                                               Sequence unavailable</span></span>
+<span><span class="co">## 3                              ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 4                                                                                                                               Sequence unavailable</span></span>
+<span><span class="co">## 5        CCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 6                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">## 7       TCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT</span></span>
+<span><span class="co">##   entrezgene_id</span></span>
+<span><span class="co">## 1        200879</span></span>
+<span><span class="co">## 2            NA</span></span>
+<span><span class="co">## 3        200879</span></span>
+<span><span class="co">## 4        200879</span></span>
+<span><span class="co">## 5        200879</span></span>
+<span><span class="co">## 6        200879</span></span>
+<span><span class="co">## 7        200879</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="retrieve-protein-sequences-for-a-given-list-of-entrezgene-identifiers">Retrieve protein sequences for a given list of EntrezGene
@@ -939,19 +1004,32 @@ identifiers<a class="anchor" aria-label="anchor" href="#retrieve-protein-sequenc
 <p>In this task the type argument specifies which type of identifiers we
 are using. To get an overview of other valid identifier types we refer
 to the <code><a href="../reference/listFilters.html">listFilters()</a></code> function.</p>
-<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">protein</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getSequence.html">getSequence</a></span><span class="op">(</span></span>
 <span>  id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">27112</span>, <span class="fl">653067</span><span class="op">)</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"entrezgene_id"</span>,</span>
 <span>  seqType <span class="op">=</span> <span class="st">"peptide"</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">ensembl</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.</span></span></code></pre>
-<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">protein</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'protein' not found</span></span></code></pre>
+<span><span class="op">)</span></span>
+<span><span class="va">protein</span></span></code></pre></div>
+<pre><code><span><span class="co">##                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     peptide</span></span>
+<span><span class="co">## 1 MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKAVYKAWLCSEYFSVTQQECQRWVPCKQYCLEVQTRCPFILPDNEEMVYGGLPGFICTGLLDTSPKRLETKCCDVQWVSCEAKKKKFKESEAPKTHQQQFHHSYFHHYHQQYHHYHPHHDPPGRVSNKPALLPVSGGSRLSPSRIRLCVLVLMLLHTVVSFSSNQGGGGLGLETLPALEEGLTREE*</span></span>
+<span><span class="co">## 2                                                                                                                                                                                     MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKKLCAH*</span></span>
+<span><span class="co">## 3                                                                                                                                     MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKRLELNVLGLAGAGGRPKMGGRIFGNQTLTLWLLPVGERTSTPGGGAHHTLDLM*</span></span>
+<span><span class="co">## 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable</span></span>
+<span><span class="co">## 5                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*</span></span>
+<span><span class="co">## 6                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*</span></span>
+<span><span class="co">## 7                                                                                                                                                                                                                                                                                                                                                                                                          MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAEQPQV*</span></span>
+<span><span class="co">## 8                                                                                                                                                                                                                                                                                                                                                                                                           MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAAFPQ*</span></span>
+<span><span class="co">##   entrezgene_id</span></span>
+<span><span class="co">## 1         27112</span></span>
+<span><span class="co">## 2         27112</span></span>
+<span><span class="co">## 3         27112</span></span>
+<span><span class="co">## 4        653067</span></span>
+<span><span class="co">## 5        653067</span></span>
+<span><span class="co">## 6        653067</span></span>
+<span><span class="co">## 7        653067</span></span>
+<span><span class="co">## 8        653067</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="retrieve-known-snps-located-on-the-human-chromosome-8-between-positions-148350-and-148400">Retrieve known SNPs located on the human chromosome 8 between
@@ -959,8 +1037,9 @@ positions 148350 and 148400<a class="anchor" aria-label="anchor" href="#retrieve
 </h3>
 <p>For this example we’ll first have to connect to a different BioMart
 database, namely snp.</p>
-<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">snpmart</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span>biomart <span class="op">=</span> <span class="st">"snp"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_snp"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying asia mirror</span></span></code></pre>
 <p>The <code><a href="../reference/listAttributes.html">listAttributes()</a></code> and <code><a href="../reference/listFilters.html">listFilters()</a></code>
 functions give us an overview of the available attributes and filters.
 From these we need: <em>refsnp_id</em>, <em>allele</em>,
@@ -971,7 +1050,7 @@ an end position are jointly used as filters, the BioMart webservice
 interprets this as return everything from the given chromosome between
 the given start and end positions.&lt;/p&gt;"><sup>6</sup></a> Putting our selected attributes and filters
 into <code><a href="../reference/getBM.html">getBM()</a></code> gives:</p>
-<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refsnp_id"</span>, <span class="st">"allele"</span>, <span class="st">"chrom_start"</span>, <span class="st">"chrom_strand"</span><span class="op">)</span>,</span>
 <span>  filters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"chr_name"</span>, <span class="st">"start"</span>, <span class="st">"end"</span><span class="op">)</span>,</span>
@@ -1018,21 +1097,20 @@ its homolog in mouse.<a class="anchor" aria-label="anchor" href="#given-the-huma
 dataset with the <code>TP53</code> gene symbol, and return the
 chromosomal location. Note we also retrieve the Ensembl Gene ID, as this
 will be required in the next step.</p>
-<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">human</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">BRCA2_human</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">human</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"hsapiens_gene_ensembl"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying useast mirror</span></span></code></pre>
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying asia mirror</span></span></code></pre>
+<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">BRCA2_human</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  mart <span class="op">=</span> <span class="va">human</span>,</span>
 <span>  filters <span class="op">=</span> <span class="st">"hgnc_symbol"</span>,</span>
 <span>  value <span class="op">=</span> <span class="st">"BRCA2"</span>,</span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ensembl_gene_id"</span>, <span class="st">"chromosome_name"</span>, <span class="st">"start_position"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `.processResults()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> Query ERROR: caught BioMart::Exception::Database: Could not connect to mysql database ensembl_mart_115: DBI connect('database=ensembl_mart_115;host=127.0.0.1;port=5316','ensro',...) failed: Can't connect to MySQL server on '127.0.0.1' (111) at /nfs/public/ro/ensweb/live/mart/www_115/biomart-perl/lib/BioMart/Configuration/DBLocation.pm line 98.</span></span></code></pre>
-<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">BRCA2_human</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'BRCA2_human' not found</span></span></code></pre>
+<span><span class="op">)</span></span>
+<span><span class="va">BRCA2_human</span></span></code></pre></div>
+<pre><code><span><span class="co">##   ensembl_gene_id chromosome_name start_position</span></span>
+<span><span class="co">## 1 ENSG00000139618              13       32315086</span></span></code></pre>
 <p>Next we can use the <code><a href="../reference/getHomologs.html">getHomologs()</a></code> function to find
 homologous genes between two species. For this we need to provide the
 ensembl IDs for the genes we’re interest in, which is why we included
@@ -1042,35 +1120,35 @@ and will attempt to find the correct BioMart dataset <a class="footnote-ref" tab
 multiple strains in BioMart. In this case &lt;strong&gt;biomaRt&lt;/strong&gt;
 selects the reference strain.&lt;/p&gt;"><sup>7</sup></a> Our returned table
 contains the paired Ensembl IDs between the two organisms.</p>
-<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">homologs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getHomologs.html">getHomologs</a></span><span class="op">(</span></span>
 <span>  ensembl_gene_ids <span class="op">=</span> <span class="va">BRCA2_human</span><span class="op">$</span><span class="va">ensembl_gene_id</span>,</span>
 <span>  species_from <span class="op">=</span> <span class="st">"human"</span>,</span>
 <span>  species_to <span class="op">=</span> <span class="st">"mouse"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'BRCA2_human' not found</span></span></code></pre>
-<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying asia mirror</span></span></code></pre>
+<div class="sourceCode" id="cb99"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">homologs</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'homologs' not found</span></span></code></pre>
+<pre><code><span><span class="co">##   ensembl_gene_id mmusculus_homolog_ensembl_gene</span></span>
+<span><span class="co">## 1 ENSG00000139618             ENSMUSG00000041147</span></span></code></pre>
 <p>Finally we can use the mouse Ensembl gene IDs found by
 <code><a href="../reference/getHomologs.html">getHomologs()</a></code> to query the mouse gene dataset and get the
 details we require.</p>
-<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mouse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"mmusculus_gene_ensembl"</span><span class="op">)</span></span>
-<span><span class="va">BRCA2_mouse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mouse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useEnsembl.html">useEnsembl</a></span><span class="op">(</span><span class="st">"ensembl"</span>, dataset <span class="op">=</span> <span class="st">"mmusculus_gene_ensembl"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Ensembl site unresponsive, trying asia mirror</span></span></code></pre>
+<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">BRCA2_mouse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  mart <span class="op">=</span> <span class="va">mouse</span>,</span>
 <span>  filters <span class="op">=</span> <span class="st">"ensembl_gene_id"</span>,</span>
 <span>  values <span class="op">=</span> <span class="va">homologs</span><span class="op">$</span><span class="va">mmusculus_homolog_ensembl_gene</span>,</span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refseq_mrna"</span>, <span class="st">"chromosome_name"</span>, <span class="st">"start_position"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'homologs' not found</span></span></code></pre>
-<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">BRCA2_mouse</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'BRCA2_mouse' not found</span></span></code></pre>
+<span><span class="op">)</span></span>
+<span><span class="va">BRCA2_mouse</span></span></code></pre></div>
+<pre><code><span><span class="co">##    refseq_mrna chromosome_name start_position</span></span>
+<span><span class="co">## 1                            5      150446057</span></span>
+<span><span class="co">## 2    NM_009765               5      150446057</span></span>
+<span><span class="co">## 3 NM_001081001               5      150446057</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -1084,10 +1162,10 @@ or you have a new error not listed here, please reported it on the <a href="http
 Site</a>.</p>
 <div class="section level3">
 <h3 id="biomart-specific-solutions">
-<em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+<em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 specific solutions<a class="anchor" aria-label="anchor" href="#biomart-specific-solutions"></a>
 </h3>
-<p>If you are using <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+<p>If you are using <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 directly make sure you are using <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> to create the
 <strong>Mart</strong> object, rather than <code><a href="../reference/useMart.html">useMart()</a></code>.
 <code><a href="../reference/useEnsembl.html">useEnsembl()</a></code> is aware of some specific connection details
@@ -1097,13 +1175,13 @@ problems without requiring you to do anything further.</p>
 <div class="section level3">
 <h3 id="global-connection-settings">Global connection settings<a class="anchor" aria-label="anchor" href="#global-connection-settings"></a>
 </h3>
-<p>If you are unable to modify the <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
-code (for example if you are using another package that calls <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+<p>If you are unable to modify the <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
+code (for example if you are using another package that calls <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 as part of one if its functions) it’s still possible to modify the
 connection settings for your R session. Below are some reported error
 messages and code that has been known to resolve them. You will need to
 execute this code only once in an R session. The settings will then be
-saved to the <em><a href="https://bioconductor.org/packages/3.22/biomaRt" class="external-link">biomaRt</a></em>
+saved to the <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 cache and will be used from then on when you try to connect to the
 Ensembl BioMart.</p>
 <div class="section level4">
@@ -1113,7 +1191,7 @@ Ensembl BioMart.</p>
 <pre><code>Error in curl::curl_fetch_memory(url, handle = handle) :
 SSL certificate problem: unable to get local issuer certificate</code></pre>
 <p><strong>Fix</strong></p>
-<div class="sourceCode" id="cb100"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/setEnsemblSSL.html">setEnsemblSSL</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ssl_verifypeer <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -1125,7 +1203,7 @@ error:14094410:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure</code>
 <p><strong>Fix</strong></p>
 <p>If you’re running Ubuntu 20.04 or newer the following command should
 fix the issue.</p>
-<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb108"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/setEnsemblSSL.html">setEnsemblSSL</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ssl_cipher_list <span class="op">=</span> <span class="st">"DEFAULT@SECLEVEL=1"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>If you encounter this error on Fedora 33, the code above doesn’t seem
 to work. At the moment, the only workaround we have discovered is to
@@ -1142,9 +1220,9 @@ change. You could also consider alerting Ensembl to this issue.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb110"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## R version 4.5.3 (2026-03-11)</span></span>
+<pre><code><span><span class="co">## R version 4.6.1 (2026-06-24)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">## Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">## </span></span>
@@ -1164,27 +1242,27 @@ change. You could also consider alerting Ensembl to this issue.</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] biomaRt_2.67.7   BiocStyle_2.38.0</span></span>
+<span><span class="co">## [1] biomaRt_2.69.0   BiocStyle_2.40.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] KEGGREST_1.50.0      xfun_0.57            bslib_0.10.0         httr2_1.2.2         </span></span>
-<span><span class="co">##  [5] Biobase_2.70.0       vctrs_0.7.2          tools_4.5.3          generics_0.1.4      </span></span>
-<span><span class="co">##  [9] stats4_4.5.3         curl_7.0.0           tibble_3.3.1         AnnotationDbi_1.72.0</span></span>
-<span><span class="co">## [13] RSQLite_2.4.6        blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.5.2        </span></span>
-<span><span class="co">## [17] desc_1.4.3           S4Vectors_0.48.1     lifecycle_1.0.5      compiler_4.5.3      </span></span>
-<span><span class="co">## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.78.0    progress_1.2.3      </span></span>
-<span><span class="co">## [25] Seqinfo_1.0.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         </span></span>
+<span><span class="co">##  [1] KEGGREST_1.52.2      xfun_0.59            bslib_0.11.0         httr2_1.2.3         </span></span>
+<span><span class="co">##  [5] Biobase_2.72.0       vctrs_0.7.3          tools_4.6.1          generics_0.1.4      </span></span>
+<span><span class="co">##  [9] stats4_4.6.1         curl_7.1.0           tibble_3.3.1         AnnotationDbi_1.74.0</span></span>
+<span><span class="co">## [13] RSQLite_3.53.3       blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.6.0        </span></span>
+<span><span class="co">## [17] desc_1.4.3           S4Vectors_0.50.1     lifecycle_1.0.5      compiler_4.6.1      </span></span>
+<span><span class="co">## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.80.1    progress_1.2.3      </span></span>
+<span><span class="co">## [25] Seqinfo_1.2.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         </span></span>
 <span><span class="co">## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     </span></span>
 <span><span class="co">## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       </span></span>
-<span><span class="co">## [37] dplyr_1.2.1          purrr_1.2.1          bookdown_0.46        fastmap_1.2.0       </span></span>
-<span><span class="co">## [41] cli_3.6.5            magrittr_2.0.5       withr_3.0.2          prettyunits_1.2.0   </span></span>
-<span><span class="co">## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.6.0-1        rmarkdown_2.31      </span></span>
-<span><span class="co">## [49] XVector_0.50.0       httr_1.4.8           bit_4.6.0            ragg_1.5.2          </span></span>
-<span><span class="co">## [53] png_0.1-9            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      </span></span>
-<span><span class="co">## [57] knitr_1.51           IRanges_2.44.0       BiocFileCache_3.0.0  rlang_1.2.0         </span></span>
-<span><span class="co">## [61] glue_1.8.0           DBI_1.3.0            xml2_1.5.2           BiocManager_1.30.27 </span></span>
-<span><span class="co">## [65] BiocGenerics_0.56.0  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   </span></span>
-<span><span class="co">## [69] fs_2.0.1</span></span></code></pre>
+<span><span class="co">## [37] dplyr_1.2.1          purrr_1.2.2          bookdown_0.47        fastmap_1.2.0       </span></span>
+<span><span class="co">## [41] cli_3.6.6            magrittr_2.0.5       withr_3.0.3          prettyunits_1.2.0   </span></span>
+<span><span class="co">## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.8.2          rmarkdown_2.31      </span></span>
+<span><span class="co">## [49] XVector_0.52.0       httr_1.4.8           bit_4.6.0            otel_0.2.0          </span></span>
+<span><span class="co">## [53] ragg_1.5.2           png_0.1-9            hms_1.1.4            memoise_2.0.1       </span></span>
+<span><span class="co">## [57] evaluate_1.0.5       knitr_1.51           IRanges_2.46.0       BiocFileCache_3.2.0 </span></span>
+<span><span class="co">## [61] rlang_1.2.0          glue_1.8.1           DBI_1.3.0            xml2_1.6.0          </span></span>
+<span><span class="co">## [65] BiocManager_1.30.27  BiocGenerics_0.58.1  jsonlite_2.0.0       R6_2.6.1            </span></span>
+<span><span class="co">## [69] systemfonts_1.3.2    fs_2.1.0</span></span></code></pre>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

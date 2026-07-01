@@ -21,6 +21,11 @@ attributePages(mart)
   [`useMart()`](https://huber-group-embl.github.io/biomaRt/reference/useMart.md)
   function.
 
+## Value
+
+A character vector containing the names of the attribute pages present
+in the `mart` object.
+
 ## Author
 
 Steffen Durinck
