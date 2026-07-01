@@ -262,6 +262,10 @@ listMarts <- function(
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
 #'
+#' @returns An object of class [Mart], which can be used in functions such as
+#' [getBM()], [getLDS()], [getGene()], etc. to retrieve data from the selected
+#' BioMart database.
+#'
 #' @details
 #' The previously available `archive` argument is defunct.
 #' A better alternative is to specify the url of the archived BioMart
@@ -810,7 +814,12 @@ listAttributes <- function(
 #'
 #'
 #' @param mart object of class Mart, created with the [useMart()] function.
+#'
 #' @author Steffen Durinck
+#'
+#' @returns A character vector containing the names of the attribute pages present
+#'   in the `mart` object.
+#'
 #' @keywords methods
 #' @examplesIf interactive()
 #' mart <- useMart(
@@ -844,6 +853,11 @@ attributePages <- function(mart) {
 #' @param pattern Character vector defining the regular expression
 #' ([regex][base::regex]) to be used for the search.  If left blank the
 #' default is to use `".*"`` which will match everything.
+#'
+#' @returns A `data.frame` with available filters as 2 columns:
+#' * `name`: the name of the filter
+#' * `description`: text description of the filter
+#'
 #' @author Steffen Durinck, Mike Smith
 #' @keywords methods
 #'

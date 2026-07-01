@@ -9,6 +9,10 @@ attributePages(mart)
 \arguments{
 \item{mart}{object of class Mart, created with the \code{\link[=useMart]{useMart()}} function.}
 }
+\value{
+A character vector containing the names of the attribute pages present
+in the \code{mart} object.
+}
 \description{
 Attributes in BioMart databases are grouped together in attribute pages.
 The \code{\link[=attributePages]{attributePages()}} function gives a summary of the attribute categories and

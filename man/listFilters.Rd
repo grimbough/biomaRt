@@ -22,6 +22,13 @@ the available filters.  Valid values are \code{name}, \code{description},
 (\link[base:regex]{regex}) to be used for the search.  If left blank the
 default is to use `".*"`` which will match everything.}
 }
+\value{
+A \code{data.frame} with available filters as 2 columns:
+\itemize{
+\item \code{name}: the name of the filter
+\item \code{description}: text description of the filter
+}
+}
 \description{
 Filters are what we use as inputs for a biomaRt query.  For example, if we
 want to retrieve all EntrezGene identifiers on chromosome X,

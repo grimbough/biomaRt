@@ -362,6 +362,9 @@ listEnsembl <- function(
 #' Ensembl Genomes databases.
 #' @param verbose Give detailed output of what the method is doing while in
 #' use, for debugging
+#'
+#' @inherit useMart return
+#'
 #' @author Steffen Durinck & Mike Smith
 #' @keywords methods
 #'

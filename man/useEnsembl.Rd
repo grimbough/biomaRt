@@ -43,6 +43,11 @@ Ensembl Genomes databases.}
 \item{verbose}{Give detailed output of what the method is doing while in
 use, for debugging}
 }
+\value{
+An object of class \link{Mart}, which can be used in functions such as
+\code{\link[=getBM]{getBM()}}, \code{\link[=getLDS]{getLDS()}}, \code{\link[=getGene]{getGene()}}, etc. to retrieve data from the selected
+BioMart database.
+}
 \description{
 A first step in using the biomaRt package is to select a BioMart database
 and dataset to use.  The \code{\link[=useEnsembl]{useEnsembl()}} function enables one to connect
