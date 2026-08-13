@@ -227,26 +227,16 @@ listEnsembl <- function(
     verbose = verbose
   )
 
-  sel <- which(marts$biomart == "ENSEMBL_MART_ENSEMBL")
-  if (length(sel) > 0) {
-    marts$biomart[sel] <- "genes"
-  }
-  sel <- which(marts$biomart == "ENSEMBL_MART_SNP")
-  if (length(sel) > 0) {
-    marts$biomart[sel] <- "snps"
-  }
-  sel <- which(marts$biomart == "ENSEMBL_MART_FUNCGEN")
-  if (length(sel) > 0) {
-    marts$biomart[sel] <- "regulation"
-  }
-  sel <- which(marts$biomart == "ENSEMBL_MART_VEGA")
-  if (length(sel) > 0) {
-    marts$biomart[sel] <- "vega"
-  }
-  sel <- which(marts$biomart == "ENSEMBL_MART_MOUSE")
-  if (length(sel) > 0) {
-    marts$biomart[sel] <- "mouse_strains"
-  }
+  biomart_lookup <- c(
+    "ENSEMBL_MART_ENSEMBL" = "genes",
+    "ENSEMBL_MART_SNP" = "snps",
+    "ENSEMBL_MART_FUNCGEN" = "regulation",
+    "ENSEMBL_MART_VEGA" = "vega",
+    "ENSEMBL_MART_MOUSE" = "mouse_strains"
+  )
+
+  sel <- match(marts$biomart, names(biomart_lookup))
+  marts$biomart[!is.na(sel)] <- unname(biomart_lookup[sel[!is.na(sel)]])
   return(marts)
 }
 
