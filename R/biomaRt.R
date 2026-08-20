@@ -1027,14 +1027,14 @@ getBM <- function(
   if (useCache) {
     cache <- .biomartCacheLocation()
     bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-  }
-  hash <- .createHash(mart, attributes, filters, values, uniqueRows, bmHeader)
-  if (useCache && .checkValidCache(bfc, hash)) {
-    if (verbose) {
-      message("Cache found")
+    hash <- .createHash(mart, attributes, filters, values, uniqueRows, bmHeader)
+    if (.checkValidCache(bfc, hash)) {
+      if (verbose) {
+        message("Cache found")
+      }
+      result <- .readFromCache(bfc, hash)
+      return(result)
     }
-    result <- .readFromCache(bfc, hash)
-    return(result)
   }
   ## force the query to return the 'descriptive text' header names with the result
   ## we use these later to match and order attribute/column names
