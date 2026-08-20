@@ -59,12 +59,6 @@
   stop("Unable to contact any Ensembl mirror")
 }
 
-.currentEnsemblVersion <- function() {
-  archives <- listEnsemblArchives()
-  current <- archives[archives$current_release == "*", ]
-  return(current)
-}
-
 ## scrapes the ensembl website for the list of current archives and returns
 ## a data frame containing the versions and their URL
 
