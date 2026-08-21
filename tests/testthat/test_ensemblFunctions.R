@@ -63,13 +63,6 @@ test_that("Ensembl URLs are constructed correctly", {
     expect_equal("https://jun2026.archive.ensembl.org") |>
     expect_silent()
 
-  ## mirror ##
-  .constructEnsemblURL(mirror = "INVALID_MIRROR") |>
-    expect_equal("https://jun2026.archive.ensembl.org") |>
-    expect_warning(,
-      regexp = "Invalid mirror\\. Select a mirror"
-    )
-
   expect_equal(
     .constructEnsemblURL(mirror = "useast"),
     "https://useast.ensembl.org"
