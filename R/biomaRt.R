@@ -472,7 +472,7 @@ listDatasets <- function(mart, verbose = FALSE) {
 
   ## we choose a separator based on whether 'redirect=no' is present
   ## should always be '?' now
-  sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+  sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
 
   request <- paste0(
     martHost(mart),
@@ -522,7 +522,7 @@ bmVersion <- function(mart, verbose = FALSE) {
     bmv <- "0.7"
   } else {
     ## we choose a separator based on whether 'redirect=no' is present
-    sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+    sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
 
     request <- paste0(
       martHost(mart),
@@ -572,7 +572,7 @@ bmVersion <- function(mart, verbose = FALSE) {
 #' @importFrom utils read.table
 .getAttrFilt <- function(mart, verbose, type) {
   ## we choose a separator based on whether 'redirect=no' is present
-  sep <- ifelse(grepl(x = mart@host, pattern = ".+\\?.+"), "&", "?")
+  sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
 
   request <- paste0(
     mart@host,
@@ -1118,11 +1118,7 @@ getBM <- function(
     }
 
     ## we choose a separator based on whether '?redirect=no' is present
-    sep <- ifelse(
-      grepl(x = martHost(mart), pattern = ".+\\?.+"),
-      "&",
-      "?"
-    )
+    sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
 
     ## create a unique name for this chunk & see if it has been run before
     chunk_hash <- tools::md5sum(
@@ -1350,7 +1346,7 @@ getLDS <- function(
   }
 
   ## we choose a separator based on whether '?redirect=no' is present
-  sep <- ifelse(grepl(x = martHost(mart), pattern = ".+\\?.+"), "&", "?")
+  sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
   ## POST query
   postRes <- .submitQueryXML(
     host = paste0(martHost(mart), sep),
