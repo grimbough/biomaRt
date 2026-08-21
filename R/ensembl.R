@@ -177,18 +177,13 @@ listEnsemblArchives <- function(fetch = TRUE) {
       version = version,
       GRCh = GRCh
     )
-    port <- ifelse(startsWith(host, "http://")[1], yes = 80, no = 443)
-    ensemblRedirect <- is.null(mirror)
-
-    http_config <- .getEnsemblSSL()
-
     marts <- .listMarts(
       mart = mart,
       host = host,
       verbose = verbose,
-      http_config = http_config,
-      port = port,
-      ensemblRedirect = ensemblRedirect
+      http_config = .getEnsemblSSL(),
+      port = .guess_port(host),
+      ensemblRedirect = is.null(mirror)
     )
 
     .addToCache(bfc, marts, hash = paste0("ensembl-marts-", version_num))
@@ -450,8 +445,7 @@ useEnsembl <- function(
     ensemblRedirect <- FALSE
   }
 
-  ## choose the port based on whether we use https or not
-  port <- ifelse(startsWith(host, "http://"), yes = 80, no = 443)
+  port <- .guess_port(host)
 
   if (grepl(x = host, pattern = "www|useast|asia")) {
     marts <- .listEnsembl(version = version, GRCh = GRCh, mirror = mirror)

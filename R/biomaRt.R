@@ -133,7 +133,7 @@ listMarts <- function(
   verbose = FALSE
 ) {
   if (missing(port)) {
-    port <- ifelse(startsWith(host, "http://"), yes = 80, no = 443)
+    port <- .guess_port(host)
   }
 
   if (grepl("^https://.*ensembl.org", host) && missing(http_config)) {
@@ -297,7 +297,7 @@ useMart <- function(
   verbose = FALSE
 ) {
   if (missing(port)) {
-    port <- ifelse(startsWith(host, "http://")[1], yes = 80, no = 443)
+    port <- .guess_port(host)
   }
 
   .useMart(
