@@ -19,7 +19,7 @@ function.
 useMart(
   biomart,
   dataset,
-  host = "https://www.ensembl.org",
+  host = "https://jun2026.archive.ensembl.org",
   path = "/biomart/martservice",
   port,
   version,

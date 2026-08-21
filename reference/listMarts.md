@@ -11,7 +11,7 @@ function.
 ``` r
 listMarts(
   mart = NULL,
-  host = "https://www.ensembl.org",
+  host = "https://jun2026.archive.ensembl.org",
   path = "/biomart/martservice",
   port,
   includeHosts = FALSE,
@@ -31,7 +31,7 @@ listMarts(
 
 - host:
 
-  Host to connect to. Defaults to `www.ensembl.org`
+  Host to connect to. Defaults to `jun2026.archive.ensembl.org`
 
 - path:
 
