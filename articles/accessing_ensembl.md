@@ -235,7 +235,7 @@ listEnsembl(version = 110)
     ## ! Failed to perform HTTP request.
     ## Caused by error in `curl::curl_fetch_memory()`:
     ## ! Timeout was reached [jul2023.archive.ensembl.org]:
-    ## Operation timed out after 60000 milliseconds with 0 bytes received
+    ## Operation timed out after 60001 milliseconds with 0 bytes received
 
 ``` r
 
@@ -624,24 +624,19 @@ mart <- useEnsembl(dataset = "hsapiens_gene_ensembl", biomart = "ensembl")
 
     ## Ensembl site unresponsive, trying asia mirror
 
-    ## Error in `.chooseEnsemblMirror()`:
-    ## ! Unable to query any Ensembl site
-
 ``` r
 
 head(keytypes(mart), n = 3)
 ```
 
-    ## Error in `h()`:
-    ## ! error in evaluating the argument 'x' in selecting a method for function 'keytypes': object 'mart' not found
+    ## [1] "affy_hc_g110"        "affy_hg_focus"       "affy_hg_u133_plus_2"
 
 ``` r
 
 head(columns(mart), n = 3)
 ```
 
-    ## Error in `h()`:
-    ## ! error in evaluating the argument 'x' in selecting a method for function 'columns': object 'mart' not found
+    ## [1] "3_utr_end"   "3_utr_end"   "3_utr_start"
 
 And you still can use
 [`keys()`](https://huber-group-embl.github.io/biomaRt/reference/select-methods.md)
@@ -650,18 +645,10 @@ to extract potential keys, for a particular key type.
 ``` r
 
 k <- keys(mart, keytype = "chromosome_name")
-```
-
-    ## Error in `h()`:
-    ## ! error in evaluating the argument 'x' in selecting a method for function 'keys': object 'mart' not found
-
-``` r
-
 head(k, n = 3)
 ```
 
-    ## Error:
-    ## ! object 'k' not found
+    ## [1] "1" "2" "3"
 
 When using
 [`keys()`](https://huber-group-embl.github.io/biomaRt/reference/select-methods.md),
@@ -671,18 +658,10 @@ for others keys methods.
 ``` r
 
 k <- keys(mart, keytype = "chromosome_name", pattern = "LRG")
-```
-
-    ## Error in `h()`:
-    ## ! error in evaluating the argument 'x' in selecting a method for function 'keys': object 'mart' not found
-
-``` r
-
 head(k, n = 3)
 ```
 
-    ## Error:
-    ## ! object 'k' not found
+    ## character(0)
 
 Unfortunately the
 [`keys()`](https://huber-group-embl.github.io/biomaRt/reference/select-methods.md)
@@ -706,8 +685,10 @@ select(
 )
 ```
 
-    ## Error in `h()`:
-    ## ! error in evaluating the argument 'x' in selecting a method for function 'select': object 'mart' not found
+    ##   affy_hg_u133_plus_2 entrezgene_id
+    ## 1           207500_at           838
+    ## 2           202763_at           836
+    ## 3         209310_s_at           837
 
 So why would we want to do this when we already have functions like
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)?
@@ -745,7 +726,7 @@ biomartCacheInfo()
     ## biomaRt cache
     ## - Location: /home/runner/.cache/R/biomaRt
     ## - No. of files: 3
-    ## - Total size: 10 Kb
+    ## - Total size: 9.8 Kb
 
 The cache can be deleted using the command
 [`biomartCacheClear()`](https://huber-group-embl.github.io/biomaRt/reference/biomartCache.md).
@@ -766,7 +747,7 @@ biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/RtmpPrlxvh
+    ## - Location: /tmp/RtmpIFjRqf
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
@@ -1126,16 +1107,16 @@ utr5
 
     ##                                                                                                                                                 5utr
     ## 1 AGTCAGTCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 2                                                                                                                               Sequence unavailable
-    ## 3                              ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 4                                                                                                                               Sequence unavailable
-    ## 5        CCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 6                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
-    ## 7       TCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 2        CCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 3                                                                                                                               Sequence unavailable
+    ## 4                                                                                                            ATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 5                              ACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 6       TCCCTAGGGAACTTCCTGTTGTCACCACACCTCTGAGTCGTCTGAGCTCACTGTGAGCAAAATCCCACAGTGGAAACTCTTAAGCCTCTGCGAAGTAAATCATTCTTGTGAATGTGACACACGATCTCTCCAGTTTCCAT
+    ## 7                                                                                                                               Sequence unavailable
     ##   entrezgene_id
     ## 1        200879
-    ## 2            NA
-    ## 3        200879
+    ## 2        200879
+    ## 3            NA
     ## 4        200879
     ## 5        200879
     ## 6        200879
@@ -1164,10 +1145,10 @@ protein
     ## 1 MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKAVYKAWLCSEYFSVTQQECQRWVPCKQYCLEVQTRCPFILPDNEEMVYGGLPGFICTGLLDTSPKRLETKCCDVQWVSCEAKKKKFKESEAPKTHQQQFHHSYFHHYHQQYHHYHPHHDPPGRVSNKPALLPVSGGSRLSPSRIRLCVLVLMLLHTVVSFSSNQGGGGLGLETLPALEEGLTREE*
     ## 2                                                                                                                                                                                     MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKKLCAH*
     ## 3                                                                                                                                     MFRGAWMWPGKDAAALTICCCCCCWAPRPSDKPCADSERAQRWRLSLASLLFFTVLLADHLWLCAGARPRARELSSAMRPPWGAGRERQPVPPRAVLPLPPPPPGEPSAPPGTCGPRYSNLTKAAPAAGSRPVCGGVPEPTGLDAACTKLQSLQRLFEPTTPAPPLRPPDSLSRAPAEFPSAKKNLLKGHFRNFTLSFCDTYTVWDLLLGMDRPDSLDCSLDTLMGDLLAVVASPGSGAWEACSNCIEAYQRLDRHAQEKYDEFDLVLHKYLQAEEYSIRSCTKGCKRLELNVLGLAGAGGRPKMGGRIFGNQTLTLWLLPVGERTSTPGGGAHHTLDLM*
-    ## 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable
-    ## 5                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*
-    ## 6                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*
-    ## 7                                                                                                                                                                                                                                                                                                                                                                                                          MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAEQPQV*
+    ## 4                                                                                                                                                                                                                                                                                                                                                                                                        MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAGEEQPQV*
+    ## 5                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Sequence unavailable
+    ## 6                                                                                                                                                                                                                                                                                                                                                                                                          MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAEQPQV*
+    ## 7                                                                                                                                                                                                                                                                                                                                                                                                                    MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQVLGREMRDMEGDLQELHQSNTGDKSGFGFRRQGEDNT*
     ## 8                                                                                                                                                                                                                                                                                                                                                                                                           MESPKKKNQQLKVGILHLGSRQKKIRIQLRSQCATWKVICKSCISQTPGINLDLGSGVKVKIIPKEEHCKMPEAAFPQ*
     ##   entrezgene_id
     ## 1         27112
@@ -1440,24 +1421,24 @@ sessionInfo()
     ## [1] biomaRt_2.69.0   BiocStyle_2.40.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] KEGGREST_1.52.2      xfun_0.59            bslib_0.11.0         httr2_1.2.3         
+    ##  [1] KEGGREST_1.52.2      xfun_0.60            bslib_0.12.0         httr2_1.3.0         
     ##  [5] Biobase_2.72.0       vctrs_0.7.3          tools_4.6.1          generics_0.1.4      
     ##  [9] stats4_4.6.1         curl_7.1.0           tibble_3.3.1         AnnotationDbi_1.74.0
     ## [13] RSQLite_3.53.3       blob_1.3.0           pkgconfig_2.0.3      dbplyr_2.6.0        
     ## [17] desc_1.4.3           S4Vectors_0.50.1     lifecycle_1.0.5      compiler_4.6.1      
     ## [21] stringr_1.6.0        textshaping_1.0.5    Biostrings_2.80.1    progress_1.2.3      
     ## [25] Seqinfo_1.2.0        htmltools_0.5.9      sass_0.4.10          yaml_2.3.12         
-    ## [29] pillar_1.11.1        pkgdown_2.2.0        crayon_1.5.3         jquerylib_0.1.4     
-    ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.7       
+    ## [29] pillar_1.11.1        pkgdown_2.2.1        crayon_1.5.3         jquerylib_0.1.4     
+    ## [33] cachem_1.1.0         tidyselect_1.2.1     digest_0.6.39        stringi_1.8.9       
     ## [37] dplyr_1.2.1          purrr_1.2.2          bookdown_0.47        fastmap_1.2.0       
     ## [41] cli_3.6.6            magrittr_2.0.5       withr_3.0.3          prettyunits_1.2.0   
-    ## [45] filelock_1.0.3       rappdirs_0.3.4       bit64_4.8.2          rmarkdown_2.31      
-    ## [49] XVector_0.52.0       httr_1.4.8           bit_4.6.0            otel_0.2.0          
-    ## [53] ragg_1.5.2           png_0.1-9            hms_1.1.4            memoise_2.0.1       
-    ## [57] evaluate_1.0.5       knitr_1.51           IRanges_2.46.0       BiocFileCache_3.2.0 
-    ## [61] rlang_1.2.0          glue_1.8.1           DBI_1.3.0            xml2_1.6.0          
-    ## [65] BiocManager_1.30.27  BiocGenerics_0.58.1  jsonlite_2.0.0       R6_2.6.1            
-    ## [69] systemfonts_1.3.2    fs_2.1.0
+    ## [45] filelock_1.0.3       bit64_4.8.4          rmarkdown_2.31       XVector_0.52.0      
+    ## [49] httr_1.4.8           bit_4.6.0            otel_0.2.0           ragg_1.5.2          
+    ## [53] png_0.1-9            hms_1.1.4            memoise_2.0.1        evaluate_1.0.5      
+    ## [57] knitr_1.51           IRanges_2.46.0       BiocFileCache_3.2.0  rlang_1.3.0         
+    ## [61] glue_1.8.1           DBI_1.3.0            xml2_1.6.0           BiocManager_1.30.27 
+    ## [65] BiocGenerics_0.58.1  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   
+    ## [69] fs_2.1.0
 
 [^1]: this is how Ensembl name the database on their server
 
