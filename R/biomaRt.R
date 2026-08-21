@@ -251,7 +251,7 @@ listMarts <- function(
 #' @param dataset Dataset you want to use.  To see the different datasets
 #' available within a biomaRt you can e.g. do: mart = [useMart()]('ensembl'),
 #' followed by [listDatasets()](mart).
-#' @param host Host to connect to. Defaults to `www.ensembl.org`
+#' @param host Host to connect to. Defaults to `june2026.archive.ensembl.org`
 #' @param path Path that should be pasted after to host to get access to the
 #' web service URL
 #' @param port port to connect to, will be pasted between host and path
@@ -262,7 +262,7 @@ listMarts <- function(
 #' @author Steffen Durinck, Mike L. Smith
 #' @keywords methods
 #'
-#' @returns An object of class [Mart], which can be used in functions such as
+#' @returns An object of class `Mart`, which can be used in functions such as
 #' [getBM()], [getLDS()], [getGene()], etc. to retrieve data from the selected
 #' BioMart database.
 #'

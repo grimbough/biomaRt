@@ -44,7 +44,7 @@ Ensembl Genomes databases.}
 use, for debugging}
 }
 \value{
-An object of class \link{Mart}, which can be used in functions such as
+An object of class \code{Mart}, which can be used in functions such as
 \code{\link[=getBM]{getBM()}}, \code{\link[=getLDS]{getLDS()}}, \code{\link[=getGene]{getGene()}}, etc. to retrieve data from the selected
 BioMart database.
 }
