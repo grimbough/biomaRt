@@ -47,17 +47,16 @@ martCheck <- function(mart, biomart = NULL) {
 #' @importFrom httr2 req_options req_perform req_timeout resp_body_string req_user_agent req_url_query
 bmRequest <- function(
   request,
-  type = c("version", "registry", "datasets", "attributes", "filters"),
+  ...,
   http_config,
   verbose = FALSE
 ) {
-  type <- match.arg(type)
   if (verbose) {
     message("Attempting web service request:\n", request)
   }
 
   request <- httr2::request(request) |>
-    req_url_query(type = type, requestid = "biomaRt") |>
+    req_url_query(!!!list(..., requestid = "biomaRt")) |>
     req_user_agent(
       .biomaRt_user_agent()
     ) |>
@@ -187,15 +186,14 @@ listMarts <- function(
     )
   }
 
-  if (!ensemblRedirect && grepl(x = request, pattern = "ensembl.org")) {
-    request <- paste0(request, "?redirect=no")
-  }
+  is_ensembl <- grepl(x = request, pattern = "ensembl.org", fixed = TRUE)
 
   registry <- bmRequest(
     request = request,
     http_config = http_config,
     verbose = verbose,
-    type = "registry"
+    type = "registry",
+    redirect = if (!ensemblRedirect && is_ensembl) "no" else "yes"
   )
 
   ## check this looks like the MartRegistry XML, otherwise throw an error
@@ -470,22 +468,12 @@ listDatasets <- function(mart, verbose = FALSE) {
     stop("No Mart object given or object not of class 'Mart'")
   }
 
-  ## we choose a separator based on whether 'redirect=no' is present
-  ## should always be '?' now
-  sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
-
-  request <- paste0(
-    martHost(mart),
-    sep,
-    "mart=",
-    martBM(mart)
-  )
-
   bmResult <- bmRequest(
-    request = request,
+    request = martHost(mart),
     http_config = martHTTPConfig(mart),
     verbose = verbose,
-    type = "datasets"
+    type = "datasets",
+    mart = martBM(mart)
   )
   txt <- scan(
     text = bmResult,
@@ -521,21 +509,12 @@ bmVersion <- function(mart, verbose = FALSE) {
   if (grepl(pattern = "ensembl.org", x = martHost(mart), fixed = TRUE)) {
     bmv <- "0.7"
   } else {
-    ## we choose a separator based on whether 'redirect=no' is present
-    sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
-
-    request <- paste0(
-      martHost(mart),
-      sep,
-      "mart=",
-      martBM(mart)
-    )
-
     BioMartVersion <- bmRequest(
-      request = request,
+      request = martHost(mart),
       http_config = martHTTPConfig(mart),
       verbose = verbose,
-      type = "version"
+      type = "version",
+      mart = martBM(mart)
     )
     bmv <- ""
     if (BioMartVersion == "\n" || BioMartVersion == "") {
@@ -571,25 +550,14 @@ bmVersion <- function(mart, verbose = FALSE) {
 
 #' @importFrom utils read.table
 .getAttrFilt <- function(mart, verbose, type) {
-  ## we choose a separator based on whether 'redirect=no' is present
-  sep <- if (grepl("?", martHost(mart), fixed = TRUE)) "&" else "?"
-
-  request <- paste0(
-    mart@host,
-    sep,
-    "dataset=",
-    martDataset(mart),
-    "&mart=",
-    martBM(mart),
-    "&virtualSchema=",
-    martVSchema(mart)
-  )
-
   attrfilt <- bmRequest(
-    request = request,
+    request = martHost(mart),
     http_config = martHTTPConfig(mart),
     verbose = verbose,
-    type = type
+    type = type,
+    dataset = martDataset(mart),
+    mart = martBM(mart),
+    virtualSchema = martVSchema(mart)
   )
   attrfiltParsed <- read.table(
     text = attrfilt,
