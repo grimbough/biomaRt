@@ -72,4 +72,4 @@ Collate:
     'non-biomart-utils.R'
     'exportFASTA.R'
     'NP2009code.R'
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

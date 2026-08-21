@@ -38,40 +38,50 @@ exportMethods(keytypes)
 exportMethods(select)
 exportMethods(show)
 import(methods)
-importFrom(BiocFileCache,bfcadd)
-importFrom(BiocFileCache,bfcinfo)
-importFrom(BiocFileCache,bfcquery)
-importFrom(BiocFileCache,bfcremove)
-importFrom(BiocFileCache,bfcupdate)
-importFrom(BiocFileCache,removebfc)
-importFrom(httr2,req_body_form)
-importFrom(httr2,req_error)
-importFrom(httr2,req_options)
-importFrom(httr2,req_perform)
-importFrom(httr2,req_retry)
-importFrom(httr2,req_timeout)
-importFrom(httr2,req_user_agent)
-importFrom(httr2,request)
-importFrom(httr2,resp_body_json)
-importFrom(httr2,resp_body_string)
-importFrom(httr2,resp_status)
-importFrom(methods,is)
-importFrom(methods,prototype)
-importFrom(methods,representation)
-importFrom(methods,setClass)
-importFrom(methods,setGeneric)
-importFrom(methods,setMethod)
-importFrom(methods,setReplaceMethod)
-importFrom(methods,signature)
+importFrom(BiocFileCache,
+  bfcadd,
+  bfcinfo,
+  bfcquery,
+  bfcremove,
+  bfcupdate,
+  removebfc
+)
+importFrom(httr2,
+  req_body_form,
+  req_error,
+  req_options,
+  req_perform,
+  req_retry,
+  req_timeout,
+  req_user_agent,
+  request,
+  resp_body_json,
+  resp_body_string,
+  resp_status
+)
+importFrom(methods,
+  is,
+  prototype,
+  representation,
+  setClass,
+  setGeneric,
+  setMethod,
+  setReplaceMethod,
+  signature
+)
 importFrom(progress,progress_bar)
-importFrom(stringr,str_extract_all)
-importFrom(stringr,str_match)
-importFrom(stringr,str_replace)
-importFrom(utils,edit)
-importFrom(utils,head)
-importFrom(utils,modifyList)
-importFrom(utils,read.table)
-importFrom(utils,tail)
+importFrom(stringr,
+  str_extract_all,
+  str_match,
+  str_replace
+)
+importFrom(utils,
+  edit,
+  head,
+  modifyList,
+  read.table,
+  tail
+)
 importMethodsFrom(AnnotationDbi,columns)
 importMethodsFrom(AnnotationDbi,keys)
 importMethodsFrom(AnnotationDbi,keytypes)
