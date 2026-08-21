@@ -485,24 +485,6 @@ useEnsembl <- function(
     http_config = http_config
   )
 
-  if (grepl("archive", martHost(mart), fixed = TRUE)) {
-    ## hack to work around redirection of most recent mirror URL
-    archives <- .listEnsemblArchives(http_config = http_config)
-    current_release <- archives[archives$current_release == "*", "url"]
-    if (grepl(martHost(mart), pattern = current_release)) {
-      martHost(mart) <- stringr::str_replace(
-        martHost(mart),
-        pattern = current_release,
-        "https://www.ensembl.org"
-      )
-      martHost(mart) <- stringr::str_replace(
-        martHost(mart),
-        pattern = stringr::fixed(":80/"),
-        ":443/"
-      )
-    }
-  }
-
   if (!missing(dataset)) {
     mart <- useDataset(mart = mart, dataset = dataset, verbose = verbose)
   }
