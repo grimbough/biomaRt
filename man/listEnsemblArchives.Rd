@@ -4,11 +4,18 @@
 \alias{listEnsemblArchives}
 \title{Lists the available archived versions of Ensembl}
 \usage{
-listEnsemblArchives()
+listEnsemblArchives(fetch = TRUE)
+}
+\arguments{
+\item{fetch}{If \code{TRUE} (default), fetches the list of Ensembl archives from
+the Ensembl website, and adds it to the \code{ensembl_versions} dataset.
+If \code{FALSE}, returns the existing \code{ensembl_versions} dataset.
+
+Returns a table containing the available archived versions of Ensembl, along
+with the dates they were created and the URL used to access them.}
 }
 \description{
-Returns a table containing the available archived versions of Ensembl, along
-with the dates they were created and the URL used to access them.
+Lists the available archived versions of Ensembl
 }
 \examples{
 listEnsemblArchives()
