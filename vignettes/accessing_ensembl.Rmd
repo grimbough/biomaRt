@@ -131,7 +131,7 @@ Alternatively, one can use the <https://www.ensembl.org> website to find an arch
 Whichever method you use to find the URL of the archive you wish to query, copy the url and use that in the `host` argument as shown below to connect to the specified BioMart database.  The example below shows how to query Ensembl 110.
 
 
-```{r archiveMarts3, echo = TRUE, eval = TRUE}
+```{r archiveMarts3, echo = TRUE, eval = FALSE}
 listEnsembl(version = 110)
 ensembl_110 <- useEnsembl(
   biomart = "genes",
