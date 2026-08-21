@@ -6,6 +6,9 @@ BREAKING CHANGES
  o This package now defaults to https://jun2026.archive.ensembl.org where it
  was previously defaulting to https://www.ensembl.org/. The June 2026 (Ensembl
  116) release is the last release to include the Biomart utility.
+ o Modification of SSL settings via `setEnsemblSSL()` is now deprecated and
+ will be removed in the next biomaRt release. Please get in touch if your 
+ workflow depends on this feature.
 
 MINOR IMPROVEMENTS
 
