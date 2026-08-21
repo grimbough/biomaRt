@@ -82,6 +82,8 @@ no longer available in recent Ensembl releases.
 
 ## Dataset
 
+- [`ensembl_versions`](https://huber-group-embl.github.io/biomaRt/reference/ensembl_versions.md)
+  : Mapping of Ensembl versions to their release dates
 - [`NP2009code()`](https://huber-group-embl.github.io/biomaRt/reference/NP2009code.md)
   : Display the analysis code from the 2009 Nature protocols paper
 

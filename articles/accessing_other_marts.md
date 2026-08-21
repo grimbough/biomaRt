@@ -153,9 +153,6 @@ phytozome_v13 <- useMart(
 )
 ```
 
-    ## Error in `req_perform()`:
-    ## ! HTTP 403 Forbidden.
-
 Once this is set up the usual
 *[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* functions
 can be used to interrogate the database options and run queries.
@@ -170,8 +167,8 @@ getBM(
 )
 ```
 
-    ## Error:
-    ## ! object 'phytozome_v13' not found
+    ##          organism_name gene_name1
+    ## 1 Smoellendorffii_v1.0      82092
 
 ## Session Info
 

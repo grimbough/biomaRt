@@ -74,7 +74,7 @@ useEnsemblGenomes(biomart, dataset, host = NULL)
 
 ## Value
 
-An object of class Mart, which can be used in functions such as
+An object of class `Mart`, which can be used in functions such as
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md),
 [`getLDS()`](https://huber-group-embl.github.io/biomaRt/reference/getLDS.md),
 [`getGene()`](https://huber-group-embl.github.io/biomaRt/reference/getGene.md),

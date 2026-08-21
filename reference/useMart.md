@@ -45,7 +45,7 @@ useMart(
 
 - host:
 
-  Host to connect to. Defaults to `www.ensembl.org`
+  Host to connect to. Defaults to `june2026.archive.ensembl.org`
 
 - path:
 
@@ -68,7 +68,7 @@ useMart(
 
 ## Value
 
-An object of class Mart, which can be used in functions such as
+An object of class `Mart`, which can be used in functions such as
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md),
 [`getLDS()`](https://huber-group-embl.github.io/biomaRt/reference/getLDS.md),
 [`getGene()`](https://huber-group-embl.github.io/biomaRt/reference/getGene.md),
