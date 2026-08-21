@@ -29,6 +29,7 @@ linters: all_linters(
     backport_linter("4.0.0")
   )
 exclusions: list(
+    "data-raw",
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),
