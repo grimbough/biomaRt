@@ -253,7 +253,7 @@ listEnsembl <- function(
 ## creates an Ensembl URL based on the arguments provided to useEnsembl.
 ## If there are conflicting options, order of precedence is:
 ## GRCh, version, mirror
-## Default return value is https://www.ensembl.org
+## Default return value is https://jun2026.archive.ensembl.org
 .constructEnsemblURL <- function(mirror = NULL, version = NULL, GRCh = NULL) {
   host <- NULL
 
@@ -298,21 +298,12 @@ listEnsembl <- function(
     }
   }
 
-  if (!is.null(mirror)) {
-    if (mirror %in% c("www", "useast", "asia")) {
-      host <- paste0("https://", mirror, ".ensembl.org")
-    } else {
-      warning(
-        "Invalid mirror. Select a mirror from [www, useast, asia].\n",
-        "Default when no mirror is specified is to use ",
-        "www.ensembl.org which may be automatically redirected."
-      )
-      host <- "https://www.ensembl.org"
-    }
+  if (!is.null(mirror) && mirror %in% c("www", "useast", "asia")) {
+    host <- paste0("https://", mirror, ".ensembl.org")
   }
 
   if (is.null(host)) {
-    host <- "https://www.ensembl.org"
+    host <- "https://jun2026.archive.ensembl.org"
   }
 
   return(host)
@@ -435,14 +426,16 @@ useEnsembl <- function(
     }
 
     if (is.null(version) && is.null(GRCh)) {
-      mirror <- .chooseEnsemblMirror(mirror = mirror, http_config = http_config)
+      host <- "https://jun2026.archive.ensembl.org"
+      ensemblRedirect <- FALSE
+    } else {
+      host <- .constructEnsemblURL(
+        version = version,
+        GRCh = GRCh,
+        mirror = mirror
+      )
+      ensemblRedirect <- TRUE
     }
-    host <- .constructEnsemblURL(
-      version = version,
-      GRCh = GRCh,
-      mirror = mirror
-    )
-    ensemblRedirect <- is.null(mirror)
   } else {
     ensemblRedirect <- FALSE
   }
