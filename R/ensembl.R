@@ -285,7 +285,7 @@ listEnsembl <- function(
   }
 
   if (!is.null(version)) {
-    archives <- .listEnsemblArchives(http_config = list())
+    archives <- listEnsemblArchives()
     idx <- match(version, archives[, "version"], nomatch = NA)
     if (is.na(idx)) {
       stop(
