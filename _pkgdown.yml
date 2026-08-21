@@ -37,6 +37,7 @@ reference:
   - biomartCache
 - title: "Dataset"
 - contents:
+  - ensembl_versions
   - NP2009code
 - title: "Deprecated of Defunct functions"
 - contents:
