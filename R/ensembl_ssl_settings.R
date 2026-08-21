@@ -2,7 +2,17 @@
   cache <- .biomartCacheLocation()
   bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
   if (.checkInCache(bfc, hash = "ensembl-ssl-settings-httr2")) {
-    return(.readFromCache(bfc, "ensembl-ssl-settings-httr2"))
+    settings <- .readFromCache(bfc, "ensembl-ssl-settings-httr2")
+    if (length(settings) > 0L) {
+      .Deprecated(
+        package = "biomaRt",
+        msg = paste(
+          "Modifying the Ensembl SSL settings is deprecated and will be removed in the next release. ",
+          "Please get in touch as soon as possible if your workflow requires this function to work."
+        )
+      )
+    }
+    return(settings)
   }
   return(list())
 }
@@ -32,6 +42,14 @@
 #' @importFrom utils modifyList
 #' @export
 setEnsemblSSL <- function(settings) {
+  .Deprecated(
+    package = "biomaRt",
+    msg = paste(
+      "setEnsemblSSL() is deprecated and will be removed in the next release. ",
+      "No modification of SSL settings should be required. ",
+      "Please get in touch as soon as possible if your workflow requires this function to work."
+    )
+  )
   stopifnot(is.list(settings))
 
   cache <- .biomartCacheLocation()
