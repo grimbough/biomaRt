@@ -91,7 +91,7 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' @param mart mart object created with the [useMart()] function.
 #' This is optional, as you usually use [listMarts()] to see which
 #' marts there are to connect to.
-#' @param host Host to connect to. Defaults to `www.ensembl.org`
+#' @param host Host to connect to. Defaults to `jun2026.archive.ensembl.org`
 #' @param path path to martservice that should be pasted behind the host to get
 #' to web service URL
 #' @param port port to use in HTTP communication
@@ -118,7 +118,7 @@ bmRequest <- function(request, http_config, verbose = FALSE) {
 #' @export
 listMarts <- function(
   mart = NULL,
-  host = "https://www.ensembl.org",
+  host = "https://jun2026.archive.ensembl.org",
   path = "/biomart/martservice",
   port,
   includeHosts = FALSE,
@@ -148,7 +148,7 @@ listMarts <- function(
 #' @importFrom methods is
 .listMarts <- function(
   mart = NULL,
-  host = "www.ensembl.org",
+  host = "jun2026.archive.ensembl.org",
   path = "/biomart/martservice",
   port = 443,
   includeHosts = FALSE,
@@ -283,7 +283,7 @@ listMarts <- function(
 useMart <- function(
   biomart,
   dataset,
-  host = "https://www.ensembl.org",
+  host = "https://jun2026.archive.ensembl.org",
   path = "/biomart/martservice",
   port,
   version,
@@ -309,7 +309,7 @@ useMart <- function(
 .useMart <- function(
   biomart,
   dataset,
-  host = "https://www.ensembl.org",
+  host = "https://jun2026.archive.ensembl.org",
   path = "/biomart/martservice",
   port = 443,
   ensemblRedirect = NULL,

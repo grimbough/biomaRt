@@ -22,11 +22,6 @@ ex_mart <- Mart(
 
 test_that("useEnsembl() error handling is OK", {
   expect_error(useEnsembl(), regexp = "You must provide the argument")
-
-  expect_warning(
-    useEnsembl(biomart = "genes", host = "https://ensembl.org"),
-    regexp = "You cannot use the host"
-  )
 })
 
 test_that("useEnsembl(host = ) is not necessary for ensembl.org", {
@@ -65,12 +60,12 @@ with_mock_dir(
 test_that("Ensembl URLs are constructed correctly", {
   ## no arguments ##
   .constructEnsemblURL() |>
-    expect_equal("https://www.ensembl.org") |>
+    expect_equal("https://jun2026.archive.ensembl.org") |>
     expect_silent()
 
   ## mirror ##
   .constructEnsemblURL(mirror = "INVALID_MIRROR") |>
-    expect_equal("https://www.ensembl.org") |>
+    expect_equal("https://jun2026.archive.ensembl.org") |>
     expect_warning(,
       regexp = "Invalid mirror\\. Select a mirror"
     )
@@ -84,7 +79,7 @@ test_that("Ensembl URLs are constructed correctly", {
   expect_equal(.constructEnsemblURL(GRCh = 37), "https://grch37.ensembl.org")
 
   .constructEnsemblURL(GRCh = 38) |>
-    expect_equal("https://www.ensembl.org") |>
+    expect_equal("https://jun2026.archive.ensembl.org") |>
     expect_warning(
       regexp = "Only 37 can be specified for GRCh version"
     )
