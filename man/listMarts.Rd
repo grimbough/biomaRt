@@ -6,7 +6,7 @@
 \usage{
 listMarts(
   mart = NULL,
-  host = "https://www.ensembl.org",
+  host = "https://jun2026.archive.ensembl.org",
   path = "/biomart/martservice",
   port,
   includeHosts = FALSE,
@@ -19,7 +19,7 @@ listMarts(
 This is optional, as you usually use \code{\link[=listMarts]{listMarts()}} to see which
 marts there are to connect to.}
 
-\item{host}{Host to connect to. Defaults to \code{www.ensembl.org}}
+\item{host}{Host to connect to. Defaults to \code{jun2026.archive.ensembl.org}}
 
 \item{path}{path to martservice that should be pasted behind the host to get
 to web service URL}
