@@ -64,6 +64,10 @@
 
 #' Lists the available archived versions of Ensembl
 #'
+#' @param fetch If `TRUE` (default), fetches the list of Ensembl archives from
+#' the Ensembl website, and adds it to the `ensembl_versions` dataset.
+#' If `FALSE`, returns the existing `ensembl_versions` dataset.
+#'
 #' Returns a table containing the available archived versions of Ensembl, along
 #' with the dates they were created and the URL used to access them.
 #'
@@ -74,8 +78,24 @@
 #' listEnsemblArchives()
 #'
 #' @export
-listEnsemblArchives <- function() {
-  .listEnsemblArchives(http_config = list())
+listEnsemblArchives <- function(fetch = TRUE) {
+  if (!fetch) {
+    return(ensembl_versions)
+  }
+  all_versions <- rbind(
+    .listEnsemblArchives(http_config = list()),
+    ensembl_versions
+  )
+  all_versions <- all_versions[!duplicated(all_versions$version), ]
+  all_versions <- all_versions[
+    order(
+      suppressWarnings(as.numeric(all_versions$version)),
+      decreasing = TRUE,
+      na.last = FALSE
+    ),
+  ]
+
+  return(all_versions)
 }
 
 #' @importFrom stringr str_extract_all str_match
