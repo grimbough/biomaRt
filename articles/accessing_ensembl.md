@@ -24,10 +24,6 @@ library(biomaRt)
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
-    ## Error:
-    ## ! Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
-    ## Look at ?useEnsembl for details on how to try a mirror site.
-
 If this your first time using
 *[biomaRt](https://bioconductor.org/packages/3.23/biomaRt)* , you might
 wonder how to find the two arguments we supplied to the
@@ -52,9 +48,11 @@ with the Ensembl version.
 listEnsembl()
 ```
 
-    ## Error:
-    ## ! Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
-    ## Look at ?useEnsembl for details on how to try a mirror site.
+    ##         biomart                version
+    ## 1         genes      Ensembl Genes 116
+    ## 2 mouse_strains      Mouse strains 116
+    ## 3          snps  Ensembl Variation 116
+    ## 4    regulation Ensembl Regulation 116
 
 The
 [`useEnsembl()`](https://huber-group-embl.github.io/biomaRt/reference/useEnsembl.md)
@@ -69,10 +67,6 @@ access to gene annotation information.
 ensembl <- useEnsembl(biomart = "genes")
 ```
 
-    ## Error:
-    ## ! Your query has been redirected to https://status.ensembl.org indicating this Ensembl service is currently unavailable.
-    ## Look at ?useEnsembl for details on how to try a mirror site.
-
 If we print the current `ensembl` object, we can see that the
 `ENSEMBL_MART_ENSEMBL` database [^1] has been selected, but that no
 dataset has been chosen.
@@ -82,8 +76,9 @@ dataset has been chosen.
 ensembl
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ## Object of class 'Mart':
+    ##   Using the ENSEMBL_MART_ENSEMBL BioMart database
+    ##   No dataset selected.
 
 ### Step 2: Choosing a dataset
 
@@ -99,18 +94,16 @@ using the function
 ``` r
 
 datasets <- listDatasets(ensembl)
-```
-
-    ## Error:
-    ## ! object 'ensembl' not found
-
-``` r
-
 head(datasets)
 ```
 
-    ## Error:
-    ## ! object 'datasets' not found
+    ##                        dataset                           description     version
+    ## 1 abrachyrhynchus_gene_ensembl Pink-footed goose genes (ASM259213v1) ASM259213v1
+    ## 2     acalliptera_gene_ensembl      Eastern happy genes (fAstCal1.3)  fAstCal1.3
+    ## 3   acarolinensis_gene_ensembl       Green anole genes (AnoCar2.0v2) AnoCar2.0v2
+    ## 4    acchrysaetos_gene_ensembl       Golden eagle genes (bAquChr1.2)  bAquChr1.2
+    ## 5    acitrinellus_gene_ensembl        Midas cichlid genes (Midas_v5)    Midas_v5
+    ## 6    amelanoleuca_gene_ensembl       Giant panda genes (ASM200744v2) ASM200744v2
 
 The
 [`listDatasets()`](https://huber-group-embl.github.io/biomaRt/reference/listDatasets.md)
@@ -130,8 +123,8 @@ following:
 searchDatasets(mart = ensembl, pattern = "hsapiens")
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##                  dataset              description    version
+    ## 80 hsapiens_gene_ensembl Human genes (GRCh38.p14) GRCh38.p14
 
 To use a dataset we can update our `Mart` object using the function
 [`useDataset()`](https://huber-group-embl.github.io/biomaRt/reference/useDataset.md).
@@ -141,9 +134,6 @@ In the example below we choose to use the *hsapiens* dataset.
 
 ensembl <- useDataset(dataset = "hsapiens_gene_ensembl", mart = ensembl)
 ```
-
-    ## Error:
-    ## ! object 'ensembl' not found
 
 As mentioned previously, if the dataset one wants to use is known in
 advance i.e. you’ve gone through this process before, we can select a
@@ -237,8 +227,11 @@ how to query Ensembl 110.
 listEnsembl(version = 110)
 ```
 
-    ## Error in `req_perform()`:
-    ## ! HTTP 500 Internal Server Error.
+    ##         biomart                version
+    ## 1         genes      Ensembl Genes 110
+    ## 2 mouse_strains      Mouse strains 110
+    ## 3          snps  Ensembl Variation 110
+    ## 4    regulation Ensembl Regulation 110
 
 ``` r
 
@@ -248,12 +241,6 @@ ensembl_110 <- useEnsembl(
   version = 110
 )
 ```
-
-    ## Error in `req_perform()`:
-    ## ! Failed to perform HTTP request.
-    ## Caused by error in `curl::curl_fetch_memory()`:
-    ## ! Timeout was reached [jul2023.archive.ensembl.org]:
-    ## Operation timed out after 60000 milliseconds with 0 bytes received
 
 ### Using Ensembl Genomes
 
@@ -331,18 +318,15 @@ function shows you all available filters in the selected dataset.
 ``` r
 
 filters <- listFilters(ensembl)
-```
-
-    ## Error:
-    ## ! object 'ensembl' not found
-
-``` r
-
 filters[1:5, ]
 ```
 
-    ## Error:
-    ## ! object 'filters' not found
+    ##              name              description
+    ## 1 chromosome_name Chromosome/scaffold name
+    ## 2           start                    Start
+    ## 3             end                      End
+    ## 4      band_start               Band Start
+    ## 5        band_end                 Band End
 
 *Attributes* define the data we are interested in retrieving. For
 example, maybe we want to retrieve the gene symbols or chromosomal
@@ -353,18 +337,15 @@ function displays all available attributes in the selected dataset.
 ``` r
 
 attributes <- listAttributes(ensembl)
-```
-
-    ## Error:
-    ## ! object 'ensembl' not found
-
-``` r
-
 attributes[1:5, ]
 ```
 
-    ## Error in `attributes[1:5, ]`:
-    ## ! object of type 'builtin' is not subsettable
+    ##                            name                  description         page
+    ## 1               ensembl_gene_id               Gene stable ID feature_page
+    ## 2       ensembl_gene_id_version       Gene stable ID version feature_page
+    ## 3         ensembl_transcript_id         Transcript stable ID feature_page
+    ## 4 ensembl_transcript_id_version Transcript stable ID version feature_page
+    ## 5            ensembl_peptide_id            Protein stable ID feature_page
 
 The
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)
@@ -423,8 +404,10 @@ getBM(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##   affy_hg_u133_plus_2 entrezgene_id
+    ## 1           207500_at           838
+    ## 2           202763_at           836
+    ## 3         209310_s_at           837
 
 ### Searching for filters and attributes
 
@@ -453,8 +436,10 @@ returns the details for all attributes that contain the pattern
 searchAttributes(mart = ensembl, pattern = "hgnc")
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##               name        description         page
+    ## 63         hgnc_id            HGNC ID feature_page
+    ## 64     hgnc_symbol        HGNC symbol feature_page
+    ## 95 hgnc_trans_name Transcript name ID feature_page
 
 For advanced use, note that the *pattern* argument takes a regular
 expression. This means you can create more complex queries if required.
@@ -470,8 +455,14 @@ be appropriate for our example.
 searchFilters(mart = ensembl, pattern = "ensembl.*id")
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##                             name                                                    description
+    ## 54               ensembl_gene_id                       Gene stable ID(s) [e.g. ENSG00000000003]
+    ## 55       ensembl_gene_id_version       Gene stable ID(s) with version [e.g. ENSG00000000003.18]
+    ## 56         ensembl_transcript_id                 Transcript stable ID(s) [e.g. ENST00000000233]
+    ## 57 ensembl_transcript_id_version Transcript stable ID(s) with version [e.g. ENST00000000233.10]
+    ## 58            ensembl_peptide_id                    Protein stable ID(s) [e.g. ENSP00000000233]
+    ## 59    ensembl_peptide_id_version     Protein stable ID(s) with version [e.g. ENSP00000000233.5]
+    ## 60               ensembl_exon_id                              Exon ID(s) [e.g. ENSE00000000001]
 
 From this we can compare *ENST00000577249.1* with the examples given in
 the description column, and see it is a Transcript ID with version. Thus
@@ -503,9 +494,6 @@ list the possible chromosome names you could run the following:
 listFilterOptions(mart = ensembl, filter = "chromosome_name")
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
-
 It is also possible to search the list of available values via
 [`searchFilterOptions()`](https://huber-group-embl.github.io/biomaRt/reference/listFilterOptions.md).
 In the two examples below, the first returns all chromosome names
@@ -517,8 +505,8 @@ descriptions that contain the string “*Crohn*”.
 searchFilterOptions(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##  [1] "GL000008.2" "GL000009.2" "GL000194.1" "GL000195.1" "GL000205.2" "GL000213.1" "GL000214.1"
+    ##  [8] "GL000216.2" "GL000218.1" "GL000219.1" "GL000220.1" "GL000221.1" "GL000224.1" "GL000225.1"
 
 ``` r
 
@@ -529,8 +517,8 @@ searchFilterOptions(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ## [1] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 1"  "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 10"
+    ## [3] "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 19" "INFLAMMATORY BOWEL DISEASE CROHN DISEASE 30"
 
 ### Finding out more information on filters
 
@@ -553,8 +541,7 @@ to investigate the type of the filter you want to use.
 filterType("with_affy_hg_u133_plus_2", ensembl)
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ## [1] "boolean_list"
 
 ### Attribute Pages
 
@@ -571,18 +558,10 @@ function.
 ``` r
 
 pages <- attributePages(ensembl)
-```
-
-    ## Error:
-    ## ! object 'ensembl' not found
-
-``` r
-
 pages
 ```
 
-    ## Error:
-    ## ! object 'pages' not found
+    ## [1] "feature_page" "structure"    "homologs"     "snp"          "snp_somatic"  "sequences"
 
 To show us a smaller list of attributes which belong to a specific page,
 we can now specify this in the
@@ -594,8 +573,13 @@ function.[^3]
 head(listAttributes(ensembl, page = "feature_page"))
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##                            name                  description         page
+    ## 1               ensembl_gene_id               Gene stable ID feature_page
+    ## 2       ensembl_gene_id_version       Gene stable ID version feature_page
+    ## 3         ensembl_transcript_id         Transcript stable ID feature_page
+    ## 4 ensembl_transcript_id_version Transcript stable ID version feature_page
+    ## 5            ensembl_peptide_id            Protein stable ID feature_page
+    ## 6    ensembl_peptide_id_version    Protein stable ID version feature_page
 
 We now get a short list of attributes related to the region where the
 genes are located.
@@ -683,8 +667,10 @@ select(
 )
 ```
 
-    ## Error in `httr2::req_perform()`:
-    ## ! HTTP 405 Method Not Allowed.
+    ##   affy_hg_u133_plus_2 entrezgene_id
+    ## 1           207500_at           838
+    ## 2           202763_at           836
+    ## 3         209310_s_at           837
 
 So why would we want to do this when we already have functions like
 [`getBM()`](https://huber-group-embl.github.io/biomaRt/reference/getBM.md)?
@@ -721,8 +707,8 @@ biomartCacheInfo()
 
     ## biomaRt cache
     ## - Location: /home/runner/.cache/R/biomaRt
-    ## - No. of files: 1
-    ## - Total size: 9.4 Kb
+    ## - No. of files: 4
+    ## - Total size: 10 Kb
 
 The cache can be deleted using the command
 [`biomartCacheClear()`](https://huber-group-embl.github.io/biomaRt/reference/biomartCache.md).
@@ -743,7 +729,7 @@ biomartCacheInfo()
 ```
 
     ## biomaRt cache
-    ## - Location: /tmp/RtmpVdeJBX
+    ## - Location: /tmp/RtmpMmoFgq
     ## - No. of files: 0
     ## - Total size: 0 bytes
 
@@ -809,8 +795,10 @@ getBM(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##   affy_hg_u133_plus_2 hgnc_symbol chromosome_name start_position end_position  band
+    ## 1           207500_at       CASP5              11      104991932    105023169 q22.3
+    ## 2           202763_at       CASP3               4      184627695    184650418 q35.1
+    ## 3         209310_s_at       CASP4              11      104942866    104969366 q22.3
 
 ### Annotate a set of EntrezGene identifiers with GO annotation
 
@@ -833,18 +821,16 @@ goids <- getBM(
   values = entrez,
   mart = ensembl
 )
-```
-
-    ## Error:
-    ## ! object 'ensembl' not found
-
-``` r
-
 head(goids)
 ```
 
-    ## Error:
-    ## ! object 'goids' not found
+    ##   entrezgene_id      go_id
+    ## 1           673 GO:0005524
+    ## 2           673 GO:0007165
+    ## 3           673 GO:0006468
+    ## 4           673 GO:0004672
+    ## 5           673 GO:0000166
+    ## 6           673 GO:0016740
 
 ### Retrieve all HUGO gene symbols of genes that are located on chromosomes 17,20 or Y, and are associated with specific GO terms
 
@@ -871,8 +857,9 @@ getBM(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##   hgnc_symbol
+    ## 1     RPS6KB1
+    ## 2        CDK3
 
 ### Annotate set of idenfiers with INTERPRO protein domain identifiers
 
@@ -889,18 +876,26 @@ ipro <- getBM(
   values = refseqids,
   mart = ensembl
 )
-```
-
-    ## Error:
-    ## ! object 'ensembl' not found
-
-``` r
-
 ipro
 ```
 
-    ## Error:
-    ## ! object 'ipro' not found
+    ##    refseq_mrna  interpro                                               interpro_description
+    ## 1    NM_000546 IPR008967      p53-like transcription factor, DNA-binding domain superfamily
+    ## 2    NM_000546 IPR036674                        p53-like tetramerisation domain superfamily
+    ## 3    NM_000546 IPR012346 p53/RUNT-type transcription factor, DNA-binding domain superfamily
+    ## 4    NM_000546 IPR002117                                       p53 tumour suppressor family
+    ## 5    NM_000546 IPR011615                                            p53, DNA-binding domain
+    ## 6    NM_000546 IPR057064                                        p53, central conserved site
+    ## 7    NM_000546 IPR010991                                        p53, tetramerisation domain
+    ## 8    NM_000546 IPR040926               Cellular tumor antigen p53, transactivation domain 2
+    ## 9    NM_000546 IPR013872                                        p53, transactivation domain
+    ## 10   NM_005359 IPR003619                                       MAD homology 1, Dwarfin-type
+    ## 11   NM_005359 IPR008984                                        SMAD/FHA domain superfamily
+    ## 12   NM_005359 IPR017855                                       SMAD-like domain superfamily
+    ## 13   NM_005359 IPR001132                                          SMAD domain, Dwarfin-type
+    ## 14   NM_005359 IPR013019                                                  MAD homology, MH1
+    ## 15   NM_005359 IPR036578                                        SMAD MH1 domain superfamily
+    ## 16   NM_005359 IPR013790                                                            Dwarfin
 
 ### Select all Affymetrix identifiers on the hgu133plus2 chip and Ensembl gene identifiers for genes located on chromosome 16 between basepair 1100000 and 1250000.
 
@@ -921,8 +916,33 @@ getBM(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##    affy_hg_u133_plus_2 ensembl_gene_id
+    ## 1                      ENSG00000292423
+    ## 2                      ENSG00000260702
+    ## 3                      ENSG00000260532
+    ## 4            215502_at ENSG00000260532
+    ## 5                      ENSG00000292400
+    ## 6                      ENSG00000292401
+    ## 7                      ENSG00000273551
+    ## 8            205845_at ENSG00000196557
+    ## 9                      ENSG00000196557
+    ## 10                     ENSG00000260403
+    ## 11                     ENSG00000259910
+    ## 12                     ENSG00000261294
+    ## 13         220339_s_at ENSG00000116176
+    ## 14         210084_x_at ENSG00000197253
+    ## 15         217023_x_at ENSG00000197253
+    ## 16         216474_x_at ENSG00000197253
+    ## 17         205683_x_at ENSG00000197253
+    ## 18         207134_x_at ENSG00000197253
+    ## 19         215382_x_at ENSG00000197253
+    ## 20                     ENSG00000292385
+    ## 21         210084_x_at ENSG00000172236
+    ## 22         217023_x_at ENSG00000172236
+    ## 23         216474_x_at ENSG00000172236
+    ## 24         205683_x_at ENSG00000172236
+    ## 25         207134_x_at ENSG00000172236
+    ## 26         215382_x_at ENSG00000172236
 
 ### Retrieve all EntrezGene identifiers and HUGO gene symbols of genes which have a “MAP kinase activity” GO term associated with it.
 
@@ -940,8 +960,27 @@ getBM(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ##    entrezgene_id hgnc_symbol
+    ## 1           1022        CDK7
+    ## 2         225689      MAPK15
+    ## 3           6300      MAPK12
+    ## 4           5596       MAPK4
+    ## 5           5600      MAPK11
+    ## 6           5595       MAPK3
+    ## 7           6885      MAP3K7
+    ## 8           1432      MAPK14
+    ## 9           5597       MAPK6
+    ## 10          5127       CDK16
+    ## 11          5594       MAPK1
+    ## 12          5891         MOK
+    ## 13          2932       GSK3B
+    ## 14          8621       CDK13
+    ## 15          5599       MAPK8
+    ## 16          5601       MAPK9
+    ## 17          5603      MAPK13
+    ## 18          5602      MAPK10
+    ## 19         51701         NLK
+    ## 20          5598       MAPK7
 
 ### Given a set of EntrezGene identifiers, retrieve 100bp upstream promoter sequences
 
@@ -1014,8 +1053,8 @@ getSequence(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ## Error in `httr2::req_perform()`:
+    ## ! HTTP 405 Method Not Allowed.
 
 One further thing to note is that, although we are searching for genes
 based on their NCBI Gene IDs, Ensembl BioMart doesn’t allow some ID
@@ -1047,8 +1086,8 @@ utr5 <- getSequence(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ## Error in `httr2::req_perform()`:
+    ## ! HTTP 405 Method Not Allowed.
 
 ``` r
 
@@ -1076,8 +1115,8 @@ protein <- getSequence(
 )
 ```
 
-    ## Error:
-    ## ! object 'ensembl' not found
+    ## Error in `httr2::req_perform()`:
+    ## ! HTTP 405 Method Not Allowed.
 
 ``` r
 
