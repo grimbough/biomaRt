@@ -59,18 +59,4 @@ Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE)
-Collate:
-    'biomaRt-package.R'
-    'biomaRtClasses.R'
-    'methods-Mart.R'
-    'biomaRt.R'
-    'caching.R'
-    'ensembl.R'
-    'ensembl_wrappers.R'
-    'ensembl_ssl_settings.R'
-    'utilityFunctions.R'
-    'non-biomart-utils.R'
-    'exportFASTA.R'
-    'NP2009code.R'
-    'data.R'
 Config/roxygen2/version: 8.1.0
