@@ -44,13 +44,20 @@ martCheck <- function(mart, biomart = NULL) {
 }
 
 
-#' @importFrom httr2 req_options req_perform req_timeout resp_body_string req_user_agent
-bmRequest <- function(request, http_config, verbose = FALSE) {
+#' @importFrom httr2 req_options req_perform req_timeout resp_body_string req_user_agent req_url_query
+bmRequest <- function(
+  request,
+  type = c("version", "registry", "datasets", "attributes", "filters"),
+  http_config,
+  verbose = FALSE
+) {
+  type <- match.arg(type)
   if (verbose) {
     message("Attempting web service request:\n", request)
   }
 
   request <- httr2::request(request) |>
+    req_url_query(type = type, requestid = "biomaRt") |>
     req_user_agent(
       .biomaRt_user_agent()
     ) |>
@@ -163,15 +170,14 @@ listMarts <- function(
       host,
       ":",
       port,
-      path,
-      "?type=registry&requestid=biomaRt"
+      path
     )
 
     if (is.list(http_config)) {
       http_config <- do.call(c, http_config)
     }
   } else if (is(mart, "Mart")) {
-    request <- paste0(martHost(mart), "?type=registry&requestid=biomaRt")
+    request <- martHost(mart)
     http_config <- martHTTPConfig(mart)
   } else {
     stop(
@@ -182,13 +188,14 @@ listMarts <- function(
   }
 
   if (!ensemblRedirect && grepl(x = request, pattern = "ensembl.org")) {
-    request <- paste0(request, "&redirect=no")
+    request <- paste0(request, "?redirect=no")
   }
 
   registry <- bmRequest(
     request = request,
     http_config = http_config,
-    verbose = verbose
+    verbose = verbose,
+    type = "registry"
   )
 
   ## check this looks like the MartRegistry XML, otherwise throw an error
@@ -470,15 +477,15 @@ listDatasets <- function(mart, verbose = FALSE) {
   request <- paste0(
     martHost(mart),
     sep,
-    "type=datasets&requestid=biomaRt&mart=",
+    "mart=",
     martBM(mart)
   )
-  http_config <- martHTTPConfig(mart)
 
   bmResult <- bmRequest(
     request = request,
-    http_config = http_config,
-    verbose = verbose
+    http_config = martHTTPConfig(mart),
+    verbose = verbose,
+    type = "datasets"
   )
   txt <- scan(
     text = bmResult,
@@ -520,16 +527,15 @@ bmVersion <- function(mart, verbose = FALSE) {
     request <- paste0(
       martHost(mart),
       sep,
-      "type=version",
-      "&requestid=biomaRt&mart=",
+      "mart=",
       martBM(mart)
     )
-    http_config <- martHTTPConfig(mart)
 
     BioMartVersion <- bmRequest(
       request = request,
-      http_config = http_config,
-      verbose = verbose
+      http_config = martHTTPConfig(mart),
+      verbose = verbose,
+      type = "version"
     )
     bmv <- ""
     if (BioMartVersion == "\n" || BioMartVersion == "") {
@@ -571,11 +577,9 @@ bmVersion <- function(mart, verbose = FALSE) {
   request <- paste0(
     mart@host,
     sep,
-    "type=",
-    type,
-    "&dataset=",
+    "dataset=",
     martDataset(mart),
-    "&requestid=biomaRt&mart=",
+    "&mart=",
     martBM(mart),
     "&virtualSchema=",
     martVSchema(mart)
@@ -584,7 +588,8 @@ bmVersion <- function(mart, verbose = FALSE) {
   attrfilt <- bmRequest(
     request = request,
     http_config = martHTTPConfig(mart),
-    verbose = verbose
+    verbose = verbose,
+    type = type
   )
   attrfiltParsed <- read.table(
     text = attrfilt,
