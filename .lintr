@@ -26,6 +26,7 @@ linters: all_linters(
     paste_linter = NULL,
     return_linter = NULL,
     object_overwrite_linter = NULL,
+    namespace_linter = NULL,
     backport_linter("4.0.0")
   )
 exclusions: list(
