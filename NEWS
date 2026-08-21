@@ -1,3 +1,30 @@
+CHANGES IN VERSION 2.70.0
+-------------------------
+
+BREAKING CHANGES
+
+ o This package now defaults to https://jun2026.archive.ensembl.org where it
+ was previously defaulting to https://www.ensembl.org/. The June 2026 (Ensembl
+ 116) release is the last release to include the Biomart utility.
+
+MINOR IMPROVEMENTS
+
+ o Unnecessary call to `listEnsemblArchives()` in `getBM(useCache = FALSE)`
+ has been removed.
+ o A complete static dataset of previous Ensembl releases is now shipped with
+ this package. This solves an issue where the upstream Ensembl website stopped
+ listing all releases on their page. The dataset is directly accessible to 
+ users via `data("ensembl_releases")`. It is also possible to get the list of
+ Ensembl archives without an internet connection via 
+ `listEnsemblArchives(fetch = FALSE)`.
+
+INTERNAL CHANGES
+
+  o Vignettes now run again on continuous integration to ensure they stay up
+  to date.
+  o Unused internal functions have been removed.
+  o Code duplication across functions have been reduced.
+
 CHANGES IN VERSION 2.68.0
 -------------------------
 
