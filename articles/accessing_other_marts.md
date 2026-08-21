@@ -69,9 +69,6 @@ wormbase <- useMart(
 )
 ```
 
-    ## Error in `req_perform()`:
-    ## ! HTTP 500 Internal Server Error.
-
 We can then use functions described earlier in this vignette to find and
 select the gene dataset, and print the first 6 available attributes and
 filters. Then we use a list of gene names as filter and retrieve
@@ -82,32 +79,35 @@ associated transcript IDs and the transcript biotype.
 listDatasets(wormbase)
 ```
 
-    ## Error:
-    ## ! object 'wormbase' not found
+    ##     dataset          description version
+    ## 1 wbps_gene All Species (WBPS19)      19
 
 ``` r
 
 wormbase <- useDataset(mart = wormbase, dataset = "wbps_gene")
-```
-
-    ## Error:
-    ## ! object 'wormbase' not found
-
-``` r
-
 head(listFilters(wormbase))
 ```
 
-    ## Error:
-    ## ! object 'wormbase' not found
+    ##                  name     description
+    ## 1     species_id_1010          Genome
+    ## 2 nematode_clade_1010  Nematode Clade
+    ## 3     chromosome_name Chromosome name
+    ## 4               start           Start
+    ## 5                 end             End
+    ## 6              strand          Strand
 
 ``` r
 
 head(listAttributes(wormbase))
 ```
 
-    ## Error:
-    ## ! object 'wormbase' not found
+    ##                      name        description         page
+    ## 1          species_id_key      Internal Name feature_page
+    ## 2    production_name_1010     Genome project feature_page
+    ## 3       display_name_1010        Genome name feature_page
+    ## 4        taxonomy_id_1010        Taxonomy ID feature_page
+    ## 5 assembly_accession_1010 Assembly accession feature_page
+    ## 6     nematode_clade_1010     Nematode clade feature_page
 
 ``` r
 
@@ -123,8 +123,12 @@ getBM(
 )
 ```
 
-    ## Error:
-    ## ! object 'wormbase' not found
+    ##   external_gene_id wbps_transcript_id transcript_biotype
+    ## 1           his-33         F17E9.13.1     protein_coding
+    ## 2           unc-26          JC8.10a.1     protein_coding
+    ## 3           unc-26          JC8.10b.1     protein_coding
+    ## 4           unc-26          JC8.10c.1     protein_coding
+    ## 5           unc-26          JC8.10d.1     protein_coding
 
 ### Phytozome
 

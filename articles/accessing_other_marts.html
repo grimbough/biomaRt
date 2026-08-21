@@ -126,29 +126,34 @@ without these options.&lt;/p&gt;"><sup>1</sup></a></p>
 <span>  host <span class="op">=</span> <span class="st">"https://parasite.wormbase.org"</span>,</span>
 <span>  port <span class="op">=</span> <span class="fl">443</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in `req_perform()`:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> HTTP 500 Internal Server Error.</span></span></code></pre>
 <p>We can then use functions described earlier in this vignette to find
 and select the gene dataset, and print the first 6 available attributes
 and filters. Then we use a list of gene names as filter and retrieve
 associated transcript IDs and the transcript biotype.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/listDatasets.html">listDatasets</a></span><span class="op">(</span><span class="va">wormbase</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'wormbase' not found</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wormbase</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useDataset.html">useDataset</a></span><span class="op">(</span>mart <span class="op">=</span> <span class="va">wormbase</span>, dataset <span class="op">=</span> <span class="st">"wbps_gene"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'wormbase' not found</span></span></code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/listFilters.html">listFilters</a></span><span class="op">(</span><span class="va">wormbase</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'wormbase' not found</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">##     dataset          description version</span></span>
+<span><span class="co">## 1 wbps_gene All Species (WBPS19)      19</span></span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wormbase</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useDataset.html">useDataset</a></span><span class="op">(</span>mart <span class="op">=</span> <span class="va">wormbase</span>, dataset <span class="op">=</span> <span class="st">"wbps_gene"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/listFilters.html">listFilters</a></span><span class="op">(</span><span class="va">wormbase</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                  name     description</span></span>
+<span><span class="co">## 1     species_id_1010          Genome</span></span>
+<span><span class="co">## 2 nematode_clade_1010  Nematode Clade</span></span>
+<span><span class="co">## 3     chromosome_name Chromosome name</span></span>
+<span><span class="co">## 4               start           Start</span></span>
+<span><span class="co">## 5                 end             End</span></span>
+<span><span class="co">## 6              strand          Strand</span></span></code></pre>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/listAttributes.html">listAttributes</a></span><span class="op">(</span><span class="va">wormbase</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'wormbase' not found</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<pre><code><span><span class="co">##                      name        description         page</span></span>
+<span><span class="co">## 1          species_id_key      Internal Name feature_page</span></span>
+<span><span class="co">## 2    production_name_1010     Genome project feature_page</span></span>
+<span><span class="co">## 3       display_name_1010        Genome name feature_page</span></span>
+<span><span class="co">## 4        taxonomy_id_1010        Taxonomy ID feature_page</span></span>
+<span><span class="co">## 5 assembly_accession_1010 Assembly accession feature_page</span></span>
+<span><span class="co">## 6     nematode_clade_1010     Nematode clade feature_page</span></span></code></pre>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"external_gene_id"</span>,</span>
@@ -159,8 +164,12 @@ associated transcript IDs and the transcript biotype.</p>
 <span>  values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unc-26"</span>, <span class="st">"his-33"</span><span class="op">)</span>,</span>
 <span>  mart <span class="op">=</span> <span class="va">wormbase</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
-<span><span class="co">## <span style="color: #BBBB00;">!</span> object 'wormbase' not found</span></span></code></pre>
+<pre><code><span><span class="co">##   external_gene_id wbps_transcript_id transcript_biotype</span></span>
+<span><span class="co">## 1           his-33         F17E9.13.1     protein_coding</span></span>
+<span><span class="co">## 2           unc-26          JC8.10a.1     protein_coding</span></span>
+<span><span class="co">## 3           unc-26          JC8.10b.1     protein_coding</span></span>
+<span><span class="co">## 4           unc-26          JC8.10c.1     protein_coding</span></span>
+<span><span class="co">## 5           unc-26          JC8.10d.1     protein_coding</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="phytozome">Phytozome<a class="anchor" aria-label="anchor" href="#phytozome"></a>
@@ -177,7 +186,7 @@ in August 2021 and can not longer be accessed.</p>
 <p>Version 13 of Phytozome can be found at <a href="https://phytozome-next.jgi.doe.gov/" class="external-link uri">https://phytozome-next.jgi.doe.gov/</a> and if you wish to
 query that version the URL used to create the Mart object must reflect
 that.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">phytozome_v13</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/useMart.html">useMart</a></span><span class="op">(</span></span>
 <span>  biomart <span class="op">=</span> <span class="st">"phytozome_mart"</span>,</span>
 <span>  dataset <span class="op">=</span> <span class="st">"phytozome"</span>,</span>
@@ -186,7 +195,7 @@ that.</p>
 <p>Once this is set up the usual <em><a href="https://bioconductor.org/packages/3.23/biomaRt" class="external-link">biomaRt</a></em>
 functions can be used to interrogate the database options and run
 queries.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getBM.html">getBM</a></span><span class="op">(</span></span>
 <span>  attributes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"organism_name"</span>, <span class="st">"gene_name1"</span><span class="op">)</span>,</span>
 <span>  filters <span class="op">=</span> <span class="st">"gene_name_filter"</span>,</span>
@@ -201,7 +210,7 @@ queries.</p>
 <div class="section level2">
 <h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## R version 4.6.1 (2026-06-24)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
@@ -244,7 +253,7 @@ queries.</p>
 <span><span class="co">## [61] glue_1.8.1           DBI_1.3.0            BiocManager_1.30.27  xml2_1.6.0          </span></span>
 <span><span class="co">## [65] BiocGenerics_0.58.1  jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.2   </span></span>
 <span><span class="co">## [69] fs_2.1.0</span></span></code></pre>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/warnings.html" class="external-link">warnings</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 
