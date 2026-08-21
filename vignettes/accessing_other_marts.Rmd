@@ -15,7 +15,7 @@ editor_options:
 ---
 
 ```{r setup, echo = FALSE}
-knitr::opts_chunk$set(error = TRUE, cache = FALSE, eval = TRUE)
+knitr::opts_chunk$set(cache = FALSE, eval = TRUE)
 options(width = 100)
 ```
 
@@ -31,28 +31,15 @@ There are a small number of non-Ensembl databases that offer a BioMart interface
 library(biomaRt)
 ```
 
-```{r test-wormbase-ssl, echo = FALSE, eval = FALSE}
-if (
-  grepl(
-    try(httr::GET("https://parasite.wormbase.org"), silent = TRUE)[1],
-    pattern = "sslv3 alert handshake",
-    fixed = TRUE
-  )
-) {
-  httr::set_config(httr::config(ssl_cipher_list = "DEFAULT@SECLEVEL=1"))
-}
-```
-
 ## Wormbase
 
 To demonstrate the use of the `r BiocStyle::Biocpkg("biomaRt")` package with non-Ensembl databases the next query is performed using the Wormbase ParaSite BioMart.  In this example, we use the `listMarts()` function to find the name of the available marts, given the URL of Wormbase.  We use this to connect to Wormbase BioMart using the `useMart()` function.^[Note that we use the `https` address and must provide the port as `443`.  Queries to WormBase will fail without these options.]
 
 ```{r wormbase, echo=TRUE, eval=TRUE}
-listMarts(host = "parasite.wormbase.org")
+listMarts(host = "https://parasite.wormbase.org")
 wormbase <- useMart(
   biomart = "parasite_mart",
-  host = "https://parasite.wormbase.org",
-  port = 443
+  host = "https://parasite.wormbase.org"
 )
 ```
 

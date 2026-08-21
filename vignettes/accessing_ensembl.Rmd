@@ -31,7 +31,6 @@ pre code {
 
 ```{r setup, echo = FALSE}
 knitr::opts_chunk$set(
-  error = TRUE,
   cache = FALSE,
   eval = TRUE,
   out.width = "100%"
@@ -97,7 +96,7 @@ ensembl <- useDataset(dataset = "hsapiens_gene_ensembl", mart = ensembl)
 
 As mentioned previously, if the dataset one wants to use is known in advance i.e. you've gone through this process before, we can select a both the database and dataset in one step:
 
-```{r ensembl4, eval = FALSE}
+```{r ensembl4, eval = TRUE}
 ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 ```
 
@@ -105,7 +104,7 @@ ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
 
 To improve performance Ensembl provides several mirrors of their site distributed around the globe.  When you use the default settings for `useEnsembl()` your queries will be directed to your closest mirror geographically.  In theory this should give you the best performance, however this is not always the case in practice.  For example, if the nearest mirror is experiencing many queries from other users it may perform poorly for you.  You can use the `mirror` argument to `useEnsembl()` to explicitly request a specific mirror.
 
-```{r, mirrors, eval = FALSE}
+```{r, mirrors, eval = TRUE}
 ensembl <- useEnsembl(
   biomart = "ensembl",
   dataset = "hsapiens_gene_ensembl",
