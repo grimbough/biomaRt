@@ -22,7 +22,7 @@ database names can be retrieved with the function \code{\link[=listMarts]{listMa
 available within a biomaRt you can e.g. do: mart = \href{'ensembl'}{useMart()},
 followed by \href{mart}{listDatasets()}.}
 
-\item{host}{Host to connect to. Defaults to \code{www.ensembl.org}}
+\item{host}{Host to connect to. Defaults to \code{june2026.archive.ensembl.org}}
 
 \item{path}{Path that should be pasted after to host to get access to the
 web service URL}
@@ -36,7 +36,7 @@ BioMart you want to use}
 use, for debugging}
 }
 \value{
-An object of class \link{Mart}, which can be used in functions such as
+An object of class \code{Mart}, which can be used in functions such as
 \code{\link[=getBM]{getBM()}}, \code{\link[=getLDS]{getLDS()}}, \code{\link[=getGene]{getGene()}}, etc. to retrieve data from the selected
 BioMart database.
 }
